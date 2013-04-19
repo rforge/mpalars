@@ -1,0 +1,21 @@
+Package: MPAlars
+Type: Package
+Title: lars algorithm
+Version: 1.0
+Date: 2013-04-18
+Author: Quentin Grimonprez
+Maintainer: Quentin Grimonprez <quentin.grimonprez@inria.fr>
+Description: This package contains an implementation of the lars algorithm [1],
+    for the lasso and fusion penalization. It works even if the number of
+    covariate is greater than the number of individuals. It has been designed
+    for Multi Patients Analysis (MPA) of Genomics Markers. Its main purpose is
+    the analysis of copy number signal but it can be used for other context.
+License: GPL (>=2)
+Depends:
+    Rcpp (>= 0.9.14),
+    methods
+LinkingTo: Rcpp
+Collate:
+    'LarsPath.R'
+    'lars.R'
+    'simulation.R'

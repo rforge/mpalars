@@ -1,0 +1,8 @@
+exportClasses(LarsPath)
+exportMethods(plot)
+export(MPA.coef)
+export(MPA.fusion)
+export(MPA.lars)
+export(MPA.simul)
+export(plot.coefficient)
+useDynLib(MPAlars)
