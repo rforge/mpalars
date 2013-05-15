@@ -19,13 +19,13 @@
     Boston, MA 02111-1307
     USA
 
-    Contact : Serge.Iovleff@stkpp.org
+    Contact : S..._Dot_I..._At_stkpp_Dot_org (see copyright for ...)
 */
 
 /*
  * Project:  stkpp::Arrays
  * Purpose:  Define the Interface for the Array classes.
- * Author:   Serge Iovleff, serge.iovleff@stkpp.org
+ * Author:   Serge Iovleff, S..._Dot_I..._At_stkpp_Dot_org (see copyright for ...)
  *
  **/
 
@@ -167,14 +167,19 @@ class IArray2DBase : public ITArrayBase<Derived>
     ~IArray2DBase() {}
 
   public:
+    /** @return a constant pointer on the j-th column of the container
+     *  @param j the index of the column
+     **/
+    inline PTRCOL const& data(int j) const { return allocator_.data(j);}
+    /** @return a constant pointer on the main pointer of the container */
+    inline PTRCOL* const& p_data() const { return allocator_.p_data();}
     /**  @return @c true if the container is empty, @c false otherwise */
     inline bool isRef() const { return allocator_.isRef();}
     /** @return a reference on the element (i,j) of the 2D container.
      *  @param i index of the row
      *  @param j index of the column
      **/
-    inline Type& operator()(int i, int j)
-    { return this->elt(i,j);}
+    inline Type& operator()(int i, int j) { return this->elt(i,j);}
     /** @return a constant reference on the element (i,j) of the 2D container.
      *  @param i index of the row
      *  @param j index of the column
@@ -370,7 +375,7 @@ class IArray2DBase : public ITArrayBase<Derived>
       for (int j=first; j<= last; j++) { copyColumn(Tref, j, j);}
       // delete and set view on the data
       Tref.allocator_.freeData();
-      Tref.setPtrData(allocator_.p_data(), allocator_.rangeData(), true);
+      Tref.allocator_.setPtrData(allocator_.p_data(), allocator_.rangeData(), true);
     }
     /** Append the vector @c other to @c this without copying the data
      *  explicitly. @c other is appended to this and
@@ -414,11 +419,10 @@ class IArray2DBase : public ITArrayBase<Derived>
     Array1D<int> capacityCols_;
     /** range of the index of the columns of the container. **/
     Array1D<Range> rangeCols_;
-    /* utilities methods */
-    inline PTRCOL const& data(int col) const { return allocator_.data(col);}
-    inline PTRCOL& data(int col) { return allocator_.data(col);}
-    inline void setPtrData( PTRCOL* p_data,  Range const& rangeData, bool ref)
-    { allocator_.setPtrData(p_data, rangeData, ref);}
+    /** @return a pointer on the j-th column of the container
+     *  @param j the index of the column
+     **/
+    inline PTRCOL& data(int j) { return allocator_.data(j);}
     /** set the maximum possible number of columns without reallocation.
      *  @param capacity the maximum number of columns
      **/

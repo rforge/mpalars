@@ -19,14 +19,14 @@
     Boston, MA 02111-1307
     USA
 
-    Contact : Serge.Iovleff@stkpp.org
+    Contact : S..._Dot_I..._At_stkpp_Dot_org (see copyright for ...)
 */
 
 /*
  * Project:  stkpp::reduct
  * created on: 16 June 2010
  * Purpose:  main header file of the Reduct project.
- * Author:   iovleff, serge.iovleff@stkpp.org
+ * Author:   iovleff, S..._Dot_I..._At_stkpp_Dot_org (see copyright for ...)
  *
  **/
 

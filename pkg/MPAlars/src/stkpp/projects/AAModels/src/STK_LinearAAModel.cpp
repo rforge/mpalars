@@ -19,12 +19,12 @@
     Boston, MA 02111-1307
     USA
 
-    Contact : Serge.Iovleff@stkpp.org                                   */
+    Contact : S..._Dot_I..._At_stkpp_Dot_org (see copyright for ...)                                   */
 
 /*
  * Project:  stkpp::AAModels
  * Purpose:  implementation class for AA linear models.
- * Author:   Serge Iovleff, serge.iovleff@stkpp.org
+ * Author:   Serge Iovleff, S..._Dot_I..._At_stkpp_Dot_org (see copyright for ...)
  *
  **/
 
@@ -64,6 +64,20 @@ LinearAAModel::LinearAAModel( Matrix const& data)
   p_regressor_ = new MultidimRegression();
   setWorkData(workData_);
 }
+
+/** copy constructor.
+ *  @param model the model to copy
+ **/
+LinearAAModel::LinearAAModel( LinearAAModel const& model)
+                            : Runner(model)
+                            , GaussianAAModel(model)
+                            , workData_(model.workData_)
+{
+  p_regressor_ = new MultidimRegression();
+  setWorkData(workData_);
+}
+
+
 
 /* Virtual destructor */
 LinearAAModel::~LinearAAModel()

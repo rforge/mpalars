@@ -20,18 +20,18 @@
     Boston, MA 02111-1307
     USA
 
-    Contact : Serge.Iovleff@stkpp.org
+    Contact : S..._Dot_I..._At_stkpp_Dot_org (see copyright for ...)
 */
 
 /*
  * Project:  stkpp::STKernel::Base
  * created on: 23 août 2012
- * Author:   iovleff, serge.iovleff@stkpp.org
+ * Author:   iovleff, S..._Dot_I..._At_stkpp_Dot_org (see copyright for ...)
  **/
 
 /** @file STK_Macros.h
- *  @brief In this file we defien the macro and utilities function for emiting
- *  messages and errors.
+ *  @brief In this file we define the macro and utilities function for
+ *  errors messages and errors exceptions.
  **/
 
 
@@ -51,7 +51,6 @@
 
 #define STKERROR_NO_ARG(Where, Error) \
   STKERROR_NO_ARG2(Where,  Error)
-
 
 /** @ingroup STKernel
  * generate an Error message with no argument. All Error message have the form :
@@ -88,7 +87,7 @@
 #define STKERROR_3ARG(Where, Arg1, Arg2, Arg3, Error) \
   STKERROR_3ARG2(Where, Arg1, Arg2, Arg3, Error)
 
-/** @ingroup STkernel
+/** @ingroup STKernel
  *  throw an out_of_range exception with one arguments. Error message have the form :
  * "Error in classname::methodname(arg)\nWhat: error message."
  **/
@@ -97,7 +96,7 @@
 #define STKOUT_OF_RANGE_1ARG(Where, Arg, Error) \
     STKOUT_OF_RANGE_1ARG2(Where, Arg, Error)
 
-/**  @ingroup STkernel
+/**  @ingroup STKernel
  * throw an out_of_range exception with one arguments. Error message have the form :
  * "Error in classname::methodname(arg)\nWhat: error message."
  **/
@@ -106,7 +105,7 @@
 #define STKOUT_OF_RANGE_2ARG(Where, Arg1, Arg2, Error) \
     STKOUT_OF_RANGE_2ARG2(Where, Arg1, Arg2, Error)
 
-/**  @ingroup STkernel
+/**  @ingroup STKernel
  * throw an out_of_range exception with one arguments. Error message have the form :
  * "Error in classname::methodname(arg)\nWhat: error message."
  **/
@@ -115,8 +114,8 @@
 #define STKOUT_OF_RANGE_3ARG(Where, Arg1, Arg2, Arg3, Error) \
     STKOUT_OF_RANGE_3ARG2(Where, Arg1, Arg2, Arg3, Error)
 
-/**  @ingroup STkernel
- * throw an out_of_range exception with one arguments. Error message have the form :
+/**  @ingroup STKernel
+ * throw an runtime exception with one arguments. Error message have the form :
  * "Error in classname::methodname(arg)\nWhat: error message."
  **/
 #define STKRUNTIME_ERROR_2ARG2(Where, Arg1, Arg2, Error) \
@@ -124,8 +123,8 @@
 #define STKRUNTIME_ERROR_2ARG(Where, Arg1, Arg2, Error) \
     STKRUNTIME_ERROR_2ARG2(Where, Arg1, Arg2, Error)
 
-/**  @ingroup STkernel
- * throw an out_of_range exception with one arguments. Error message have the form :
+/**  @ingroup STKernel
+ * throw an runtime exception with one arguments. Error message have the form :
  * "Error in classname::methodname(arg)\nWhat: error message."
  **/
 #define STKRUNTIME_ERROR_1ARG2(Where, Arg, Error) \
@@ -133,14 +132,41 @@
 #define STKRUNTIME_ERROR_1ARG(Where, Arg, Error) \
     STKRUNTIME_ERROR_1ARG2(Where, Arg, Error)
 
-/**  @ingroup STkernel
- * throw an out_of_range exception with one arguments. Error message have the form :
+/**  @ingroup STKernel
+ * throw an runtime exception with one arguments. Error message have the form :
  * "Error in classname::methodname(arg)\nWhat: error message."
  **/
 #define STKRUNTIME_ERROR_NO_ARG2(Where, Error) \
   throw runtime_error(STKERROR_NO_ARG2(Where, Error))
 #define STKRUNTIME_ERROR_NO_ARG(Where, Error) \
     STKRUNTIME_ERROR_NO_ARG2(Where, Error)
+
+/**  @ingroup STKernel
+ * throw an domain exception with two arguments. Error message have the form :
+ * "Error in classname::methodname(arg)\nWhat: error message."
+ **/
+#define STKDOMAIN_ERROR_2ARG2(Where, Arg1, Arg2, Error) \
+  throw domain_error(STKERROR_2ARG2(Where, Arg1, Arg2, Error))
+#define STKDOMAIN_ERROR_2ARG(Where, Arg1, Arg2, Error) \
+    STKDOMAIN_ERROR_2ARG2(Where, Arg1, Arg2, Error)
+
+/**  @ingroup STKernel
+ * throw an domain exception with one arguments. Error message have the form :
+ * "Error in classname::methodname(arg)\nWhat: error message."
+ **/
+#define STKDOMAIN_ERROR_1ARG2(Where, Arg, Error) \
+  throw domain_error(STKERROR_1ARG2(Where, Arg, Error))
+#define STKDOMAIN_ERROR_1ARG(Where, Arg, Error) \
+    STKDOMAIN_ERROR_1ARG2(Where, Arg, Error)
+
+/**  @ingroup STKernel
+ * throw an domain exception with one arguments. Error message have the form :
+ * "Error in classname::methodname(arg)\nWhat: error message."
+ **/
+#define STKDOMAIN_ERROR_NO_ARG2(Where, Error) \
+  throw domain_error(STKERROR_NO_ARG2(Where, Error))
+#define STKDOMAIN_ERROR_NO_ARG(Where, Error) \
+    STKDOMAIN_ERROR_NO_ARG2(Where, Error)
 
 
 #endif /* STK_MACROS_H */

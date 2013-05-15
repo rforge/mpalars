@@ -19,13 +19,13 @@
     Boston, MA 02111-1307
     USA
 
-    Contact : Serge.Iovleff@stkpp.org
+    Contact : S..._Dot_I..._At_stkpp_Dot_org (see copyright for ...)
 */
 
 /*
  * Project:  stkpp::Reduct
  * Purpose:  Implementation of the ILinearReduct interface using the local variance.
- * Author:   iovleff, serge.iovleff@stkpp.org
+ * Author:   iovleff, S..._Dot_I..._At_stkpp_Dot_org (see copyright for ...)
  **/
 
 /** @file STK_LocalVariance.cpp In this file we implement the LocalVariance
@@ -123,6 +123,18 @@ LocalVariance::LocalVariance( Matrix const& data, TypeGraph type, int nbNeighbor
   };
 }
 
+/** copy Constructor.
+ *  @param reductor the reductor to copy
+ */
+LocalVariance::LocalVariance( LocalVariance const& reductor)
+                            : ILinearReduct(reductor)
+                            , type_(reductor.type_)
+                            , nbNeighbor_(reductor.nbNeighbor_)
+                            , neighbors_(reductor.neighbors_)
+                            , dist_(reductor.dist_)
+                            , p_dataStatistics_(reductor.p_dataStatistics_->clone())
+{ }
+
 /*
  * Destructor
  */
@@ -166,7 +178,7 @@ void LocalVariance::maximizeCriteria()
   // clear any allocated memory
   clear();
   // initialize memory
-  initializeMemory();
+  initialize();
   // compute covariance matrices
   computeCovarianceMatrices();
   // compute the axis
@@ -184,7 +196,7 @@ void LocalVariance::maximizeCriteria(Vector const& weights)
   // clear allocated memory
   clear();
   // initialize memory
-  initializeMemory();
+  initialize();
   // compute covariance matrices
   computeCovarianceMatrices(weights);
   // compute the axis
@@ -406,7 +418,7 @@ void LocalVariance::clear()
 }
 
 /* initialize dimension */
-void LocalVariance::initializeMemory()
+void LocalVariance::initialize()
 {
   p_dataStatistics_ = new Stat::MultivariateMatrix(p_data_);
   localCovariance_.resize(p_data_->cols());

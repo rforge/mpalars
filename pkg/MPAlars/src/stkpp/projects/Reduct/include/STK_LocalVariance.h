@@ -19,13 +19,13 @@
     Boston, MA 02111-1307
     USA
 
-    Contact : Serge.Iovleff@stkpp.org
+    Contact : S..._Dot_I..._At_stkpp_Dot_org (see copyright for ...)
 */
 
 /*
  * Project:  stkpp::AAModels
  * Purpose:  Implementation of the ILinearReduct interface using the local variance.
- * Author:   iovleff, serge.iovleff@stkpp.org
+ * Author:   iovleff, S..._Dot_I..._At_stkpp_Dot_org (see copyright for ...)
  **/
 
 /** @file STK_LocalVariance.h In this file we define the LocalVariance class.
@@ -52,7 +52,7 @@ namespace STK
  *  The class can use the algorithm of Prim or the minimal distance
  *  in order to compute the proximity graph defining the local variance.
  *
- *  This class derive from ILinearReduct which derive itself from IRunnerConst.
+ *  This class derive from ILinearReduct which derive itself from IRunnerUnsupervised.
  *  The @c run() and @c run(weights) methods have been implemented in the
  *  ILinearReduct interface using the pure virtual methods @c maximizeCriteria()
  *  and @c MaximizeCriteria(weights).
@@ -60,8 +60,7 @@ namespace STK
 class LocalVariance : public ILinearReduct
 {
   public:
-    /**
-     * Type of proximity graph to used in order to compute the local variance:
+    /** Type of proximity graph to used in order to compute the local variance:
      * - prim_ the minimal spanning tree
      * - distance_ the first neighbors
      * - unknown_ unknown type of graph
@@ -92,6 +91,13 @@ class LocalVariance : public ILinearReduct
      *  @param nbNeighbor number of neighbors to use in the proximity graph
      */
     LocalVariance( Matrix const& data, TypeGraph type = distance_, int nbNeighbor =1);
+    /** copy Constructor.
+     *  @param reductor the reductor to copy
+     */
+    LocalVariance( LocalVariance const& reductor);
+
+    /** clone pattern */
+    inline virtual LocalVariance* clone() const { return new LocalVariance(*this);}
     /** Destructor */
     virtual ~LocalVariance();
     /** @return the number of neighbors used in the local covariance.*/
@@ -156,9 +162,10 @@ class LocalVariance : public ILinearReduct
     void computeAxis();
 
     /** initialize memory */
-    void initializeMemory();
+    void initialize();
     /** clear allocated memory */
     void clear();
+
     /** Default constructor. The TypeGraph and the number of neighbors are
      *  given by the user and are not modified.
      *  @param type type of proximity graph to build

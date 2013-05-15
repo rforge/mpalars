@@ -19,13 +19,13 @@
     Boston, MA 02111-1307
     USA
 
-    Contact : Serge.Iovleff@stkpp.org
+    Contact : S..._Dot_I..._At_stkpp_Dot_org (see copyright for ...)
 */
 
 /*
  * Project: STatistik
  * Purpose: implementation of the Normal Distribution
- * Author:  Serge Iovleff, serge.iovleff@stkpp.org
+ * Author:  Serge Iovleff, S..._Dot_I..._At_stkpp_Dot_org (see copyright for ...)
  **/
 
 /** @file STK_Law_Normal.cpp
@@ -42,46 +42,32 @@ namespace Law
 /* constructor */
 Normal::Normal(Real const& mu, Real const& sigma)
               : IUnivLaw<Real>(String(_T("Normal")))
-              , mu_(mu)
-              , sigma_(sigma)
+              , mu_(mu), sigma_(sigma)
 {
   // check parameters
-  if (  !Arithmetic<Real>::isFinite(mu)
-     || !Arithmetic<Real>::isFinite(sigma)
-     || sigma < 0
-     )
-    throw domain_error("Normal::Normal(mu, sigma) argument error");
+  if (!Arithmetic<Real>::isFinite(mu) || !Arithmetic<Real>::isFinite(sigma) || sigma < 0)
+    STKDOMAIN_ERROR_2ARG(Normal::Normal,mu,sigma,invalid argument);
 }
 
 /* destructor */
-Normal::~Normal()
-{ ;}
+Normal::~Normal() {}
 
-/*
- *  Generate a pseudo Normal random variate.
- */
+/*  Generate a pseudo Normal random variate. */
 Real Normal::rand() const
-{
-  if (sigma_ == 0.) return mu_;
-  else              return generator.randGauss(mu_, sigma_);
-}
+{ return (sigma_ == 0.) ? mu_ : generator.randGauss(mu_, sigma_);}
 
-/*
- *  Generate a pseudo Normal random variate with the specified parameters.
+/*  Generate a pseudo Normal random variate with the specified parameters.
  *  (static)
  */
 Real Normal::rand(Real const& mu, Real const& sigma)
 {
+#ifdef STK_DEBUG
   // check parameters
-  if (  !Arithmetic<Real>::isFinite(mu)
-     || !Arithmetic<Real>::isFinite(sigma)
-     || sigma < 0
-     )
-    throw domain_error("Normal::rand(mu, sigma) "
-                       "argument error");
+  if ( !Arithmetic<Real>::isFinite(mu) || !Arithmetic<Real>::isFinite(sigma) || sigma < 0)
+    STKDOMAIN_ERROR_2ARG(Normal::rand,mu,sigma,invalid argument);
+#endif
   // return variate
-  if (sigma == 0.) return mu;
-  else             return mu + sigma * generator.randGauss();
+  return (sigma == 0.) ? mu : generator.randGauss(mu, sigma);
 }
 
 /*
@@ -91,13 +77,12 @@ Real Normal::pdf(Real const& x) const
 {
   // check parameter
   if ( !Arithmetic<Real>::isFinite(x))
-    throw domain_error("Normal::pdf(x) argument error");
+    STKDOMAIN_ERROR_1ARG(Normal::pdf,x,invalid argument);
   // trivial case
-  if (sigma_ == 0.)
-    return (x==mu_) ? 1. : 0.;
+  if (sigma_ == 0.) return (x==mu_) ? 1. : 0.;
   // compute pdf
   const Real y = (x - mu_)/sigma_;
-  return Const::_1_SQRT2PI_ * exp(-0.5 * y * y)  / sigma_;
+  return Const::_1_SQRT2PI_ * std::exp(-0.5 * y * y)  / sigma_;
 }
 
 /*
@@ -105,15 +90,19 @@ Real Normal::pdf(Real const& x) const
  */
 Real Normal::pdf(Real const& x, Real const& mu, Real const& sigma)
 {
+#ifdef STK_DEBUG
+  // check parameters
+  if ( !Arithmetic<Real>::isFinite(mu) || !Arithmetic<Real>::isFinite(sigma) || sigma < 0)
+    STKDOMAIN_ERROR_2ARG(Normal::rand,mu,sigma,invalid argument);
+#endif
   // check parameter
   if ( !Arithmetic<Real>::isFinite(x))
-    throw domain_error("Normal::pdf(x, mu, sigma) argument error");
+    STKDOMAIN_ERROR_1ARG(Normal::pdf,x,invalid argument);
   // trivial case
-  if (sigma == 0.)
-    return (x==mu) ? 1. : 0.;
+  if (sigma == 0.) return (x==mu) ? 1. : 0.;
   // compute pdf
   const Real y = (x - mu)/sigma;
-  return Const::_1_SQRT2PI_ * exp(-0.5 * y * y)  / sigma;
+  return Const::_1_SQRT2PI_ * std::exp(-0.5 * y * y)  / sigma;
 }
 
 /*
@@ -123,13 +112,34 @@ Real Normal::lpdf(Real const& x) const
 {
   // check parameter
   if ( !Arithmetic<Real>::isFinite(x))
-    throw domain_error("Normal::lpdf(x) argument error");
+    STKDOMAIN_ERROR_1ARG(Normal::lpdf,x,invalid argument);
   // trivial case
   if (sigma_ == 0)
     return (x==mu_) ? 0. : -Arithmetic<Real>::infinity();
   // compute lpdf
   const Real y = (x - mu_)/sigma_;
-  return -(Const::_LNSQRT2PI_ + log(sigma_) + 0.5 * y * y);
+  return -(Const::_LNSQRT2PI_ + std::log(double(sigma_)) + 0.5 * y * y);
+}
+
+/*
+ * Give the value of the log-pdf at x.
+ */
+Real Normal::lpdf(Real const& x, Real const& mu, Real const& sigma)
+{
+#ifdef STK_DEBUG
+  // check parameters
+  if ( !Arithmetic<Real>::isFinite(mu) || !Arithmetic<Real>::isFinite(sigma) || sigma < 0)
+    STKDOMAIN_ERROR_2ARG(Normal::rand,mu,sigma,invalid argument);
+#endif
+  // check parameter
+  if ( !Arithmetic<Real>::isFinite(x))
+    STKDOMAIN_ERROR_1ARG(Normal::lpdf,x,invalid argument);
+  // trivial case
+  if (sigma == 0)
+    return (x==mu) ? 0. : -Arithmetic<Real>::infinity();
+  // compute lpdf
+  const Real y = (x - mu)/sigma;
+  return -(Const::_LNSQRT2PI_ + std::log(double(sigma)) + 0.5 * y * y);
 }
 
 /*
@@ -138,8 +148,8 @@ Real Normal::lpdf(Real const& x) const
 Real Normal::cdf(Real const& t) const
 {
   // check parameter
-  if ( !Arithmetic<Real>::isFinite(t))
-    throw domain_error("Normal::cdf(t) argument error");
+  if (!Arithmetic<Real>::isFinite(t))
+    STKDOMAIN_ERROR_1ARG(Normal::cdf,t,invalid argument);
   // coefficients
   const Real a[5] =
   {
@@ -236,17 +246,12 @@ Real Normal::cdf(Real const& t) const
   return (t < 0. ? y : 1.-y);
 }
     
-/*
- * The inverse cumulative distribution function at p.
- */
+/* The inverse cumulative distribution function at p.*/
 Real Normal::icdf(Real const& p) const
 {
   // check parameter
-  if ( !Arithmetic<Real>::isFinite(p)
-     || p > 1.
-     || p < 0.
-     )
-    throw domain_error("Normal::icdf(p) argument error");
+  if ( (!Arithmetic<Real>::isFinite(p)) || (p > 1.) || (p < 0.) )
+    STKDOMAIN_ERROR_1ARG(Normal::icdf,p,invalid argument);
  // trivial cases
  if (p == 0.)  return -Arithmetic<Real>::infinity();
  if (p == 1.)  return  Arithmetic<Real>::infinity();
@@ -286,9 +291,7 @@ Real Normal::icdf(Real const& p) const
  , 3.754408661907416e+00
  };
 
- register Real t, u;
-
- Real q = std::min(p, 1-p);
+ Real t, u, q = std::min(p, 1-p);
  if (q > 0.02425)
  {
   /* Rational approximation for central region. */

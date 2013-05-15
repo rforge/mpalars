@@ -19,14 +19,14 @@
     Boston, MA 02111-1307
     USA
 
-    Contact : Serge.Iovleff@stkpp.org
+    Contact : S..._Dot_I..._At_stkpp_Dot_org (see copyright for ...)
 */
 
 /*
  * Project:  stkpp::DManager
  * created on: 22 avr. 2010
  * Purpose:  Public interface of the IPage class.
- * Author:   iovleff, serge.iovleff@stkpp.org
+ * Author:   iovleff, S..._Dot_I..._At_stkpp_Dot_org (see copyright for ...)
  **/
 
 /** @file STK_IPage.cpp In this file we implement the Interface class IPage.

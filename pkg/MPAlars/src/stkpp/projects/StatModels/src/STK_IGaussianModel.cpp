@@ -19,14 +19,14 @@
  Boston, MA 02111-1307
  USA
 
- Contact : Serge.Iovleff@stkpp.org
+ Contact : S..._Dot_I..._At_stkpp_Dot_org (see copyright for ...)
  */
 
 /*
  * Project:  stkpp::
  * created on: 13 août 2011
  * Purpose: implemen the interface class IGaussianModel .
- * Author:   iovleff, serge.iovleff@stkpp.org
+ * Author:   iovleff, S..._Dot_I..._At_stkpp_Dot_org (see copyright for ...)
  *
  **/
 
@@ -35,10 +35,6 @@
  **/
 
 #include<cmath>
-
-#ifdef STK_DEBUG
-#include "../../../include/DManager.h"
-#endif
 
 #include "../include/STK_IGaussianModel.h"
 
@@ -95,7 +91,6 @@ Real diagonalGaussianLnLikelihood(Matrix const& data, Point const& mu, MatrixSqu
   Real sum = 0.;
   for (int j = first; j<= last; ++j)
   {
-    //stk_cout << data.col(j) << _T("\n");
     sum +=univariateGaussianLnLikelihood(data.col(j), mu[j], sigma(j,j));
   }
   return sum;

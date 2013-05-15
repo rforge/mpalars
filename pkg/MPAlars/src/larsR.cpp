@@ -1,6 +1,7 @@
+#include "stkpp/projects/STKernel/include/STK_Real.h"
 #include "larsR.h"
-#include "Lars.h"
-#include "Fusion.h"
+#include "lars/Lars.h"
+#include "fusion/Fusion.h"
 
 #include <iostream>
 

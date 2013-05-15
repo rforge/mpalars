@@ -19,17 +19,17 @@
  Boston, MA 02111-1307
  USA
 
- Contact : Serge.Iovleff@stkpp.org
+ Contact : S..._Dot_I..._At_stkpp_Dot_org (see copyright for ...)
  */
 
 /*
- * Project:  stkpp::
+ * Project:  stkpp::STatistiK::Law
  * created on: 23 janv. 2013
- * Author:   iovleff, serge.iovleff@stkpp.org
+ * Author:   iovleff, S..._Dot_I..._At_stkpp_Dot_org (see copyright for ...)
  **/
 
 /** @file STK_Law_Bernoulli.cpp
- *  @brief In this file .
+ *  @brief In this file we implement the Bernoulli class.
  **/
 
 #include "../include/STK_Law_Bernoulli.h"
@@ -43,13 +43,24 @@ namespace Law
  **/
 Bernoulli::Bernoulli(Real const& prob) : Base(String(_T("Bernoulli")) ), prob_(prob)
 {
-  if (prob<0) STKRUNTIME_ERROR_1ARG(Bernoulli,prob,prob must be >= 0);
-  if (prob>1) STKRUNTIME_ERROR_1ARG(Bernoulli,prob,prob must be <= 1);
+  if (prob<0) STKDOMAIN_ERROR_1ARG(Bernoulli,prob,prob must be >= 0);
+  if (prob>1) STKDOMAIN_ERROR_1ARG(Bernoulli,prob,prob must be <= 1);
 }
 
 /* @return a @c Type random variate . */
 Binary Bernoulli::rand() const
-{ return (generator.randUnif()<=prob_) ? one_ : zero_;}
+{
+return (generator.randUnif()<=prob_) ? one_ : zero_;}
+
+/* @return a @c Bernoulli random variate . */
+Binary Bernoulli::rand(Real const& prob)
+{
+#ifdef STK_DEBUG
+  if (prob<0) STKDOMAIN_ERROR_1ARG(Bernoulli::rand,prob,prob must be >= 0);
+  if (prob>1) STKDOMAIN_ERROR_1ARG(Bernoulli::rand,prob,prob must be <= 1);
+#endif
+  return (generator.randUnif()<=prob) ? one_ : zero_;
+}
 
 /* @brief compute the probability distribution function (density)
  *  Give the value of the pdf at the point x.
@@ -66,6 +77,25 @@ Real Bernoulli::pdf(Binary const& x) const
   }
   return Arithmetic<Real>::NA();
 }
+/* @brief compute the probability distribution function (density)
+ *  Give the value of the pdf at the point x.
+ *  @param x the value to compute the pdf.
+ *  @return the value of the pdf
+ **/
+Real Bernoulli::pdf(Binary const& x, Real const& prob)
+{
+#ifdef STK_DEBUG
+  if (prob<0) STKDOMAIN_ERROR_1ARG(Bernoulli::pdf,prob,prob must be >= 0);
+  if (prob>1) STKDOMAIN_ERROR_1ARG(Bernoulli::pdf,prob,prob must be <= 1);
+#endif
+  switch (x)
+  {
+    case zero_: return 1.-prob;
+    case one_:  return prob;
+    default: break;
+  }
+  return Arithmetic<Real>::NA();
+}
 /* @brief compute the log probability distribution function
  *  Give the value of the log-pdf at the point x.
  *  @param x the value to compute the lpdf.
@@ -77,6 +107,26 @@ Real Bernoulli::lpdf(Binary const& x) const
   {
     case zero_: return (prob_ == 1) ? -Arithmetic<Real>::infinity() : std::log(1.-prob_);
     case one_: return (prob_ == 0) ? -Arithmetic<Real>::infinity() : std::log(prob_);
+    default: break;
+  }
+  return Arithmetic<Real>::NA();
+}
+
+/* @brief compute the log probability distribution function
+ *  Give the value of the log-pdf at the point x.
+ *  @param x the value to compute the lpdf.
+ *  @return the value of the log-pdf
+ **/
+Real Bernoulli::lpdf(Binary const& x, Real const& prob)
+{
+#ifdef STK_DEBUG
+  if (prob<0) STKDOMAIN_ERROR_1ARG(Bernoulli::lpdf,prob,prob must be >= 0);
+  if (prob>1) STKDOMAIN_ERROR_1ARG(Bernoulli::lpdf,prob,prob must be <= 1);
+#endif
+  switch (x)
+  {
+    case zero_: return (prob == 1) ? -Arithmetic<Real>::infinity() : std::log(1.-prob);
+    case one_: return (prob == 0) ? -Arithmetic<Real>::infinity() : std::log(prob);
     default: break;
   }
   return Arithmetic<Real>::NA();
@@ -98,12 +148,10 @@ Real Bernoulli::cdf(Real const& t) const
  **/
 Binary Bernoulli::icdf(Real const& prob) const
 {
-  if (prob<0) STKRUNTIME_ERROR_1ARG(Bernoulli::icdf,prob,prob must be >= 0);
-  if (prob>1) STKRUNTIME_ERROR_1ARG(Bernoulli::icdf,prob,prob must be <= 1);
+  if (prob<0) STKDOMAIN_ERROR_1ARG(Bernoulli::icdf,prob,prob must be >= 0);
+  if (prob>1) STKDOMAIN_ERROR_1ARG(Bernoulli::icdf,prob,prob must be <= 1);
   return (prob==0) ? zero_ : (prob==1) ? one_ : (prob <= 1.-prob_) ? zero_ :  one_;
 }
-
-
 
 } /* namespace Law */
 

@@ -19,13 +19,13 @@
     Boston, MA 02111-1307
     USA
 
-    Contact : Serge.Iovleff@stkpp.org
+    Contact : S..._Dot_I..._At_stkpp_Dot_org (see copyright for ...)
 */
 
 /*
  * Project:  Base
  * Purpose:  Define the fundamental type Real.
- * Author:   Serge Iovleff, serge.iovleff@stkpp.org
+ * Author:   Serge Iovleff, S..._Dot_I..._At_stkpp_Dot_org (see copyright for ...)
  *
  **/
 
@@ -43,7 +43,8 @@ namespace STK
 {
 
 #ifdef REALAREFLOAT
-#define Real float
+//#define Real float
+typedef  float Real;
 #else
 /** @ingroup Base
   *  @brief STK fundamental type of Real values.
@@ -52,7 +53,8 @@ namespace STK
   *  internal representation of the continuous variables. By default it is the
   *  double type, but it can be overridden at compile-time, if needed.
   **/
-#define Real double
+typedef  double Real;
+//#define Real double
 #endif
 
 /** @ingroup Arithmetic

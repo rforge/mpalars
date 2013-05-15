@@ -19,13 +19,13 @@
     Boston, MA 02111-1307
     USA
 
-    Contact : Serge.Iovleff@stkpp.org
+    Contact : S..._Dot_I..._At_stkpp_Dot_org (see copyright for ...)
 */
 
 /*
  * Project:  Base
  * Purpose:  Define the fundamental type Binary.
- * Author:   Serge Iovleff, serge.iovleff@stkpp.org
+ * Author:   Serge Iovleff, S..._Dot_I..._At_stkpp_Dot_org (see copyright for ...)
  *
  **/
 
@@ -51,7 +51,7 @@ namespace STK
  enum Binary
  { zero_ =0, ///< 0 value
    one_  =1, ///< 1 value
-   binaryNA_ ///< Not Available value
+   binaryNA_=-1 ///< Not Available value
  };
 
  /** @ingroup Arithmetic

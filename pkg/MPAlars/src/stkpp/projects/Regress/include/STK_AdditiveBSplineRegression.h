@@ -19,14 +19,14 @@
  Boston, MA 02111-1307
  USA
 
- Contact : Serge.Iovleff@stkpp.org
+ Contact : S..._Dot_I..._At_stkpp_Dot_org (see copyright for ...)
  */
 
 /*
  * Project:  stkpp::Regress
  * created on: 31 juil. 2010
  * Purpose: definition of the AdditiveBSplineRegression class.
- * Author:   iovleff, serge.iovleff@stkpp.org
+ * Author:   iovleff, S..._Dot_I..._At_stkpp_Dot_org (see copyright for ...)
  **/
 
 /** @file STK_AdditiveBSplineRegression.h

@@ -19,14 +19,14 @@
  Boston, MA 02111-1307
  USA
 
- Contact : Serge.Iovleff@stkpp.org
+ Contact : S..._Dot_I..._At_stkpp_Dot_org (see copyright for ...)
  */
 
 /*
  * Project:  stkpp::Sdk
  * created on: 29 juil. 2011
  * Purpose:  main interface base class for running method.
- * Author:   iovleff, serge.iovleff@stkpp.org
+ * Author:   iovleff, S..._Dot_I..._At_stkpp_Dot_org (see copyright for ...)
  **/
 
 /** @file STK_IRunner.h
@@ -93,9 +93,8 @@ class IRunnerBase
  *  @brief Abstract class for all classes making unsupervised learning.
  *
  *  This Interface is designed for unsupervised learning purpose. In a
- *  supervised learning setting, use IRunnerConstReg.
- *  The data set y is not copied. There is just a pointer on the data set
- *  stored internally.
+ *  supervised learning setting, use IRunnerRegression. The data set to
+ *  process is not copied and a ptr on the data set is stored internally.
  *
  *  The pure virtual methods to implement are
  *  @code
@@ -103,45 +102,48 @@ class IRunnerBase
  *    bool run(weights);
  *  @endcode
  **/
-template < typename Array>
-class IRunnerConst : virtual public IRunnerBase
+template < class Array, class WColVector>
+class IRunnerUnsupervised : public IRunnerBase
 {
   protected:
     /** default constructor. */
-    IRunnerConst() : p_data_(0) {}
+    IRunnerUnsupervised() : p_data_(0) {}
     /** constructor with a pointer on the constant data set
-     *  @param p_y A pointer on the data set to run
+     *  @param p_data pointer on the data set to run
      **/
-    IRunnerConst( Array const* const p_y) : p_data_(p_y) {}
+    IRunnerUnsupervised( Array const* const p_data) : p_data_(p_data) {}
     /** constructor with a constant reference on the data set
-     *  @param y The data set to run
+     *  @param data data set to run
      **/
-    IRunnerConst( Array const& y) : p_data_(&y) {}
-    /** copy constructor */
-    IRunnerConst( IRunnerConst const& runner)
-                : IRunnerBase(runner)
-                , p_data_(runner.p_data_)
+    IRunnerUnsupervised( Array const& data) : p_data_(&data) {}
+    /** copy constructor
+     *  @param runner the runner to copy
+     **/
+    IRunnerUnsupervised( IRunnerUnsupervised const& runner)
+                       : IRunnerBase(runner)
+                       , p_data_(runner.p_data_)
     {}
+    /** clone pattern */
+    virtual IRunnerUnsupervised* clone() const =0;
 
   public:
     /** destructor*/
-    virtual ~IRunnerConst() {}
+    virtual ~IRunnerUnsupervised() {}
     /** get the data set
      * @return a constant reference on the data set.
      **/
     inline Array const* p_data() const { return p_data_;}
-    /** set the data set. If the state of the runner change when a new data
-     *  set is set, the user of this class have to overload the udpateY(
-     *  method.
-     *  @param y The data set to run
+    /** Set the data set. If the state of the derived runner change when a new
+     *  data set is set the user have to overload the udpate() method.
+     *  @param data The data set to run
      */
-    virtual void setData( Array const& y)
+    virtual void setData( Array const& data)
     {
-      p_data_ = &y;
+      p_data_ = &data;
       update();
     }
 
-    /** run the weighted computations.
+    /** run the computations.
      *  @return @c true if no error occur during the running process, @c false
      *  otherwise
      **/
@@ -151,7 +153,7 @@ class IRunnerConst : virtual public IRunnerBase
      *  @return @c true if no error occur during the running process, @c false
      *  otherwise
      **/
-    virtual bool run( typename Array::Col const& weights) =0;
+    virtual bool run( WColVector const& weights) =0;
 
   protected:
     /** A pointer on the original data set. */
@@ -167,8 +169,8 @@ class IRunnerConst : virtual public IRunnerBase
  *  @brief Abstract class for all classes making supervised learning.
  *
  *  This Interface is designed for supervised learning purpose. In an
- *  unsupervised learning setting, use IRunnerConst.
- *  The data sets x and y are not copied. There is just pointers on the data
+ *  unsupervised learning setting, use IRunnerUnsupervised.
+ *  The data sets x and y are not copied. There is two pointers on the data
  *  sets stored internally.
  *
  *  The pure virtual method to implement are
@@ -179,37 +181,37 @@ class IRunnerConst : virtual public IRunnerBase
  *
  **/
 template < typename TY, typename TX>
-class IRunnerConstReg : virtual public IRunnerBase
+class IRunnerRegression : virtual public IRunnerBase
 {
   protected:
     /** default constructor
      *  @param p_x A pointer on the x data set to run
      *  @param p_y A pointer on the y data set to run
      **/
-    IRunnerConstReg( TY const* const& p_y, TX const* const& p_x)
-                   : p_y_(p_y)
-                   , p_x_(p_x)
-    { }
+    IRunnerRegression( TY const* const& p_y, TX const* const& p_x)
+                     : p_y_(p_y)
+                     , p_x_(p_x)
+    {}
     /** default constructor
      *  @param x The x data set to run
      *  @param y The y data set to run
      **/
-    IRunnerConstReg( TY const& y, TX const& x)
-                   : p_y_(&y)
-                   , p_x_(&x)
-    { }
+    IRunnerRegression( TY const& y, TX const& x)
+                     : p_y_(&y)
+                     , p_x_(&x)
+    {}
     /** copy constructor
      * @param runner the runner to copy
      **/
-    IRunnerConstReg( IRunnerConstReg const& runner)
-                   : IRunnerBase(runner)
-                   , p_y_(runner.p_y_)
-                   , p_x_(runner.p_x_)
-    { }
+    IRunnerRegression( IRunnerRegression const& runner)
+                     : IRunnerBase(runner)
+                     , p_y_(runner.p_y_)
+                     , p_x_(runner.p_x_)
+    {}
 
   public:
     /** destructor*/
-    virtual ~IRunnerConstReg() { }
+    virtual ~IRunnerRegression() { }
 
     /** set the x data set (predictors). If the state of the runner change when
      *  a new x data set is set, the user of this class have to overload the

@@ -19,12 +19,12 @@
     Boston, MA 02111-1307
     USA
 
-    Contact : Serge.Iovleff@stkpp.org                                   */
+    Contact : S..._Dot_I..._At_stkpp_Dot_org (see copyright for ...)                                   */
 
 /*
  * Project:  stkpp::AAModels
  * Purpose:  class for AA Linear models.
- * Author:   Serge Iovleff, serge.iovleff@stkpp.org
+ * Author:   Serge Iovleff, S..._Dot_I..._At_stkpp_Dot_org (see copyright for ...)
  **/
 
 /** @file STK_LinearAAModel.h
@@ -84,16 +84,28 @@ class IUnivLaw;
  *  regression. As the regression model is linear there is no necessity
  *  to use the @c setRegresor method. it will be created by this object.
  **/
-class LinearAAModel : public IRunnerConst<Matrix>
+class LinearAAModel : public IRunnerUnsupervised<Matrix, Vector>
                     , public GaussianAAModel
 {
   public :
-    typedef IRunnerConst<Matrix> Runner;
+    typedef IRunnerUnsupervised<Matrix, Vector> Runner;
     /** constructor. compute the Linear AA models of the matrix data
      *  using the local variance as criteria.
      *  @param data the data set to modelize
      **/
     LinearAAModel( Matrix const& data);
+
+    /** copy constructor.
+     *  @param model the model to copy
+     **/
+    LinearAAModel( LinearAAModel const& model);
+
+    /** Virtual destructor */
+    virtual ~LinearAAModel();
+
+    /** clone pattern */
+    inline virtual LinearAAModel* clone() const { return new LinearAAModel(*this);}
+
     /** run the estimation of the AA model.
      * The behavior of the estimation is the following :
      * - compute the projected data set and set the result in p_reduced_
@@ -148,9 +160,6 @@ class LinearAAModel : public IRunnerConst<Matrix>
      * @param weights the container of the weights
      **/
     virtual bool run(Vector const& weights);
-
-    /** Virtual destructor */
-    virtual ~LinearAAModel();
 
     /** Simulate a centered auto-associative linear model in
      * \f$ \mathbb{R}^p \f$ of the form

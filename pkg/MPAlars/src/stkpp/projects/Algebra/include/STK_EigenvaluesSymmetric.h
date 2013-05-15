@@ -19,13 +19,13 @@
     Boston, MA 02111-1307
     USA
 
-    Contact : Serge.Iovleff@stkpp.org
+    Contact : S..._Dot_I..._At_stkpp_Dot_org (see copyright for ...)
 */
 
 /*
  * Project:  stkpp::Algebra
  * Purpose:  Define The EigenvaluesSymmetric Class.
- * Author:   Serge Iovleff, serge.iovleff@stkpp.org
+ * Author:   Serge Iovleff, S..._Dot_I..._At_stkpp_Dot_org (see copyright for ...)
  **/
 
 /** @file STK_EigenvaluesSymmetric.h
@@ -61,11 +61,11 @@ namespace STK
  *  Thus the user can be faced with a deficient rank matrix and with a norm and
  *  a determinant very small (but not exactly 0.0).
  **/
-class EigenvaluesSymmetric : public IRunnerConst<MatrixSquare>
+class EigenvaluesSymmetric : public IRunnerUnsupervised<MatrixSquare, Vector>
 {
   public:
     /** concrete type of the runner */
-    typedef IRunnerConst<MatrixSquare> Runner;
+    typedef IRunnerUnsupervised<MatrixSquare, Vector> Runner;
     /** constructor.
      *  @param A A ptr on the symmetric matrix to decompose.
      **/
@@ -78,6 +78,11 @@ class EigenvaluesSymmetric : public IRunnerConst<MatrixSquare>
      *  @param S the EigenValue to copy
      **/
     EigenvaluesSymmetric(const EigenvaluesSymmetric& S);
+
+    /** clone pattern */
+    inline virtual EigenvaluesSymmetric* clone() const
+    { return new EigenvaluesSymmetric(*this);}
+
     /** virtual destructor */
     virtual ~EigenvaluesSymmetric();
     /** @brief Diagonalization of P_

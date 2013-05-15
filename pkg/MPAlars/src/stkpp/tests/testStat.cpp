@@ -19,13 +19,13 @@
     Boston, MA 02111-1307
     USA
 
-    Contact : Serge.Iovleff@stkpp.org
+    Contact : S..._Dot_I..._At_stkpp_Dot_org (see copyright for ...)
 */
 
 /*
  * Project:  stkpp::STatistiK::StatDesc
  * Purpose:  test program for testing Analysis classes and methods.
- * Author:   Serge Iovleff, serge.iovleff@stkpp.org
+ * Author:   Serge Iovleff, S..._Dot_I..._At_stkpp_Dot_org (see copyright for ...)
  */
 
 /** @file testStat.cpp
@@ -214,7 +214,7 @@ int main(int argc, char *argv[])
   stk_cout << _T("X =\n") << X << _T("\n");
   stk_cout << _T("W =")   << W << _T("\n\n");
 
-  Real mu  = mean<Variable<Real> >(X), wmu = mean<Variable<Real> >(X, W);
+  Real mu  = mean<Variable<Real> >(X), wmu = mean<Variable<Real>, Variable<Real> >(X, W);
   stk_cout << _T("mean(X) = ") << mu << _T("\n");
   stk_cout << _T("mean(X, W) = ") << wmu << _T("\n");
 

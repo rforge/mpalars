@@ -19,14 +19,14 @@
     Boston, MA 02111-1307
     USA
 
-    Contact : Serge.Iovleff@stkpp.org
+    Contact : S..._Dot_I..._At_stkpp_Dot_org (see copyright for ...)
 */
 
 /*
  * Project:  stkpp::Reduct
  * created on: 17 avr. 2010
  * Purpose:  Abstract class for the computation of the Index in the SLAAM.
- * Author:   iovleff, serge.iovleff@stkpp.org
+ * Author:   iovleff, S..._Dot_I..._At_stkpp_Dot_org (see copyright for ...)
  *
  **/
 
@@ -54,8 +54,9 @@ namespace STK
  *
  * The derived class will compute a @em reduced data set of dimension (n,d).
  */
-class IReduct : public IRunnerConst<Matrix>
+class IReduct : public IRunnerUnsupervised<Matrix, Vector>
 {
+  typedef IRunnerUnsupervised<Matrix, Vector> Runner;
   protected:
     /** Default constructor. */
     IReduct();

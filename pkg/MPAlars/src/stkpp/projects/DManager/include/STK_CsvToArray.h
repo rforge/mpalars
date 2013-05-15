@@ -19,7 +19,7 @@
  Boston, MA 02111-1307
  USA
 
- Contact : Serge.Iovleff@stkpp.org
+ Contact : S..._Dot_I..._At_stkpp_Dot_org (see copyright for ...)
  */
 
 /*
@@ -27,7 +27,7 @@
  * created on: 9 juin 2011
  * Purpose:  Create an utility class in order to transfer the Data from
  * a DataFrame in an Array.
- * Author:   iovleff, serge.iovleff@stkpp.org
+ * Author:   iovleff, S..._Dot_I..._At_stkpp_Dot_org (see copyright for ...)
  *
  **/
 

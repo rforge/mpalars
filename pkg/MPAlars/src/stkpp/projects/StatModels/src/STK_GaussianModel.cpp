@@ -19,14 +19,14 @@
  Boston, MA 02111-1307
  USA
 
- Contact : Serge.Iovleff@stkpp.org
+ Contact : S..._Dot_I..._At_stkpp_Dot_org (see copyright for ...)
  */
 
 /*
  * Project:  stkpp::
  * created on: 13 août 2011
  * Purpose:  .
- * Author:   iovleff, serge.iovleff@stkpp.org
+ * Author:   iovleff, S..._Dot_I..._At_stkpp_Dot_org (see copyright for ...)
  *
  **/
 
@@ -48,7 +48,7 @@ GaussianModel::GaussianModel( Matrix const* p_data)
                             : IGaussianModel<Matrix>(p_data)
                             , cov_(p_data_->cols())
 {
-  setNbFreeParameter(nbVar() + (nbVar()* (nbVar()-1))/2);
+  setNbFreeParameters(nbVar() + (nbVar()* (nbVar()-1))/2);
 }
 
 /* constructor */
@@ -56,7 +56,7 @@ GaussianModel::GaussianModel( Matrix const& data)
                             : IGaussianModel<Matrix>(data)
                             , cov_(data.cols())
 {
-  setNbFreeParameter(nbVar() + (nbVar()* (nbVar()-1))/2);
+  setNbFreeParameters(nbVar() + (nbVar()* (nbVar()-1))/2);
 }
 
 /* destructor */

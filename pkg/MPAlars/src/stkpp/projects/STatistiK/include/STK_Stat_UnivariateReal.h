@@ -19,13 +19,13 @@
     Boston, MA 02111-1307
     USA
 
-    Contact : Serge.Iovleff@stkpp.org
+    Contact : S..._Dot_I..._At_stkpp_Dot_org (see copyright for ...)
 */
 
 /*
  * Project:  stkpp::STatistiK::StatDesc
  * Purpose:  Compute elementary 1D statistics for all variables.
- * Author:   Serge Iovleff, serge.iovleff@stkpp.org
+ * Author:   Serge Iovleff, S..._Dot_I..._At_stkpp_Dot_org (see copyright for ...)
  **/
 
 /** @file STK_Stat_Univariate.h
@@ -796,10 +796,8 @@ Real max( TContainer1D const&  V)
  *  @param V variable
  *  @param W weights
  **/
-template<class TContainer1D>
-Real mean( TContainer1D const&  V
-         , TContainer1D const& W
-         )
+template<class TContainer1D, class WColVector>
+Real mean( TContainer1D const& V, WColVector const& W)
 {
   // no samples
   if (V.empty()) { return Arithmetic<Real>::NA();}
@@ -836,10 +834,7 @@ Real mean( TContainer1D const&  V
  *  @c false otherwise (default is @c false)
  **/
 template<class TContainer1D>
-Real varianceWithFixedMean( TContainer1D const& V
-                          , Real const& mu
-                          , bool unbiased = false
-                          )
+Real varianceWithFixedMean( TContainer1D const& V, Real const& mu, bool unbiased = false)
 {
   // no samples
   if (V.empty()) { return Arithmetic<Real>::NA();}
@@ -880,9 +875,8 @@ Real varianceWithFixedMean( TContainer1D const& V
  *  @param unbiased @c true if we want an unbiased estimator of the variance,
  *  @c false otherwise (default is @c false)
  **/
-template<class TContainer1D>
-Real varianceWithFixedMean( TContainer1D const& V
-                          , TContainer1D const& W
+template<class TContainer1D, class WColVector>
+Real varianceWithFixedMean( TContainer1D const& V, WColVector const& W
                           , Real const& mu
                           , bool unbiased = false
                           )
@@ -974,27 +968,23 @@ Real variance( TContainer1D const& V, bool unbiased = false)
  *  @param unbiased @c true if we want an unbiased estimator of the variance,
  *  @c false otherwise (default is @c false)
  **/
-template<class TContainer1D>
-Real variance( TContainer1D const& V
-             , TContainer1D const& W
+template<class TContainer1D, class WColVector>
+Real variance( TContainer1D const& V, WColVector const& W
              , bool unbiased = false
              )
 {
-    // no samples
-    if (V.empty()) { return Arithmetic<Real>::NA();}
-    
-    // Compute the mean if necessary
-    Real mu = mean(V, W);
-    
-    // if the weight are not of the same size, ignore them
-    if (V.range() != W.range()) return varianceWithFixedMean(V, mu);
-    
-    // get dimensions
-    const int  first = V.firstIdx(), last = V.lastIdx();
-    // sum
-    Real dev, sum = 0.0, var = 0.0, nweight = 0.0, nweight2 = 0.0;
-    for (int i=first; i<=last; i++)
-    { if ( Arithmetic<Real>::isFinite(V[i]) && Arithmetic<Real>::isFinite(W[i]) )
+  // no samples
+  if (V.empty()) { return Arithmetic<Real>::NA();}
+  // Compute the mean if necessary
+  Real mu = mean(V, W);
+  // if the weight are not of the same size, ignore them
+  if (V.range() != W.range()) return varianceWithFixedMean(V, mu);
+  // get dimensions
+  const int  first = V.firstIdx(), last = V.lastIdx();
+  // sum
+  Real dev, sum = 0.0, var = 0.0, nweight = 0.0, nweight2 = 0.0;
+  for (int i=first; i<=last; i++)
+  { if ( Arithmetic<Real>::isFinite(V[i]) && Arithmetic<Real>::isFinite(W[i]) )
     {
         Real weight = std::abs(W[i]);
         nweight    += weight;
@@ -1002,15 +992,14 @@ Real variance( TContainer1D const& V
         sum        += weight*(dev = V[i]-mu); // deviation from the mean
         var        += weight*(dev*dev);       // squared value
     }
-    }
-    // compute the variance
-    if (unbiased)
-    {
-        return (nweight*nweight - nweight2 > 0.) ? (var - sum*sum/nweight)/(nweight - nweight2/nweight)
-        : Arithmetic<Real>::NA();
-        
-    }
-    return (nweight) ? (var - sum*sum)/(nweight) : Arithmetic<Real>::NA();
+  }
+  // compute the variance
+  if (unbiased)
+  {
+    return (nweight*nweight - nweight2 > 0.) ? (var - sum*sum/nweight)/(nweight - nweight2/nweight)
+                                             : Arithmetic<Real>::NA();
+  }
+  return (nweight) ? (var - sum*sum)/(nweight) : Arithmetic<Real>::NA();
 }
     
 

@@ -19,14 +19,14 @@
     Boston, MA 02111-1307
     USA
 
-    Contact : Serge.Iovleff@stkpp.org
+    Contact : S..._Dot_I..._At_stkpp_Dot_org (see copyright for ...)
 */
 
 /*
  * Project:  stkpp::Reduct
  * Purpose:  Implementation of the ILinearReduct interface using the
  * projected variance.
- * Author:   iovleff, serge.iovleff@stkpp.org
+ * Author:   iovleff, S..._Dot_I..._At_stkpp_Dot_org (see copyright for ...)
  **/
 
 #include "../include/STK_ProjectedVariance.h"
@@ -48,7 +48,12 @@ ProjectedVariance::ProjectedVariance(Matrix const* p_data) : ILinearReduct(p_dat
  *  @param data a constatn reference on the data set to reduce.
  **/
 ProjectedVariance::ProjectedVariance(Matrix const& data) : ILinearReduct(data)
-{ ;}
+{}
+/* Copy constructor.
+ * @param reductor the reductor to copy
+ **/
+ProjectedVariance::ProjectedVariance(ProjectedVariance const& reductor) : ILinearReduct(reductor)
+{}
 
  /* Destructor */
 ProjectedVariance::~ProjectedVariance()

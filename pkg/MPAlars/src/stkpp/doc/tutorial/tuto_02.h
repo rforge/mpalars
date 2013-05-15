@@ -280,7 +280,7 @@ namespace STK
  * class.
  *
  * These interfaces are running classes, derived from the interface
- * @ref IRunnerConst. A IRunnerConst declare two pure virtual functions
+ * @ref IRunnerUnsupervised. A IRunnerUnsupervised declare two pure virtual functions
  * @c run() and @c run(weights). The call to these methods will estimate the
  * parameters of the model.
  *

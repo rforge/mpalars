@@ -19,13 +19,13 @@
     Boston, MA 02111-1307
     USA
 
-    Contact : Serge.Iovleff@stkpp.org
+    Contact : S..._Dot_I..._At_stkpp_Dot_org (see copyright for ...)
 */
 
 /*
  * Project:  stkpp::STatistiK::Law
  * Purpose:  Interface base class for all multivariate probabilities laws.
- * Author:   Serge Iovleff, serge.iovleff@stkpp.org
+ * Author:   Serge Iovleff, S..._Dot_I..._At_stkpp_Dot_org (see copyright for ...)
  **/
 
 /** @file STK_Law_ILawBase.h
@@ -64,13 +64,13 @@ class ILawBase
   public:
     /** @return the name of the distribution */
     inline String const& name() const { return name_;}
-
-  protected:
     /** Pseudo-random uniform/Gaussian/exponential generator.
      *  Must be explicitly initialized outside the class with
      *  @c Law::ILawBase::generator, or an other constructor @see RandBase.
      **/
     static RandBase generator;
+
+  protected:
     /** Name of the Law. **/
     String name_;
 };

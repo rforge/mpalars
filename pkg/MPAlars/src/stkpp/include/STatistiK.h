@@ -19,13 +19,13 @@
     Boston, MA 02111-1307
     USA
 
-    Contact : Serge.Iovleff@stkpp.org
+    Contact : S..._Dot_I..._At_stkpp_Dot_org (see copyright for ...)
 */
 
 /*
  * Project:  stkpp::STatistiK
  * Purpose:  Primary include file for STatistiK project.
- * Author:   Serge Iovleff, serge.iovleff@stkpp.org
+ * Author:   Serge Iovleff, S..._Dot_I..._At_stkpp_Dot_org (see copyright for ...)
  **/
 
 /** @file STatistiK.h
@@ -74,6 +74,8 @@
 #include "../projects/STatistiK/include/STK_Law_Normal.h"
 
 #include "../projects/STatistiK/include/STK_Law_JointBernoulli.h"
+#include "../projects/STatistiK/include/STK_Law_JointNormal.h"
+#include "../projects/STatistiK/include/STK_Law_JointCauchy.h"
 #include "../projects/STatistiK/include/STK_Law_MultiNormal.h"
 
 // namespace Stat

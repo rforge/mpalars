@@ -19,14 +19,14 @@
     Boston, MA 02111-1307
     USA
 
-    Contact : Serge.Iovleff@stkpp.org
+    Contact : S..._Dot_I..._At_stkpp_Dot_org (see copyright for ...)
 */
 
 /*
  * Project:  stkpp::Model
  * created on: 22 juil. 2011
  * Purpose: implement the BIC criterion.
- * Author:   iovleff, serge.iovleff@stkpp.org
+ * Author:   iovleff, S..._Dot_I..._At_stkpp_Dot_org (see copyright for ...)
  *
  **/
 
@@ -54,13 +54,10 @@ bool BICCriterion::run()
 {
   try
   {
-    Real loglikelihood    = p_model_->lnLikelihood();
-    int freeParameter = p_model_->nbFreeParameter();
-    Real logN             = p_model_->lnNbSample();
     // BIC criteria
-    value_  = (-2.*loglikelihood)+(freeParameter*logN);
+    value_  = (-2.*p_model_->lnLikelihood())+(p_model_->nbFreeParameter()*p_model_->lnNbSample());
   }
-  catch(const Exception& e)
+  catch( Exception const& e)
   {
     msg_error_ = e.error();
     return false;

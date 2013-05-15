@@ -19,14 +19,14 @@
     Boston, MA 02111-1307
     USA
 
-    Contact : Serge.Iovleff@stkpp.org
+    Contact : S..._Dot_I..._At_stkpp_Dot_org (see copyright for ...)
 */
 
 /*
  * Project:  stkpp::Model
  * created on: 22 juil. 2011
  * Purpose: define the BIC criterion.
- * Author:   iovleff, serge.iovleff@stkpp.org
+ * Author:   iovleff, S..._Dot_I..._At_stkpp_Dot_org (see copyright for ...)
  *
  **/
 
@@ -57,10 +57,8 @@ class BICCriterion : public ICriterion
      *  @param model the model to evaluate the criterion
      **/
     BICCriterion( IModelBase const& model);
-
     /** virtual destructor. */
     virtual ~BICCriterion();
-  
     /** implementation of the virtual method run */
     virtual bool run();
 };

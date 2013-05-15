@@ -19,13 +19,13 @@
     Boston, MA 02111-1307
     USA
 
-    Contact : Serge.Iovleff@stkpp.org
+    Contact : S..._Dot_I..._At_stkpp_Dot_org (see copyright for ...)
 */
 
 /*
- * Project:  Laws
+ * Project:  stkpp::STatistiK::Law
  * Purpose:  Cauchy probability distribution.
- * Author:   Serge Iovleff, serge.iovleff@stkpp.org
+ * Author:   Serge Iovleff, S..._Dot_I..._At_stkpp_Dot_org (see copyright for ...)
  **/
 
 /** @file STK_Law_Cauchy.h
@@ -42,8 +42,7 @@ namespace STK
 
 namespace Law
 {
-/**
- *  @ingroup Laws
+/** @ingroup Laws
  *  @brief Cauchy distribution law.
  * 
  *  The Cauchy distribution, is a continuous probability
@@ -61,45 +60,41 @@ class Cauchy : public IUnivLaw<Real>
   protected:
     /** The location parameter. */
     Real location_;
-    
     /** The scale parameter. */
     Real scale_;
     
   public:
-    /** Constructor.
+    /** Default constructor.
      *  @param location location of the Cauchy distribution
      *  @param scale scale of the Cauchy distribution
      **/
     Cauchy( Real const& location=0, Real const& scale=1);
-
     /** Destructor. **/
     virtual ~Cauchy();
-
+    /** @return the location parameter */
+    inline Real const& location() const { return location_;}
+    /** @return the scale parameter */
+    inline Real const& scale() const { return scale_;}
+    /** @param location the value to set to mu */
+    inline void setLocation( Real const& location) { location_ = location;}
+    /** @param scale the value to set to sigma */
+    inline void setScale( Real const& scale)
+    {
+      if (scale<0) STKRUNTIME_ERROR_1ARG(Cauchy::setScale,scale,scale must be >= 0);
+       scale_ = scale;
+    }
     /** Generate a pseudo Cauchy random variate.
      * @return a cauchy random variable **/
     virtual Real rand() const;
-    
-    /** Generate a pseudo Cauchy random variate with the specified
-     *  parameters.
-     *  @param location location of the Cauchy distribution
-     *  @param scale scale of the Cauchy distribution
-     *  @return a cauchy random variable
-     **/
-    static Real rand( Real const& location, Real const& scale);
-    
-    /** Give the value of the pdf at x.
-     *  @param x the value to evaluate the probability density function
+    /** @param x a real value
      *  @return the pdf of the cauchy distribution at x
      **/
     virtual Real pdf( Real const& x) const;
-    
-    /**  Give the value of the log-pdf at x.
-     *  @param x the value to evaluate the log-probability density function
+    /** @param x a real value
      *  @return the log-pdf of the cauchy distribution at x
      **/
     virtual Real lpdf( Real const& x) const;
-
-    /** The cumulative distribution function at t is
+    /** The cumulative distribution function of the Cauchy distribution at t is
      * \f[
      *  F(t; \mu,\gamma)=
      * \frac{1}{\pi} \arctan\left(\frac{t-\mu}{\gamma}\right)+\frac{1}{2}
@@ -107,21 +102,36 @@ class Cauchy : public IUnivLaw<Real>
      * @see http://www.faqs.org/faqs/fr/maths/maths-faq-3/
      * for the computation of arctan.
      *
-     *  @param t the value to evaluate the cumulative density function
-     *  @return the cdf of the cauchy distribution at t
+     *  @param t a real value
+     *  @return the cdf of the Cauchy distribution at t
      **/
     virtual Real cdf( Real const& t) const;
-    
     /** The inverse cumulative distribution function at p is
      * \f[
      * F^{-1}(p; \mu,\gamma) = \mu + \gamma \tan(\pi (p-1/2)).
      * \f]
      * 
-     *  @param p the probability to evaluate the inverse cumulative
-     *  density function
-     *  @return the inverse cdf of the cauchy distribution at p
+     *  @param p a probability number
+     *  @return the inverse cdf of the Cauchy distribution at p
      **/
     virtual Real icdf( Real const& p) const;
+
+    /** Generate a pseudo Cauchy random variate with the specified
+     *  parameters.
+     *  @param location location of the Cauchy distribution
+     *  @param scale scale of the Cauchy distribution
+     *  @return a cauchy random variable
+     **/
+    static Real rand( Real const& location, Real const& scale);
+    /** @param x a real value
+     *  @return the pdf of the cauchy distribution at x
+     **/
+    static Real pdf( Real const& x, Real const& location, Real const& scale);
+    /** @param x a real value
+     *  @return the log-pdf of the cauchy distribution at x
+     **/
+    static Real lpdf( Real const& x, Real const& location, Real const& scale);
+
 };
 
 } // namespace Law

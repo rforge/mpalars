@@ -19,13 +19,13 @@
     Boston, MA 02111-1307
     USA
 
-    Contact : Serge.Iovleff@stkpp.org
+    Contact : S..._Dot_I..._At_stkpp_Dot_org (see copyright for ...)
 */
 
 /*
  * Project:  stkpp::STKernel::Base
  * Purpose:  Define the Range class.
- * Author:   Serge Iovleff, serge.iovleff@stkpp.org
+ * Author:   Serge Iovleff, S..._Dot_I..._At_stkpp_Dot_org (see copyright for ...)
  *
  **/
 
@@ -73,7 +73,7 @@ class TRange<UnknownSize>
   public:
     /** Default constructor. Null range.*/
     inline TRange() : first_(STKBASEARRAYS), last_(STKBASEARRAYS-1), size_(0) {}
-    /** constructor. The first index is defined by the @ref STKBASEARRAYS macro.
+    /** constructor. The first index is defined by the STKBASEARRAYS macro.
      *  @param size the size of the range
      **/
     inline TRange( int size)
@@ -264,7 +264,7 @@ class TRange
   public:
     /** Default constructor. Null range.*/
     inline TRange() : first_(STKBASEARRAYS) {}
-    /** constructor. The first index is defined by the @ref STKBASEARRAYS macro.
+    /** constructor. The first index is defined by the STKBASEARRAYS macro.
      **/
     inline TRange( int) : first_(STKBASEARRAYS) {}
     /** Complete constructor. Give the beginning and the size of the sub-region.

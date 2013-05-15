@@ -19,14 +19,14 @@
     Boston, MA 02111-1307
     USA
 
-    Contact : Serge.Iovleff@stkpp.org
+    Contact : S..._Dot_I..._At_stkpp_Dot_org (see copyright for ...)
 */
 
 /*
  * Project:  stkpp::Model
  * created on: 22 juil. 2011
  * Purpose: define the class IUnivStatModel.
- * Author:   iovleff, serge.iovleff@stkpp.org
+ * Author:   iovleff, S..._Dot_I..._At_stkpp_Dot_org (see copyright for ...)
  *
  **/
 
@@ -52,69 +52,55 @@ namespace STK
  *       p^{x_i} (1-p)^{1-x_i}, \quad x_i\in\{0,1\}, \quad i=1\ldots,n.
  * \f]
  **/
-template <class Array>
-class BernoulliModel : public IUnivStatModel<Array, Law::Bernoulli>
+template <class Array, class WColVector = CVectorX>
+class BernoulliModel : public IUnivStatModel<Array, WColVector, Law::Bernoulli>
 {
-  using IRunnerConst<Array>::p_data;
+  using IUnivStatModel<Array, CVectorX, Law::Bernoulli>::p_data;
 
   public:
     /** Type of the data contained in the container */
     typedef typename Array::Type Type;
-    /** Runner */
-    typedef IUnivStatModel<Array, Law::Bernoulli> Base;
-
-  public:
+    /** Base class */
+    typedef IUnivStatModel<Array, WColVector, Law::Bernoulli> Base;
     /** default constructor. */
     BernoulliModel() : Base() {}
     /** Constructor with data set. */
     BernoulliModel(Array const& data) : Base(data) {}
     /** Constructor with a ptr on the data set. */
     BernoulliModel(Array const* p_data) : Base(p_data) {}
+    /** Copy constructor. */
+    BernoulliModel(BernoulliModel const& model) : Base(model) {}
+    /** clone patern */
+    BernoulliModel* clone() const { return new BernoulliModel(*this);}
     /** destructor */
     virtual ~BernoulliModel() {}
+    /** compute the number of free parameters */
+    virtual int computeNbFreeParameters() const { return 1;}
+
+  protected:
     /** compute the empirical probability of success based on the observed
      * variables. The NA values are discarded.
      **/
-    virtual bool run()
+    virtual void computeParameters()
     {
-      try
-      {
         Real sum=0.;
         int nbObs=p_data()->size();
         for (int i=p_data()->firstIdx(); i<=p_data()->lastIdx(); ++i)
         { (p_data()->elt(i) == binaryNA_) ? --nbObs : sum += p_data()->elt(i);}
         if (nbObs != 0) { this->law_.setProb(sum/nbObs);}
-                  else { this->law_.setProb(0.);}
-        // compute log-likehood
-        this->computeLnLikelihood();
-        this->setNbFreeParameter(1);
-        return true;
-      }
-      catch (Exception const& e)
-      { this->msg_error_ = e.error();}
-      return false;
+                  else  { this->law_.setProb(0.);}
     }
     /** compute the weighted empirical probability of success based on the observed
      *  variables. The NA values are discarded.
      **/
-    virtual bool run(Array const& weights)
+    virtual void computeParameters(WColVector const& weights)
     {
-      try
-      {
         Real sum=0.;
         int nbObs=p_data()->size();
         for (int i=p_data()->firstIdx(); i<=p_data()->lastIdx(); ++i)
         { (p_data()->elt(i) == binaryNA_) ? --nbObs : sum += weights[i]*p_data()->elt(i);}
         if (nbObs != 0) { this->law_.setProb(sum/nbObs);}
                   else { this->law_.setProb(0.);}
-        // compute log-likehood with
-        this->computeLnLikelihood();
-        this->setNbFreeParameter(1);
-        return true;
-      }
-      catch (Exception const& e)
-      { this->msg_error_ = e.error();}
-      return false;
     }
 };
 

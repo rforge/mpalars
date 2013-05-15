@@ -56,3 +56,5 @@ ADD_SUBDIRECTORY(tests)
 ADD_SUBDIRECTORY(tests/Algebra)
 ADD_SUBDIRECTORY(tests/Arrays)
 ADD_SUBDIRECTORY(tests/DManager)
+ADD_SUBDIRECTORY(tests/StatModels)
+

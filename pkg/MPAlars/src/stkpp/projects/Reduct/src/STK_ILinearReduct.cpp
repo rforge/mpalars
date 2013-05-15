@@ -19,7 +19,7 @@
     Boston, MA 02111-1307
     USA
 
-    Contact : Serge.Iovleff@stkpp.org
+    Contact : S..._Dot_I..._At_stkpp_Dot_org (see copyright for ...)
 */
 
 /*
@@ -27,7 +27,7 @@
  * created on: 17 avr. 2010
  * Purpose:  Abstract class for the computation of the Index in the
  * AAM models.
- * Author:   iovleff, serge.iovleff@stkpp.org
+ * Author:   iovleff, S..._Dot_I..._At_stkpp_Dot_org (see copyright for ...)
  **/
 
 /** @file STK_ILinearReduct.cpp In this file we implement the interface base
@@ -57,9 +57,14 @@ ILinearReduct::ILinearReduct( Matrix const* p_data) : IReduct(p_data)
  */
 ILinearReduct::ILinearReduct( Matrix const& data) : IReduct(data)
 {}
-/*
- * Destructor
- */
+/* copy Constructor.
+ *  @param reductor the reductor to copy.
+ **/
+ILinearReduct::ILinearReduct( ILinearReduct const& reductor)
+                            : idx_values_(reductor.idx_values_)
+                            , axis_(reductor.axis_)
+{}
+/* Destructor */
 ILinearReduct::~ILinearReduct()
 {}
 

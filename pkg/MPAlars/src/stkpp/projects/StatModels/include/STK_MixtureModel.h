@@ -20,13 +20,13 @@
     Boston, MA 02111-1307
     USA
 
-    Contact : Serge.Iovleff@stkpp.org
+    Contact : S..._Dot_I..._At_stkpp_Dot_org (see copyright for ...)
 */
 
 /*
  * Project:  stkpp::
  * created on: 16 oct. 2012
- * Author:   iovleff, serge.iovleff@stkpp.org
+ * Author:   iovleff, S..._Dot_I..._At_stkpp_Dot_org (see copyright for ...)
  **/
 
 /** @file STK_MixtureModel.h
@@ -45,37 +45,39 @@ namespace STK
  *
  * In statistics, a mixture model is a probabilistic model for representing
  * the presence of sub-populations within an overall population, without
- * requiring that an observed data-set should identify the sub-population t
- *  which an individual observation belongs. Formally a mixture model
- *  corresponds to the mixture distribution that represents the probability
- *  distribution of observations in the overall population. However, while
- *  problems associated with "mixture distributions" relate to deriving the
- *  properties of the overall population from those of the sub-populations,
- *  "mixture models" are used to make statistical inferences about the
- *  properties of the sub-populations given only observations on the pooled
- *  population, without sub-population-identity information.
+ * requiring that an observed data-set should identify the sub-population to
+ * which an individual observation belongs. Formally a mixture model
+ * corresponds to the mixture distribution that represents the probability
+ * distribution of observations in the overall population. However, while
+ * problems associated with "mixture distributions" relate to deriving the
+ * properties of the overall population from those of the sub-populations,
+ * "mixture models" are used to make statistical inferences about the
+ * properties of the sub-populations given only observations on the pooled
+ * population, without sub-population-identity information.
  *
- *  Some ways of implementing mixture models involve steps that attribute
- *  postulated sub-population-identities to individual observations (or weights
- *  towards such sub-populations), in which case these can be regarded as types
- *  unsupervised learning or clustering procedures. However not all inference
- *  procedures involve such steps.
- *
+ * Some ways of implementing mixture models involve steps that attribute
+ * postulated sub-population-identities to individual observations (or weights
+ * towards such sub-populations), in which case these can be regarded as types
+ * unsupervised learning or clustering procedures. However not all inference
+ * procedures involve such steps.
  **/
-template <class ObservableData, class LatentData>
-class MixtureModel : public LatentModel<ObservableData, LatentData>
+template <class ObservableData>
+class MixtureModel : public LatentModel<ObservableData, Array2D< Real > >
 {
   public:
-    typedef LatentModel<ObservableData, LatentData> Base;
+    typedef LatentModel<ObservableData, Array2D<Real> > Base;
+
   protected:
     /** Constructor with data set. */
     MixtureModel(ObservableData const& data) : Base(data) {}
       /** Constructor with data set. */
     MixtureModel(ObservableData const* p_data) : Base(p_data) {}
+    /** */
+    Array2D<Real> const* p_tik_() const { return this->p_latentData();}
 
   public:
     /** destructor */
-    virtual ~MixtureModel() {;}
+    virtual ~MixtureModel() { ;}
 
 };
 

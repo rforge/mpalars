@@ -19,14 +19,14 @@
  Boston, MA 02111-1307
  USA
 
- Contact : Serge.Iovleff@stkpp.org
+ Contact : S..._Dot_I..._At_stkpp_Dot_org (see copyright for ...)
  */
 
 /*
  * Project:  stkpp::aam
  * created on: 27 sept. 2010
  * Purpose:  Define the STK_LocalVariancePage.
- * Author:   iovleff, serge.iovleff@stkpp.org
+ * Author:   iovleff, S..._Dot_I..._At_stkpp_Dot_org (see copyright for ...)
  *
  **/
 
@@ -70,6 +70,12 @@ class LocalVariancePage: public IPage
     LocalVariancePage( LocalVariancePage const& page);
     /** destructor. */
     virtual ~LocalVariancePage();
+    /** clone pattern
+     *  @return a pointer on the clone of this
+     **/
+    inline virtual LocalVariancePage* clone() const
+    { return new LocalVariancePage(*this);}
+
     /** get the type of graph
      *  @return the TypeGraph used for computing the local variance
      **/
@@ -82,11 +88,6 @@ class LocalVariancePage: public IPage
      *  @return @c true if the options are correct, @c false otherwise.
      **/
     virtual bool validate();
-    /** Create a copy of the LocalVariancePage.
-     *  @return a pointer on the clone of this
-     **/
-    inline virtual LocalVariancePage* clone() const
-    { return new LocalVariancePage(*this);}
 
   private:
     /** type of the graph to compute */

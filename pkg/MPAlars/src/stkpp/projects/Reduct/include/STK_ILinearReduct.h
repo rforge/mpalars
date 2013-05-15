@@ -19,14 +19,14 @@
     Boston, MA 02111-1307
     USA
 
-    Contact : Serge.Iovleff@stkpp.org
+    Contact : S..._Dot_I..._At_stkpp_Dot_org (see copyright for ...)
 */
 
 /*
  * Project:  stkpp::AAModels
  * created on: 17 avr. 2010
  * Purpose:  Abstract class for the computation of the Index in the SLAAM.
- * Author:   iovleff, serge.iovleff@stkpp.org
+ * Author:   iovleff, S..._Dot_I..._At_stkpp_Dot_org (see copyright for ...)
  *
  **/
 
@@ -78,6 +78,10 @@ class ILinearReduct : public IReduct
      *  @param data a constant reference on the data set to reduce.
      **/
     ILinearReduct( Matrix const& data);
+    /** copy Constructor.
+     *  @param reductor the reductor to copy.
+     **/
+    ILinearReduct( ILinearReduct const& reductor);
 
   public:
     /** virtual destructor  */

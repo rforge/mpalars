@@ -19,7 +19,7 @@
     Boston, MA 02111-1307
     USA
 
-    Contact : Serge.Iovleff@stkpp.org
+    Contact : S..._Dot_I..._At_stkpp_Dot_org (see copyright for ...)
 */
 
 /*
@@ -27,7 +27,7 @@
  * created on: 17 avr. 2010
  * Purpose:  Abstract class for the computation of the Index in the
  * AAM models.
- * Author:   iovleff, serge.iovleff@stkpp.org
+ * Author:   iovleff, S..._Dot_I..._At_stkpp_Dot_org (see copyright for ...)
  **/
 
 /** @file STK_IReduct.cpp In this file we implement the interface
@@ -39,7 +39,7 @@
 namespace STK
 {
 /* Default constructor. */
-IReduct::IReduct() : IRunnerConst<Matrix>()
+IReduct::IReduct() : Runner()
                    , dim_(0)
                    , p_reduced_(0)
 {;}
@@ -47,21 +47,21 @@ IReduct::IReduct() : IRunnerConst<Matrix>()
 /* Constructor with a pointer on the constant data set.
  *  @param p_data the data set to reduce.
  **/
-IReduct::IReduct( Matrix const* p_data) : IRunnerConst<Matrix>(p_data)
+IReduct::IReduct( Matrix const* p_data) : Runner(p_data)
                                         , dim_(0)
                                         , p_reduced_(0)
     {;}
 /* Constructor with a constant reference on the data set.
  *  @param data the data set to reduce.
  * */
-IReduct::IReduct( Matrix const& data) : IRunnerConst<Matrix>(data)
+IReduct::IReduct( Matrix const& data) : Runner(data)
                                       , dim_(0)
                                       , p_reduced_(0)
     {;}
 /* Copy constructor.
  *  @param data The data set to reduce.
  * */
-IReduct::IReduct( IReduct const& reductor) : IRunnerConst<Matrix>(reductor)
+IReduct::IReduct( IReduct const& reductor) : Runner(reductor)
                                            , dim_(reductor.dim_)
                                            , p_reduced_(0)
 { if (reductor.p_reduced_)

@@ -45,7 +45,7 @@
 //                     and Cokus@math.washington.edu
 // when you write.
 //
-// Also it would be nice to cc to serge.iovleff@stkpp.org
+// Also it would be nice to cc to S..._Dot_I..._At_stkpp_Dot_org (see copyright for ...)
 // if you are using this code.
 //
 #ifndef MERSENNETWISTER_H

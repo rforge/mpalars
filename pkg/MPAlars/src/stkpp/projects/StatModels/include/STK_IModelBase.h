@@ -20,13 +20,13 @@
     Boston, MA 02111-1307
     USA
 
-    Contact : Serge.Iovleff@stkpp.org
+    Contact : S..._Dot_I..._At_stkpp_Dot_org (see copyright for ...)
 */
 
 /*
  * Project:  stkpp::
  * created on: 15 oct. 2012
- * Author:   iovleff, serge.iovleff@stkpp.org
+ * Author:   iovleff, S..._Dot_I..._At_stkpp_Dot_org (see copyright for ...)
  **/
 
 /** @file STK_IModelBase.h
@@ -62,6 +62,15 @@ class IModelBase
      **/
     IModelBase(int const& nbSample, int const& nbVar)
     { initialize(nbSample, nbVar);}
+    /** Copy constructor.
+     *  @param model the model to copy
+     **/
+    IModelBase( IModelBase const& model)
+              : nbSample_(model.nbSample_)
+              , nbVar_(model.nbVar_)
+              , lnLikelihood_(model.lnLikelihood_)
+              , nbFreeParameter_(model.nbFreeParameter_)
+    {}
     /** destructor */
     ~IModelBase() {}
 
@@ -69,14 +78,15 @@ class IModelBase
     /** @return the total available observations */
     inline int const& nbSample() const { return nbSample_;}
     /** @return th Log of the total available observations */
-    inline Real lnNbSample() const { return (nbSample_ <= 0) ? Arithmetic<Real>::NA(): std::log((double)nbSample_);}
+    inline Real lnNbSample() const
+    { return (nbSample_ <= 0) ? -Arithmetic<Real>::infinity() : std::log((Real)nbSample_);}
     /** @return the total available observations*/
     inline int const& nbVar() const { return nbVar_;}
     /** @return The ln-likelihood */
     inline Real lnLikelihood() const { return lnLikelihood_;}
     /** @return The likelihood */
     inline Real likelihood() const
-    { return (Arithmetic<Real>::isFinite(lnLikelihood_)) ? std::exp((double)lnLikelihood_) : 0.;}
+    { return (Arithmetic<Real>::isFinite(lnLikelihood_)) ? std::exp((Real)lnLikelihood_) : 0.;}
     /** @return the total number of free parameters */
     inline int const& nbFreeParameter() const { return nbFreeParameter_;}
 
@@ -84,7 +94,7 @@ class IModelBase
     /** set the number of free parameters of the model
      *  @param nbFreeParameter number of free parameters of the model
      * */
-    inline void setNbFreeParameter( int const& nbFreeParameter) { nbFreeParameter_ = nbFreeParameter;}
+    inline void setNbFreeParameters( int const& nbFreeParameter) { nbFreeParameter_ = nbFreeParameter;}
     /** set the number of sample of the model
      *  @param nbSample number of sample of the model
      * */
@@ -108,6 +118,7 @@ class IModelBase
       lnLikelihood_ = -Arithmetic<Real>::infinity();
       nbFreeParameter_ = 0;
     }
+
   private:
     /** total available samples */
     int nbSample_;
@@ -117,7 +128,6 @@ class IModelBase
     Real lnLikelihood_;
     /** number of free parameter of the model */
     int nbFreeParameter_;
-
 };
 
 } // namespace STK

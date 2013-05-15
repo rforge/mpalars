@@ -19,13 +19,13 @@
     Boston, MA 02111-1307
     USA
 
-    Contact : Serge.Iovleff@stkpp.org
+    Contact : S..._Dot_I..._At_stkpp_Dot_org (see copyright for ...)
 */
 
 /*
  * Project:  stkpp::AAModels
  * Purpose:  Implementation of the ILinearReduct interface using the total variance.
- * Author:   iovleff, serge.iovleff@stkpp.org
+ * Author:   iovleff, S..._Dot_I..._At_stkpp_Dot_org (see copyright for ...)
  **/
 
 
@@ -58,8 +58,17 @@ class ProjectedVariance : public ILinearReduct
      *  @param data a constant reference on the data set to reduce.
      **/
     ProjectedVariance(Matrix const& data);
+    /** Copy constructor.
+     * @param reductor the reductor to copy
+     **/
+    ProjectedVariance(ProjectedVariance const& reductor);
     /** Destructor */
     virtual ~ProjectedVariance();
+    /** clone pattern
+     *  @return a pointer on the clone of this
+     **/
+    inline virtual ProjectedVariance* clone() const
+    { return new ProjectedVariance(*this);}
 
   protected:
     /** the covariance Matrix */

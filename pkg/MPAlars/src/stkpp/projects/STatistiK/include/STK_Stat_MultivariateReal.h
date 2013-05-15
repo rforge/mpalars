@@ -19,14 +19,14 @@
     Boston, MA 02111-1307
     USA
 
-    Contact : Serge.Iovleff@stkpp.org
+    Contact : S..._Dot_I..._At_stkpp_Dot_org (see copyright for ...)
 */
 
 /*
  * Project:  StatDesc
  * Purpose:  Compute multivariate elementary statistics for
  * a 2D container.
- * Author:   Serge Iovleff, serge.iovleff@stkpp.org
+ * Author:   Serge Iovleff, S..._Dot_I..._At_stkpp_Dot_org (see copyright for ...)
  **/
 
 /** @file STK_Stat_MultivariateReal.h
@@ -61,13 +61,12 @@ typedef Multivariate<Matrix, Real> MultivariateMatrix;
  *  @c TContainer2D with n rows (the samples) and p columns (the variables).
  **/
 template <class Array>
-class Multivariate<Array, Real> : public IRunnerConst< Array>
+class Multivariate<Array, Real> : public IRunnerUnsupervised< Array, typename Array::Col>
 {
-  typedef typename Array::Type Type;
   typedef typename Array::Row RowVector;
   typedef typename Array::Col ColVector;
   /** type of runner */
-  typedef IRunnerConst< Array> Runner2D;
+  typedef IRunnerUnsupervised< Array, ColVector> Runner;
 
   public:
     /** Constructor.
@@ -75,7 +74,7 @@ class Multivariate<Array, Real> : public IRunnerConst< Array>
      *  @param data the data set
      **/
     Multivariate( Array const& data)
-                : Runner2D(&data)
+                : Runner(&data)
                 , nbSamples_(0)
                 , nbVar_(0)
                 , min_()
@@ -90,7 +89,7 @@ class Multivariate<Array, Real> : public IRunnerConst< Array>
      *  @param p_data a pointer on the data set
      **/
     Multivariate( Array const* p_data)
-                : Runner2D(p_data)
+                : Runner(p_data)
                 , nbSamples_(0)
                 , nbVar_(0)
                 , min_()
@@ -100,8 +99,24 @@ class Multivariate<Array, Real> : public IRunnerConst< Array>
                 , cov_()
     { update(); }
 
+    /** copy constructor.
+     *  @param stat the statistics to copy
+     **/
+    Multivariate( Multivariate const& stat)
+                : Runner(stat)
+                , nbSamples_(stat.nbSamples_)
+                , nbVar_(stat.nbVar_)
+                , min_(stat.min_)
+                , max_(stat.max_)
+                , mean_(stat.mean_)
+                , var_(stat.var_)
+                , cov_(stat.cov_)
+    {}
     /** virtual destructor.*/
     virtual ~Multivariate() { }
+
+    /** clone pattern */
+    inline virtual Multivariate* clone() const { return new Multivariate(*this);}
 
     /** @return the number of variables in the p_data_ set (the number of columns) */
     inline int const& nbVar() const {return nbVar_;}
@@ -121,10 +136,12 @@ class Multivariate<Array, Real> : public IRunnerConst< Array>
     /** run the estimation of the Multivariate statistics. **/
     virtual bool run()
     {
+      if (!this->p_data_)
+      { this->msg_error_ = STKERROR_NO_ARG(MultivariateMatrix::run(),data have not be set);
+        return false;
+      }
       try
       {
-        if (!this->p_data_)
-        { STKRUNTIME_ERROR_NO_ARG(MultivariateMatrix::run(),data have not be set);}
         // for each variables
         for (int j=this->p_data_->firstIdxCols(); j<=this->p_data_->lastIdxCols(); j++)
         {
@@ -154,10 +171,12 @@ class Multivariate<Array, Real> : public IRunnerConst< Array>
      **/
     virtual bool run( ColVector const& weights)
     {
+      if (!this->p_data_)
+      { this->msg_error_ = STKERROR_NO_ARG(MultivariateMatrix::run(weights),data have not be set);
+        return false;
+      }
       try
       {
-        if (!this->p_data_)
-        { STKRUNTIME_ERROR_NO_ARG(MutivariateReal::run(weights),data have not be set);}
         // for each variables
         for (int j= this->p_data_->firstIdxCols(); j<= this->p_data_->lastIdxCols(); j++)
         {
@@ -221,7 +240,7 @@ class Multivariate<Array, Real> : public IRunnerConst< Array>
  *  @param V the container with the Data
  *  @param mean the container with the result
  **/
-template <class TContainer2D >
+template <class TContainer2D>
 void mean( TContainer2D const&  V, typename TContainer2D::Row & mean)
 {
   mean.resize(V.cols());
@@ -239,10 +258,8 @@ void mean( TContainer2D const&  V, typename TContainer2D::Row & mean)
  *  @param W the weights
  *  @param mean the computed weighted mean
  **/
-template < class TContainer2D >
-void mean( TContainer2D const& V, typename TContainer2D::Col const& W
-         , typename TContainer2D::Row & mean
-         )
+template < class TContainer2D, class WColVector>
+void mean( TContainer2D const& V, WColVector const& W, typename TContainer2D::Row & mean)
 {
   mean.resize(V.cols());
   for (int j= V.firstIdxCols(); j<= V.lastIdxCols(); j++)
@@ -259,7 +276,7 @@ void mean( TContainer2D const& V, typename TContainer2D::Col const& W
  *  @param unbiased @c true if we want an unbiased estimator of the variance,
  *  @c false otherwise (default is @c false)
  **/
-template < class TContainer2D >
+template < class TContainer2D>
 void variance( TContainer2D const& V, typename TContainer2D::Row& var
              , bool unbiased = false
              )
@@ -284,9 +301,8 @@ void variance( TContainer2D const& V, typename TContainer2D::Row& var
  *  @param unbiased @c true if we want an unbiased estimator of the variance,
  *  @c false otherwise (default is @c false)
  **/
-template < class TContainer2D >
-void variance( TContainer2D const& V, typename TContainer2D::Col const& W
-             , typename TContainer2D::Row& var
+template < class TContainer2D, class WColVector, class RowVector >
+void variance( TContainer2D const& V, WColVector const& W, RowVector& var
              , bool unbiased = false
              )
 {
@@ -306,17 +322,16 @@ void variance( TContainer2D const& V, typename TContainer2D::Col const& W
  * @param unbiased @c true if we want an unbiased estimator of the variance,
  *  @c false otherwise (default is @c false)
  **/
-template < class Row, class Col, class TContainer2D >
-Row varianceWithFixedMean( TContainer2D const& V
-                                  , Row const& mu
-                                  , bool unbiased = false
-                                  )
+template < class TContainer2D, class RowVector >
+RowVector varianceWithFixedMean( TContainer2D const& V, RowVector const& mu
+                               , bool unbiased = false
+                               )
 {
   if (mu.range() != V.cols())
     throw runtime_error("In varianceWithFixedMean(V, mu, unbiased) "
                              "mu.range() != V.cols()");
   // create result
-  Row var(V.cols());
+  RowVector var(V.cols());
   // get dimensions
   const int  firstVar = V.firstIdxCols(), lastVar = V.lastIdxCols();
   for (int j= firstVar; j<= lastVar; j++)
@@ -336,21 +351,21 @@ Row varianceWithFixedMean( TContainer2D const& V
  *  @param unbiased @c true if we want an unbiased estimator of the variance,
  *  @c false otherwise (default is @c false)
  **/
-template < class Row, class Col, class TContainer2D >
-Row varianceWithFixedMean(TContainer2D const& V
-                         , Col const& W
-                         , Row const& mu
-                         , bool unbiased = false
-                         )
+template < class TContainer2D, class WColVector,class RowVector >
+RowVector varianceWithFixedMean( TContainer2D const& V
+                               , WColVector const& W
+                               , RowVector const& mu
+                               , bool unbiased = false
+                               )
 {
   if (mu.range() != V.cols())
     STKRUNTIME_ERROR_NO_ARG(varianceWithFixedMean(V, W, mu),mu.range() != V.cols());
   // create result
-  Row var(V.cols());
+  RowVector var(V.cols());
   // get dimensions
   const int  firstVar = V.firstIdxCols(), lastVar = V.lastIdxCols();
   for (int j= firstVar; j<= lastVar; j++)
-    var[j] = varianceWithFixedMean<Col>(V[j], W, mu[j], unbiased);
+    var[j] = varianceWithFixedMean(V[j], W, mu[j], unbiased);
   // return variance
   return var;
 }
@@ -368,7 +383,7 @@ Row varianceWithFixedMean(TContainer2D const& V
 template < class TContainer2D >
 void covariance( TContainer2D const& V, MatrixSquare & cov, bool unbiased = false)
 {
-  typename hidden::Traits<TContainer2D>::Row mean;
+  typename TContainer2D::Row mean;
   // compute the
   Stat::mean(V, mean);
   // get dimensions
@@ -393,11 +408,12 @@ void covariance( TContainer2D const& V, MatrixSquare & cov, bool unbiased = fals
  *  @param unbiased @c true if we want an unbiased estimator of the variance,
  *  @c false otherwise (default is @c false)
  **/
-template <class TContainer2D >
-void covariance( TContainer2D const& V, typename hidden::Traits<TContainer2D>::Col const& W, MatrixSquare & cov, bool unbiased = false)
+template <class TContainer2D, class WColVector >
+void covariance( TContainer2D const& V, WColVector const& W, MatrixSquare & cov, bool unbiased = false)
 {
-  typename hidden::Traits<TContainer2D>::Row mean;
-  typedef typename hidden::Traits<TContainer2D>::Col CoVector;
+  typedef typename TContainer2D::Row RowVector;
+  typedef typename TContainer2D::Col ColVector;
+  RowVector mean;
   // compute the
   Stat::mean(V, W, mean);
   // get dimensions
@@ -405,7 +421,7 @@ void covariance( TContainer2D const& V, typename hidden::Traits<TContainer2D>::C
   cov.resize(V.cols());
   for (int j= firstVar; j<= lastVar; j++)
   {
-    cov(j, j) = varianceWithFixedMean<CoVector>(V.col(j), W, unbiased);
+    cov(j, j) = varianceWithFixedMean<ColVector, WColVector>(V.col(j), W, mean[j], unbiased);
     for (int i= firstVar; i<j; i++)
     { cov(j,i) = ( cov(i, j) = covarianceWithFixedMean(V.col(i), V.col(j), W, mean[i], mean[j], unbiased));}
   }

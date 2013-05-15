@@ -19,12 +19,12 @@
 #    Boston, MA 02111-1307
 #    USA
 #
-#    Contact : Serge.Iovleff@stkpp.org
+#    Contact : S..._Dot_I..._At_stkpp_Dot_org (see copyright for ...)
 #
 #-----------------------------------------------------------------------
 #
 # Purpose:  Main makefile of the Project STKpp.
-# Author:   Serge Iovleff, serge.iovleff@stkpp.org
+# Author:   Serge Iovleff, S..._Dot_I..._At_stkpp_Dot_org (see copyright for ...)
 #
 #-----------------------------------------------------------------------
 # Macros and definitions
@@ -73,10 +73,10 @@ all: obj lib
 PROJECTS_DIR = ./projects/
 GUI_DIR = ./gui/
 BIN_DIR = ./bin/
-LIB_DIR = ./lib/
+LIB_DIR = ../
 
 TUTO_DIR = ./doc/tutorial/
-MIXBIN_DIR = ./tutorials/MixBin/src/
+MIXBIN_DIR = ./programs/MixBin/src/
 
 #-----------------------------------------------------------------------
 # specific projects paths
@@ -109,6 +109,7 @@ TEST_ARRAYS_DIR = $(TEST_DIR)Arrays/
 TEST_ALGEBRA_DIR = $(TEST_DIR)Algebra/
 TEST_ANALYSIS_DIR = $(TEST_DIR)Analysis/
 TEST_DMANAGER_DIR = $(TEST_DIR)DManager/
+TEST_STATMODELS_DIR = $(TEST_DIR)StatModels/
 
 
 #-----------------------------------------------------------------------
@@ -188,7 +189,7 @@ statmodel:
 
 #-----------------------------------------------------------------------
 # rule if we want to compile test programs
-.PHONY: tests testsCsv testArrays testAlgebra testDManager testsPages alltests
+.PHONY: tests testsCsv testArrays testAlgebra testDManager testsStatModels testsPages alltests
 tests: obj lib
 	cd $(TEST_DIR); $(MAKE) all
 
@@ -204,13 +205,16 @@ testsAlgebra: obj lib
 testsDManager: obj lib
 	cd $(TEST_DMANAGER_DIR); $(MAKE) all
 
+testsStatModels: obj lib
+	cd $(TEST_STATMODELS_DIR); $(MAKE) all
+
 testsCsv: obj lib
 	cd $(TEST_DMANAGER_DIR); $(MAKE) testCsv
 
 testsPages: obj lib
 	cd $(TEST_DMANAGER_DIR); $(MAKE) testPages
 
-alltests: tests testsArrays testsAnalysis testsAlgebra testsDManager
+alltests: tests testsArrays testsAnalysis testsAlgebra testsDManager testsStatModels
 
 #-----------------------------------------------------------------------
 # rule if we want to compile tutorial programs

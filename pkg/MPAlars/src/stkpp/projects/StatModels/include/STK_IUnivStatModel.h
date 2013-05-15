@@ -19,14 +19,14 @@
     Boston, MA 02111-1307
     USA
 
-    Contact : Serge.Iovleff@stkpp.org
+    Contact : S..._Dot_I..._At_stkpp_Dot_org (see copyright for ...)
 */
 
 /*
  * Project:  stkpp::Model
  * created on: 22 juil. 2011
  * Purpose: define the class IUnivStatModel.
- * Author:   iovleff, serge.iovleff@stkpp.org
+ * Author:   iovleff, S..._Dot_I..._At_stkpp_Dot_org (see copyright for ...)
  *
  **/
 
@@ -82,52 +82,102 @@ namespace STK
  *  @tparam UnivariateLaw any probabilistic law deriving from the interface
  *  class IUnivLaw, @sa IUnivLaw.
  **/
-template <class ColVector, class UnivariateLaw>
-class IUnivStatModel : public IModelBase, public IRunnerConst<ColVector>
+template <class ColVector, class WColVector, class UnivariateLaw>
+class IUnivStatModel : public IModelBase, public IRunnerUnsupervised<ColVector, WColVector>
 {
-  using IRunnerConst<ColVector>::p_data_;
-
   public:
+    using IRunnerUnsupervised<ColVector, WColVector>::p_data;
     /** Type of the data contained in the container */
     typedef typename ColVector::Type Type;
     /** Type of the Runner */
-    typedef IRunnerConst<ColVector> Runner;
+    typedef IRunnerUnsupervised<ColVector, WColVector> Runner;
 
   protected:
     /** default constructor. */
     IUnivStatModel() : IModelBase(), Runner() {}
     /** Constructor with data set. */
-    IUnivStatModel(ColVector const& data) : IModelBase(data.size(), 1)
-                                      , Runner(data)
+    IUnivStatModel(ColVector const& data) : IModelBase(data.size(), 1), Runner(data)
     { this->initialize(data.size(), 1);}
     /** Constructor with a ptr on the data set. */
     IUnivStatModel(ColVector const* p_data) : IModelBase(), Runner(p_data)
     { if (p_data) this->initialize(p_data->size(), 1) ;}
+    /** Copy constructor. */
+    IUnivStatModel( IUnivStatModel const& model)
+                  : IModelBase(model), Runner(model), law_(model.law_) {}
 
   public:
     /** destructor */
     virtual ~IUnivStatModel() {}
+    /** compute the log Likelihood of the statistical model. */
+    Real computeLnLikelihood() const
+    {
+      Real sum = 0.0;
+      for (int i= p_data()->firstIdx(); i<= p_data()->lastIdx(); i++)
+      { if (!Arithmetic<Type>::isNA(p_data()->elt(i))) sum += law_.lpdf(p_data()->elt(i));}
+      return sum;
+    }
     /** @return the total available observations */
     inline UnivariateLaw const& law() const { return law_;}
+    /** compute the number of free parameters */
+    virtual int computeNbFreeParameters() const =0;
+    /** Estimate the parameters of the model and update the
+     **/
+    virtual bool run()
+    {
+      if (!p_data())
+      { this->msg_error_ = STKERROR_NO_ARG(IUnivStatModel::run(),data have not be set);
+        return false;
+      }
+      try
+      {
+        // compute weighted parameters
+        computeParameters();
+        // compute log-likelihood
+        this->setLnLikelihood(computeLnLikelihood());
+        // set the number of free parameters
+        this->setNbFreeParameters(computeNbFreeParameters());
+      }
+      catch (Exception const& e)
+      { this->msg_error_ = e.error(); return false;}
+      return true;
+    }
+    /** compute the weighted empirical probability of success based on the observed
+     *  variables. The NA values are discarded.
+     *  @param weights the weights of the observations
+     **/
+    virtual bool run( WColVector const& weights)
+    {
+      if (!p_data())
+      { this->msg_error_ = STKERROR_NO_ARG(IUnivStatModel::run(weights),data have not be set);
+        return false;
+      }
+      try
+      {
+        // compute weighted parameters
+        computeParameters(weights);
+        // compute log-likelihood
+        this->setLnLikelihood(computeLnLikelihood());
+        // set the number of free parameters
+        this->setNbFreeParameters(computeNbFreeParameters());
+      }
+      catch (Exception const& e)
+      { this->msg_error_ = e.error(); return false;}
+      return true;
+    }
 
   protected:
     /** This virtual method will be called if the user set a new data set
-     *  @sa IRunnerConst::setData */
+     *  @sa IRunnerUnsupervised::setData */
     virtual void update()
-    { if (p_data_) this->initialize(p_data_->size(), 1); }
+    { if (p_data()) this->initialize(p_data()->size(), 1); }
     /** The probability law of the model. */
     UnivariateLaw law_;
-    /** compute the log Likelihood of the statistical model. */
-    void computeLnLikelihood()
-    {
-      // no data
-      if (!p_data_) return;
-      Real sum = 0.0;
-      for (int i= p_data_->firstIdx(); i<= p_data_->lastIdx(); i++)
-      { if (!Arithmetic<Type>::isNA(p_data_->elt(i))) sum += law_.lpdf(p_data_->elt(i));}
-      this->setLnLikelihood(sum);
-    }
+    /** compute the parameters */
+    virtual void computeParameters() = 0;
+    /** compute the weighted parameters */
+    virtual void computeParameters(ColVector const& weights) = 0;
 };
+
 
 } // namespace STK
 

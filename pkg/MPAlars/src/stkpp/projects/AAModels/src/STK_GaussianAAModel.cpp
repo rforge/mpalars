@@ -19,13 +19,13 @@
     Boston, MA 02111-1307
     USA
 
-    Contact : Serge.Iovleff@stkpp.org
+    Contact : S..._Dot_I..._At_stkpp_Dot_org (see copyright for ...)
 */
 
 /*
  * Project:  stkpp::AAModels
  * Purpose:  Interface base class for AA models.
- * Author:   Serge Iovleff, serge.iovleff@stkpp.org
+ * Author:   Serge Iovleff, S..._Dot_I..._At_stkpp_Dot_org (see copyright for ...)
  *
  **/
 
@@ -117,7 +117,7 @@ void GaussianAAModel::computeModelParameters()
 void GaussianAAModel::computeNbFreeParameter()
 {
   // get number of free parameters
-  setNbFreeParameter(p_regressor_->nbParameter() + dim() * (dim()+1)/2 + 1);
+  setNbFreeParameters(p_regressor_->nbParameter() + dim() * (dim()+1)/2 + 1);
 }
 
 /* compute the ln-likelihood of the model */

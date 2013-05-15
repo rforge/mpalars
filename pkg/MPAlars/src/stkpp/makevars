@@ -38,7 +38,7 @@ CFLAGS   = -Wno-long-long
 #-----------------------------------------------------------------------
 # specific C++ compilation flags used by the CXX compiler 
 # Uncomment the next line if you want a release binary
-CXXFLAGS   = -ansi -pedantic -Wall -O3 -ftree-vectorize -march=native -funroll-loops -fPIC
+CXXFLAGS   = -ansi -pedantic -Wall -O3 -ftree-vectorize -march=native -funroll-loops
 # Comment the next line if you want a release binary
 #CXXFLAGS   = -ansi -pedantic -Wall -g -Os
 
@@ -52,8 +52,8 @@ CXXFLAGS   = -ansi -pedantic -Wall -O3 -ftree-vectorize -march=native -funroll-l
 #STK_FLAGS = -DSTKBASEARRAYS=0
 
 #STK_FLAGS = -DSTK_BOUNDS_CHECK  -DSTK_DEBUG  -DSTK_VERBOSE -DSTKBASEARRAYS=0
-STK_FLAGS = -DSTK_BOUNDS_CHECK  -DSTK_DEBUG  -DSTK_VERBOSE
+#STK_FLAGS = -DSTK_BOUNDS_CHECK  -DSTK_DEBUG  -DSTK_VERBOSE
 
 #-----------------------------------------------------------------------
 # Name of the STK++ library
-LIB_STKPP_A = libSTKpp.a
+LIB_STKPP_A = mpa.a

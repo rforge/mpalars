@@ -19,14 +19,14 @@
     Boston, MA 02111-1307
     USA
 
-    Contact : Serge.Iovleff@stkpp.org
+    Contact : S..._Dot_I..._At_stkpp_Dot_org (see copyright for ...)
 */
 
 /*
  * Project:  stkpp::Model
  * created on: 22 juil. 2011
  * Purpose: define the class IMultiStatModel.
- * Author:   iovleff, serge.iovleff@stkpp.org
+ * Author:   iovleff, S..._Dot_I..._At_stkpp_Dot_org (see copyright for ...)
  *
  **/
 
@@ -47,8 +47,8 @@ namespace STK
 {
 
 /** @ingroup StatModels
- *  @brief Base class for all Statistical Models.
- *  A Statistical model, \f$ \mathcal{P}\f$, is a collection of
+ *  @brief Base class for all Multivariate Statistical Models.
+ *  A Statistical model, \f$ \mathcal{P}\f$, is a collection of multivariate
  *  probability distribution functions or probability density functions
  *  (collectively referred to as ''distributions'' for brevity).
  *  A parametric model is a collection of distributions, each of which is
@@ -56,81 +56,165 @@ namespace STK
  *  \f$\mathcal{P}=\{\mathbb{P}_{\theta} : \theta \in \Theta\}\f$, where
  *  \f$\theta\f$ is a parameter and \f$\Theta \subseteq \mathbb{R}^d\f$ is
  *  the feasible region of parameters, which is a subset of d-dimensional
- *  Euclidean space.  A statistical model may be used to describe the set of
+ *  Euclidean space.
+ *
+ *  A statistical model may be used to describe the set of
  *  distributions from which one assumes that a particular data set is sampled.
- *  For example, if one assumes that data arise from a univariate Gaussian
+ *  For example, if one assumes that data arise from a multivariate Gaussian
  *  distribution, then one has assumed a Gaussian model:
  *  \f$
- *    \mathcal{P}=\{\mathbb{P}(x; \mu, \sigma) = \frac{1}{\sqrt{2 \pi} \sigma}
- *    \exp\left\{ -\frac{1}{2\sigma^2}(x-\mu)^2\right\} : \mu \in \mathbb{R}, \sigma > 0\}
+ *    \mathcal{P}=\{\mathbb{P}(x; \mu, \Sigma) = \frac{1}{\sqrt{2 \pi |\Sigma|} }
+ *    \exp\left\{ -\frac{1}{2}(x-\mu)'\Sigma^{-1}(x-\mu)\right\} : \mu \in \mathbb{R}^p, \Sigma > 0\}
  *  \f$.
  *
  *  From a computational point of view a statistical model is defined with
  *  the help of two elements
- *  - A data set where the number of samples is the number of rows. This data
- *    set is stored in a Container of type @c Array.
+ *  - A data set where the number of samples is the number of rows and the number
+ *  of variable is the number of columns. This data set is stored in a Container
+ *  of type @c Array.
  *  - A probability (density/law) which for each row of the data set can compute
  *  a density/probability.
  *
  *  The parameters of the distribution (if any) are directly managed by the
  *  probability law.
  *
- *  Further implementation of this interface have to implement the @c run() and
- *  the @c run(weights) methods in order to estimate the parameters of the
- *  univariate law.
+ *  Derived implementations of this interface have to implement the following
+ *  pure methods:
+ *  @code
+ *    int computeNbFreeParameters() const;
+ *    Real computeLnLikelihood( RowVector const& rowData) const = 0;
+ *    virtual void initParameters() =0;
+ *    virtual void computeParameters() = 0;
+ *    virtual void computeParameters(ColVector const& weights) = 0;
+ *  @endcode
  *
  *  @tparam Array can be any kind of vector for the data set. it should at
  *  least derive from the specialization of ITContainer for Arrays::vector_,
  *  @sa ITContainer.
- *  @tparam MultivariateLaw any probabilistic law deriving from the interface
- *  class IUnivLaw, @sa IUnivLaw.
+ *  @tparam Parameters any structure encapsulating the parameters of the model.
+ *
+ *  @note this class can be a runner, in this case the parameters are estimated
+ *  using either @c run() and @c run(weights) methods. This class can also be used
+ *  as a "kitchen" providing tools, in particular if there is latent variables.
+ *  @sa LatentModel, MixtureModel.
  **/
-template <class Array, class MultivariateLaw>
-class IMultiStatModel : public IModelBase, public IRunnerConst<Array>
+template <class Array, class WColVector, class Parameters>
+class IMultiStatModel : public IModelBase, public IRunnerUnsupervised<Array, WColVector>
 {
-  using IRunnerConst<Array>::p_data_;
   public:
     /** Type of the data contained in the container */
     typedef typename Array::Type Type;
-    /** Runner */
-    typedef IRunnerConst<Array> Runner;
+    /** Type of the row vector of the container */
+    typedef typename Array::Row RowVector;
+    /** Type of the column vector of the container */
+    typedef typename Array::Col ColVector;
+    /** Type of the runner */
+    typedef IRunnerUnsupervised<Array, WColVector> Runner;
+    using Runner::p_data;
 
   protected:
     /** default constructor. */
-    IMultiStatModel() : IModelBase(), Runner() {}
+    IMultiStatModel() : IModelBase(), Runner(), p_param_(0) {}
     /** Constructor with data set. */
-    IMultiStatModel(Array const& data) : IModelBase(), Runner(data)
+    IMultiStatModel(Array const& data) : IModelBase(), Runner(data), p_param_(0)
     { this->initialize(data.sizeRows(), data.sizeCols());}
     /** Constructor with a ptr on the data set. */
-    IMultiStatModel(Array const* p_data) : IModelBase(), Runner(p_data)
+    IMultiStatModel(Array const* p_data) : IModelBase(), Runner(p_data), p_param_(0)
     { if (p_data) this->initialize(p_data->sizeRow(), p_data->sizeCol()) ;}
+    /** Copy constructor.
+     *  @param model the model to copy
+     **/
+    IMultiStatModel( IMultiStatModel const& model)
+                   : IModelBase(model), Runner(model), p_param_(model.p_param_->clone())
+    { if (p_param_) delete p_param_;}
 
   public:
     /** destructor */
-    virtual ~IMultiStatModel() {}
-    /** @return the multivariate law */
-    inline MultivariateLaw const& law() const { return law_;}
-    /** @return the multivariate law */
-    inline MultivariateLaw& law() { return law_;}
+    virtual ~IMultiStatModel() { if (p_param_) delete p_param_;}
+    /** @return the pointer on the parameters */
+    inline Parameters* const p_param() const { return p_param_;}
+    /** @param p_param the pointer on the parameters to set */
+    inline void setParameters(Parameters* p_param) { p_param_ = p_param;}
+    /** @return the pointer on the parameters and release them from teh class. */
+    inline Parameters* release() { Parameters* p =p_param_; p_param_=0; return p;}
+    /** compute the log Likelihood of the statistical model. */
+    Real computeLnLikelihood() const
+    {
+      Real sum = 0.0;
+      for (int i= p_data()->firstIdxRows(); i<= p_data()->lastIdxRows(); i++)
+      { sum += computeLnLikelihood(p_data()->row(i));}
+      return(sum);
+    }
+    /** Estimate the parameters of the model and update the
+     **/
+    virtual bool run()
+    {
+      if (!p_data())
+      { this->msg_error_ = STKERROR_NO_ARG(IMultiStatModel::run,data have not be set);
+        return false;
+      }
+      try
+      {
+        if (!p_param()) p_param_ = new Parameters;
+        // iniitalize parameters
+        initParameters();
+        // compute parameters
+        computeParameters();
+        // compute log-likelihood
+        this->setLnLikelihood(computeLnLikelihood());
+        // set the number of free parameters
+        this->setNbFreeParameters(computeNbFreeParameters());
+      }
+      catch (Exception const& e)
+      { this->msg_error_ = e.error(); return false;}
+      return true;
+    }
+    /** compute the weighted empirical probability of success based on the observed
+     *  variables. The NA values are discarded.
+     *  @param weights the weights of the observations
+     **/
+    virtual bool run(WColVector const& weights)
+    {
+      if (!p_data())
+      { this->msg_error_ = STKERROR_NO_ARG(IMultiStatModel::run(weights),data have not be set);
+        return false;
+      }
+      try
+      {
+        if (!p_param()) p_param_ = new Parameters;
+        // initialize parameters
+        initParameters();
+        // compute weighted parameters
+        computeParameters(weights);
+        // compute log-likelihood
+        this->setLnLikelihood(computeLnLikelihood());
+        // set the number of free parameters
+        this->setNbFreeParameters(computeNbFreeParameters());
+      }
+      catch (Exception const& e)
+      { this->msg_error_ = e.error(); return false;}
+      return true;
+    }
+    /** compute the number of free parameters */
+    virtual int computeNbFreeParameters() const =0;
+    /** compute the log Likelihood of an observation. */
+    virtual Real computeLnLikelihood( RowVector const& rowData) const = 0;
 
   protected:
-    /** This method is called if the user set a new data set @sa IRunnerConst::setData*/
+    /** Pointer on the parameters of the model. */
+    Parameters* p_param_;
+    /** This method is called if the user set a new data set
+     *  @sa IRunnerUnsupervised::setData */
     virtual void update()
-    { if (p_data_)
-        this->initialize(p_data_->sizeRows(), p_data_->sizeCols());
+    { if (p_data())
+        this->initialize(p_data()->sizeRows(), p_data()->sizeCols());
     }
-    /** The probability law of the model. */
-    MultivariateLaw law_;
-    /** compute the log Likelihood of the statistical model. */
-    void computeLnLikelihood()
-    {
-      // no data
-      if (!p_data_) return;
-      Real sum = 0.0;
-      for (int i= p_data_->firstIdxRows(); i<= p_data_->lastIdxRows(); i++)
-      { sum += law_.lpdf(p_data_->row(i));}
-      this->setLnLikelihood(sum);
-    }
+    /** initialize the parameters */
+    virtual void initParameters() =0;
+    /** compute the parameters */
+    virtual void computeParameters() = 0;
+    /** compute the weighted parameters */
+    virtual void computeParameters(WColVector const& weights) = 0;
 };
 
 } // namespace STK

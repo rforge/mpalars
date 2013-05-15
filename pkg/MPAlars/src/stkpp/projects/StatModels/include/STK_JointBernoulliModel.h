@@ -19,19 +19,19 @@
     Boston, MA 02111-1307
     USA
 
-    Contact : Serge.Iovleff@stkpp.org
+    Contact : S..._Dot_I..._At_stkpp_Dot_org (see copyright for ...)
 */
 
 /*
  * Project:  stkpp::Model
  * created on: 22 juil. 2011
  * Purpose: define the class IUnivStatModel.
- * Author:   iovleff, serge.iovleff@stkpp.org
+ * Author:   iovleff, S..._Dot_I..._At_stkpp_Dot_org (see copyright for ...)
  *
  **/
 
-/** @file STK_IUnivStatModel.h
- *  @brief In this file we define the class IUnivStatModel.
+/** @file STK_JointBernoulliModel.h
+ *  @brief In this file we define the class JointBernoulliModel.
  **/
 
 #ifndef STK_JOINTBERNOULLIMODEL_H
@@ -40,10 +40,52 @@
 #include <cmath>
 
 #include "STK_IMultiStatModel.h"
-#include "../../STatistiK/include/STK_Law_JointBernoulli.h"
+#include "../../STatistiK/include/STK_Law_Bernoulli.h"
 
 namespace STK
 {
+
+/** @ingroup StatModels
+ *  Structure encapsulating the parameters of a Joint Bernoulli model.
+ */
+class JointBernoulliParameters
+{
+  public:
+    /** default constructor */
+    JointBernoulliParameters() {}
+    /** copy constructor. @param param the parameters to copy. */
+    JointBernoulliParameters( JointBernoulliParameters const& param)
+                            : prob_(param.prob_)
+                            , lnProb_(param.lnProb_)
+                            , ln1mProb_(param.ln1mProb_)
+    {}
+    /** destructor */
+    ~JointBernoulliParameters() {}
+    /** clone pattern. */
+    JointBernoulliParameters* clone() const
+    { return new JointBernoulliParameters(*this);}
+    /** @return the probability of success of the jth law */
+    inline Real const& prob(int const& j) const { return prob_[j];}
+    /** @return the probability of success of the jth law */
+    inline Real const& lnProb(int const& j) const { return lnProb_[j];}
+    /** @return the probability of success of the jth law */
+    inline Real const& ln1mProb(int const& j) const { return ln1mProb_[j];}
+    /** set the probability of success of the jth law */
+    inline void setProb(int const& j, Real const& prob)
+    { prob_[j] = prob;
+      if (prob>0) { lnProb_[j] = std::log(prob);}
+      else        { lnProb_[j] = -Arithmetic<Real>::infinity();}
+      if (prob<1) { ln1mProb_[j] = std::log(1.-prob);}
+      else        { ln1mProb_[j] = -Arithmetic<Real>::infinity();}
+    }
+    /** resize the set of parameter */
+    inline void resize(Range const& size)
+    { prob_.resize(size); lnProb_.resize(size); ln1mProb_.resize(size);}
+  protected:
+    CPointX prob_;
+    CPointX lnProb_;
+    CPointX ln1mProb_;
+};
 
 /** @ingroup StatModels
  * A joint Bernoulli model is a statistical model of the form:
@@ -55,81 +97,92 @@ namespace STK
  * \f]
  *
  **/
-template <class Array>
-class JointBernoulliModel : public IMultiStatModel<Array, Law::JointBernoulli< typename Array::Row> >
+template <class Array, class WColVector = CVectorX>
+class JointBernoulliModel : public IMultiStatModel<Array, WColVector, JointBernoulliParameters >
 {
-  using IRunnerConst<Array>::p_data;
   public:
     /** Type of the data contained in the container */
     typedef typename Array::Type Type;
-    /** Type of the data contained in the container */
+    /** Type of the row vector of the container */
+    typedef typename Array::Row RowVector;
+    /** Type of the column vector of the container */
     typedef typename Array::Col ColVector;
-    /** Runner */
-    typedef IMultiStatModel<Array, Law::JointBernoulli<typename Array::Row> > Base;
-
-  public:
+    /** Base class */
+    typedef IMultiStatModel<Array, WColVector, JointBernoulliParameters > Base;
+    using Base::p_data;
+    using Base::p_param;
     /** default constructor. */
     JointBernoulliModel() : Base() {}
     /** Constructor with data set. */
     JointBernoulliModel(Array const& data) : Base(data) {}
     /** Constructor with a ptr on the data set. */
     JointBernoulliModel(Array const* p_data) : Base(p_data) {}
+    /** Copy constructor. */
+    JointBernoulliModel(JointBernoulliModel const& model) : Base(model) {}
     /** destructor */
     virtual ~JointBernoulliModel() {}
-    /** compute the empirical probability of success based on the observed
-     * variables. The NA values are discarded.
-     **/
-    virtual bool run()
+    /** clone pattern. @return a clone of this. */
+    JointBernoulliModel* clone() const { return new JointBernoulliModel(*this);}
+
+    /** compute the number of free parameters */
+    virtual int computeNbFreeParameters() const
+    { return p_data()->sizeCols();}
+    /** compute the log Likelihood of an observation. */
+    virtual Real computeLnLikelihood( RowVector const& rowData) const
     {
-      try
+      Real sum =0.;
+      for (Integer j= rowData.firstIdx(); j <= rowData.lastIdx(); ++j)
       {
-        this->law().resize(p_data()->sizeCols());
-        for (int j=p_data()->firstIdxCols(); j<=p_data()->lastIdxCols(); ++j)
-        {
-          Real sum=0.;
-          int nbObs=p_data()->sizeRows();
-          for (int i=p_data()->firstIdxRows(); i<=p_data()->lastIdxRows(); ++i)
-          { (p_data()->elt(i,j) == binaryNA_) ? --nbObs : sum += p_data()->elt(i,j);}
-          if (nbObs != 0) { this->law().setProb(j,sum/nbObs);}
-                     else { this->law().setProb(j,0.);}
-        }
-        // compute log-likehood
-        this->computeLnLikelihood();
-        this->setNbFreeParameter(p_data()->sizeCols());
-        return true;
+        sum += rowData[j] * p_param()->lnProb(j)
+             + (1-rowData[j] * p_param()->ln1mProb(j) );
       }
-      catch (Exception const& e)
-      { this->msg_error_ = e.error();}
-      return false;
+      return sum;
     }
-    /** compute the weighted empirical probability of success based on the observed
-     *  variables. The NA values are discarded.
-     **/
-    virtual bool run(typename Array::Col const& weights)
+  protected:
+    /** This method is called if the user set a new data set
+     *  @sa IRunnerUnsupervised::setData */
+    virtual void update()
+    { if (p_data())
+      { this->initialize(p_data()->sizeRows(), p_data()->sizeCols());}
+    }
+    /** initialize the parameters */
+    virtual void initParameters()
     {
-      try
+       if(!p_param())
+          this->p_param_ = new JointBernoulliParameters;
+       p_param()->resize(p_data()->cols());
+    }
+    /** compute the parameters */
+    virtual void computeParameters()
+    {
+      for (int j=p_data()->firstIdxCols(); j<=p_data()->lastIdxCols(); ++j)
       {
-        this->law().resize(p_data()->sizeCols());
-        for (int j=p_data()->firstIdxCols(); j<=p_data()->lastIdxCols(); ++j)
-        {
-          Real sum=0., wsum = 0.;
-          for (int i=p_data()->firstIdxRows(); i<=p_data()->lastIdxRows(); ++i)
-          { if (p_data()->elt(i,j) != binaryNA_)
-            { sum  += weights[i]*p_data()->elt(i,j);
-              wsum += weights[i];
-            }
-          }
-          if (wsum != 0) { this->law().setProb(j, sum/wsum);}
-                    else { this->law().setProb(j, 0.);}
-        }
-        // compute log-likehood
-        this->computeLnLikelihood();
-        this->setNbFreeParameter(p_data()->sizeCols());
-        return true;
+        Real sum=0.;
+        int nbObs=p_data()->sizeRows();
+        for (int i=p_data()->firstIdxRows(); i<=p_data()->lastIdxRows(); ++i)
+        { (p_data()->elt(i,j) == binaryNA_) ? --nbObs : sum += p_data()->elt(i,j);}
+        if (nbObs != 0) { p_param()->setProb(j,sum/nbObs);}
+                   else { p_param()->setProb(j, 0.);}
       }
-      catch (Exception const& e)
-      { this->msg_error_ = e.error();}
-      return false;
+    }
+    /** compute the weighted parameters
+     * @param weights the weights of the samples
+     **/
+    virtual void computeParameters(WColVector const& weights)
+    {
+      // compute
+      for (int j=p_data()->firstIdxCols(); j<=p_data()->lastIdxCols(); ++j)
+      {
+        Real sum=0., wsum = 0.;
+        for (int i=p_data()->firstIdxRows(); i<=p_data()->lastIdxRows(); ++i)
+        { if (p_data()->elt(i,j) != binaryNA_)
+          { sum  += weights[i]*p_data()->elt(i,j);
+            wsum += weights[i];
+          }
+        }
+        if (wsum != 0) { p_param()->setProb(j, sum/wsum);}
+                  else { p_param()->setProb(j, 0.);}
+      }
     }
 };
 

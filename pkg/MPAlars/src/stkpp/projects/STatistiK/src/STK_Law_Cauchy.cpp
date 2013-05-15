@@ -19,13 +19,13 @@
     Boston, MA 02111-1307
     USA
 
-    Contact : Serge.Iovleff@stkpp.org
+    Contact : S..._Dot_I..._At_stkpp_Dot_org (see copyright for ...)
 */
 
 /*
  * Project: STatistiK
  * Purpose: Implementation of the Cauchy Distribution
- * Author:  Serge Iovleff, serge.iovleff@stkpp.org
+ * Author:  Serge Iovleff, S..._Dot_I..._At_stkpp_Dot_org (see copyright for ...)
  **/
 
 /** @file STK_Law_Cauchy.cpp
@@ -47,23 +47,16 @@ Cauchy::Cauchy( Real const& location, Real const& scale)
               , scale_(scale)
 {
   // check parameters
-  if (  !Arithmetic<Real>::isFinite(location)
-     || !Arithmetic<Real>::isFinite(scale)
-     || scale <= 0
-     )
-    throw domain_error("Cauchy::Cauchy(location, scale) "
-                            "argument error");
+  if (  !Arithmetic<Real>::isFinite(location) || !Arithmetic<Real>::isFinite(scale) || scale <= 0)
+    STKDOMAIN_ERROR_2ARG(Cauchy::Cauchy,location, scale,argument error);
 }
 
 /* destructor */
-Cauchy::~Cauchy()
-{ ;}
+Cauchy::~Cauchy() {}
 
 /*  Generate a pseudo Cauchy random variate. */
 Real Cauchy::rand() const
-{
-  return location_ + scale_ * tan((double)(Const::_PI_ * generator.randUnif()));
-}
+{ return location_ + scale_ * Real(std::tan( double(Const::_PI_ * generator.randUnif())));}
 
 /*
  *  Generate a pseudo Cauchy random variate with the specified parameters.
@@ -71,14 +64,12 @@ Real Cauchy::rand() const
  */
 Real Cauchy::rand( Real const& location, Real const& scale)
 {
+#ifdef STK_DEBUG
   // check parameters
-  if (  !Arithmetic<Real>::isFinite(location)
-     || !Arithmetic<Real>::isFinite(scale)
-     || scale <= 0
-     )
-    throw domain_error("Cauchy::Cauchy(location, scale) "
-                            "argument error");
-  return location + scale * tan(Const::_PI_ * generator.randUnif());
+  if (  !Arithmetic<Real>::isFinite(location) || !Arithmetic<Real>::isFinite(scale) || scale <= 0)
+    STKDOMAIN_ERROR_2ARG(Cauchy::Cauchy,location, scale,argument error);
+#endif
+  return location + scale * Real(std::tan( double(Const::_PI_ * generator.randUnif()) ));
 }
 
 /*  Give the value of the pdf at x.*/
@@ -86,7 +77,6 @@ Real Cauchy::pdf( Real const& x) const
 {
   // check NA value
   if (Arithmetic<Real>::isNA(x)) return Arithmetic<Real>::NA();
-
   // trivial case
   if (Arithmetic<Real>::isInfinite(x)) return 0.0;
 
@@ -95,19 +85,54 @@ Real Cauchy::pdf( Real const& x) const
   return 1. / (Const::_PI_ * scale_ * (1. + y * y));
 }
 
+/*  Give the value of the pdf at x.*/
+Real Cauchy::pdf( Real const& x, Real const& location, Real const& scale)
+{
+#ifdef STK_DEBUG
+  // check parameters
+  if (  !Arithmetic<Real>::isFinite(location) || !Arithmetic<Real>::isFinite(scale) || scale <= 0)
+    STKDOMAIN_ERROR_2ARG(Cauchy::pdf,location, scale,argument error);
+#endif
+  // check NA value
+  if (Arithmetic<Real>::isNA(x)) return Arithmetic<Real>::NA();
+  // trivial case
+  if (Arithmetic<Real>::isInfinite(x)) return 0.0;
+
+  // general case
+  Real y = (x - location) / scale;
+  return 1. / (Const::_PI_ * scale * (1. + y * y));
+}
+
 /* Give the value of the log-pdf at x. */
 Real Cauchy::lpdf( Real const& x) const
 {
   // check NA value
   if (Arithmetic<Real>::isNA(x)) return Arithmetic<Real>::NA();
+  // trivial case
+  if (Arithmetic<Real>::isInfinite(x)) return -Arithmetic<Real>::infinity();
 
+  // general case
+  Real y = (x - location_) / scale_;
+  return -Real(std::log( double(Const::_PI_ * scale_ * (1. + y * y)) ));
+}
+
+/* Give the value of the log-pdf at x. */
+Real Cauchy::lpdf( Real const& x, Real const& location, Real const& scale)
+{
+#ifdef STK_DEBUG
+  // check parameters
+  if (  !Arithmetic<Real>::isFinite(location) || !Arithmetic<Real>::isFinite(scale) || scale <= 0)
+    STKDOMAIN_ERROR_2ARG(Cauchy::lpdf,location, scale,argument error);
+#endif
+  // check NA value
+  if (Arithmetic<Real>::isNA(x)) return Arithmetic<Real>::NA();
   // trivial case
   if (Arithmetic<Real>::isInfinite(x))
     return -Arithmetic<Real>::infinity();
 
   // general case
-  Real y = (x - location_) / scale_;
-  return - log(Const::_PI_ * scale_ * (1. + y * y));
+  Real y = (x - location) / scale;
+  return - Real(std::log( double(Const::_PI_ * scale * (1. + y * y)) ));
 }
 
 /* The cumulative distribution function at t.
@@ -116,7 +141,6 @@ Real Cauchy::cdf( Real const& t) const
 {
   // check NA value
   if (Arithmetic<Real>::isNA(t)) return Arithmetic<Real>::NA();
-
   // check parameter
   if (Arithmetic<Real>::isInfinite(t))
    return (t < 0.) ? 0.0 : 1.0;
@@ -128,11 +152,11 @@ Real Cauchy::cdf( Real const& t) const
    */
   if (std::abs(t) > 1)
   {
-    double y = atan(1/t) / Const::_PI_;
-    return (t > 0) ? (1 - y) : (-y);
+    Real y = Real(std::atan(double(1./t))) / Const::_PI_;
+    return (t > 0) ? (1. - y) : (-y);
   }
   else
-    return 0.5 + atan(t) / Const::_PI_;
+    return 0.5 + Real(std::atan( double(t))) / Const::_PI_;
 }
     
 /*
@@ -142,18 +166,16 @@ Real Cauchy::icdf( Real const& p) const
 {
   // check NA value
   if (Arithmetic<Real>::isNA(p)) return Arithmetic<Real>::NA();
-
   // check parameter
   if ((p > 1.) || (p < 0.))
-    throw domain_error("Cauchy::icdf(p) "
-                            "argument error");
+    STKDOMAIN_ERROR_1ARG(Cauchy::icdf,p,p must be a probability);
  // trivial cases
  if (p == 0.)  return -Arithmetic<Real>::infinity();
  if (p == 1.)  return  Arithmetic<Real>::infinity();
 
   // general case
   // tan(pi * (p - 1/2)) = -cot(pi * p) = -1/tan(pi * p) 
-  return location_ - scale_ / tan(Const::_PI_ * p);
+  return location_ - scale_ / Real(std::tan( double(Const::_PI_ * p) ));
 }
 
 } // namespace Law

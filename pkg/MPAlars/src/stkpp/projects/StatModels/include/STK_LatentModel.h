@@ -19,14 +19,14 @@
     Boston, MA 02111-1307
     USA
 
-    Contact : Serge.Iovleff@stkpp.org
+    Contact : S..._Dot_I..._At_stkpp_Dot_org (see copyright for ...)
 */
 
 /*
  * Project:  stkpp::Model
  * created on: 22 juil. 2011
  * Purpose: define the Interface base class LatentModel (Statistical Model).
- * Author:   iovleff, serge.iovleff@stkpp.org
+ * Author:   iovleff, S..._Dot_I..._At_stkpp_Dot_org (see copyright for ...)
  *
  **/
 
@@ -69,61 +69,60 @@ namespace STK
  *  This class propose some virtual function that have to be re-implemented by
  *  derived classes.
  *
- *  @tparam ObservableData can be any kind of container for the observable variables.
- *  It should at least derive from IContainer2D. @sa IContainer2D and provide an
- *  access to a single row.
- *  @tparam LatentData can be any kind of container for the latent variables.
- *  It should at least derive from IContainer2D. @sa IContainer2D and provide an
- *  access to a single row.
+ *  @tparam ArrayObservable can be any kind of container for the observable variables.
+ *  It should at least derive from IContainer2D and provide an
+ *  access to a single row. @sa IContainer2D
+ *  @tparam ArrayLatent can be any kind of container for the latent variables.
+ *  It should at least derive from IContainer2D and provide an
+ *  access to a single row. @sa IContainer2D
  **/
-template <class ObservableData, class LatentData>
-class LatentModel : public IModelBase
+template <class ArrayObservable, class ArrayLatent>
+class LatentModel : public IModelBase, public IRunnerBase
 {
   protected:
     /** Constructor with data set
      *  @param data the observable data set
      **/
-    LatentModel(ObservableData const& data) : IModelBase(data.sizeRows(), data.sizeCols())
-                                            , p_data_(&data)
-                                            , latentData_()
+    LatentModel(ArrayObservable const& data) : IModelBase(data.sizeRows(), data.sizeCols())
+                                             , IRunnerBase()
+                                             , p_latentData_(0)
     {}
     /** Constructor with a pointer on the data set
      *  @param p_data a pointer on the constant data set
      **/
-    LatentModel(ObservableData const* p_data) : p_data_(p_data)
+    LatentModel(ArrayObservable const* p_data) : p_observableData_(p_data)
+                                               , IRunnerBase()
+                                               , p_latentData_(0)
     {
-      if (p_data_)
-      { this->initialize(p_data->sizeRows(), p_data->sizeCols());}
+      if (p_observableData_)
+      { this->initialize(p_observableData_->sizeRows(), p_observableData_->sizeCols());}
     }
   public:
     /** destructor */
-    virtual ~LatentModel() {;}
+    virtual ~LatentModel() {}
+    /** @return a pointer on the latent data set*/
+    ArrayObservable const* p_data() const { return p_observableData_;}
     /** Type of the row container (the sample) */
-    typedef typename ObservableData::Row Row;
-    /** Set the Data set of the model
-     *  @param data the data set to modelize
-     **/
-    inline void setData( ObservableData const& data)
-    {
-      p_data_ = &data;
-      this->initialize(data.sizeRows(), data.sizeCols()) ;
-    }
+    typedef typename ArrayObservable::Row Row;
     /** Expectation step of the EM algorithm. */
-    virtual void EStep() {}
+    virtual void EStep() =0;
     /** Maximization step of the EM algorithm. */
-    virtual void MStep() {}
-    /** Classification step of the CEM algorithm. */
-    virtual void CStep() {}
+    virtual void MStep() =0;
     /** simulation step of the SEM algorithm. */
-    virtual void SStep() {}
-    /** Posterior maximization of the latent variable. */
-    virtual void Map() {}
+    virtual void SStep() =0;
+    /** Posterior maximization of the latent variable. In a classification model,
+     *  this is the  Classification step of the CEMalgorithm.
+     **/
+    virtual void MapStep() =0;
 
   protected:
+    /** By default the virtual method @c run inherited from IRunnerBase does
+     *  nothing */
+    virtual bool run() { return true;}
     /** A pointer on the original data set */
-    ObservableData const* p_data_;
+    ArrayObservable const* p_observableData_;
     /** The latent data set */
-    LatentData latentData_;
+    ArrayLatent* p_latentData_;
 };
 
 } // namespace STK
