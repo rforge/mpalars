@@ -36,8 +36,7 @@
 #ifndef PATHSTATE_H_
 #define PATHSTATE_H_
 
-#include "stkpp/include/STKpp.h"
-#include "stkpp/projects/STKernel/include/STK_Real.h"
+#include "../stkpp/include/STKpp.h"
 #include <utility>
 using namespace STK;
 
