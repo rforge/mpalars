@@ -38,7 +38,7 @@ CFLAGS   = -Wno-long-long
 #-----------------------------------------------------------------------
 # specific C++ compilation flags used by the CXX compiler 
 # Uncomment the next line if you want a release binary
-CXXFLAGS   = -ansi -pedantic -Wall -O3 -ftree-vectorize -march=native -funroll-loops
+CXXFLAGS   = -ansi -pedantic -Wall -O3 -ftree-vectorize -march=native -funroll-loops -fPIC
 # Comment the next line if you want a release binary
 #CXXFLAGS   = -ansi -pedantic -Wall -g -Os
 
