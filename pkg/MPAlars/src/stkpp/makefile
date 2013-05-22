@@ -27,6 +27,8 @@
 # Author:   Serge Iovleff, S..._Dot_I..._At_stkpp_Dot_org (see copyright for ...)
 #
 #-----------------------------------------------------------------------
+
+
 # Macros and definitions
 include ./makevars
 
@@ -73,7 +75,7 @@ all: obj lib
 PROJECTS_DIR = ./projects/
 GUI_DIR = ./gui/
 BIN_DIR = ./bin/
-LIB_DIR = ../
+LIB_DIR = ./lib/
 
 TUTO_DIR = ./doc/tutorial/
 MIXBIN_DIR = ./programs/MixBin/src/

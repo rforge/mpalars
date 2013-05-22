@@ -7,12 +7,9 @@ all:lib
 #-----------------------------------------------------------------------
 # Variables
 # 
-LIB = ../mpa.a
-#LIB = ../stkpp/include/libSTKpp.a
-#LIB = ../../pkg/MPA/src/libMPA.a
-
+LIB = ../libMPA.a
 STK_INC_DIR = -I../
-#STK_INC_DIR = -I../../../
+
 #-----------------------------------------------------------------------
 # Sources files
 #
@@ -28,7 +25,7 @@ OBJS= $(SRCS:%.cpp=%.o)
 # rule for compiling the cpp files
 #
 %.o: %.cpp
-	$(CXX)  $(CXXFLAGS) ${CPICFLAGS} ${STK_INC_DIR} $< -c -o $@
+	$(CXX) $(CXXFLAGS)    ${CPICFLAGS} ${STK_INC_DIR} $< -c -o $@
 
 #-----------------------------------------------------------------------
 # The rule lib create the library 
@@ -36,7 +33,7 @@ OBJS= $(SRCS:%.cpp=%.o)
 lib: $(LIB)
 
 $(LIB): $(OBJS)
-	$(AR) -rc $@ $?
+	$(AR) $(ARFLAGS) $@ $?
   
 mostlyclean: clean
 

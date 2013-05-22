@@ -7,13 +7,11 @@ all:lib
 #-----------------------------------------------------------------------
 # Variables
 # 
-LIB = ../mpa.a
-#LIB = ../stkpp/include/libSTKpp.a
-#LIB = ../../pkg/MPA/src/libMPA.a
+LIB = ../libMPA.a
 
 #SRC_DIR = ..
 STK_INC_DIR = -I../
-#STK_INC_DIR = -I../../../
+
 #-----------------------------------------------------------------------
 # Sources files
 #
@@ -41,7 +39,7 @@ OBJS= $(SRCS:%.cpp=%.o)
 lib: $(LIB)
 
 $(LIB): $(OBJS)
-	$(AR) -rc $@ $?
+	$(AR) -r $@ $?
   
 mostlyclean: clean
 

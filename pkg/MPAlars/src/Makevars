@@ -2,23 +2,24 @@ STKPPDIR = ./stkpp
 LARSDIR = ./lars
 FUSIONDIR = ./fusion
 
-MPALIB = ./mpa.a
+MPALIB = ./libMPA.a
+STKPPLIBDIR = $(STKPPDIR)/lib
+STKPPLIB = $(STKPPLIBDIR)/libSTKpp.a
 
 # c++ flag
-PKG_CPPFLAGS = -ansi -pedantic -Wall -O3 -ftree-vectorize -march=native -funroll-loops -fPIC 
+PKG_CPPFLAGS = -ansi -pedantic -Wall
 
 ## Use the R_HOME indirection to support installations of multiple R version
-PKG_LIBS = `$(R_HOME)/bin/Rscript -e "Rcpp:::LdFlags()"` $(MPALIB)
+PKG_LIBS = `$(R_HOME)/bin/Rscript -e "Rcpp:::LdFlags()"` $(MPALIB) $(STKPPLIB)
 
-.PHONY: all mpa
+.PHONY: all libmpa
 
 all: $(SHLIB)
-$(SHLIB): mpa
+$(SHLIB): libmpa
 
-
-mpa:
+libmpa:
 	(cd $(STKPPDIR) && $(MAKE) all)
-	(cd $(LARSDIR) && $(MAKE)    -f lars.mk)
-	(cd $(FUSIONDIR) && $(MAKE)    -f fusion.mk)
-	$(RANLIB) $(MPALIB)
+	(cd $(LARSDIR) && $(MAKE)   -f lars.mk)
+	(cd $(FUSIONDIR) && $(MAKE) -f fusion.mk)
+#	$(AR) $(ARFLAGS) $(MPALIB)
 
