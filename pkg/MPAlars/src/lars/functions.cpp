@@ -103,8 +103,6 @@ STK::Array2DVector< pair<int,Real> > computeCoefficients(PathState const& state1
   }
 
   return coeff;
-
-  return coeff;
 }
 
 void print(STK::Array2DVector< pair<int,Real> > const& state)
@@ -120,9 +118,9 @@ void print(STK::Array2DVector< pair<int,Real> > const& state)
 
 void import(std::string adressFichier,int n,int p,STK::CArrayXX &data)
 {
-  ifstream flux(adressFichier.c_str());
+  std::ifstream flux(adressFichier.c_str());
 
-  Real real;
+  STK::Real real;
   int i(1),j(1);
 
   if (flux)//si le fichier est ouvert
@@ -145,9 +143,9 @@ void import(std::string adressFichier,int n,int p,STK::CArrayXX &data)
 
 void import(std::string adressFichier,int n,STK::CVectorX &data)
 {
-  ifstream flux(adressFichier.c_str());
+  std::ifstream flux(adressFichier.c_str());
 
-  Real real;
+  STK::Real real;
   int i(1);
 
   if (flux)//si le fichier est ouvert
