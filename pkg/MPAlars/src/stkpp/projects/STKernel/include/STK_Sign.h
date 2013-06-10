@@ -113,7 +113,7 @@ ostream& operator << (ostream& os, const Sign& output);
  *  @param is the input stream
  *  @param input the value to get from the stream
  **/
-istream& operator >> (istream& is, Proxy<Sign>& input);
+istream& operator >> (istream& is, Sign& input);
 
 /** @ingroup Base
  *  Convert a String to a Sign.

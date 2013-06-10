@@ -139,7 +139,7 @@ void Svd::compSvd()
   norm_ = bidiag(U_, D_, F_);
   // We need to create V_ before rightEliminate
   if (withV_) {
-    V_.resize(ncolV_);
+    V_.resize(Range(1,ncolV_));
     compV();
   }
   // rightEliminate last element of F_ if any
@@ -366,12 +366,8 @@ void Svd::compU()
 
 
 /* eliminate the element of the surdiagonal with right rotations      */
-void Svd::rightEliminate( Point& D
-                        , Vector& F
-                        , int const& nrow
-                        , MatrixSquare& V
-                        , bool withV
-                        , Real const& tol
+void Svd::rightEliminate( Point& D, Vector& F, int const& nrow
+                        , MatrixSquare& V, bool withV, Real const& tol
                         )
 {
   // the element to eliminate
@@ -403,8 +399,7 @@ void Svd::rightEliminate( Point& D
 
 
 /* eliminate the element of the surdiagonal with left rotations       */
-void Svd::leftEliminate( Point& D
-                       , Vector& F
+void Svd::leftEliminate( Point& D, Vector& F
                        , int const& nrow
                        , Matrix& U
                        , bool withU

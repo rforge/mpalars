@@ -47,7 +47,30 @@ namespace STK
 {
 
 /** @ingroup StatModels
- *  @brief Base class for all Multivariate Statistical Models.
+ *  @brief Interface base class for the parameters of a multivariate model.
+  */
+class IMultiParameters
+{
+  protected:
+    /** default constructor.*/
+    IMultiParameters() {}
+
+  public:
+    /** Destructor */
+    virtual ~IMultiParameters() {}
+    /** clone the parameters
+     *  @return a clone of the current parameters
+     **/
+    virtual IMultiParameters* clone() const = 0;
+    /** resize the parameters.
+     *  @param size the size of the parameters (range of the variables)
+     **/
+     virtual void resize( Range const& size) = 0;
+};
+
+/** @ingroup StatModels
+ *  @brief Interface base class for all Multivariate Statistical Models.
+ *
  *  A Statistical model, \f$ \mathcal{P}\f$, is a collection of multivariate
  *  probability distribution functions or probability density functions
  *  (collectively referred to as ''distributions'' for brevity).
@@ -72,18 +95,13 @@ namespace STK
  *  - A data set where the number of samples is the number of rows and the number
  *  of variable is the number of columns. This data set is stored in a Container
  *  of type @c Array.
- *  - A probability (density/law) which for each row of the data set can compute
- *  a density/probability.
- *
- *  The parameters of the distribution (if any) are directly managed by the
- *  probability law.
+ *  - A set of parameters stored in a class of type @c Parameters.
  *
  *  Derived implementations of this interface have to implement the following
  *  pure methods:
  *  @code
  *    int computeNbFreeParameters() const;
  *    Real computeLnLikelihood( RowVector const& rowData) const = 0;
- *    virtual void initParameters() =0;
  *    virtual void computeParameters() = 0;
  *    virtual void computeParameters(ColVector const& weights) = 0;
  *  @endcode
@@ -96,7 +114,7 @@ namespace STK
  *  @note this class can be a runner, in this case the parameters are estimated
  *  using either @c run() and @c run(weights) methods. This class can also be used
  *  as a "kitchen" providing tools, in particular if there is latent variables.
- *  @sa LatentModel, MixtureModel.
+ *  @sa ILatentModel, MixtureModel.
  **/
 template <class Array, class WColVector, class Parameters>
 class IMultiStatModel : public IModelBase, public IRunnerUnsupervised<Array, WColVector>
@@ -117,16 +135,17 @@ class IMultiStatModel : public IModelBase, public IRunnerUnsupervised<Array, WCo
     IMultiStatModel() : IModelBase(), Runner(), p_param_(0) {}
     /** Constructor with data set. */
     IMultiStatModel(Array const& data) : IModelBase(), Runner(data), p_param_(0)
-    { this->initialize(data.sizeRows(), data.sizeCols());}
+    { initializeModel();}
+
     /** Constructor with a ptr on the data set. */
     IMultiStatModel(Array const* p_data) : IModelBase(), Runner(p_data), p_param_(0)
-    { if (p_data) this->initialize(p_data->sizeRow(), p_data->sizeCol()) ;}
+    { initializeModel();}
     /** Copy constructor.
      *  @param model the model to copy
      **/
     IMultiStatModel( IMultiStatModel const& model)
                    : IModelBase(model), Runner(model), p_param_(model.p_param_->clone())
-    { if (p_param_) delete p_param_;}
+    {}
 
   public:
     /** destructor */
@@ -153,11 +172,12 @@ class IMultiStatModel : public IModelBase, public IRunnerUnsupervised<Array, WCo
       { this->msg_error_ = STKERROR_NO_ARG(IMultiStatModel::run,data have not be set);
         return false;
       }
+      if (!p_param())
+      { this->msg_error_ = STKERROR_NO_ARG(IMultiStatModel::run(weights),parameters have not be set);
+        return false;
+      }
       try
       {
-        if (!p_param()) p_param_ = new Parameters;
-        // iniitalize parameters
-        initParameters();
         // compute parameters
         computeParameters();
         // compute log-likelihood
@@ -179,11 +199,12 @@ class IMultiStatModel : public IModelBase, public IRunnerUnsupervised<Array, WCo
       { this->msg_error_ = STKERROR_NO_ARG(IMultiStatModel::run(weights),data have not be set);
         return false;
       }
+      if (!p_param())
+      { this->msg_error_ = STKERROR_NO_ARG(IMultiStatModel::run(weights),parameters have not be set);
+        return false;
+      }
       try
       {
-        if (!p_param()) p_param_ = new Parameters;
-        // initialize parameters
-        initParameters();
         // compute weighted parameters
         computeParameters(weights);
         // compute log-likelihood
@@ -206,15 +227,24 @@ class IMultiStatModel : public IModelBase, public IRunnerUnsupervised<Array, WCo
     /** This method is called if the user set a new data set
      *  @sa IRunnerUnsupervised::setData */
     virtual void update()
-    { if (p_data())
-        this->initialize(p_data()->sizeRows(), p_data()->sizeCols());
+    {
     }
-    /** initialize the parameters */
-    virtual void initParameters() =0;
     /** compute the parameters */
     virtual void computeParameters() = 0;
     /** compute the weighted parameters */
     virtual void computeParameters(WColVector const& weights) = 0;
+
+  private:
+    /** initialize the model and the parameters */
+    void initializeModel()
+    {
+      if (p_data())
+      { this->initialize(p_data()->sizeRows(), p_data()->sizeCols());
+        if (!p_param())
+        { p_param_ = new Parameters(p_data()->cols());}
+        else p_param_->resize(p_data()->cols());
+      }
+    }
 };
 
 } // namespace STK

@@ -52,14 +52,14 @@
  * <li> the standard types for handling data:
  * <ul>
  *   <li> String  for string data  </li>
- *   <li> int for discrete data </li>
+ *   <li> Integer for discrete data </li>
  *   <li> Real    for quantitative data  </li>
  *   <li> Binary  for binary data in {0,1}   </li>
  *   <li> Sign    for signed data in {-1, 1}  </li>
  *   <li> Range   for contiguous range of Index in Arrays  </li>
  * </ul>
  * For all these types, a not available special value is defined which can be
- * displayed in a transparent way using proxy classes @sa Proxy, @sa ConstProxy.
+ * displayed in a transparent way using proxy classes @sa Proxy, @sa Proxy.
  * <li> standard input and output streams for all these types </li>
  * <li> a standard Runtime-type identification mechanism (RTTI) @sa IdType,
  * @sa IdTypeImpl </li>
@@ -97,9 +97,6 @@
 /* fundamental STK Char.  */
 #include "../projects/STKernel/include/STK_Char.h"
 
-/* STK streams parametrized with Char.  */
-#include "../projects/STKernel/include/STK_Stream.h"
-
 /* STK String parametrized with Char. */
 #include "../projects/STKernel/include/STK_String.h"
 
@@ -120,6 +117,9 @@
 
 /* Index range. */
 #include "../projects/STKernel/include/STK_Range.h"
+
+/* STK streams parametrized with Char.  */
+#include "../projects/STKernel/include/STK_Stream.h"
 
 /* Standard exceptions */
 #include "../projects/STKernel/include/STK_Exceptions.h"

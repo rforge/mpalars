@@ -56,23 +56,18 @@ class ICriterion : virtual public IRunnerBase
     ICriterion( IModelBase const& model);
 
   public:
-    /** Destructor
-     **/
+    /** Destructor */
     virtual ~ICriterion();
-    /** get the value of the criterion
-     * @return The value of the criterion
-     **/
+    /** @return The value of the criterion */
     inline Real const& value() const { return value_;}
-    /** set the current model.
-     *  @param model the current model
-     **/
-     inline void setModel( IModelBase const& model)
-     { p_model_ = &model;}
+    /** @param model the current model to set */
+     inline void setModel( IModelBase const& model) { p_model_ = &model;}
+
   protected:
     /** The current statistical model to use*/
-     IModelBase const* p_model_;
-   /** Computed value of the criterion */
-   Real value_;
+    IModelBase const* p_model_;
+    /** Computed value of the criterion */
+    Real value_;
 };
 
 } // namespace STK

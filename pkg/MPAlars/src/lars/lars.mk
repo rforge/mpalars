@@ -19,6 +19,7 @@ SRCS =  Lars.cpp \
 	Path.cpp \
 	PathState.cpp \
 	functions.cpp \
+	Cvlars.cpp \
 
 
 

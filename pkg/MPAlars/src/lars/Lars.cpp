@@ -36,6 +36,7 @@
 #include <algorithm>
 #include <limits>
 #include "Lars.h"
+#include "functions.h"
 
 using namespace STK;
 using namespace std;
@@ -385,7 +386,7 @@ namespace MPA
 
     if(newId.size()==0)
     {
-      std::cout << "No variable selected for add in the add step.";
+      std::cout << "No variable selected for add in the add step."<<std::endl;
       return false;
     }
 
@@ -520,7 +521,7 @@ namespace MPA
 
           if(newId.size()==0)
           {
-            std::cout << "No variable selected for add in the add step.";
+            std::cout << "No variable selected for add in the add step."<<std::endl;
             break;
           }
 
@@ -590,5 +591,57 @@ namespace MPA
     }
 
   }
+
+
+  /*
+   * predict the path for a ratio fraction = lambda/lambamax
+   * @param X new data for predict the response
+   * @param fraction real between 0 and 1 .
+   * @return predicted response
+   */
+  void Lars::predict(STK::CArrayXX const& X, STK::Real fraction, STK::CVectorX &yPred)
+  {
+    yPred=mu_;
+
+    //fraction = 0 : all coefficients are equal to 0
+    if(fraction == 0)
+      return ;
+
+    //fraction = 1 : coefficients of the last step
+    if (fraction == 1)
+    {
+      int lastStep = path_.size()-1;//stocké dans un vector index à 0
+      int nbVar = path_.lastState().sizeRows();
+
+
+      for( int i = 1; i <= X.rows().size(); i++)
+        for( int j = 1; j <= nbVar; j++)
+          yPred[i] += X(i, varIdx(lastStep,j)) * coefficient(lastStep,j);
+
+      return ;
+    }
+
+    //fraction >0 and <1
+    Array2DVector<STK::Real> lambda(path_.lambda());
+
+    fraction *= lambda.back();
+
+    int index = 1;
+    while( lambda[index] < fraction)
+      index++;
+
+    //compute coefficient
+    STK::Array2DVector< pair<int,Real> > coeff(std::max(path_.states(index-2).size(),path_.states(index-1).size()));
+    //coeff.move(computeCoefficients(path_.states(index-2),path_.states(index-1),path_.evolution(index-2),fraction));
+    computeCoefficients(path_.states(index-2),path_.states(index-1),path_.evolution(index-2),fraction,coeff);
+
+
+    for( int i = 1; i <= yPred.sizeRowsImpl(); i++)
+      for( int j = 1; j <= coeff.sizeRows(); j++)
+        yPred[i] += X(i, coeff[j].first) * coeff[j].second ;
+
+    return ;
+  }
+
 
 }//end namespace

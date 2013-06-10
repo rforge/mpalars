@@ -88,7 +88,7 @@ Real sumAlternateSerie(const ISerie<Serie>& f, int const& n = 0)
   rate   = pow(rate, niter);
   Real b = -2.0/(rate+1.0/rate), c = -1.0, sum = 0.0;
   // first iteration (k = 0)
-  sum += (c = b-c) * f.firstIdx();
+  sum += (c = b-c) * f.first();
   b   *= (- 2.*niter*niter);
   // iterations
   for (int k = 1; k<niter; k++)
@@ -135,7 +135,7 @@ Real sumSerie(const ISerie<Serie>& f, int const& iter_max = 10)
   Real e5[2];
   Real delta, sum; // e6
 
-  e0[0] = f.firstIdx();        //f[0];
+  e0[0] = f.first();        //f[0];
   e0[1] = e0[0] + f.next();
   e0[2] = e0[1] + f.next();
   e0[3] = e0[2] + f.next();
@@ -253,11 +253,11 @@ Real continuedFraction( const ISerie<Seriea>& a
                       )
 {
   // initialize a_n
-  Real an = a.firstIdx(); // a_1
+  Real an = a.first(); // a_1
   // note a_1 =0 => cf = 0
   if (an == 0.) return 0.;
   // initialize b_n
-  Real bn = b.firstIdx(); // b_1
+  Real bn = b.first(); // b_1
   // initialize numerator
   Real Nold = 0, Ncur = an; // = a_1
   // initialize denominator

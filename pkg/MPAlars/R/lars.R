@@ -9,8 +9,8 @@
 #' @param verbose If TRUE print details during the process.
 #' @return An object of type LarsPath.
 #' @examples 
-#' data=MPA.simul(50,10000,0.4,10,50,matrix(c(0.1,0.8,0.02,0.02),nrow=2))
-#' result=MPA.lars(data$data,data$response)
+#' dataset=MPA.simul(50,10000,0.4,10,50,matrix(c(0.1,0.8,0.02,0.02),nrow=2))
+#' result=MPA.lars(dataset$data,dataset$response)
 #' @export
 #' @useDynLib MPAlars
 #' 
@@ -43,8 +43,8 @@ MPA.lars <- function(X,y,maxSteps=3*min(dim(X)),eps=.Machine$double.eps^0.5,verb
 #' @param verbose If TRUE print details during the process.
 #' @return An object of type LarsPath.
 #' @examples  
-#' data=MPA.simul(50,10000,0.4,10,50,matrix(c(0.1,0.8,0.02,0.02),nrow=2))
-#' result=MPA.fusion(data$data,data$response)
+#' dataset=MPA.simul(50,10000,0.4,10,50,matrix(c(0.1,0.8,0.02,0.02),nrow=2))
+#' result=MPA.fusion(dataset$data,dataset$response)
 #' @export 
 #' 
 MPA.fusion <- function(X,y,maxSteps=3*min(dim(X)),eps=.Machine$double.eps^0.5,verbose=FALSE)

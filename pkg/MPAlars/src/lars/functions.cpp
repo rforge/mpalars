@@ -49,7 +49,7 @@ using namespace STK;
  */
 Real computeOrdinate(Real x1,Real x2,Real x3,Real y1,Real y2)
 {
-  return x1 + (y2-y1) * ((x3-x1)/(x2-x1)) ;
+  return y1 + (y2-y1) * ((x3-x1)/(x2-x1)) ;
 }
 
 /*
@@ -63,46 +63,97 @@ Real computeOrdinate(Real x1,Real x2,Real x3,Real y1,Real y2)
  */
 STK::Array2DVector< pair<int,Real> > computeCoefficients(PathState const& state1,PathState const& state2,pair<int,int> const& evolution, Real const& lambda)
 {
-  STK::Array2DVector< pair<int,Real> > coeff(max(state1.coefficients().size(),state2.coefficients().size()));
+  int maxSize=std::max(state1.size(),state2.size());
+  if(evolution.first!=0 && evolution.second!=0)
+   maxSize++;
+  STK::Array2DVector< pair<int,Real> > coeff(maxSize);
 
   if(evolution.second==0)
   {//no drop variable
-    int j(0);
-    for(j=0; j<state1.coefficients().size(); j++)
-      coeff[j+1]=make_pair(state1.varIdx(j+1),computeOrdinate(state1.lambda(), state2.lambda(), lambda,state1.varCoeff(j+1), state2.varCoeff(j+1)));
+    int j(1);
+    for(j=1; j <= state1.size(); j++)
+      coeff[j]=make_pair(state1.varIdx(j),computeOrdinate(state1.lambda(), state2.lambda(), lambda, state1.varCoeff(j), state2.varCoeff(j)));
 
     //add variable case
     if(evolution.first!=0)
-      coeff[j+1]=make_pair( evolution.second, computeOrdinate(state1.lambda(),state2.lambda(),lambda,0.,state2.varCoeff(j+1)));
+      coeff[j]=make_pair( evolution.first, computeOrdinate(state1.lambda(), state2.lambda(), lambda, 0., state2.varCoeff(j)));
   }
   else
   {
     //delete variable case
-    int i(1);
+    int i = 1;
     //while we don't meet the delete variable, variable has the same index in the two sets
-    while(evolution.second!=state1.coefficients(i).first)
+    while(evolution.second!=state1.varIdx(i))
     {
-      coeff[i]=make_pair(state1.varIdx(i),computeOrdinate(state1.lambda(),state2.lambda(),lambda,state1.varCoeff(i),state2.varCoeff(i)));
+      coeff[i]=make_pair(state1.varIdx(i),computeOrdinate(state1.lambda(), state2.lambda(), lambda, state1.varCoeff(i), state2.varCoeff(i)));
       i++;
     }
     //compute coefficient for the delete variable
-    coeff[i]=make_pair(state1.varIdx(i),computeOrdinate(state1.lambda(),state2.lambda(),lambda,state1.varCoeff(i),0.));
+    coeff[i]=make_pair(state1.varIdx(i),computeOrdinate(state1.lambda(), state2.lambda(), lambda, state1.varCoeff(i),0.));
     i++;
 
     //compute coefficient for the other variable
-    while(i<state1.coefficients().size()+1)
+    while(i<state1.size()+1)
     {
-      coeff[i]=make_pair(state1.varIdx(i),computeOrdinate(state1.lambda(),state2.lambda(),lambda,state1.varCoeff(i),state2.varCoeff(i-1)));
+      coeff[i]=make_pair(state1.varIdx(i),computeOrdinate(state1.lambda(), state2.lambda(), lambda, state1.varCoeff(i), state2.varCoeff(i-1)));
       i++;
     }
 
     //drop with an add variable
     if(evolution.first!=0)
-      coeff[i]=make_pair(evolution.first, computeOrdinate(state1.lambda(), state2.lambda(), lambda, 0., state2.varCoeff(i)));
-
+      coeff[i]=make_pair(evolution.first, computeOrdinate(state1.lambda(), state2.lambda(), lambda, 0., state2.varCoeff(i-1)));
   }
 
   return coeff;
+}
+
+void computeCoefficients(PathState const& state1,PathState const& state2,pair<int,int> const& evolution, Real const& lambda, STK::Array2DVector< pair<int,Real> > &coeff)
+{
+  //STK::Array2DVector< pair<int,Real> > coeff(std::max(state1.size(),state2.size()));
+  int maxSize=std::max(state1.size(),state2.size());
+  if(evolution.first!=0 && evolution.second!=0)
+   maxSize++;
+
+  coeff.resize1D(Range(1,maxSize));
+
+  if(evolution.second==0)
+  {//no drop variable
+    int j(1);
+    for(j=1; j <= state1.size(); j++)
+      coeff[j]=make_pair(state1.varIdx(j),computeOrdinate(state1.lambda(), state2.lambda(), lambda, state1.varCoeff(j), state2.varCoeff(j)));
+
+    //add variable case
+    if(evolution.first!=0)
+      coeff[j]=make_pair( evolution.first, computeOrdinate(state1.lambda(), state2.lambda(), lambda, 0., state2.varCoeff(j)));
+  }
+  else
+  {
+    //delete variable case
+    int i = 1;
+
+    //while we don't meet the delete variable, variable has the same index in the two sets
+    while(evolution.second!=state1.varIdx(i))
+    {
+      coeff[i]=make_pair(state1.varIdx(i),computeOrdinate(state1.lambda(), state2.lambda(), lambda, state1.varCoeff(i), state2.varCoeff(i)));
+      i++;
+    }
+
+    //compute coefficient for the delete variable
+    coeff[i]=make_pair(state1.varIdx(i),computeOrdinate(state1.lambda(), state2.lambda(), lambda, state1.varCoeff(i),0.));
+    i++;
+
+    //compute coefficient for the other variable
+    while(i<state1.size()+1)
+    {
+      coeff[i]=make_pair(state1.varIdx(i),computeOrdinate(state1.lambda(), state2.lambda(), lambda, state1.varCoeff(i), state2.varCoeff(i-1)));
+      i++;
+    }
+
+    //drop with an add variable
+    if(evolution.first!=0)
+      coeff[i]=make_pair(evolution.first, computeOrdinate(state1.lambda(), state2.lambda(), lambda, 0., state2.varCoeff(i-1)));
+
+  }
 }
 
 void print(STK::Array2DVector< pair<int,Real> > const& state)
@@ -116,7 +167,7 @@ void print(STK::Array2DVector< pair<int,Real> > const& state)
 }
 
 
-void import(std::string adressFichier,int n,int p,STK::CArrayXX &data)
+bool import(std::string adressFichier,int n,int p,STK::CArrayXX &data)
 {
   std::ifstream flux(adressFichier.c_str());
 
@@ -135,13 +186,13 @@ void import(std::string adressFichier,int n,int p,STK::CArrayXX &data)
          i++;
        }
      }
-  cout<<"Importation finie."<<endl<<endl;
+  return true;
   }
   else
-    cout<<"Problème d'importation!"<<endl<<endl;
+    return false;
 }
 
-void import(std::string adressFichier,int n,STK::CVectorX &data)
+bool import(std::string adressFichier,int n,STK::CVectorX &data)
 {
   std::ifstream flux(adressFichier.c_str());
 
@@ -155,8 +206,8 @@ void import(std::string adressFichier,int n,STK::CVectorX &data)
        data[i]=real;
        i++;
      }
-  cout<<"Importation finie."<<endl<<endl;
+  return true;
   }
   else
-    cout<<"Problème d'importation!"<<endl<<endl;
+    return false;
 }

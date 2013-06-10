@@ -73,7 +73,7 @@ all: obj lib
 PROJECTS_DIR = ./projects/
 GUI_DIR = ./gui/
 BIN_DIR = ./bin/
-LIB_DIR = ./lib/
+LIB_DIR = ../
 
 TUTO_DIR = ./doc/tutorial/
 MIXBIN_DIR = ./programs/MixBin/src/

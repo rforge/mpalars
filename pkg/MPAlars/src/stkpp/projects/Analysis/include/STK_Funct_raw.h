@@ -46,17 +46,6 @@ namespace STK
 
 namespace Funct
 {
-
-/** @ingroup Analysis
- *  @brief Compute the poisson density
- */
-Real poisson_pdf_raw(Real const& x, Real const& lambda);
-
-/** @ingroup Analysis
- *  @brief Compute the poisson density with integer value
- */
-Real poisson_pdf_raw(int const& x, Real const& lambda);
-
 /** @ingroup Analysis
  *  @brief Compute the error fonction erf(a)
  */

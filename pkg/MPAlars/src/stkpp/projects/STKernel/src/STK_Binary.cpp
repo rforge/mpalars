@@ -46,11 +46,11 @@ namespace STK
 ostream& operator << (ostream& os, const Binary& output)
 {
   return Arithmetic<Binary>::isNA(output)
-         ? (os <<  STRING_NA) : (os << static_cast<int>(output));
+         ? (os <<  stringNa) : (os << static_cast<int>(output));
 }
 
 /*  Overloading of the istream >> for the type Binary. */
-istream& operator >> (istream& is, Proxy<Binary>& input)
+istream& operator >> (istream& is, Binary& input)
 {
   // get current file position
   std::ios::pos_type pos = is.tellg();
@@ -65,12 +65,14 @@ istream& operator >> (istream& is, Proxy<Binary>& input)
     if (is.eof()) is.clear(is.rdstate() & ~std::ios::eofbit);
     // Try to read a NA value, in all case input is a NA object
     input = Arithmetic<Binary>::NA();
-    Char Lbuff[STRING_NA_SIZE+1];
-    is.getline(Lbuff, STRING_NA_SIZE+1);
+    Char* buffer = new Char[stringNaSize()+1];
+    is.getline(buffer, stringNaSize()+1);
     // if we don't get a NA String, rewind stream
-    if (!(STRING_NA.compare(Lbuff) == 0)) { is.seekg(pos); }
+    if (!(stringNa.compare(buffer) == 0)) { is.seekg(pos); }
+    delete[] buffer;
   }
   else
+  {
     switch (buff)
     {
       case 0:
@@ -83,6 +85,7 @@ istream& operator >> (istream& is, Proxy<Binary>& input)
         input = binaryNA_;
         break;
     }
+  }
   return is;
 }
 
@@ -122,7 +125,7 @@ String binaryToString( Binary const& type)
 {
   if (type == zero_)  return String(_T("0"));
   if (type == one_) return String(_T("1"));
-  return STRING_NA;
+  return stringNa;
 }
 
 /* @ingroup Base

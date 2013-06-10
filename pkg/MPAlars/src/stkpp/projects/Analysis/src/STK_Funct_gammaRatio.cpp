@@ -40,7 +40,7 @@
 #include "../include/STK_Funct_gamma.h"
 #include "../include/STK_Funct_util.h"
 #include "../include/STK_Funct_raw.h"
-
+#include "../include/STK_Funct_poisson_raw.h"
 #include "../../STKernel/include/STK_Exceptions.h"
 
 namespace STK
@@ -94,10 +94,10 @@ class Seriedl : public ISerie<Seriedl>
                     , n_(1), xn_factn_(x), aplusn_(a+1.)
     { ;}
     
-    inline Real firstIdx() const
+    inline Real firstImpl() const
     { return x_/aplusn_;}
 
-    inline Real next() const
+    inline Real nextImpl() const
     {
       // n and x^n/ n!
       xn_factn_ *= (x_/(++n_));

@@ -48,11 +48,17 @@ namespace STK
 /** @ingroup StatModels
  *  Structure encapsulating the parameters of a Joint Bernoulli model.
  */
-class JointBernoulliParameters
+class JointBernoulliParameters: public IMultiParameters
 {
   public:
     /** default constructor */
     JointBernoulliParameters() {}
+    /** constructor with fixed size */
+    JointBernoulliParameters( Range const& size)
+                            : prob_(size, 0.5)
+                            , lnProb_(size, -Const::_LN2_)
+                            , ln1mProb_(size, -Const::_LN2_)
+    {}
     /** copy constructor. @param param the parameters to copy. */
     JointBernoulliParameters( JointBernoulliParameters const& param)
                             : prob_(param.prob_)
@@ -82,9 +88,9 @@ class JointBernoulliParameters
     inline void resize(Range const& size)
     { prob_.resize(size); lnProb_.resize(size); ln1mProb_.resize(size);}
   protected:
-    CPointX prob_;
-    CPointX lnProb_;
-    CPointX ln1mProb_;
+    Array2DPoint<Real> prob_;
+    Array2DPoint<Real> lnProb_;
+    Array2DPoint<Real> ln1mProb_;
 };
 
 /** @ingroup StatModels
@@ -139,18 +145,11 @@ class JointBernoulliModel : public IMultiStatModel<Array, WColVector, JointBerno
       return sum;
     }
   protected:
-    /** This method is called if the user set a new data set
-     *  @sa IRunnerUnsupervised::setData */
-    virtual void update()
-    { if (p_data())
-      { this->initialize(p_data()->sizeRows(), p_data()->sizeCols());}
-    }
     /** initialize the parameters */
     virtual void initParameters()
     {
        if(!p_param())
-          this->p_param_ = new JointBernoulliParameters;
-       p_param()->resize(p_data()->cols());
+          this->p_param_ = new JointBernoulliParameters(p_data()->cols());
     }
     /** compute the parameters */
     virtual void computeParameters()

@@ -478,7 +478,7 @@ void Option::setDefaultValue()
   {
     case string_:
       p_String_ = new String;
-      *p_String_ = STRING_NA;
+      *p_String_ = stringNa;
       break;
     case real_:
       p_Real_ = new Real;

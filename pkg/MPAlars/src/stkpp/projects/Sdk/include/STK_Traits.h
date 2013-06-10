@@ -43,7 +43,7 @@ namespace STK
 namespace hidden
 {
 /** @ingroup hidden
- *  The traits class Traits must be specialized for any 2D
+ *  The traits struct Traits must be specialized for any 2D
  *  container derived from the interface classes ITContainer. For example:
  *  @code
  *  template<class TYPE>

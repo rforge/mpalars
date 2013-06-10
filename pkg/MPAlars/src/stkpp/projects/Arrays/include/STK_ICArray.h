@@ -125,7 +125,7 @@ class ICArray : public ArrayBase<Derived>
     /** @return the index of the last column */
     inline int lastIdxCols() const { return allocator_.lastIdxCols();}
     /** @return the Horizontal size (the number of column) */
-    inline int sizeCols() const { return allocator_.sizeCols();}
+    inline int sizeColsImpl() const { return allocator_.sizeCols();}
     /**  @return the Range of the rows of the container. */
     inline Range rows() const { return allocator_.rows();}
     /** @return the index of the first row*/
@@ -133,7 +133,7 @@ class ICArray : public ArrayBase<Derived>
     /** @return the index of the last row */
     inline int lastIdxRows() const { return allocator_.lastIdxRows();}
     /** @return the Vertical size (the number of rows) */
-    inline int sizeRows() const { return allocator_.sizeRows();}
+    inline int sizeRowsImpl() const { return allocator_.sizeRows();}
     /** @return @c true if *this is reference container, @c false otherwise */
     inline bool isRef() const { return allocator_.isRef();}
 

@@ -36,12 +36,9 @@
 #include <cmath>
 
 #include "../include/STK_Const_Math.h"
-
 #include "../include/STK_Funct_gamma.h"
-
 #include "../include/STK_Funct_util.h"
-
-#include "../include/STK_Funct_raw.h"
+#include "../include/STK_Funct_poisson_raw.h"
 
 namespace STK
 {
@@ -54,7 +51,7 @@ namespace Funct
  *    p(x, \lambda) = e^{-\lambda} \lambda^x/\Gamma(x+1)
  *  \f]
  *  with good accuracy using the partial deviance.
- *  This is the verision when x is Real.
+ *  This is the version for x Real.
  * 
  *  @see http://www.herine.net/stat/software/dbinom.html
  * 
@@ -68,11 +65,9 @@ Real poisson_pdf_raw(Real const& x, Real const& lambda)
   // if lambda is 0, we have P(X=0) = 1
   if (lambda==0.) return( (x==0.) ? 1. : 0. );
   // special value
-  if (x==0.) return( exp(-lambda) );
+  if (x==0.) return( Real(std::exp(-lambda)) );
   // stirling approximation and deviance
-  return( exp(-gammaLnStirlingError(x)-dev0(x, lambda))
-        / (Const::_SQRT2PI_*sqrt(x))
-        );
+  return( std::exp(-gammaLnStirlingError(x)-dev0(x, lambda))/(Const::_SQRT2PI_*std::sqrt(x)));
 }
 
 /** @ingroup Analysis
@@ -81,7 +76,7 @@ Real poisson_pdf_raw(Real const& x, Real const& lambda)
  *    p(x, \lambda) = e^{-\lambda} \lambda^x/\Gamma(x+1)
  *  \f]
  *  with good accuracy using the partial deviance.
- *  This is the verision when x is an int.
+ *  This is the version for x integer.
  * 
  *  @see http://www.herine.net/stat/software/dbinom.html
  * 
@@ -89,19 +84,48 @@ Real poisson_pdf_raw(Real const& x, Real const& lambda)
  *  @param lambda value of the parameter
  **/
 Real poisson_pdf_raw(int const& x, Real const& lambda)
+{ return poisson_pdf_raw(Real(x), lambda);}
+
+/** @ingroup Analysis
+ *  Compute the function:
+ *  \f[
+ *    p(x, \lambda) = e^{-\lambda} \lambda^x/\Gamma(x+1)
+ *  \f]
+ *  with good accuracy using the partial deviance.
+ *  This is the version for x Real.
+ *
+ *  @see http://www.herine.net/stat/software/dbinom.html
+ *
+ *  @param x value to evaluate the function
+ *  @param lambda value of the parameter
+ **/
+Real poisson_lpdf_raw(Real const& x, Real const& lambda)
 {
   // check trivial values
-  if (x<0) return( 0. );
+  if (x<0.) return( -Arithmetic<Real>::infinity() );
   // if lambda is 0, we have P(X=0) = 1
-  if (lambda==0) return( (x==0) ? 1. : .0 );
+  if (lambda==0.) return( (x==0.) ? 0 : -Arithmetic<Real>::infinity() );
   // special value
-  if (x==0) return( exp(-lambda) );
+  if (x==0.) return( -lambda );
   // stirling approximation and deviance
-  return( exp(-gammaLnStirlingError(x)-dev0(x, lambda))
-        / (Const::_SQRT2PI_*sqrt(x))
-        );
+  return( -gammaLnStirlingError(x)-dev0(x, lambda)-Const::_LNSQRT2PI_-std::log(x)/2.);
 }
 
+/** @ingroup Analysis
+ *  Compute the function:
+ *  \f[
+ *    p(x, \lambda) = e^{-\lambda} \lambda^x/\Gamma(x+1)
+ *  \f]
+ *  with good accuracy using the partial deviance.
+ *  This is the version for x integer.
+ *
+ *  @see http://www.herine.net/stat/software/dbinom.html
+ *
+ *  @param x value to evaluate the function
+ *  @param lambda value of the parameter
+ **/
+Real poisson_lpdf_raw(int const& x, Real const& lambda)
+{ return poisson_lpdf_raw(Real(x), lambda);}
 
 } // namespace Funct
 

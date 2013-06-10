@@ -48,7 +48,7 @@ namespace STK
  *  your own %Exception classes, or use a different hierarchy, or to
  *  throw non-class data (e.g., fundamental types).
  */
-class Exception : public std::exception
+class Exception
 {
   String _M_msg;
 

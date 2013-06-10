@@ -56,21 +56,15 @@ namespace Funct
  */
 class Serielog1p : public ISerie<Serielog1p>
 {
-  private:
-    const   Real& x_;
-    mutable Real n_;
-    mutable Real xpown_;
-
   public:
-    inline Serielog1p( Real const& x)
-                       : x_(x)
+    inline Serielog1p( Real const& x): x_(x)
                        , n_(2), xpown_(1.)
     { ;}
 
-    inline Real firstIdx() const
+    inline Real firstImpl() const
     { return 1./n_;}
 
-    inline Real next() const
+    inline Real nextImpl() const
     {
       // n
       ++n_;
@@ -79,6 +73,11 @@ class Serielog1p : public ISerie<Serielog1p>
       // x^n/(n+2)
       return xpown_/n_;
     }
+  private:
+    const   Real& x_;
+    mutable Real n_;
+    mutable Real xpown_;
+
 };
 
 /** @ingroup Analysis

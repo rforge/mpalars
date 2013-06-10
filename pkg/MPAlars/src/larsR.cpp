@@ -1,6 +1,7 @@
 #include "stkpp/projects/STKernel/include/STK_Real.h"
 #include "larsR.h"
 #include "lars/Lars.h"
+#include "lars/Cvlars.h"
 #include "fusion/Fusion.h"
 
 #include <iostream>
@@ -165,5 +166,47 @@ RcppExport SEXP fusion(SEXP data, SEXP response, SEXP nbIndiv, SEXP nbVar, SEXP 
 
   return List::create(Named("lambda")=wrap(lambda), Named("varIdx")=wrap(varIdx),Named("varCoeff")=wrap(varCoeff),
                       Named("step")=wrap(step),Named("evoDropIdx")=wrap(evoIdxDrop), Named("evoAddIdx")=wrap(evoIdxAdd),Named("mu")=wrap(fusion.mu()),Named("ignored")=wrap(ignored));
+
+}
+
+
+RcppExport SEXP cvlars(SEXP data, SEXP response, SEXP nbIndiv, SEXP nbVar, SEXP maxStep, SEXP eps, SEXP nbFold, SEXP index)
+{
+  double t1,t2;
+  t1=clock();
+  //convert parameters
+  int p(as<int>(nbVar)), n(as<int>(nbIndiv)), maxStepC(as<int>(maxStep)), nbFoldC(as<int>(nbFold));
+  vector<double> indexC=as<vector<double> >(index);
+  Real epsC(as<Real>(eps));
+
+  CArrayXX x(n,p);
+  convertToArray(data,x);
+  CVectorX y(n);
+  convertToVector(response,nbIndiv,y);
+
+  t2=clock();
+
+  //run algorithm
+  t1=clock();
+  Cvlars cvlars(x,y,nbFoldC,indexC,maxStepC,epsC);
+  cvlars.run();
+  t2=clock();
+
+  //extract and convert results
+  t1=clock();
+  vector<double> cv(indexC.size()),cvError(indexC.size());
+  STK::CVectorX stkCv(indexC.size()),stkCvError(indexC.size());
+  stkCv=cvlars.cv();
+  stkCvError=cvlars.cvError();
+
+  for(int i=1;i<=indexC.size();i++)
+  {
+    cv[i-1]=stkCv[i];
+    cvError[i-1]=stkCvError[i];
+  }
+  t2=clock();
+
+
+  return List::create(Named("cv")=wrap(cv),Named("cvError")=wrap(cvError));
 
 }

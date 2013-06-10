@@ -33,7 +33,7 @@
  * 
  *  @defgroup Analysis Special functions tools
  *  @brief In this project we compute usual and special functions.
- *  The Analysis provide al the tools necessary to the computation of the usual
+ *  The Analysis provide all the tools necessary to the computation of the usual
  *  and special functions like gamma, beta, gamma ratio, beta ration functions.
  *  It provide generic algorithms and the usual mathematical constants.
  **/
@@ -66,6 +66,8 @@
 // namespace Funct
 // usual fonctions
 #include "../projects/Analysis/include/STK_Funct_util.h"
+// raw functions for poisson function
+#include "../projects/Analysis/include/STK_Funct_poisson_raw.h"
 // raw functions
 #include "../projects/Analysis/include/STK_Funct_raw.h"
 // gamma function

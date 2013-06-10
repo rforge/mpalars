@@ -40,6 +40,7 @@
 #include "../include/STK_Funct_gamma.h"
 #include "../include/STK_Funct_util.h"
 #include "../include/STK_Funct_raw.h"
+#include "../include/STK_Funct_poisson_raw.h"
 
 #include "../../Arrays/include/STK_Array2DVector.h"
 

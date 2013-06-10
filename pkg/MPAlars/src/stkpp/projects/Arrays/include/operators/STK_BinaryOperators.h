@@ -262,10 +262,10 @@ class BinaryOperator : public BinaryOperatorBase< BinaryOp, Lhs, Rhs >
     inline Range const cols() const
     { return (int(Lhs::sizeCols_)==UnknownSize) ? rhs_.cols() : lhs_.cols();}
     /** @return the fixed size type if available to enable compile time optimizations */
-    inline int sizeRows() const
+    inline int sizeRowsImpl() const
     { return (int(Lhs::sizeRows_)==UnknownSize) ? rhs_.sizeRows() : lhs_.sizeRows();}
     /** @return the fixed size type if available to enable compile time optimizations */
-    inline int sizeCols() const
+    inline int sizeColsImpl() const
     { return (int(Lhs::sizeCols_)==UnknownSize) ? rhs_.sizeCols() : lhs_.sizeCols();}
     /** @return the left hand side expression */
     inline Lhs const& lhs() const { return lhs_; }

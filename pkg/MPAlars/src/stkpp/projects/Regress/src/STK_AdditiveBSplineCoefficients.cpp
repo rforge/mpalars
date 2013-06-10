@@ -115,7 +115,7 @@ bool AdditiveBSplineCoefficients::run()
   }
   catch ( runtime_error const& e)
   {
-    msg_error_ = e.what();
+    msg_error_ = e.error();
     return false;
   }
 #ifdef STK_VERBOSE

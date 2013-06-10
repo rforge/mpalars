@@ -51,12 +51,12 @@ namespace Arrays
 /** Return n+m, where n is the first number such that m < 2^n.
   *  @param m the size of the container
  **/
-int evalCapacity(int const& m);
+int evalSizeCapacity(int const& m);
 
 /** Return n+m, where n is the first number such that m < 2^n.
   *  @param I the range of the container
  **/
-Range evalCapacity(Range const& I);
+Range evalRangeCapacity(Range const& I);
 
 
 /** Intrinsic dimension of the container : 1D, 2D, 3D or 4D. Higher

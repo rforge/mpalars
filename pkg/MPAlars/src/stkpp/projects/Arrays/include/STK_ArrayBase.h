@@ -340,7 +340,7 @@ class ArrayBase : public ITContainer<Derived>
  **/
 template < class Derived, int SizeRow_ = hidden::Traits<Derived>::sizeRows_
                         , int SizeCol_ = hidden::Traits<Derived>::sizeCols_>
-class ITArrayBase : public TContainer2D<SizeRow_, SizeCol_>
+class ITArrayBase : protected TContainer2D<SizeRow_, SizeCol_>
                   , public ArrayBase<Derived>
 {
   protected:
@@ -370,7 +370,7 @@ class ITArrayBase : public TContainer2D<SizeRow_, SizeCol_>
     /**  @return the index of the last column */
     inline int lastIdxCols() const { return Base2D::lastIdxCols();}
     /** @return the Horizontal size (the number of column) */
-    inline int sizeCols() const { return Base2D::sizeCols();}
+    inline int sizeColsImpl() const { return Base2D ::sizeColsImpl();}
     /** @return the Vertical range */
     inline Range rows() const { return Base2D::rows();}
     /** @return the index of the first row */
@@ -378,7 +378,7 @@ class ITArrayBase : public TContainer2D<SizeRow_, SizeCol_>
     /** @return the index of the last row */
     inline int lastIdxRows() const { return Base2D::lastIdxRows();}
     /** @return the Vertical size (the number of rows) */
-    inline int sizeRows() const { return Base2D::sizeRows();}
+    inline int sizeRowsImpl() const { return Base2D::sizeRowsImpl();}
     /**  @return @c true if the container is empty, @c false otherwise */
     inline bool empty() const { return Base2D::empty();}
 };

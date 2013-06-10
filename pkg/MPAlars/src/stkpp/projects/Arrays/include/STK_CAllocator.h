@@ -93,7 +93,7 @@ namespace hidden
  *  @brief Specialization of the Traits class for CAllocator.
  */
 template< typename Scalar, Arrays::Structure Structure_, int SizeRows_, int SizeCols_, bool Orient_>
-class Traits< CAllocator<Scalar, Structure_, SizeRows_, SizeCols_, Orient_> >
+struct Traits< CAllocator<Scalar, Structure_, SizeRows_, SizeCols_, Orient_> >
 {
   private:
     class Void { };

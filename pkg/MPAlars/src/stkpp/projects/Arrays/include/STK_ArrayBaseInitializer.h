@@ -29,12 +29,14 @@
  **/
 
 /** @file STK_ArrayBaseInitializer.h
- *  @brief In this file .
+ *  @brief In this file we implement the ArrayInitializer class.
  **/
 
 
-#ifndef STK_ARRAYBASEINITIALIZER_H_
-#define STK_ARRAYBASEINITIALIZER_H_
+#ifndef STK_ARRAYBASEINITIALIZER_H
+#define STK_ARRAYBASEINITIALIZER_H
+
+#include "../../STKernel/include/STK_Macros.h"
 
 namespace STK
 {
@@ -55,7 +57,7 @@ struct ArrayInitializer
                            , nextRow_(row_)
     { // check if there is space
       if (array.empty())
-      { STKRUNTIME_ERROR_NO_ARG(ArrayInitializer::ArrayInitializer,Too many coefficients passed to operator<<(array is empty));}
+      { STKRUNTIME_ERROR_NO_ARG(ArrayInitializer::ArrayInitializer,array is empty);}
       array_.elt(row_, col_) = s;
       col_++;
       nextRow_++;
@@ -143,4 +145,4 @@ inline ArrayInitializer<Derived> ArrayBase<Derived>::operator<< (const Type& s)
 
 } // namespace STK
 
-#endif /* STK_ARRAYBASEINITIALIZER_H_ */
+#endif /* STK_ARRAYBASEINITIALIZER_H */

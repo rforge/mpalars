@@ -38,15 +38,24 @@
 
 #include "STK_Arithmetic.h"
 #include "STK_IdTypeImpl.h"
+#include "STK_Proxy.h"
 
 namespace STK
 {
 
 #ifdef REALAREFLOAT
-//#define Real float
+/**  @ingroup Base
+  *  @brief STK fundamental type of Real values.
+  *
+  *  The type Real is defined for the numerical computation and the
+  *  internal representation of the continuous variables. By default it is the
+  *  double type, but it can be overridden at compile-time by enabling
+  *  the REALAREFLOAT macro.
+  **/
 typedef  float Real;
+
 #else
-/** @ingroup Base
+/**  @ingroup Base
   *  @brief STK fundamental type of Real values.
   *
   *  The type Real is defined for the numerical computation and the
@@ -54,7 +63,7 @@ typedef  float Real;
   *  double type, but it can be overridden at compile-time, if needed.
   **/
 typedef  double Real;
-//#define Real double
+
 #endif
 
 /** @ingroup Arithmetic

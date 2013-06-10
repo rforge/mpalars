@@ -115,7 +115,7 @@ class IVariable
      **/
     virtual void pushBackNAValues(int const& n=1) = 0;
     /** @return the number of sample in the variable */
-    virtual int const& size() const = 0;
+    virtual int size() const = 0;
     /** Insert n elements at the position pos of the container.
      *  @param pos index where to insert elements
      *  @param n number of elements to insert (default 1)

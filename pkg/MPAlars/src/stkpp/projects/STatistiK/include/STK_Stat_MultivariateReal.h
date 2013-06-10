@@ -82,7 +82,7 @@ class Multivariate<Array, Real> : public IRunnerUnsupervised< Array, typename Ar
                 , mean_()
                 , var_()
                 , cov_()
-    { update(); }
+    { }
 
     /** Constructor.
      *  Compute the Multivariate statistics of the Matrix p_data set.
@@ -97,7 +97,7 @@ class Multivariate<Array, Real> : public IRunnerUnsupervised< Array, typename Ar
                 , mean_()
                 , var_()
                 , cov_()
-    { update(); }
+    {}
 
     /** copy constructor.
      *  @param stat the statistics to copy
@@ -142,6 +142,7 @@ class Multivariate<Array, Real> : public IRunnerUnsupervised< Array, typename Ar
       }
       try
       {
+        resize(this->p_data_->cols());
         // for each variables
         for (int j=this->p_data_->firstIdxCols(); j<=this->p_data_->lastIdxCols(); j++)
         {
@@ -175,8 +176,13 @@ class Multivariate<Array, Real> : public IRunnerUnsupervised< Array, typename Ar
       { this->msg_error_ = STKERROR_NO_ARG(MultivariateMatrix::run(weights),data have not be set);
         return false;
       }
+      if (this->p_data_->rows() != weights.rows())
+      { this->msg_error_ = STKERROR_NO_ARG(MultivariateMatrix::run(weights),data and weights does not have not the same size);
+        return false;
+      }
       try
       {
+        resize(this->p_data_->cols());
         // for each variables
         for (int j= this->p_data_->firstIdxCols(); j<= this->p_data_->lastIdxCols(); j++)
         {
@@ -226,12 +232,19 @@ class Multivariate<Array, Real> : public IRunnerUnsupervised< Array, typename Ar
       {
         nbSamples_ = this->p_data_->sizeRows();
         nbVar_     = this->p_data_->sizeCols();
-        min_.resize(nbVar_);
-        max_.resize(nbVar_);
-        mean_.resize(nbVar_);
-        var_.resize(nbVar_);
-        cov_.resize(nbVar_);
+        resize(Range());
       }
+    }
+
+  private:
+    /** @param J range of the statistics  */
+    void resize(Range const& J)
+    {
+      min_.resize(J);
+      max_.resize(J);
+      mean_.resize(J);
+      var_.resize(J);
+      cov_.resize(J);
     }
 };
 

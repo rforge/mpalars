@@ -87,10 +87,13 @@ namespace STK
   \section Tutorial
   <p> You will find tutorials for the use of the arrays classes and
   how to develop a statistical application
-  - @b Tutorials
-    - @ref TutorialIntroduction
-    - @ref TutorialApplication
-    - @ref TutorialStatModel
+
+  @b Tutorials
+ * - @ref TutorialIntroduction
+ * - @ref TutorialKernel
+ * - @ref TutorialApplication
+ * - @ref TutorialStatModel
+ *
 
   </p>
   \section Projects

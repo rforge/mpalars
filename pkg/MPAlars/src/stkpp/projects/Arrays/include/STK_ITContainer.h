@@ -149,7 +149,7 @@ class ITContainerBase  : public IRecursiveTemplate<Derived>, hidden::NoAssignOpe
     /** @return the index of the last column */
     inline int lastIdxCols() const { return this->asDerived().cols().lastIdx();}
     /** @return the Horizontal size (the number of column) */
-    inline int sizeCols() const { return this->asDerived().sizeCols();}
+    inline int sizeCols() const { return this->asDerived().sizeColsImpl();}
     /** @return the Vertical range*/
     inline Range rows() const { return this->asDerived().rows();}
     /** @return the index of the first row*/
@@ -157,9 +157,9 @@ class ITContainerBase  : public IRecursiveTemplate<Derived>, hidden::NoAssignOpe
     /** @return the index of the last row */
     inline int lastIdxRows() const { return this->asDerived().rows().lastIdx();}
     /** @return the Vertical size (the number of rows) */
-    inline int sizeRows() const { return this->asDerived().sizeRows();}
+    inline int sizeRows() const { return this->asDerived().sizeRowsImpl();}
     /** @return @c true if the container is empty, @c false otherwise */
-    //inline bool empty() const { return (cols().empty() || rows().empty());}
+    inline bool empty() const { return (cols().empty() || rows().empty());}
     /** @return the element (i,j) of the 2D container.
      *  @param i index of the row
      *  @param j index of the column
@@ -589,6 +589,8 @@ class ITContainer<Derived, Arrays::vector_> : public ITContainerBase<Derived>
     inline int lastIdx() const  { return this->asDerived().range().lastIdx();}
     /**  @return the size of the container */
     inline int size() const  { return this->asDerived().range().size();}
+    /**  @return the size of the container */
+    inline int sizeRows() const  { return this->asDerived().range().size();}
     /** @return the index of the column of the vector */
     inline int colIndex() const { return this->cols().firstIdx();}
     /** @return the first element */
@@ -693,7 +695,7 @@ class ITContainer<Derived, Arrays::number_> : public ITContainerBase<Derived>
  **/
 template < class Derived, int SizeRow_ = hidden::Traits<Derived>::sizeRows_
                         , int SizeCol_ = hidden::Traits<Derived>::sizeCols_>
-class ITContainer2D : public TContainer2D<SizeRow_, SizeCol_>
+class ITContainer2D : protected TContainer2D<SizeRow_, SizeCol_>
                     , public ITContainer<Derived, hidden::Traits<Derived>::structure_>
 {
   protected:
@@ -719,11 +721,11 @@ class ITContainer2D : public TContainer2D<SizeRow_, SizeCol_>
     /**@return the Horizontal range */
     inline Range cols() const { return Base2D::cols();}
     /** @return the index of the first column */
-    inline int const& firstIdxCols() const { return Base2D::firstIdxCols();}
+    inline int firstIdxCols() const { return Base2D::firstIdxCols();}
     /**  @return the index of the last column */
     inline int lastIdxCols() const { return Base2D::lastIdxCols();}
     /** @return the Horizontal size (the number of column) */
-    inline int sizeCols() const { return Base2D::sizeCols();}
+    inline int sizeCols() const { return Base2D ::sizeColsImpl();}
     /** @return the Vertical range */
     inline Range rows() const { return Base2D::rows();}
     /** @return the index of the first row */
@@ -731,7 +733,7 @@ class ITContainer2D : public TContainer2D<SizeRow_, SizeCol_>
     /** @return the index of the last row */
     inline int lastIdxRows() const { return Base2D::lastIdxRows();}
     /** @return the Vertical size (the number of rows) */
-    inline int sizeRows() const { return Base2D::sizeRows();}
+    inline int sizeRowsImpl() const { return Base2D::sizeRowsImpl();}
     /**  @return @c true if the container is empty, @c false otherwise */
     inline bool empty() const { return Base2D::empty();}
 };

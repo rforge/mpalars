@@ -103,7 +103,7 @@ ostream& operator << (ostream& os, const Binary& output);
   *  @param is the input stream
   *  @param input the value to get from the stream
   **/
-istream& operator >> (istream& is, Proxy<Binary>& input);
+istream& operator >> (istream& is, Binary& input);
 
 /** @ingroup Base
  *  Convert a String to a Binary.

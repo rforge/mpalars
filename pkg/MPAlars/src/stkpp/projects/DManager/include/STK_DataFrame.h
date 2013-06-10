@@ -80,7 +80,7 @@ class DataFrame : protected List1D<IVariable* >, public IContainer2D
     /**  @return the index of the last column */
     inline int lastIdxCols() const { return IContainer2D::lastIdxCols();}
     /** @return the Horizontal size (the number of column) */
-    inline int sizeCols() const { return IContainer2D::sizeCols();}
+    inline int sizeCols() const { return IContainer2D ::sizeColsImpl();}
     /** @return the Vertical range */
     inline Range rows() const { return IContainer2D::rows();}
     /** @return the index of the first row */
@@ -88,7 +88,7 @@ class DataFrame : protected List1D<IVariable* >, public IContainer2D
     /** @return the index of the last row */
     inline int lastIdxRows() const { return IContainer2D::lastIdxRows();}
     /** @return the Vertical size (the number of rows) */
-    inline int sizeRows() const { return IContainer2D::sizeRows();}
+    inline int sizeRows() const { return IContainer2D::sizeRowsImpl();}
     /**  @return @c true if the container is empty, @c false otherwise */
     inline bool empty() const { return IContainer2D::empty();}
     /** access to an element. Set the method elt as a public method. */

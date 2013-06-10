@@ -49,7 +49,7 @@ template< class Type> class Variable;
 namespace hidden
 {
 /** @ingroup hidden
- *  Specialization of the Traits class Traits for Array2DVector class.
+ *  Specialization of the Traits struct Traits for Array2DVector class.
  **/
 template<class _TYPE>
 struct Traits< Variable<_TYPE> >
@@ -87,7 +87,7 @@ class Variable : public IVariable
     typedef IArray1D< Variable<Type> > Base;
 
     /** Default constructor*/
-    Variable() : IVariable(IdTypeImpl<Type>::returnType(), STRING_NA)
+    Variable() : IVariable(IdTypeImpl<Type>::returnType(), stringNa)
                , Base()
     {}
     /** constructor
@@ -101,7 +101,7 @@ class Variable : public IVariable
      *  @param I : range of the data
      **/
     Variable( Range const& I)
-            : IVariable(IdTypeImpl<Type>::returnType(), STRING_NA)
+            : IVariable(IdTypeImpl<Type>::returnType(), stringNa)
             , Base(I)
     {}
     /** constructor
@@ -195,7 +195,7 @@ class Variable : public IVariable
     }
     // IVariable part
     /** @return the number of sample in the variable */
-    virtual int const& size() const { return Base::size();}
+    virtual int size() const { return Base::size();}
     /** Insert n elements at the position pos of the container.
      *  @param pos index where to insert elements
      *  @param n number of elements to insert (default 1)
@@ -262,7 +262,7 @@ class Variable : public IVariable
  **/
 template<>
 inline void Variable<String>::pushBackNAValues(int const& n)
-{ this->insert(Range(this->lastIdx() +1, n), STRING_NA);}
+{ this->insert(Range(this->lastIdx() +1, n), stringNa);}
 /** push back n NA values.
  *  @param n number of NA values to add
  **/
@@ -295,7 +295,7 @@ inline int Variable<Type>::importFromString( Variable< String > const& V
   this->setName(V.name());
   int nSuccess = V.size();
   for (int i=V.firstIdx(); i<=V.lastIdx(); i++)
-    if ( (Arithmetic<String>::isNA(V[i])) || (V[i]==STRING_NA) ) // not Available
+    if ( (Arithmetic<String>::isNA(V[i])) || (V[i]==stringNa) ) // not Available
       this->elt(i) = Arithmetic<Type>::NA();
     else
     if (!stringToType<Type>(this->elt(i), V[i], f)) nSuccess--;

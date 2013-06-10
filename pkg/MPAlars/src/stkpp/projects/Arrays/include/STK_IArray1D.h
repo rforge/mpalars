@@ -61,12 +61,12 @@ class IArray1D  : public ITContainer1D<Derived>
     /** Type for the IArray1D Class. */
     typedef ITContainer1D< Derived > Base;
     /** Default constructor. */
-    IArray1D() : Base(), Allocator(Arrays::evalCapacity(0)), capacity_(Arrays::evalCapacity(0))
+    IArray1D() : Base(), Allocator(Arrays::evalSizeCapacity(0)), capacity_(Arrays::evalSizeCapacity(0))
     {}
     /** constructor with a specified Range.
       *  @param I range of the container
      **/
-    IArray1D( Range const& I): Base(I), Allocator(Arrays::evalCapacity(I))
+    IArray1D( Range const& I): Base(I), Allocator(Arrays::evalRangeCapacity(I))
             , capacity_(this->sizeData())
     {}
     /** Misc constructor with first and last, initialization with a constant.
@@ -74,7 +74,7 @@ class IArray1D  : public ITContainer1D<Derived>
      *  @param v initial value of the container
      **/
     IArray1D( Range const& I, Type const& v) : Base(I)
-            , Allocator(Arrays::evalCapacity(I))
+            , Allocator(Arrays::evalRangeCapacity(I))
             , capacity_(this->sizeData())
     { for (int i=this->firstIdx(); i<=this->lastIdx(); i++) this->data(i) = v;}
     /** Copy constructor
@@ -389,7 +389,7 @@ class IArray1D  : public ITContainer1D<Derived>
     void init1D(Range const& I)
     {
       // compute the size necessary (can be 0)
-      int size = Arrays::evalCapacity(I.size());
+      int size = Arrays::evalSizeCapacity(I.size());
       // try to allocate memory
       try
       {

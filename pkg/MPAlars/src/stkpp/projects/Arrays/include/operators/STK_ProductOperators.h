@@ -321,9 +321,9 @@ class PointByMatrixProduct : public ArrayBase< PointByMatrixProduct<Lhs, Rhs> >
     /** @return the range of the columns */
     inline Range cols() const { return result_.cols();}
     /** @return the size of the vector */
-    inline int const sizeRows() const { return int(1);}
+    inline int const sizeRowsImpl() const { return int(1);}
     /** @return the fixed size type if available to enable compile time optimizations */
-    inline int const sizeCols() const { return result_.sizeCols();}
+    inline int const sizeColsImpl() const { return result_.sizeCols();}
 
     /** @return the left hand side expression */
     inline Lhs const& lhs() const { return lhs_; }
@@ -413,9 +413,9 @@ class MatrixByVectorProduct : public ArrayBase< MatrixByVectorProduct<Lhs, Rhs> 
     /** @return the range of the columns */
     inline Range cols() const { return result_.cols();}
     /** @return the size of the vector */
-    inline int const sizeRows() const { return result_.sizeRows();}
+    inline int const sizeRowsImpl() const { return result_.sizeRows();}
     /** @return the fixed size type if available to enable compile time optimizations */
-    inline int const sizeCols() const { return int(1);}
+    inline int const sizeColsImpl() const { return int(1);}
 
     /** @return the left hand side expression */
     inline Lhs const& lhs() const { return lhs_; }
@@ -500,9 +500,9 @@ class MatrixByDiagonalProduct : public ArrayBase< MatrixByDiagonalProduct<Lhs, R
     /** @return the range of the columns */
     inline Range const cols() const { return lhs_.cols();}
     /** @return the fixed size type if available to enable compile time optimizations */
-    inline int sizeRows() const { return lhs_.sizeRows();}
+    inline int sizeRowsImpl() const { return lhs_.sizeRows();}
     /** @return the fixed size type if available to enable compile time optimizations */
-    inline int sizeCols() const { return rhs_.sizeCols();}
+    inline int sizeColsImpl() const { return rhs_.sizeCols();}
     /** @return the left hand side expression */
     inline Lhs const& lhs() const { return lhs_; }
     /** @return the right hand side nested expression */
@@ -581,9 +581,9 @@ class DiagonalByMatrixProduct : public ArrayBase< DiagonalByMatrixProduct<Lhs, R
     /** @return the range of the columns */
     inline Range const cols() const { return rhs_.cols();}
     /** @return the fixed size type if available to enable compile time optimizations */
-    inline int sizeRows() const { return lhs_.sizeRows();}
+    inline int sizeRowsImpl() const { return lhs_.sizeRows();}
     /** @return the fixed size type if available to enable compile time optimizations */
-    inline int sizeCols() const { return rhs_.sizeCols();}
+    inline int sizeColsImpl() const { return rhs_.sizeCols();}
     /** @return the left hand side expression */
     inline Lhs const& lhs() const { return lhs_; }
     /** @return the right hand side nested expression */
@@ -679,9 +679,9 @@ class MatrixByMatrixProduct : public ProductBase< Lhs, Rhs >
     /** @return the range of the columns */
     inline Range const cols() const { return result_.cols();}
     /** @return the fixed size type if available to enable compile time optimizations */
-    inline int sizeRows() const { return result_.sizeRows();}
+    inline int sizeRowsImpl() const { return result_.sizeRows();}
     /** @return the fixed size type if available to enable compile time optimizations */
-    inline int sizeCols() const { return result_.sizeCols();}
+    inline int sizeColsImpl() const { return result_.sizeCols();}
     /** @return the left hand side expression */
     inline Lhs const& lhs() const { return lhs_; }
     /** @return the right hand side nested expression */

@@ -58,6 +58,14 @@ namespace MPA
       inline STK::Array2DVector< std::pair<int,STK::Real> > const& lastState() const {return states_.back().coefficients();}
       /**@return lambda of state i*/
       inline STK::Real const lambda(int i) const {return states_[i].lambda();}
+      /**@return lambda*/
+      inline STK::Array2DVector<STK::Real> const lambda() const
+      {
+        STK::Array2DVector<STK::Real> lambda(states_.size());
+        for(int i = 0; i < states_.size(); i++)
+          lambda[i+1] = states_[i].lambda();
+        return lambda;
+      }
       /**@return coefficient j of state i*/
       inline STK::Real varCoeff(int i,int j) const {return states_[i].varCoeff(j);}
       /**@return index variable j of state i*/
@@ -74,10 +82,12 @@ namespace MPA
       inline int size(int i) const {return states_[i].size();}
       /** print states_[i]*/
       inline void print(int i) const {states_[i].printCoeff();}
-      /** print evolution_[i]*/
+      /** print evolution_*/
       inline void printEvolution() const {for(std::vector< std::pair<int,int> >::const_iterator it=evolution_.begin();it!=evolution_.end();it++){std::cout<<(*it).first<<"   "<<(*it).second<<std::endl;}}
-      /** print evolution_[i]*/
+      /** @return evolution_*/
       inline std::vector< std::pair<int,int> > evolution() const {return evolution_;}
+      /** @return evolution_[i]*/
+      inline std::pair<int,int> evolution(int i) const {return evolution_[i];}
 
 
       //methods

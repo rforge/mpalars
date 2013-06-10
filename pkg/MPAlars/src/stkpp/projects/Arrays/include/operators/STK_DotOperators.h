@@ -113,9 +113,9 @@ class DotProduct : public ArrayBase< DotProduct<Lhs, Rhs> >
     /** @return the range of the columns */
     inline Range cols() const { return result_.cols();}
     /** @return the number of rows */
-    inline int sizeRows() const { return result_.sizeRows();}
+    inline int sizeRowsImpl() const { return result_.sizeRows();}
     /** @return the number of columns */
-    inline int sizeCols() const { return result_.sizeCols();}
+    inline int sizeColsImpl() const { return result_.sizeCols();}
     /** @return the left hand side expression */
     inline Lhs const& lhs() const { return lhs_; }
     /** @return the right hand side nested expression */

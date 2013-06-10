@@ -44,46 +44,28 @@ namespace STK
  **/
 ostream& operator << (ostream& os, const Sign& output)
 { return Arithmetic<Sign>::isNA(output)
-      ? (os << STRING_NA) : (os << static_cast<int>(output));
+      ? (os << stringNa) : (os << static_cast<int>(output));
 }
 
 /*  Overloading of the istream >> for the type Sign.
  **/
-istream& operator >> (istream& is, Proxy<Sign>& input)
+istream& operator >> (istream& is, Sign& input)
 {
-  // get current file position
-  std::ios::pos_type pos = is.tellg();
-  // try to read a discrete value
   int buff;
   // failed to read a discrete value
-  if ((is >> buff).fail())
+  if ((is >> buff).fail()) return is;
+  switch (buff)
   {
-    is.seekg(pos);
-    // clear failbit state and eofbit state if necessary
-    is.clear(is.rdstate() & ~std::ios::failbit);
-    if (is.eof())
-    { is.clear(is.rdstate() & ~std::ios::eofbit);}
-    // in all case input is a NA object
-    input = Arithmetic<Sign>::NA();
-    // Create a String buffer
-    Char Lbuff[STRING_NA_SIZE+1];
-    is.getline(Lbuff, STRING_NA_SIZE+1);
-    // if we don't get a NA String, rewind stream
-    if (!(STRING_NA.compare(Lbuff) == 0)) { is.seekg(pos); }
+    case -1:
+      input = negative_;
+      break;
+    case 1:
+      input = positive_;
+      break;
+    default:
+      input = signNA_;
+      break;
   }
-  else
-    switch (buff)
-    {
-      case -1:
-        input = negative_;
-        break;
-      case 1:
-        input = positive_;
-        break;
-      default:
-        input = signNA_;
-        break;
-    }
   return is;
 }
 
@@ -123,7 +105,7 @@ String signToString( Sign const& type)
 {
   if (type == negative_)  return String(_T("-1"));
   if (type == positive_) return String(_T("1"));
-  return STRING_NA;
+  return stringNa;
 }
 
 /* @ingroup Base

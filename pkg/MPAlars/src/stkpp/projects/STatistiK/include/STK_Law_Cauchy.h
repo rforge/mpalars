@@ -75,9 +75,9 @@ class Cauchy : public IUnivLaw<Real>
     inline Real const& location() const { return location_;}
     /** @return the scale parameter */
     inline Real const& scale() const { return scale_;}
-    /** @param location the value to set to mu */
+    /** @param location the location parameter */
     inline void setLocation( Real const& location) { location_ = location;}
-    /** @param scale the value to set to sigma */
+    /** @param scale the scale parameter */
     inline void setScale( Real const& scale)
     {
       if (scale<0) STKRUNTIME_ERROR_1ARG(Cauchy::setScale,scale,scale must be >= 0);
@@ -124,14 +124,17 @@ class Cauchy : public IUnivLaw<Real>
      **/
     static Real rand( Real const& location, Real const& scale);
     /** @param x a real value
+     *  @param location location of the Cauchy distribution
+     *  @param scale scale of the Cauchy distribution
      *  @return the pdf of the cauchy distribution at x
      **/
     static Real pdf( Real const& x, Real const& location, Real const& scale);
     /** @param x a real value
+     *  @param location location of the Cauchy distribution
+     *  @param scale scale of the Cauchy distribution
      *  @return the log-pdf of the cauchy distribution at x
      **/
     static Real lpdf( Real const& x, Real const& location, Real const& scale);
-
 };
 
 } // namespace Law

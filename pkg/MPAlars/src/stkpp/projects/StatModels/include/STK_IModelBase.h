@@ -119,7 +119,7 @@ class IModelBase
       nbFreeParameter_ = 0;
     }
 
-  private:
+  protected:
     /** total available samples */
     int nbSample_;
     /** total available variables */

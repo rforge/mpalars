@@ -654,7 +654,7 @@ bool TReadWriteCsv<Type>::read( istream& inBuffer)
       if (nbField == 0) { break;}
       //  add on the non-existing columns: will be done if (nbField >= nbVars_)
       for (int iField=nbVars_+1; iField<=nbField; iField++)
-      { push_back(Var( nbRows_, Arithmetic<Type>::NA(), STRING_NA));
+      { push_back(Var( nbRows_, Arithmetic<Type>::NA(), stringNa));
         nbVars_++;
       }
       // first loop on the existing columns with data
@@ -697,11 +697,11 @@ void TReadWriteCsv<Type>::writeSelection( ostream& os, int top, int bottom, int 
     for(int iVar=left; iVar<right; iVar++)
     {
       os << std::setw(int(format[iVar])) << std::right
-         << ConstProxy<String>(str_data_.at(iVar).name())
+         << Proxy<String>(str_data_.at(iVar).name())
          << delimiters_.at(0);
     }
     os << std::setw(int(format[right])) << std::right
-       << ConstProxy<String>(str_data_[right].name())
+       << Proxy<String>(str_data_[right].name())
        << STRING_NL;
   }
   // write data
@@ -712,19 +712,19 @@ void TReadWriteCsv<Type>::writeSelection( ostream& os, int top, int bottom, int 
       try
       {
         os << std::setw(format[iVar]) << std::right
-           << ConstProxy<Type>(str_data_[iVar].at(irow));
+           << Proxy<Type>(str_data_[iVar].at(irow));
       }
       catch(...) // if an error occur, we put NA value
-      { os << std::setw(format[iVar]) << std::right << STRING_NA;}
+      { os << std::setw(format[iVar]) << std::right << stringNa;}
       os <<  delimiters_.at(0);
     }
     try
     {
       os << std::setw(format[right]) << std::right
-         << ConstProxy<Type>(str_data_[right].at(irow));
+         << Proxy<Type>(str_data_[right].at(irow));
     }
     catch(...) // if an error occur, we put NA value
-    { os << std::setw(format[right]) << std::right << STRING_NA;}
+    { os << std::setw(format[right]) << std::right << stringNa;}
     os << STRING_NL;
   }
 }

@@ -20,7 +20,7 @@ Its main purpose is the analysis of copy number signal but it can be used for ot
 Package: \tab MPAlars\cr
 Type: \tab Package\cr
 Version: \tab 1.0\cr
-Date: \tab 2013-04-18\cr
+Date: \tab 2013-05-10\cr
 License: \tab GPL(>=2)\cr
 }
 
@@ -42,6 +42,6 @@ Maintainer: Quentin Grimonprez <quentin.grimonprez@inria.fr>
 }
 
 \examples{
- data=MPA.simul(50,10000,0.4,10,50,matrix(c(0.1,0.8,0.02,0.02),nrow=2)) # simulate a data set
- result=MPA.lars(data$data,data$response) #launch lars algorithm
+ dataset=MPA.simul(50,10000,0.4,10,50,matrix(c(0.1,0.8,0.02,0.02),nrow=2)) # simulate a data set
+ result=MPA.lars(dataset$data,dataset$response) #launch lars algorithm
 }

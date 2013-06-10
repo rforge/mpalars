@@ -40,7 +40,7 @@ namespace STK
 
 // Exception
 Exception::Exception() throw()
-{_M_msg =_T("Exception thrown without any message."); }
+{_M_msg =_T("Exception error."); }
 Exception::Exception( String const& __arg) throw()
 { _M_msg = __arg;}
 Exception::~Exception() throw() {}

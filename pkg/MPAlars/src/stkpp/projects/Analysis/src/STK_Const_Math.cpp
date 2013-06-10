@@ -68,18 +68,14 @@ class SeriePi : public ISerie<SeriePi>
     inline SeriePi() : dig16_(1.), k4_(0)
     { ;}
 
-    /** return the first value (k=0)
-     **/
-    inline Real firstIdx() const
-    { return 47./15.;}
+    /** @return the first value (k=0) */
+    inline Real firstImpl() const { return 47./15.;}
  
-    /** return the next value
-     **/
-    inline Real next() const
+    /** @return the next value */
+    inline Real nextImpl() const
     { 
       dig16_ /= 16.;
       k4_    += 4;
-     
       return  dig16_
             * ( 2.0/(k4_+0.5)
               - 1.0/(k4_+2.0)
@@ -93,7 +89,7 @@ class SeriePi : public ISerie<SeriePi>
     **/
     inline Real operator[](int k) const
     { int aux = 4*k;
-      return  pow(2, -aux)
+      return  std::pow(2, -aux)
             * ( 2.0/(aux+0.5)
               - 1.0/(aux+2.0)
               - 0.5/(aux+2.5)
@@ -125,33 +121,25 @@ Real pi()
  */
 class SerieEuler : public ISerie<SerieEuler>
 {
-  private:
-    mutable Real k_;
-
   public:
-    /** Default ctor: initialize the variables
-     **/
-    inline SerieEuler() : k_(2.)
-    { ;}
-
-    /** return the first value (k=2)
-     **/
-    inline Real firstIdx() const
-    { return (Const::_LN2_/2.);}
- 
-    /** return the next value
-     **/
-    inline Real next() const
+    /** Default ctor: initialize the variables */
+    inline SerieEuler() : k_(2.) {}
+    /** @return the first value (k=2) */
+    inline Real firstImpl() const { return (Const::_LN2_/2.);}
+    /** return the next value */
+    inline Real nextImpl() const
     { 
       k_    += 1.;
-      return  log(k_)/k_;
+      return  std::log(k_)/k_;
     }
- 
     /** return the kth value
      *  @param k index of the value we want to compute
      **/
-    inline Real operator[](int k) const
-    { return log(k + 2.)/(Real)(k + 2);}
+    inline Real operator[](int k) const { return std::log(k+2.)/(Real)(k+2);}
+
+  private:
+    mutable Real k_;
+
 };
 
 /** @ingroup Analysis

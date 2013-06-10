@@ -76,7 +76,7 @@ class ITContainer1D;
  *  specialization for vector_.
  **/
 template <class Derived>
-class ITContainer1D<Derived, Arrays::vector_> : public IContainer1D
+class ITContainer1D<Derived, Arrays::vector_> : protected IContainer1D
                                               , public ITContainer<Derived, Arrays::vector_>
 {
   protected:
@@ -101,11 +101,15 @@ class ITContainer1D<Derived, Arrays::vector_> : public IContainer1D
 
   public:
     /**  @return the index of the first element */
-    inline int const& firstIdx() const { return IContainer1D::firstIdx();}
+    inline int firstIdx() const { return IContainer1D::firstIdx();}
     /**  @return the index of the last element*/
-    inline int const& lastIdx() const  { return IContainer1D::lastIdx();}
+    inline int lastIdx() const  { return IContainer1D::lastIdx();}
     /** @return the size of the container */
-    inline int const& size() const  { return IContainer1D::size();};
+    inline int size() const  { return IContainer1D::size();};
+    /** @return the size of the container in number of columns */
+    inline int sizeColsImpl() const  { return 1;};
+    /** @return the size of the container in number of rows */
+    inline int sizeRowsImpl() const  { return IContainer1D::size();};
     /** @return the range of the container */
     inline Range const& range() const  { return IContainer1D::range();}
     /** @return @c true if the container is empty, @c false otherwise */
@@ -157,11 +161,15 @@ class ITContainer1D<Derived, Arrays::point_> : public IContainer1D
 
   public:
     /**  @return the index of the first element */
-    inline int const& firstIdx() const { return IContainer1D::firstIdx();}
+    inline int firstIdx() const { return IContainer1D::firstIdx();}
     /**  @return the index of the last element*/
-    inline int const& lastIdx() const  { return IContainer1D::lastIdx();}
+    inline int lastIdx() const  { return IContainer1D::lastIdx();}
     /** @return the size of the container */
-    inline int const& size() const  { return IContainer1D::size();};
+    inline int size() const  { return IContainer1D::size();};
+    /** @return the size of the container in number of columns */
+    inline int sizeColsImpl() const  { return IContainer1D::size();};
+    /** @return the size of the container in number of rows */
+    inline int sizeRowsImpl() const  { return 1;};
     /** @return the range of the container */
     inline Range const& range() const  { return IContainer1D::range();}
     /** @return @c true if the container is empty, @c false otherwise */

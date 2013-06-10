@@ -58,9 +58,10 @@ STK::Real computeOrdinate(STK::Real x1,STK::Real x2,STK::Real x3,STK::Real y1,ST
  * @return value of coefficients for lambda
  */
 STK::Array2DVector< std::pair<int,STK::Real> > computeCoefficients(MPA::PathState const& state1,MPA::PathState const& state2,std::pair<int,int> const& evolution, STK::Real const& lambda);
+void computeCoefficients(MPA::PathState const& state1,MPA::PathState const& state2,std::pair<int,int> const& evolution, STK::Real const& lambda, STK::Array2DVector< std::pair<int,STK::Real> > &coeff);
 
 void print(STK::Array2DVector< std::pair<int,STK::Real> > const& state);
-void import(std::string adressFichier,int n,int p,STK::CArrayXX &data);
-void import(std::string adressFichier,int n,STK::CVectorX &data);
+bool import(std::string adressFichier,int n,int p,STK::CArrayXX &data);
+bool import(std::string adressFichier,int n,STK::CVectorX &data);
 
 #endif /* FUNCTIONS_H_ */

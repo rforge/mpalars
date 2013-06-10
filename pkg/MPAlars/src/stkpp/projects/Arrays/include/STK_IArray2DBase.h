@@ -488,7 +488,7 @@ class IArray2DBase : public ITArrayBase<Derived>
     void mallocHo(Range const& J)
     {
       // compute the size necessary (can be 0)
-      int size = Arrays::evalCapacity(J.size());
+      int size = Arrays::evalSizeCapacity(J.size());
       // try to allocate memory
       try
       {
@@ -524,7 +524,7 @@ class IArray2DBase : public ITArrayBase<Derived>
     void reallocCols(Range const& J)
     {
       // compute the size necessary (can be 0)
-      int size = Arrays::evalCapacity(J.size());
+      int size = Arrays::evalSizeCapacity(J.size());
       // try to allocate memory
       try
       {

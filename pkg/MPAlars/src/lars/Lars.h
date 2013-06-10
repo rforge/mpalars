@@ -63,21 +63,66 @@ namespace MPA
       Lars( STK::CArrayXX const& X, STK::CVectorX const& y, int maxSteps
           , STK::Real eps =STK::Arithmetic<STK::Real>::epsilon(), bool verbose = false);
 
-      //getters
+     //getters
+      /**@return path of the coefficients*/
       inline Path const& path() const {return path_;}
+
+      /**
+       * @param i step
+       * @return the Pathstate object : the state of the path at the step i
+       */
       inline PathState const& path(int i) const {return path_.states(i);}
+
+      /**
+       * @param i index of the step
+       * @param j index of the coefficients
+       * @return the value of the j-th coefficient at the step i
+       */
       inline STK::Real coefficient(int i,int j) const {return path_.varCoeff(i,j);}
+
+      /**
+       * @param i index of the step
+       * @param j index of the coefficients
+       * @return the value of the j-th coefficient at the step i
+       */
       inline int varIdx(int i,int j) const {return path_.varIdx(i,j);}
+
+      /**
+       * @param i index of the step
+       * @return the value of lambda at the i-th step
+       */
       inline STK::Real lambda(int i) const {return path_.lambda(i);}
+
+      /**
+       * @return the vector of lambda
+       */
+      inline STK::Array2DVector<STK::Real> const lambda() const {return path_.lambda();}
+
+      /** @return the historic of add and drop variable*/
       inline std::vector< std::pair<int,int> > evolution() const {return path_.evolution();}
+
+      /**@return Number of step of the algorithm*/
       inline int step() const {return step_;}
+
+      /** @return the intercept of the solution*/
       inline STK::Real mu() const {return mu_;}
+
+      /** @return the ignored variable*/
       inline std::vector<bool> toIgnore() const {return toIgnore_;}
+
 
 
       //methods
       /** run lars algorithm*/
       void run();
+
+      /**
+       * predict the path for a ratio fraction = lambda/lambamax
+       * @param X new data for predict the response
+       * @param fraction real between 0 and 1 .
+       * @return predicted response
+       */
+      void predict(STK::CArrayXX const& X, STK::Real fraction, STK::CVectorX &yPred);
 
    protected:
       /**

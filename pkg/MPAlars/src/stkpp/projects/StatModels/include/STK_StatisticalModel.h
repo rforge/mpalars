@@ -148,7 +148,7 @@ class StatisticalModel : public IModelBase
       Real sum = 0.0;
       for (int i= p_data_->firstIdxRows(); i<= p_data_->lastIdxRows(); i++)
       { sum += p_law_->lpdf(p_data_->row(i));}
-      lnLikelihood_ = sum;
+      setLnLikelihood(sum);
     }
 };
 

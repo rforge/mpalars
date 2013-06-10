@@ -37,7 +37,7 @@
 #ifndef STK_MIXTUREMODEL_H
 #define STK_MIXTUREMODEL_H
 
-#include "STK_LatentModel.h"
+#include "STK_ILatentModel.h"
 
 namespace STK
 {
@@ -62,22 +62,22 @@ namespace STK
  * procedures involve such steps.
  **/
 template <class ObservableData>
-class MixtureModel : public LatentModel<ObservableData, Array2D< Real > >
+class MixtureModel : public ILatentModel<ObservableData >
 {
   public:
-    typedef LatentModel<ObservableData, Array2D<Real> > Base;
-
-  protected:
+    typedef ILatentModel<ObservableData > Base;
+    /** destructor */
+    virtual ~MixtureModel() : Base() {}
     /** Constructor with data set. */
     MixtureModel(ObservableData const& data) : Base(data) {}
       /** Constructor with data set. */
     MixtureModel(ObservableData const* p_data) : Base(p_data) {}
-    /** */
-    Array2D<Real> const* p_tik_() const { return this->p_latentData();}
+    /** return a pointer on the tik probabilities */
+    Array2D<Real> const* const p_tik() const { return p_tik_;}
 
-  public:
-    /** destructor */
-    virtual ~MixtureModel() { ;}
+  protected:
+    Array2D<Real>* p_tik_;
+    Array2DPoint<MultiStatModel*> components_;
 
 };
 

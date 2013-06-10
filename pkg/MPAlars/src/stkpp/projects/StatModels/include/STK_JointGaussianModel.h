@@ -48,11 +48,13 @@ namespace STK
 /** @ingroup StatModels
  *  Structure encapsulating the parameters of a Joint Gaussian model.
  */
-struct JointGaussianParameters
+struct JointGaussianParameters: public IMultiParameters
 {
   public:
     /** default constructor */
-    JointGaussianParameters() {}
+    JointGaussianParameters() : mu_(), sigma_() {}
+    /** default constructor */
+    JointGaussianParameters(Range const& range) : mu_(range, 0.), sigma_(range, 1.) {}
     /** copy constructor. @param param the parameters to copy. */
     JointGaussianParameters( JointGaussianParameters const& param)
                             : mu_(param.mu_)
@@ -64,6 +66,10 @@ struct JointGaussianParameters
     JointGaussianParameters* clone() const
     { return new JointGaussianParameters(*this);}
 
+    /** @return the means */
+    inline Array2DPoint<Real> const& mu() const { return mu_;}
+    /** @return the mean of the jth law */
+    inline Array2DPoint<Real> const& sigma() const { return sigma_;}
     /** @return the mean of the jth law */
     inline Real const& mu(int const& j) const { return mu_[j];}
     /** @return the standard deviation of the jth law */
@@ -74,10 +80,12 @@ struct JointGaussianParameters
     inline void setSigma(int const& j, Real const& sigma) { sigma_[j] = sigma;}
     /** resize the set of parameter */
     inline void resize(Range const& size)
-    { mu_.resize(size); sigma_.resize(size);}
+    { mu_.resize(size); mu_ = 0.;
+      sigma_.resize(size); sigma_ = 1.;
+    }
   protected:
-    CPointX mu_;
-    CPointX sigma_;
+    Array2DPoint<Real> mu_;
+    Array2DPoint<Real> sigma_;
 };
 
 /** @ingroup StatModels
@@ -131,18 +139,12 @@ class JointGaussianModel : public IMultiStatModel<Array, WColVector, JointGaussi
       return sum;
     }
   protected:
-    /** This method is called if the user set a new data set
-     *  @sa IRunnerUnsupervised::setData */
-    virtual void update()
-    { if (p_data())
-      { this->initialize(p_data()->sizeRows(), p_data()->sizeCols());}
-    }
     /** initialize the parameters */
     virtual void initParameters()
     {
        if(!p_param())
-          this->p_param_ = new JointGaussianParameters;
-       p_param()->resize(p_data()->cols());
+          this->p_param_ = new JointGaussianParameters(p_data()->cols());
+//       p_param()->resize(p_data()->cols());
     }
     /** compute the parameters */
     virtual void computeParameters()

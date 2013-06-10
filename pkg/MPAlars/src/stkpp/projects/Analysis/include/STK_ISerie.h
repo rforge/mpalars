@@ -36,6 +36,7 @@
 #define STK_ISERIE_H
 
 #include "../../STKernel/include/STK_Real.h"
+#include "../../Sdk/include/STK_IRecursiveTemplate.h"
 
 namespace STK
 {
@@ -64,42 +65,21 @@ namespace STK
  * @endcode
  **/
 template <class Serie>
-class ISerie
+class ISerie : public IRecursiveTemplate<Serie>
 {
   protected:
-    /** Default Constructor
-     **/
-    ISerie() { ;}
+    /** Default Constructor*/
+    ISerie() {}
+    /** destructor.*/
+    ~ISerie() {}
 
   public:
-    /** Virtual destructor.
-     **/
-    virtual ~ISerie() { ;}
-
-    /** static cast : return a reference of this with a cast to the
-     * derived class.
-     * This allow to delegate public methods to derived classes.
-     **/
-    inline Serie& asDerived()
-    { return static_cast<Serie&>(*this); }
-
-    /** static cast : return a const reference of this with a cast to
-     * the derived class.
-     * This allow to delegate public method to derived classes.
-     **/
-    inline const Serie& asDerived() const
-    { return static_cast<Serie const &>(*this); }
-
-    /** return the first coefficient
-     **/
-    inline Real firstIdx() const
-    { return asDerived().firstIdx();}
-
-    /** return the next coefficient: firstIdx() have to be called before
+    /** @return the first coefficient of the serie */
+    inline Real first() const { return this->asDerived().firstImpl();}
+    /** @return the next coefficient: first() have to be called before
      *  any use of next()
      **/
-    inline Real next() const
-    { return asDerived().next();}
+    inline Real next() const { return this->asDerived().nextImpl();}
 };
 
 } // namespace STK

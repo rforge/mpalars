@@ -89,17 +89,17 @@ class TContainer2D
     /** @return the index of the last column */
     inline int lastIdxCols() const { return cols_.lastIdx();}
     /** @return the number of column */
-    inline int sizeCols() const { return cols_.size();}
+    inline int sizeColsImpl() const { return cols_.size();}
     /** @return the range of the columns */
-    inline Range cols() const { return  Range(firstIdxCols(), sizeCols());}
+    inline Range cols() const { return  Range(firstIdxCols(), sizeColsImpl());}
     /** @return the index of the first row */
     inline int const& firstIdxRows() const { return rows_.firstIdx();}
     /** @return the index of the last row */
     inline int lastIdxRows() const { return rows_.lastIdx();}
     /** @return the number of rows */
-    inline int sizeRows() const { return rows_.size();}
+    inline int sizeRowsImpl() const { return rows_.size();}
     /** @return the range of the rows */
-    inline Range rows() const { return Range(firstIdxRows(), sizeRows());}
+    inline Range rows() const { return Range(firstIdxRows(), sizeRowsImpl());}
     /** @return @c true if the container is empty, @c false otherwise */
     inline bool empty() const { return (cols_.empty() || rows_.empty());}
 

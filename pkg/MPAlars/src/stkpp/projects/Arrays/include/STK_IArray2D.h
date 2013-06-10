@@ -246,15 +246,18 @@ class IArray2D : public IArray2DBase< typename hidden::Traits<Derived>::Type*, D
      int rinc = I.lastIdx() - this->lastIdxRows();
      int cinc = J.lastIdx() - this->lastIdxCols();
       // check if we add columns
-      if (cinc >=0)   // work first on rows
+      if (cinc >=0)   // work first on rows as we add columns
       {
-        if (rinc < 0) this->popBackRows(-rinc); // less rows
-        else          this->pushBackRows(rinc); // more rows
+        if (rinc < 0)
+        {
+           this->popBackRows(-rinc); // less rows
+        }
+        else  this->pushBackRows(rinc); // more rows
         this->pushBackCols(cinc); // add columns
       }
-      else // work first on columns
+      else // work first on columns as we remove column
       {
-        this->asDerived().popBackCols(-cinc); // remove columns
+        this->popBackCols(-cinc); // remove columns
         if (rinc < 0) this->popBackRows(-rinc); // less rows
         else          this->pushBackRows(rinc); // more rows
       }
@@ -513,7 +516,7 @@ class IArray2D : public IArray2DBase< typename hidden::Traits<Derived>::Type*, D
         catch (Exception & error)   // if an error occur
         {
           this->exchange(Taux);   // restore container
-          throw error;        // and send again the stdexcept
+          throw error;        // and send again the exception
         }
         // set the ranges
         this->setCols(range_ho);
@@ -703,7 +706,7 @@ class IArray2D : public IArray2DBase< typename hidden::Traits<Derived>::Type*, D
           for (int k=J.firstIdx(); k<j; k++) this->freeCol(k);
           // put default for the other Cols
           for (int k=j; k<=J.lastIdx(); k++) this->data(k) = 0;
-          // and throw an stdexcept
+          // and throw an exception
           throw error;
         }
       }
@@ -729,7 +732,7 @@ class IArray2D : public IArray2DBase< typename hidden::Traits<Derived>::Type*, D
         return;
       }
       // compute the size necessary (cannot be 0)
-     int size = Arrays::evalCapacity(I.size());
+     int size = Arrays::evalSizeCapacity(I.size());
       // try to allocate memory
       try
       {
@@ -743,7 +746,7 @@ class IArray2D : public IArray2DBase< typename hidden::Traits<Derived>::Type*, D
         this->capacityCols_[pos] = 0;
         // set default value for this->rangeCols_[pos]
         this->rangeCols_[pos] = Range();
-        // and throw an stdexcept
+        // and throw an exception
         STKRUNTIME_ERROR_2ARG(IArray2D::initializeCol,pos, I,memory allocation failed.);
       }
       // increment ptr of the column
