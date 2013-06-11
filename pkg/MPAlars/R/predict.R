@@ -50,7 +50,7 @@ predict=function(x,Xnew, lambda, mode="fraction")
 
     ##fraction >0 and <1
     coeff=computeCoefficients(x,fraction);
-
+print(coeff)
 	yPred=yPred + Xnew[,coeff$variable]%*%coeff$coefficient
 
 	return(yPred);
@@ -108,15 +108,15 @@ computeCoefficients = function(x,lambda,mode="fraction")
 		{
 			coeff=c(
 			.computeOrdinate(x@lambda[index], x@lambda[index+1], lambda, x@coefficient[[index]], x@coefficient[[index+1]][-length(x@coefficient[[index+1]])]), 
-			.computeOrdinate(x@lambda[index], x@lambda[index+1], lambda, 0, x@coefficient[[index+1]]))
-			variable=x@variable[index+1]
+			.computeOrdinate(x@lambda[index], x@lambda[index+1], lambda, 0, x@coefficient[[index+1]][length(x@coefficient[[index+1]])]))
+			variable=x@variable[[index+1]]
 
 			return(list(variable=variable,coefficient=coeff))
 		}
 		else
 		{
 			coeff=.computeOrdinate(x@lambda[index], x@lambda[index+1], lambda, x@coefficient[[index]], x@coefficient[[index+1]])
-			variable=x@variable[index+1]
+			variable=x@variable[[index+1]]
 
 			return(list(variable=variable,coefficient=coeff))
 		}
