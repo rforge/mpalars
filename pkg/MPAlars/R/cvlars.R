@@ -38,7 +38,7 @@ MPA.cvlars <- function(X,y,nbFolds=10,index=seq(0,1,by=0.01),maxSteps=3*min(dim(
 	#create the output object
 	cv=list(cv=val$cv,cvError=val$cvError,minCv=min(val$cv),fraction=index[which.min(val$cv)],index=index,maxSteps=maxSteps)
 
-	class(rescvlars)="cvlars"
+	class(cv)="cvlars"
 	#plot.cv(cv)
 
 	return(cv)
