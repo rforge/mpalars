@@ -21,7 +21,7 @@
   index of the added variable at the i-th step, 0 means no
   variable has been added at this step.}
   \item{mu}{Intercept.} \item{ignored}{A vector containing
-  index of ignored variable during the algorithm.}
+  index of ignored variables during the algorithm.}
   \item{p}{Total number of covariates.} \item{fusion}{If
   TRUE, results from MPA.fusion function.} }
 }

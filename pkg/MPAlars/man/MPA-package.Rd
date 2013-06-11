@@ -9,7 +9,7 @@ Lars algorithm
 \description{
 This package contains an implementation of the lars algorithm [1], for the lasso and fusion penalization. It works even if the number of covariate is greater than the number of individuals.
 
-It has been designed for Multi Patients Analysis (MPA) of Genomics Markers.	
+It has been designed for Multi Patients Analysis (MPA) of Genomic Markers.	
 
 Its main purpose is the analysis of copy number signal but it can be used for other context.
 }

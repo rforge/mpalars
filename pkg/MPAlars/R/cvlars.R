@@ -38,7 +38,8 @@ MPA.cvlars <- function(X,y,nbFolds=10,index=seq(0,1,by=0.01),maxSteps=3*min(dim(
 	#create the output object
 	cv=list(cv=val$cv,cvError=val$cvError,minCv=min(val$cv),fraction=index[which.min(val$cv)],index=index,maxSteps=maxSteps)
 
-	plot.cv(cv)
+	class(rescvlars)="cvlars"
+	#plot.cv(cv)
 
 	return(cv)
 }
@@ -82,9 +83,23 @@ MPA.cvlars <- function(X,y,nbFolds=10,index=seq(0,1,by=0.01),maxSteps=3*min(dim(
 		stop("index must be a vector of real between 0 and 1")
 }
 
-
+#' plot cross validation mean square error
+#'
+#' @title plot cross validation mean square error
+#' @author Quentin Grimonprez
+#' @param x Output from MPA.cvlars function.
+#' @examples 
+#' dataset=MPA.simul(50,10000,0.4,10,50,matrix(c(0.1,0.8,0.02,0.02),nrow=2))
+#' result=MPA.cvlars(dataset$data,dataset$response,5)
+#' plot.cv(result)
+#' @export
+#' 
 plot.cv=function(x)
 {
+	if(missing(x))
+		stop("x is missing.")
+	if(class(x)!="cvlars")
+		stop("x must be an output of the MPA.cvlars function.")
 	plot(x$index, x$cv, type = "b", ylim = range(x$cv, x$cv + x$cvError, x$cv - x$cvError),xlab="Fraction L1 Norm",ylab="Cross-Validated MSE")
 	lines(x$index, x$cv+x$cvError,lty=2)
 	lines(x$index, x$cv-x$cvError,lty=2)

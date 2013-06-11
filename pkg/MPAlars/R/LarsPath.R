@@ -11,7 +11,7 @@
 #'   \item{dropIndex}{Vector of length "step" containing the index of the dropped variable at the i-th step, 0 means no variable has been dropped at this step.}
 #'   \item{addIndex}{Vector of length "step" containing the index of the added variable at the i-th step, 0 means no variable has been added at this step.}
 #'	 \item{mu}{Intercept.}
-#'	 \item{ignored}{A vector containing index of ignored variable during the algorithm.}
+#'	 \item{ignored}{A vector containing index of ignored variables during the algorithm.}
 #'   \item{p}{Total number of covariates.}
 #'	 \item{fusion}{If TRUE,  results from MPA.fusion function.}
 #' }
