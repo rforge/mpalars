@@ -1,0 +1,21 @@
+Package: HDPenReg
+Version: 0.8
+Date: 2013-07-11
+Title: lars algorithm
+Author: Quentin Grimonprez
+Maintainer: Quentin Grimonprez <quentin.grimonprez@inria.fr>
+Depends:
+    Rcpp (>= 0.9.14),
+    methods
+Description: This package contains an implementation of the lars algorithm [1],
+    for the lasso and fusion penalization. It works even if the number of
+    covariate is greater than the number of individuals.
+License: GPL (>= 2)
+LinkingTo: Rcpp
+Collate:
+    'LarsPath.R'
+    'lars.R'
+    'simulation.R'
+    'cvlars.R'
+    'predict.R'
+    'EM.R'

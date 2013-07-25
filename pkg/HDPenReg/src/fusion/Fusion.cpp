@@ -1,0 +1,121 @@
+/*--------------------------------------------------------------------*/
+/*     Copyright (C) 2013-2013  Serge Iovleff, Quentin Grimonprez
+
+    This program is free software; you can redistribute it and/or modify
+    it under the terms of the GNU Lesser General Public License as
+    published by the Free Software Foundation; either version 2 of the
+    License, or (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU Lesser General Public License for more details.
+
+    You should have received a copy of the GNU Lesser General Public
+    License along with this program; if not, write to the
+    Free Software Foundation, Inc.,
+    59 Temple Place,
+    Suite 330,
+    Boston, MA 02111-1307
+    USA
+
+    Contact : Serge.Iovleff@stkpp.org
+*/
+
+/*
+ * Project:  MPAGenomics::
+ * created on: 3 avr. 2013
+ * Author:   Quentin Grimonprez
+ **/
+
+/** @file Fusion.cpp
+ *  @brief In this file, we define the methods of the @c Fusion class .
+ **/
+
+#include "Fusion.h"
+
+using namespace std;
+using namespace STK;
+using namespace HD;
+
+//constructors
+
+/*
+ * constructor
+ * @param X matrix of size n*p, a row contains the values of each covariate for an individual.
+ * @param y vector of length n containing the response
+ */
+Fusion::Fusion(STK::CArrayXX const& X, STK::CVectorX const& y)
+              : X_(X),
+                y_(y),
+                eps_(STK::Arithmetic<Real>::epsilon()),
+                verbose_(false),
+                path_(maxSteps_)
+{
+  maxSteps_=3*min(X.sizeRows(),X.sizeCols());
+  computeZ();
+}
+
+/*
+ *
+ * @param X matrix of size n*p, a row contains the values of each covariate for an individual.
+ * @param y vector of length n containing the response
+ * @param maxSteps number of maximum step to do
+ * @param eps epsilon (for 0)
+ * @param verbose if TRUE print some details
+ */
+Fusion::Fusion( STK::CArrayXX const& X, STK::CVectorX const& y, int maxSteps, Real eps, bool verbose)
+              : X_(X),
+                y_(y),
+                maxSteps_(maxSteps),
+                eps_(eps),
+                verbose_(verbose),
+                path_(maxSteps_)
+{
+  computeZ();
+}
+
+//destructors
+
+
+//methods
+/*
+ * change X in Z=X*L^-1 (L^-1 = lower triangular matrix of 1)
+ */
+void Fusion::computeZ()
+{
+  int p=X_.sizeCols(), n=X_.sizeRows();
+
+  for(int i=p-1; i>=1; i--)
+  {
+    for(int j=1; j<=n; j++ )
+      X_(j,i) += X_(j,i+1);
+
+  }
+//    X_.col(i) += X_.col(i-1);
+
+}
+
+/*
+ * run the lars algorithm for solving the fusion problem on Z=X*L^-1 (L^-1 = lower triangular matrix of 1)
+ */
+void Fusion::run()
+{
+
+  stk_cout<<X_<<endl;
+  //run lars algorithm on Z
+  Lars lars(X_, y_, maxSteps_, eps_, verbose_);
+  lars.run();
+
+  //get the solution path
+  path_=lars.path();
+  step_=lars.step();
+  mu_=lars.mu();
+  toIgnore_=lars.toIgnore();
+
+  //transform the coefficient B in L^-1 * B
+  //int p=X_.sizeCols();
+  //if(step_>=2)
+  //  path_.transform2fusion(p);
+}
+

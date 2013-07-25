@@ -1,0 +1,26 @@
+STKPPDIR = ./stkpp
+LARSDIR = ./lars
+FUSIONDIR = ./fusion
+LASSOMODELSDIR = ./lassoModels
+
+HDLIB = ./libHD.a
+STKPPLIBDIR = $(STKPPDIR)/lib
+STKPPLIB = $(STKPPLIBDIR)/libSTKpp.a
+
+
+# c++ flag
+PKG_CPPFLAGS = -ansi -pedantic -Wall
+
+## Use the R_HOME indirection to support installations of multiple R version
+PKG_LIBS = `$(R_HOME)/bin/Rscript -e "Rcpp:::LdFlags()"` $(HDLIB) $(STKPPLIB)
+
+.PHONY: all libhd
+
+all: $(SHLIB)
+$(SHLIB): libhd
+
+libhd:
+    ($(MAKE)  -f lars.mk)
+    ($(MAKE) -f fusion.mk)
+    ($(MAKE) -f lassoModels.mk)
+
