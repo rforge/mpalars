@@ -10,7 +10,7 @@
 #' @return An object of type LarsPath.
 #' @examples 
 #' dataset=simul(50,10000,0.4,10,50,matrix(c(0.1,0.8,0.02,0.02),nrow=2))
-#' result=EMlasso(dataset$data,dataset$response)
+#' #result=EMlasso(dataset$data,dataset$response)
 #' @export
 #' 
 EMlasso <- function(X,y,lambda,maxSteps=3*max(dim(X)),eps=.Machine$double.eps^0.5)
@@ -20,7 +20,7 @@ EMlasso <- function(X,y,lambda,maxSteps=3*max(dim(X)),eps=.Machine$double.eps^0.
 		stop("X is missing.")
 	if(missing(y))
 		stop("y is missing.")
-	.check(X,y,maxSteps,eps,TRUE)
+	.check(X,y,maxSteps,eps)
 
 	if(missing(lambda))
 		lambda=-1#lambda will be generated in C code

@@ -7,6 +7,7 @@
 #' @param nbFolds the number of folds for the cross-validation.
 #' @param index Values at which prediction error should be computed. This is the fraction of the saturated |beta|. The default value is seq(0,1,by=0.01).
 #' @param maxSteps Maximal number of steps for lars algorithm.
+#' @param intercept If TRUE, there is an intercept in the model.
 #' @param eps Tolerance of the algorithm.
 #' @return A list containing 
 #' \describe{
@@ -22,7 +23,7 @@
 #' result=HDcvlars(dataset$data,dataset$response,5)
 #' @export
 #' 
-HDcvlars <- function(X,y,nbFolds=10,index=seq(0,1,by=0.01),maxSteps=3*min(dim(X)),eps=.Machine$double.eps^0.5)
+HDcvlars <- function(X,y,nbFolds=10,index=seq(0,1,by=0.01),maxSteps=3*min(dim(X)),intercept=TRUE,eps=.Machine$double.eps^0.5)
 {
 	#check arguments
 	if(missing(X))
@@ -30,23 +31,23 @@ HDcvlars <- function(X,y,nbFolds=10,index=seq(0,1,by=0.01),maxSteps=3*min(dim(X)
 	if(missing(y))
 		stop("y is missing.")
 	index=unique(index)
-	.checkcvlars(X,y,maxSteps,eps,nbFolds,index)
+	.checkcvlars(X,y,maxSteps,eps,nbFolds,index,intercept)
 
 	# call lars algorithm
-	val=.Call( "cvlars",X,y,nrow(X),ncol(X),maxSteps,eps,nbFolds,index,PACKAGE = "HDPenReg" )
+	val=.Call( "cvlars",X,y,nrow(X),ncol(X),maxSteps,intercept,eps,nbFolds,index,PACKAGE = "HDPenReg" )
 	
 	#create the output object
 	cv=list(cv=val$cv,cvError=val$cvError,minCv=min(val$cv),fraction=index[which.min(val$cv)],index=index,maxSteps=maxSteps)
 
 	class(cv)="cvlars"
-	#plot.cv(cv)
+	#plotCv(cv)
 
 	return(cv)
 }
 
 
 # check arguments from cvlars 
-.checkcvlars=function(X,y,maxSteps,eps,nbFolds,index)
+.checkcvlars=function(X,y,maxSteps,eps,nbFolds,index,intercept)
 {
 	## X: matrix of real
 	if(!is.numeric(X) || !is.matrix(X))
@@ -81,6 +82,10 @@ HDcvlars <- function(X,y,nbFolds=10,index=seq(0,1,by=0.01),maxSteps=3*min(dim(X)
 		stop("index must be a vector of real between 0 and 1")
 	if(max(index)>1 || min(index)<0)
 		stop("index must be a vector of real between 0 and 1")
+		
+	##intercept
+    if(!is.logical(intercept))
+        stop("intercept must be a boolean") 
 }
 
 #' plot cross validation mean square error
@@ -91,10 +96,10 @@ HDcvlars <- function(X,y,nbFolds=10,index=seq(0,1,by=0.01),maxSteps=3*min(dim(X)
 #' @examples 
 #' dataset=simul(50,10000,0.4,10,50,matrix(c(0.1,0.8,0.02,0.02),nrow=2))
 #' result=HDcvlars(dataset$data,dataset$response,5)
-#' plot.cv(result)
+#' plotCv(result)
 #' @export
 #' 
-plot.cv=function(x)
+plotCv=function(x)
 {
 	if(missing(x))
 		stop("x is missing.")

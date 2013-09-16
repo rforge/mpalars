@@ -51,7 +51,7 @@ HDpredict=function(x,Xnew, lambda, mode="fraction")
     ##fraction >0 and <1
     coeff=computeCoefficients(x,fraction);
 
-	yPred=yPred + Xnew[,coeff$variable]%*%coeff$coefficient
+	yPred=yPred + Xnew[,coeff$variable,drop=FALSE]%*%coeff$coefficient
 
 	return(yPred);
 }

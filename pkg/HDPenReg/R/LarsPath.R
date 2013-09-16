@@ -140,10 +140,10 @@ setMethod(
 #' @examples 
 #' dataset=simul(50,10000,0.4,10,50,matrix(c(0.1,0.8,0.02,0.02),nrow=2))
 #' result=HDfusion(dataset$data,dataset$response) 
-#' plot.coefficient(result,45) #plot coefficients at the step 45
+#' plotCoefficient(result,45) #plot coefficients at the step 45
 #' @export 
 #' 
-plot.coefficient=function(x,step,ylab="coefficients",xlab="variables",...)
+plotCoefficient=function(x,step,ylab="coefficients",xlab="variables",...)
 {
   if(missing(x))
     stop("x is missing.")

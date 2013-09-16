@@ -5,6 +5,7 @@
 #' @param X the matrix (of size n*p) of the covariates.
 #' @param y a vector of length n with the response.
 #' @param maxSteps Maximal number of steps for lars algorithm.
+#' @param intercept If TRUE, there is an intercept in the model.
 #' @param eps Tolerance of the algorithm.
 #' @return An object of type LarsPath.
 #' @examples 
@@ -13,17 +14,17 @@
 #' @export
 #' @useDynLib HDPenReg
 #' 
-HDlars <- function(X,y,maxSteps=3*min(dim(X)),eps=.Machine$double.eps^0.5)
+HDlars <- function(X,y,maxSteps=3*min(dim(X)),intercept=TRUE,eps=.Machine$double.eps^0.5)
 {
 	#check arguments
 	if(missing(X))
 		stop("X is missing.")
 	if(missing(y))
 		stop("y is missing.")
-	.check(X,y,maxSteps,eps,verbose)
+	.check(X,y,maxSteps,eps,intercept)
 
 	# call lars algorithm
-	val=.Call( "lars",X,y,nrow(X),ncol(X),maxSteps,eps,FALSE ,PACKAGE = "HDPenReg" )
+	val=.Call( "lars",X,y,nrow(X),ncol(X),maxSteps,intercept,eps,PACKAGE = "HDPenReg" )
 	
 	#create the output object
 	path=new("LarsPath",variable=val$varIdx,coefficient=val$varCoeff,lambda=val$lambda,l1norm=val$l1norm,addIndex=val$evoAddIdx,dropIndex=val$evoDropIdx,
@@ -38,6 +39,7 @@ HDlars <- function(X,y,maxSteps=3*min(dim(X)),eps=.Machine$double.eps^0.5)
 #' @param X the matrix (of size n*p) of the covariates.
 #' @param y a vector of length n with the response.
 #' @param maxSteps Maximal number of steps for lars algorithm.
+#' @param intercept If TRUE, there is an intercept in the model.
 #' @param eps Tolerance of the algorithm.
 #' @return An object of type LarsPath.
 #' @examples  
@@ -45,17 +47,17 @@ HDlars <- function(X,y,maxSteps=3*min(dim(X)),eps=.Machine$double.eps^0.5)
 #' result=HDfusion(dataset$data,dataset$response)
 #' @export 
 #' 
-HDfusion <- function(X,y,maxSteps=3*min(dim(X)),eps=.Machine$double.eps^0.5)
+HDfusion <- function(X,y,maxSteps=3*min(dim(X)),intercept=TRUE,eps=.Machine$double.eps^0.5)
 {
 	#check arguments
 	if(missing(X))
 		stop("X is missing.")
 	if(missing(y))
 		stop("y is missing.")
-	.check(X,y,maxSteps,eps)
+	.check(X,y,maxSteps,eps,intercept)
 
 	# call fusion algorithm
-	val=.Call( "fusion",X,y,nrow(X),ncol(X),maxSteps,eps,FALSE ,PACKAGE = "HDPenReg" )
+	val=.Call( "fusion",X,y,nrow(X),ncol(X),maxSteps,intercept,eps,PACKAGE = "HDPenReg" )
 	
 	#create the output object
 	path=new("LarsPath",nbStep=val$step,variable=val$varIdx,coefficient=val$varCoeff,lambda=val$lambda,l1norm=val$l1norm,addIndex=val$evoAddIdx,dropIndex=val$evoDropIdx,p=ncol(X),fusion=TRUE)
@@ -64,7 +66,7 @@ HDfusion <- function(X,y,maxSteps=3*min(dim(X)),eps=.Machine$double.eps^0.5)
 }
 
 # check arguments from lars and fusion algorithm
-.check=function(X,y,maxSteps,eps,verbose=FALSE)
+.check=function(X,y,maxSteps,eps,intercept)
 {
 	## X: matrix of real
 	if(!is.numeric(X) || !is.matrix(X))
@@ -87,11 +89,10 @@ HDfusion <- function(X,y,maxSteps=3*min(dim(X)),eps=.Machine$double.eps^0.5)
 		stop("eps must be a positive real")	
 	if(eps<=0)
 		stop("eps must be a positive real")	
-
-	##verbose
-	if(!is.logical(verbose))
-		stop("verbose must be a logical")
-
+		
+	##intercept
+	if(!is.logical(intercept))
+        stop("intercept must be a boolean") 
 }
 
 #check if a number is an integer

@@ -1,6 +1,6 @@
 Package: HDPenReg
-Version: 0.8
-Date: 2013-07-11
+Version: 0.81
+Date: 2013-09-10
 Title: lars algorithm
 Author: Quentin Grimonprez
 Maintainer: Quentin Grimonprez <quentin.grimonprez@inria.fr>
