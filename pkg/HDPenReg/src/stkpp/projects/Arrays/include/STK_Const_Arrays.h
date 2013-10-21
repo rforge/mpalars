@@ -36,6 +36,8 @@
 #ifndef STK_CONST_ARRAYS_H
 #define STK_CONST_ARRAYS_H
 
+#include "STK_ArrayBase.h"
+
 namespace STK
 {
 
@@ -212,7 +214,7 @@ class Identity : public ITArrayBase<Identity<Type_, Size_>, Size_, Size_ >
     /** default constructor */
     Identity() : Base() {}
     /** constructor with specified dimension */
-    Identity(int n) : Base(n,n) {}
+    Identity(Range I) : Base(I,I) {}
     /** @return the element (i,j) of the identity matrix.
      *  @param i index of the row
      *  @param j index of the column
@@ -264,7 +266,7 @@ class Square : public ITArrayBase<Square<Type_, Size_>, Size_, Size_ >
     /** default constructor */
     Square() : Base() {}
     /** constructor with specified dimension */
-    Square(int size) : Base(size, size) {}
+    Square(Range I) : Base(I, I) {}
     /** @return the element (i,j) of the constant square matrix.
      *  @param i index of the row
      *  @param j index of the column
@@ -312,7 +314,7 @@ class General : public ITArrayBase<General<Type_, SizeRows_, SizeCols_>, SizeRow
     /** default constructor */
     General() : Base() {}
     /** constructor with specified dimension */
-    General(int sizeRows, int sizeCols) : Base(sizeRows, sizeCols) {}
+    General(Range rangeRows, Range rangeCols) : Base(rangeRows, rangeCols) {}
     /** @return the element (i,j) of the constant square matrix.
      *  @param i index of the row
      *  @param j index of the column
@@ -360,7 +362,7 @@ class UpperTriangular : public ITArrayBase<UpperTriangular<Type_, SizeRows_, Siz
     /** default constructor */
     UpperTriangular() : Base() {}
     /** constructor with specified dimension */
-    UpperTriangular(int sizeRows, int sizeCols) : Base(sizeRows, sizeCols) {}
+    UpperTriangular(Range rangeRows, Range rangeCols) : Base(rangeRows, rangeCols) {}
     /** @return the element (i,j) of the constant upper triangular matrix.
      *  @param i index of the row
      *  @param j index of the column
@@ -408,13 +410,98 @@ class LowerTriangular : public ITArrayBase<LowerTriangular<Type_, SizeRows_, Siz
     /** default constructor */
     LowerTriangular() : Base() {}
     /** constructor with specified dimension */
-    LowerTriangular(int sizeRows, int sizeCols) : Base(sizeRows, sizeCols) {}
+    LowerTriangular(Range rangeRows, Range rangeCols) : Base(rangeRows, rangeCols) {}
     /** @return the element (i,j) of the constant lower triangular matrix.
      *  @param i index of the row
      *  @param j index of the column
      **/
     inline Type const elt2Impl(int i, int j) const { return (Type(1));}
 };
+
+/**@ingroup Arrays
+ * Define the constant point
+ * \f[
+ * S =
+ * \left(
+ * \begin{array}{cccc}
+ *  1 & 1 & \ldots  & 1
+ * \end{array}
+ * \right).
+ * \f]
+ * The size can be either a fixed template argument or a dynamic size.
+ * Exemple:
+ * @code
+ *  STK::Const::Point<Real,3> p3; // p3 is a row-vector of size 3
+ *  STK::Const::Point<Real> p(10); // p is a row-vector of Real of size 10
+ * @endcode
+ * @tparam Size_ the size of the row-vector. Default is UnknownSize.
+ **/
+template< typename Type_, int Size_ >
+class Point : public ITArrayBase<Point<Type_, Size_>, Size_, Size_ >
+{
+  public:
+    typedef ITArrayBase<Point<Type_, Size_>, Size_, Size_ > Base;
+    typedef typename hidden::Traits< Const::Point <Type_, Size_> >::Type Type;
+    enum
+    {
+      structure_ = hidden::Traits< Const::Point <Type_, Size_> >::structure_,
+      orient_    = hidden::Traits< Const::Point <Type_, Size_> >::orient_,
+      sizeRows_  = hidden::Traits< Const::Point <Type_, Size_> >::sizeRows_,
+      sizeCols_  = hidden::Traits< Const::Point <Type_, Size_> >::sizeCols_,
+      storage_   = hidden::Traits< Const::Point <Type_, Size_> >::storage_
+    };
+    /** default constructor */
+    Point() : Base() {}
+    /** constructor with specified dimension */
+    Point(Range I) : Base(1, I) {}
+    /** @return the j-th element  of the constant row-vector.
+     *  @param j index of the element
+     **/
+    inline Type const elt1Impl(int j) const { return (Type(1));}
+};
+
+/**@ingroup Arrays
+ * Define the constant point
+ * \f[
+ * S =
+ * \left(
+ * \begin{array}{cccc}
+ *  1 & 1 & \ldots  & 1
+ * \end{array}
+ * \right).
+ * \f]
+ * The size can be either a fixed template argument or a dynamic size.
+ * Exemple:
+ * @code
+ *  STK::Const::Point<Real,3> p3; // p3 is a row-vector of size 3
+ *  STK::Const::Point<Real> p(10); // p is a row-vector of Real of size 10
+ * @endcode
+ * @tparam Size_ the size of the row-vector. Default is UnknownSize.
+ **/
+template< typename Type_, int Size_ >
+class Vector : public ITArrayBase<Vector<Type_, Size_>, Size_, Size_ >
+{
+  public:
+    typedef ITArrayBase<Vector<Type_, Size_>, Size_, Size_ > Base;
+    typedef typename hidden::Traits< Const::Vector <Type_, Size_> >::Type Type;
+    enum
+    {
+      structure_ = hidden::Traits< Const::Vector <Type_, Size_> >::structure_,
+      orient_    = hidden::Traits< Const::Vector <Type_, Size_> >::orient_,
+      sizeRows_  = hidden::Traits< Const::Vector <Type_, Size_> >::sizeRows_,
+      sizeCols_  = hidden::Traits< Const::Vector <Type_, Size_> >::sizeCols_,
+      storage_   = hidden::Traits< Const::Vector <Type_, Size_> >::storage_
+    };
+    /** default constructor */
+    Vector() : Base() {}
+    /** constructor with specified dimension */
+    Vector(Range I) : Base(I, 1) {}
+    /** @return the i-th element of the constant vector.
+     *  @param i index of the element
+     **/
+    inline Type const elt1Impl(int i) const { return (Type(1));}
+};
+
 
 } // namespace const
 

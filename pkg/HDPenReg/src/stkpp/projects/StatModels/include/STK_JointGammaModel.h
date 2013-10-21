@@ -40,6 +40,7 @@
 #include <cmath>
 
 #include "STK_IMultiStatModel.h"
+#include "STK_JointGammaParameters.h"
 #include "../../STatistiK/include/STK_Law_Gamma.h"
 #include "../../Analysis/include/STK_Algo_FindZero.h"
 #include "../../Analysis/include/STK_Funct_raw.h"
@@ -48,54 +49,7 @@ namespace STK
 {
 
 /** @ingroup StatModels
- *  Structure encapsulating the parameters of a Joint Gamma model.
- */
-struct JointGammaParameters: public IMultiParameters<JointGammaParameters>
-{
-  public:
-    /** default constructor */
-    JointGammaParameters() : a_(), b_() {}
-    /** default constructor */
-    JointGammaParameters(Range const& range) : a_(range, 1.), b_(range, 1.) {}
-    /** copy constructor. @param param the parameters to copy. */
-    JointGammaParameters( JointGammaParameters const& param)
-                        : a_(param.a_)
-                        , b_(param.b_)
-    {}
-    /** destructor */
-    ~JointGammaParameters() {}
-
-    /** @return the means */
-    inline Array2DPoint<Real> const& shape() const { return a_;}
-    /** @return the mean of the jth law */
-    inline Array2DPoint<Real> const& scale() const { return b_;}
-    /** @return the mean of the jth law */
-    inline Real const shape(int const& j) const { return a_[j];}
-    /** @return the standard deviation of the jth law */
-    inline Real const scale(int const& j) const { return b_[j];}
-    /** set the mean of the jth law */
-    inline void setShape(int const& j, Real const& shape) { a_[j] = shape;}
-    /** set the standard deviation of the jth law */
-    inline void setScale(int const& j, Real const& scale) { b_[j] = scale;}
-    /** resize the set of parameter */
-    inline void resizeImpl(Range const& size)
-    { a_.resize(size); a_ = 0.;
-      b_.resize(size); b_ = 1.;
-    }
-    /** print the parameters a_ and b_.
-     *  @param os the output stream for the parameters
-     **/
-    inline void printImpl(ostream &os)
-     { os << a_ << b_ << _T("\n");}
-
-  protected:
-    Array2DPoint<Real> a_;
-    Array2DPoint<Real> b_;
-};
-
-/** @ingroup StatModels
- * A joint Gamma model is a statistical model of the
- * following form
+ * A joint Gamma model is a statistical model of the following form
  * \f[
  *     f(\mathbf{x}_i|\theta) =
  *     \prod_{j=1}^p\left(\frac{x_i^j}{b_j}\right)^{a_j-1}
@@ -103,8 +57,7 @@ struct JointGammaParameters: public IMultiParameters<JointGammaParameters>
  *      \quad x_i^j\in\{0,1\}, \quad j=1,\ldots,p, \quad i=1,\ldots,n.
  * \f]
  **/
-
-template <class Array, class WColVector = CVectorX>
+template <class Array, class WColVector>
 class JointGammaModel : public IMultiStatModel<Array, WColVector, JointGammaParameters >
 {
 
@@ -133,11 +86,16 @@ class JointGammaModel : public IMultiStatModel<Array, WColVector, JointGammaPara
     JointGammaModel* clone() const { return new JointGammaModel(*this);}
 
     /** @return the vector of the mean of the observations */
-    RowVector const& mean() const {return mean_;}
+    inline Array2DPoint<Real> const& shape() const {return p_param()->shape_;}
+    /** @return the vector of the mean of the observations */
+    inline Array2DPoint<Real> const& scale() const {return p_param()->scale_;}
+    /** @return the vector of the mean of the observations */
+    inline Array2DPoint<Real> const& mean() const {return p_param()->mean_;}
     /** vector of the mean log of the observations */
-    RowVector const& meanLog() const {return meanLog_;}
+    inline Array2DPoint<Real> const& meanLog() const {return p_param()->meanLog_;}
     /** vector of the variance of the observations */
-    RowVector const& variance() const {return variance_;}
+    inline Array2DPoint<Real> const& variance() const {return p_param()->variance_;}
+
     /** compute the number of free parameters */
     virtual int computeNbFreeParameters() const
     { return 2*p_data()->sizeCols();}
@@ -146,7 +104,7 @@ class JointGammaModel : public IMultiStatModel<Array, WColVector, JointGammaPara
     {
       Real sum =0.;
       for (Integer j= rowData.firstIdx(); j <= rowData.lastIdx(); ++j)
-      { sum += Law::Gamma::lpdf(rowData[j], p_param()->shape(j), p_param()->scale(j));}
+      { sum += Law::Gamma::lpdf(rowData[j], shape()[j], scale()[j]);}
       return sum;
     }
   protected:
@@ -168,70 +126,51 @@ class JointGammaModel : public IMultiStatModel<Array, WColVector, JointGammaPara
     /** compute the parameters */
     virtual void computeParameters()
     {
-      computeMeans();
       for (int j=p_data()->firstIdxCols(); j<=p_data()->lastIdxCols(); ++j)
       {
-        Real start1 = (mean_[j]*mean_[j]) / variance_[j];
-        Real start2 = 0.9*start1 +  0.05/(mean_[j] - meanLog_[j]);
-        dloglikelihood funct(mean_[j], meanLog_[j]);
-        Real shape =  Algo::findZero(funct, start1, start2);
+        mean()[j] =  p_data()->col(j).meanSafe();
+        meanLog()[j] = p_data()->col(j).log().meanSafe();
+        variance()[j] = p_data()->col(j).varianceSafe();
+        Real start1 = (mean()[j]*mean()[j]) / variance()[j];
+        Real start2 = 0.9*start1 +  0.05/(mean()[j] - meanLog()[j]);
+        dloglikelihood funct(mean()[j], meanLog()[j]);
+        Real a =  Algo::findZero(funct, start1, start2);
         // replace with moment estimator if needed
-        if (!Arithmetic<Real>::isFinite(shape)) { shape =  mean_[j]*mean_[j]/variance_[j];}
-        p_param()->setShape(j, shape);
-        p_param()->setScale(j, mean_[j]/shape);
+        if (!Arithmetic<Real>::isFinite(a)) { a =  mean()[j]*mean()[j]/variance()[j];}
+        shape()[j] = a;
+        scale()[j] = mean()[j]/a;
       }
     }
     /** compute the weighted parameters */
     virtual void computeParameters( WColVector const& weights)
     {
-      computeMeans(weights);
       for (int j=p_data()->firstIdxCols(); j<=p_data()->lastIdxCols(); ++j)
       {
-        Real start1 = (mean_[j]*mean_[j]) / variance_[j];
-        Real start2 = 0.9*start1 +  0.05/(mean_[j] - meanLog_[j]);
-        dloglikelihood funct(mean_[j], meanLog_[j]);
-        Real shape =  Algo::findZero(funct, start1, start2);
+        mean()[j] =  p_data()->col(j).wmeanSafe(weights);
+        meanLog()[j] = p_data()->col(j).log().wmeanSafe(weights);
+        variance()[j] = p_data()->col(j).wvarianceSafe(weights);
+        Real start1 = (mean()[j]*mean()[j]) / variance()[j];
+        Real start2 = 0.9*start1 +  0.05/(mean()[j] - meanLog()[j]);
+        dloglikelihood funct(mean()[j], meanLog()[j]);
+        Real a =  Algo::findZero(funct, start1, start2);
         // replace with moment estimator if needed
-        if (!Arithmetic<Real>::isFinite(shape)) { shape =  mean_[j]*mean_[j]/variance_[j];}
-        p_param()->setShape(j, shape);
-        p_param()->setScale(j, mean_[j]/shape);
+        if (!Arithmetic<Real>::isFinite(a)) { a =  mean()[j]*mean()[j]/variance()[j];}
+        shape()[j] = a;
+        scale()[j] = mean()[j]/a;
       }
     }
 
   private:
-    /** vector of the mean of the observations */
-    RowVector mean_;
+    /** @return the vector of the mean of the observations */
+    inline Array2DPoint<Real>& shape() {return p_param()->shape_;}
+    /** @return the vector of the mean of the observations */
+    inline Array2DPoint<Real>& scale() {return p_param()->scale_;}
+    /** @return the vector of the mean of the observations */
+    inline Array2DPoint<Real>& mean() {return p_param()->mean_;}
     /** vector of the mean log of the observations */
-    RowVector meanLog_;
+    inline Array2DPoint<Real>& meanLog() {return p_param()->meanLog_;}
     /** vector of the variance of the observations */
-    RowVector variance_;
-    /** compute the mean and the mean log of the ith observations */
-    void computeMeans()
-    {
-      mean_.resize(p_data()->cols());
-      meanLog_.resize(p_data()->cols());
-      variance_.resize(p_data()->cols());
-      for (int j=p_data()->firstIdxCols(); j<=p_data()->lastIdxCols(); ++j)
-      {
-        mean_[j] =  p_data()->col(j).meanSafe();
-        meanLog_[j] = p_data()->col(j).log().meanSafe();
-        variance_[j] = p_data()->col(j).varianceSafe();
-      }
-    }
-    /** compute the mean and the mean log of the ith observations */
-    void computeMeans(WColVector const& weights)
-    {
-      mean_.resize(p_data()->cols());
-      meanLog_.resize(p_data()->cols());
-      variance_.resize(p_data()->cols());
-      for (int j=p_data()->firstIdxCols(); j<=p_data()->lastIdxCols(); ++j)
-      {
-        mean_[j] =  p_data()->col(j).wmeanSafe(weights);
-        meanLog_[j] = p_data()->col(j).log().wmeanSafe(weights);
-        variance_[j] = p_data()->col(j).wvarianceSafe(weights);
-      }
-    }
-
+    inline Array2DPoint<Real>& variance() {return p_param()->variance_;}
 };
 
 } // namespace STK

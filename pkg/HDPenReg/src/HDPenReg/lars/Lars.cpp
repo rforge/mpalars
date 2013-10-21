@@ -19,7 +19,7 @@
     Boston, MA 02111-1307
     USA
 
-    Contact : Serge.Iovleff@stkpp.org
+    Contact : quentin.grimonprez@inria.fr
 */
 
 /*
@@ -113,15 +113,13 @@ namespace HD
       for(int j=1;j <= p_; j++)
       {
         muX_[j] = X_.col(j).sum()/n_;
-        for(int i=1; i <= n_; i++)
-          X_(i,j) -= muX_[j];
+        X_.col(j) -= muX_[j];
       }
     }
     else
     {
       mu_=0;
-      for(int j=1;j <= p_; j++)
-         muX_[j]=0;
+      muX_.zeros();
     }
 
 
@@ -180,7 +178,7 @@ namespace HD
 #endif
 
     //check if the variable added is not colinear with an other
-    if( abs(qrX_.R()( min(n_,nbActiveVariable_+1), nbActiveVariable_+1) ) < eps_ )
+    if( std::abs(qrX_.R()( min(n_,nbActiveVariable_+1), nbActiveVariable_+1) ) < eps_ )
     {
       qrX_.popBackCols();
 
@@ -290,9 +288,9 @@ namespace HD
   {
     Real gamTilde(std::numeric_limits<Real>::max()),gam(0);
     idxMin=0;
-    for(int i=1; i<=path_.lastState().size(); i++)
+    for(int i=1; i <= path_.lastState().size(); i++)
     {
-      if(w[i]) gam=-path_.lastVarCoeff(i)/w[i];
+      if(w[i]) gam = -path_.lastVarCoeff(i)/w[i];
 
       //we search the minimum only on positive value
       if(gam>eps_)
@@ -445,7 +443,7 @@ namespace HD
     updateBeta(gam,w,action,true,0);
 
     //update of c
-    c_-=(X_.transpose()*u)*gam;
+    c_ -= (X_.transpose()*u)*gam;
 
     return true;
   }
@@ -465,14 +463,14 @@ namespace HD
 #endif
 
     //check if the variable added is not colinear with an other
-    if( abs(qrX_.R()( min(n_,nbActiveVariable_+1), nbActiveVariable_+1) ) < eps_ )
+    if( std::abs(qrX_.R()( min(n_,nbActiveVariable_+1), nbActiveVariable_+1) ) < eps_ )
     {
       qrX_.popBackCols();
 #ifdef VERBOSE
         cout<<"Step 1 : Variable "<< idxVar<<" dropped (colinearity)"<<endl;
 #endif
 
-      toIgnore_[idxVar-1]=true;//the variable is add to the ignore set
+      toIgnore_[idxVar-1] = true;//the variable is add to the ignore set
       nbIgnoreVariable_++;
       Xi_.popBackCols(1);
     }
@@ -526,18 +524,29 @@ namespace HD
     //we stop, if we reach maxStep or if there is no more variable to add
     if(continuer)
     {
+      STK::Real oldCmax;
       while( (step_< maxSteps_) && ( nbActiveVariable_ < min( n_-1, (p_-nbIgnoreVariable_) ) ) )
       {
         step_++;
-
+        oldCmax = Cmax;
         //computation of correlation
-        Cmax=computeCmax();
+        Cmax = computeCmax();
 
         if( Cmax < eps_*100)
         {
           step_--;
 #ifdef VERBOSE
-          std::cout << "Correlation max is equal to 0.";
+          std::cout << "Correlation max is equal to 0."<<std::endl;
+#endif
+          break;
+        }
+
+        //if correlation max increased, we stop, Cmax must decreased
+        if( Cmax > oldCmax)
+        {
+          step_--;
+#ifdef VERBOSE
+          std::cout << "Correlation max has increased."<<std::endl;
 #endif
           break;
         }
@@ -548,7 +557,7 @@ namespace HD
           newId.resize(0);
           computeAddSet(Cmax, newId);
 
-          if(newId.size()==0)
+          if(newId.size() == 0)
           {
             step_--;
 #ifdef VERBOSE
@@ -557,7 +566,7 @@ namespace HD
             break;
           }
 
-          for (vector<int>::iterator it = newId.begin() ; it != newId.end(); it++)
+          for(vector<int>::iterator it = newId.begin() ; it != newId.end(); it++)
             updateR(*it,signC,action);
         }
         else
@@ -569,44 +578,44 @@ namespace HD
         computeGi1(Gi1,signC);
 
         //compute Aa
-        Aa=1/sqrt(Gi1.sum());
+        Aa = 1/sqrt(Gi1.sum());
 
         //compute w
-        w=Gi1*signC*Aa;
+        w = Gi1*signC*Aa;
 
         //compute equiangular vector
-        u=Xi_*w;
+        u = Xi_*w;
 
         //computation of gamma hat
         //if the number of active variable is equal to the max number authorized, we don't search a new index
         if( nbActiveVariable_ == min(n_-1, p_-nbIgnoreVariable_) )
-           gam=Cmax/Aa;
+           gam = Cmax/Aa;
         else
         {
           //computation of a
-          a=X_.transpose()*u;
+          a = X_.transpose()*u;
 
           //computation of gamma hat
-          gam=computeGamHat(Aa,a,Cmax);
+          gam = computeGamHat(Aa,a,Cmax);
         }
 
         //computation of gamma tilde
-        gammaTilde=computeGamTilde(w,dropId);
+        gammaTilde = computeGamTilde(w,dropId);
 
-        if(gammaTilde<gam)
+        if( gammaTilde < gam )
         {
-          gam=gammaTilde;
-          isAddCase=false;
+          gam = gammaTilde;
+          isAddCase = false;
           nbActiveVariable_--;
         }
         else
-          isAddCase=true;
+          isAddCase = true;
 
         //update beta
         updateBeta(gam,w,action,isAddCase,dropId);
 
         //update of c
-        c_-=(X_.transpose()*u)*gam;
+        c_ -= (X_.transpose()*u)*gam;
 
         //drop situation
         if(!isAddCase)
@@ -615,7 +624,7 @@ namespace HD
         //path_.states(step_).printCoeff();
       }
     }
-    Real t1=Chrono::elapsed();
+    Real t1 = Chrono::elapsed();
 
 #ifdef VERBOSE
       cout<<endl<<"Algorithm finished in "<<t1<<"s"<<endl;
@@ -634,7 +643,7 @@ namespace HD
    */
   void Lars::predict(STK::CArrayXX const& X, STK::Real fraction, STK::CVectorX &yPred)
   {
-    yPred=mu_;
+    yPred = mu_;
 
     //fraction = 0 : all coefficients are equal to 0
     if(fraction == 0)
@@ -647,8 +656,8 @@ namespace HD
       int nbVar = path_.lastState().sizeRows();
 
 
-      for( int i = 1; i <= yPred.sizeRowsImpl(); i++)
-        for( int j = 1; j <= nbVar; j++)
+      for(int i = 1; i <= yPred.sizeRowsImpl(); i++)
+        for(int j = 1; j <= nbVar; j++)
           yPred[i] += X(i, varIdx(lastStep,j)) * coefficient(lastStep,j);
 
       return ;
@@ -660,7 +669,7 @@ namespace HD
     fraction *= l1norm.back();
 
     int index = 1;
-    while( l1norm[index] < fraction)
+    while(l1norm[index] < fraction)
       index++;
 
     //compute coefficient

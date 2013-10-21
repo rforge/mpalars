@@ -2,8 +2,9 @@
 \alias{EMlasso}
 \title{EM algorithm for lasso penalty}
 \usage{
-  EMlasso(X, y, lambda, maxSteps = 3 * max(dim(X)),
-    eps = .Machine$double.eps^0.5)
+  EMlasso(X, y, lambda, maxSteps = 10000, intercept = TRUE,
+    burn = 50, threshold = 1e-10, eps = 1e-05,
+    epsCG = 1e-08)
 }
 \arguments{
   \item{X}{the matrix (of size n*p) of the covariates.}
@@ -14,20 +15,40 @@
   term. If no sequence is provided, the function computes
   his own sequence.}
 
-  \item{maxSteps}{Maximal number of steps for lars
+  \item{maxSteps}{Maximal number of steps for EM
   algorithm.}
 
-  \item{eps}{Tolerance of the algorithm.}
+  \item{intercept}{If TRUE, there is an intercept in the
+  model.}
+
+  \item{burn}{Number of steps before thresholding some
+  variables to zero.}
+
+  \item{threshold}{Zero tolerance.}
+
+  \item{eps}{Epsilon for the convergence of the EM
+  algorithm.}
+
+  \item{epsCG}{Epsilon for the convergence of the conjugate
+  gradient.}
 }
 \value{
-  An object of type LarsPath.
+  A list containing : \describe{ \item{nbStep}{Vector
+  containing the number of steps of the algorithm for every
+  lambda.} \item{variable}{List of vector of size "step+1".
+  The i+1-th item contains the index of non-zero
+  coefficients at the i-th step.} \item{coefficient}{List
+  of vector of size "step+1". The i+1-th item contains the
+  non-zero coefficients at the i-th step.}
+  \item{lambda}{Vector of length "step+1", containing the
+  lambda at each step.} \item{mu}{Intercept.} }
 }
 \description{
   EM algorithm for lasso penalty
 }
 \examples{
-dataset=simul(50,10000,0.4,10,50,matrix(c(0.1,0.8,0.02,0.02),nrow=2))
-#result=EMlasso(dataset$data,dataset$response)
+dataset=simul(50,100,0.4,1,10,matrix(c(0.1,0.9,0.02,0.02),nrow=2))
+result=EMlasso(dataset$data,dataset$response)
 }
 \author{
   Quentin Grimonprez

@@ -40,36 +40,13 @@
 #include <cmath>
 
 #include "STK_IModelBase.h"
+#include "STK_IMultiParameters.h"
+#include "../../Sdk/include/STK_IRunner.h"
 #include "../../STKernel/include/STK_Macros.h"
 #include "../../STatistiK/include/STK_Law_IMultiLaw.h"
 
 namespace STK
 {
-
-/** @ingroup StatModels
- *  @brief Interface base class for the parameters of a multivariate model.
-  */
-template<class Parameters>
-class IMultiParameters : public IRecursiveTemplate<Parameters>
-{
-  protected:
-    /** default constructor.*/
-    inline IMultiParameters() {}
-    /** Destructor */
-    inline ~IMultiParameters() {}
-
-  public:
-    /** resize the parameters.
-     *  @param size the size of the parameters (range of the variables)
-     **/
-    inline void resize( Range const& size)
-    { this->asDerived().resizeImpl(size);}
-    /** print the parameters.
-     *  @param os the output stream for the parameters
-     **/
-    inline void print(ostream &os)
-    { this->asDerived().printImpl(os);}
-};
 
 /** @ingroup StatModels
  *  @brief Interface base class for all Multivariate Statistical Models.
@@ -98,13 +75,16 @@ class IMultiParameters : public IRecursiveTemplate<Parameters>
  *  - A data set where the number of samples is the number of rows and the number
  *  of variable is the number of columns. This data set is stored in a Container
  *  of type @c Array.
- *  - A set of parameters stored in a class of type @c Parameters.
+ *  - A set of parameters stored in a class of type @c Parameters. These parameters
+ *  can be created using the @c createParameters method with the effect to
+ *  call the default constructor of the Parameters class, or can be set to this
+ *  class using the method @c setParameters.
  *
  *  Derived implementations of this interface have to implement the following
- *  pure methods:
+ *  pure virtual methods:
  *  @code
- *    int computeNbFreeParameters() const;
- *    Real computeLnLikelihood( RowVector const& rowData) const = 0;
+ *    virtual int computeNbFreeParameters() const =0;
+ *    virtual Real computeLnLikelihood( RowVector const& rowData) const = 0;
  *    virtual void computeParameters() = 0;
  *    virtual void computeParameters(ColVector const& weights) = 0;
  *  @endcode
@@ -114,17 +94,16 @@ class IMultiParameters : public IRecursiveTemplate<Parameters>
  *  @sa ITContainer.
  *  @tparam Parameters any structure encapsulating the parameters of the model.
  *
- *  @note this class can be a runner, in this case the parameters are estimated
- *  using either @c run() and @c run(weights) methods. This class can also be used
- *  as a "kitchen" providing tools, in particular if there is latent variables.
- *  @sa ILatentModel, IMixtureModel.
+ *  @note This class is a runner, The parameters are estimated using either
+ *  @c run() or @c run(weights) methods. This class can also be used
+ *  as a "kitchen" providing tools, in particular if there is latent variables
+ *  and one need to use an iterative algorithm.
+ *  @sa IMixtureModel.
  **/
 template <class Array, class WColVector, class Parameters>
 class IMultiStatModel : public IModelBase, public IRunnerUnsupervised<Array, WColVector>
 {
   public:
-    /** Type of the data contained in the container */
-    typedef typename Array::Type Type;
     /** Type of the row vector of the container */
     typedef typename Array::Row RowVector;
     /** Type of the column vector of the container */
@@ -178,6 +157,7 @@ class IMultiStatModel : public IModelBase, public IRunnerUnsupervised<Array, WCo
     /** Estimate the parameters of the model and update the model */
     virtual bool run()
     {
+#ifdef STK_DEBUG
       if (!p_data())
       { this->msg_error_ = STKERROR_NO_ARG(IMultiStatModel::run,data have not be set);
         return false;
@@ -186,6 +166,7 @@ class IMultiStatModel : public IModelBase, public IRunnerUnsupervised<Array, WCo
       { this->msg_error_ = STKERROR_NO_ARG(IMultiStatModel::run(weights),parameters have not be set);
         return false;
       }
+#endif
       try
       {
         // compute parameters
@@ -193,7 +174,7 @@ class IMultiStatModel : public IModelBase, public IRunnerUnsupervised<Array, WCo
         // compute log-likelihood
         this->setLnLikelihood(computeLnLikelihood());
         // set the number of free parameters
-        this->setnbFreeParameters(computeNbFreeParameters());
+        this->setNbFreeParameters(computeNbFreeParameters());
       }
       catch (Exception const& e)
       { this->msg_error_ = e.error(); return false;}
@@ -205,6 +186,7 @@ class IMultiStatModel : public IModelBase, public IRunnerUnsupervised<Array, WCo
      **/
     virtual bool run(WColVector const& weights)
     {
+#ifdef STK_DEBUG
       if (!p_data())
       { this->msg_error_ = STKERROR_NO_ARG(IMultiStatModel::run(weights),data have not be set);
         return false;
@@ -213,6 +195,7 @@ class IMultiStatModel : public IModelBase, public IRunnerUnsupervised<Array, WCo
       { this->msg_error_ = STKERROR_NO_ARG(IMultiStatModel::run(weights),no parameters);
         return false;
       }
+#endif
       try
       {
         // compute weighted parameters
@@ -220,7 +203,7 @@ class IMultiStatModel : public IModelBase, public IRunnerUnsupervised<Array, WCo
         // compute log-likelihood
         this->setLnLikelihood(computeLnLikelihood());
         // set the number of free parameters
-        this->setnbFreeParameters(computeNbFreeParameters());
+        this->setNbFreeParameters(computeNbFreeParameters());
       }
       catch (Exception const& e)
       { this->msg_error_ = e.error(); return false;}
@@ -236,19 +219,20 @@ class IMultiStatModel : public IModelBase, public IRunnerUnsupervised<Array, WCo
       p_param_ = p_param;
       isParametersCreated_ = false;
     }
-    /** initialize the model and the parameters */
+    /** crete the parameters of the model using default constructor of Parameters */
     void createParameters()
     {
-      if (!p_param()) { p_param_ = new Parameters; isParametersCreated_ = true;}
+      if (isParametersCreated_ && p_param_) delete p_param_->asPtrDerived();
+      p_param_ = new Parameters; isParametersCreated_ = true;
       if (p_data()) { p_param_->resize(p_data()->cols());}
     }
-    /** print the parameters.
+    /** write the parameters.
      *  @param os the output stream for the parameters
      **/
-     virtual void printParameters(ostream &os)
+     virtual void writeParameters(ostream &os)
      {
        if (!p_param())
-       { STKRUNTIME_ERROR_NO_ARG(IMultiStatModel::printParameters(os),no parameters);}
+       { STKRUNTIME_ERROR_NO_ARG(IMultiStatModel::writeParameters(os),no parameters);}
        p_param_->print(os);
      }
 
@@ -259,7 +243,9 @@ class IMultiStatModel : public IModelBase, public IRunnerUnsupervised<Array, WCo
     bool isParametersCreated_;
     /** update the model if a new data set is set */
     virtual void update()
-    { this->initialize(p_data()->sizeRows(), p_data()->sizeCols());}
+    { this->initialize(p_data()->sizeRows(), p_data()->sizeCols());
+      if (isParametersCreated_ && p_param_) { p_param_->resize(p_data()->cols());}
+    }
 
   private:
     /** compute the parameters */

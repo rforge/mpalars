@@ -19,7 +19,7 @@
     Boston, MA 02111-1307
     USA
 
-    Contact : Serge.Iovleff@stkpp.org
+    Contact : quentin.grimonprez@inria.fr
 */
 
 /*
@@ -37,47 +37,133 @@
 #define IPENALIZEDSOLVER_H_
 
 #include "../../stkpp/include/STKpp.h"
+#include "IPenalty.h"
+
 
 namespace HD
 {
+
+  /**
+   * Functor for initialization in the conjugate gradient
+   */
+  struct InitFunctor
+  {
+      /**
+       * Operator
+       * @return pointer on the value for initialization
+       */
+      STK::CVectorX operator()() const
+      { return *p_x_;}
+
+      /**
+       * Constructor
+       * @param p_x pointer on the value for initialization
+       */
+      InitFunctor(STK::CVectorX const* p_x = 0) : p_x_(p_x) {};
+
+      ///pointer on the value for initialization
+      STK::CVectorX const* p_x_;
+  };
+
   /** @ingroup lassoModels
    *  @brief The class IPenalizedSolver is an interface for the solver of the @c PenalizedModels M-step
    */
   class IPenalizedSolver
   {
     public:
+      /**default constructor*/
+      IPenalizedSolver()
+      : currentData_()
+      , currentBeta_()
+      , currentSet_()
+      , p_data_(0)
+      , p_y_(0)
+      , beta_()
+      {
+      }
+
       /**
        * Constructor
-       * @param p_currentData pointer to the current data
-       * @param p_currentSet pointer to the current set of non zero estimates
+       * @param beta value for initializing beta
+       * @param p_data pointer to the data
+       * @param p_y pointer to the response
        */
-      IPenalizedSolver(STK::CArrayXX const* p_currentData = 0, STK::Array2DVector<int> const* p_currentSet = 0)
-      : p_currentData_(p_currentData)
-      , p_currentSet_(p_currentSet)
-      {};
+      IPenalizedSolver(STK::CVectorX const& beta, STK::CArrayXX const* p_data = 0, STK::CVectorX const* p_y = 0)
+                           : currentData_(*p_data)
+                           , currentBeta_(beta)
+                           , currentSet_(beta.sizeRows())
+                           , p_data_(p_data)
+                           , p_y_(p_y)
+                           , beta_(beta)
+       {
+         for(int i = 1; i <= currentSet_.sizeRows(); i++)
+           currentSet_[i] = i;
+       };
 
-      /**destructor*/
-      virtual ~IPenalizedSolver() {} ;
+       /**destructor*/
+       virtual ~IPenalizedSolver() {} ;
 
-      /**
-       * run the solver
-       * @return the new estimated value of beta
-       */
-      virtual STK::CVectorX run() = 0;
+       /**
+        * run the solver (Mstep)
+        * @return the new estimated value of beta
+        */
+       virtual STK::Real run(bool const& burn = true) = 0;
+       /**run the update of the penalty (Estep)*/
+       virtual void update() = 0;
+       /** initialize all the containers of the class */
+       virtual void initializeSolver() = 0;
 
-      //setter
-      /**set the pointer to the current data (data reduce to covariates from current set)*/
-      inline void setCurrentData(STK::CArrayXX const* p_currentData){p_currentData_=p_currentData;};
-      /**set the pointer to the current set*/
-      inline void setCurrentSet(STK::CArrayXX const* p_currentSet){p_currentData_=p_currentSet;};
+       //setter
+       /**set the pointer to the current data (data reduce to covariates from current set)*/
+       inline void setData(STK::CArrayXX const* p_data) {p_data_ = p_data;};
+       /**set the pointer to the response*/
+       inline void setY(STK::CVectorX const* p_y) {p_y_ = p_y;};
+       /**set the pointer to the current beta*/
+       inline void setBeta(STK::CVectorX const& beta)
+       {
+         beta_ = beta;
+         currentBeta_ = beta_;
+       };
+
+
+       //getter
+       /**@return beta_*/
+       inline STK::CVectorX  const& beta() const {return beta_;};
+       /**@return currentData_*/
+       inline STK::CArrayXX const& currentData() const {return currentData_;};
+       /**@return currentBeta_*/
+       inline STK::CVectorX const& currentBeta() const {return currentBeta_;};
+       /**@return currentData_*/
+       inline STK::CArrayXX const* p_currentData() const {return &currentData_;};
+       /**@return currentBeta_*/
+       inline STK::CVectorX const* p_currentBeta() const {return &currentBeta_;};
+       ///@return currentSet_
+       inline STK::Array2DVector<int> const& currentSet() const {return currentSet_;};
+
 
     protected:
-      ///const pointer on the current data (data reduce to variable of non-zero estimates)
-      STK::CArrayXX const* p_currentData_;
-      ///const pointer on the current set of variable (contains the index of non-zero estimates)
-      STK::Array2DVector<int> const* p_currentSet_;
+       /** compute the loglikelihood
+        * @return the loglikelihood of the current step
+        */
+       virtual STK::Real computeLlc() = 0;
 
-  };
+    protected:
+       ///current data
+       STK::CArrayXX currentData_;
+       ///Current beta
+       STK::CVectorX currentBeta_;
+       ///current set of variable
+       STK::Array2DVector<int> currentSet_;
+       ///const pointer on the data
+       STK::CArrayXX const* p_data_;
+       ///const pointer on the response
+       STK::CVectorX const* p_y_;
+       ///const pointer on beta_
+       STK::CVectorX beta_;
+
+   };
+
+
 }
 
 #endif /* IPENALIZEDSOLVER_H_ */

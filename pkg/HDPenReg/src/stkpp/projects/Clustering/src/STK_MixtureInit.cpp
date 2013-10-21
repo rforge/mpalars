@@ -32,58 +32,105 @@
  *  @brief In this file we implement the initialization methods.
  **/
 
+#include "../../STKernel/include/STK_Exceptions.h"
 #include "../include/STK_MixtureInit.h"
+#include "../include/STK_MixtureAlgo.h"
 #include "../include/STK_IMixtureModelBase.h"
 
 namespace STK
 {
 
-/* call the classInit() model initialization.
+/** destructor */
+IMixtureInit::~IMixtureInit()
+{ if (p_initAlgo_) delete p_initAlgo_;}
+
+/* launch the algorithm of the initialization step */
+bool IMixtureInit::runInitAlgo()
+{
+  if (p_initAlgo_)
+  {
+    p_initAlgo_->setModel(p_model_);
+    return (p_initAlgo_->run());
+  }
+  return true;
+}
+
+/* call the randomClassInit() model initialization.
  * @return @c true if no error occur, @c false otherwise*/
 bool RandomInit::run()
 {
-  try
+#ifdef STK_MIXTURE_VERY_VERBOSE
+  stk_cout << _T("Entering RandomInit::run() with:\n")
+           << _T("nbTry = ") << nbTry_ << _T("\n");
+#endif
+  for (int iTry= 0; iTry < this->nbTry_; ++iTry)
   {
-    p_model_->randomInit();
-  }
-  catch (Exception const& e)
-  {
-     msg_error_ = e.error();
-     return false;
-  }
-  return true;
+     try
+     {
+       p_model_->randomInit();
+       if (runInitAlgo()) return true;
+     }
+     catch (Clust::exceptions const& error)
+     {
+#ifdef STK_MIXTURE_VERY_VERBOSE
+  stk_cout << _T("In RandomInit::run(), try number") << iTry << " failed.\n";
+#endif
+     }
+  } // iTry
+  msg_error_ = _T("All initialization failed.");
+  return false;
 }
 
-/* call the classInit() model initialization.
+/* call the randomClassInit() model initialization.
  * @return @c true if no error occur, @c false otherwise*/
 bool ClassInit::run()
 {
-  try
+#ifdef STK_MIXTURE_VERY_VERBOSE
+  stk_cout << _T("Entering ClassInit::run() with:\n")
+           << _T("nbTry = ") << nbTry_ << _T("\n");
+#endif
+  for (int iTry= 0; iTry < nbTry_; ++iTry)
   {
-    p_model_->classInit();
-  }
-  catch (Exception const& e)
-  {
-     msg_error_ = e.error();
-     return false;
-  }
-  return true;
+    try
+    {
+      p_model_->randomClassInit();
+      if (runInitAlgo()) return true;
+    }
+    catch (Clust::exceptions const& error)
+    {
+#ifdef STK_MIXTURE_VERY_VERBOSE
+      stk_cout << _T("In ClassInit::run, try number: ") << iTry << " failed.\n";
+#endif
+    }
+  } // iTry
+  msg_error_ = _T("All initialization failed.");
+  return false;
 }
 
-/* call the classInit() model initialization.
+/* call the randomClassInit() model initialization.
  * @return @c true if no error occur, @c false otherwise*/
-bool FuzziInit::run()
+bool FuzzyInit::run()
 {
-  try
+#ifdef STK_MIXTURE_VERY_VERBOSE
+  stk_cout << _T("Entering FuzzyInit::run() with:\n")
+           << _T("nbTry = ") << nbTry_ << _T("\n");
+#endif
+  for (int iTry= 0; iTry < this->nbTry_; ++iTry)
   {
-    p_model_->fuzziInit();
-  }
-  catch (Exception const& e)
-  {
-     msg_error_ = e.error();
-     return false;
-  }
-  return true;
+    try
+    {
+      p_model_->randomFuzzyInit();
+      if (runInitAlgo()) return true;
+    }
+    catch (Clust::exceptions const& error)
+    {/* do nothing and retry*/
+#ifdef STK_MIXTURE_VERY_VERBOSE
+      stk_cout << _T("In FuzzyInit::run try:") << iTry << " failed.\n";
+#endif
+    }
+  } // iTry
+  msg_error_ = _T("All initialization failed.");
+  return false;
 }
 
 } // namespace STK

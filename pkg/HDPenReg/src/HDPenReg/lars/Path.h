@@ -19,7 +19,7 @@
     Boston, MA 02111-1307
     USA
 
-    Contact : Serge.Iovleff@stkpp.org
+    Contact : quentin.grimonprez@inria.fr
 */
 
 /*
@@ -69,7 +69,7 @@ namespace HD
       inline STK::Array2DVector<STK::Real> const l1norm() const
       {
         STK::Array2DVector<STK::Real> l1norm(states_.size());
-        for(int i = 0; i < states_.size(); i++)
+        for(int i = 0; i < (int) states_.size(); i++)
           l1norm[i+1] = states_[i].l1norm();
         return l1norm;
       }

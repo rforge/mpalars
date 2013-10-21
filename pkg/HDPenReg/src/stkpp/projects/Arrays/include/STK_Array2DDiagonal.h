@@ -209,16 +209,6 @@ class Array2DDiagonal : public IArray2D< Array2DDiagonal<Type> >
     inline Array2DDiagonal& operator=(Type const& v) { this->setValue(v); return *this;}
 };
 
-/** @ingroup Arrays
- *  ostream for Array2D.
- *  @param s the output stream
- *  @param V the Array2D to write
- **/
-template<class Type>
-ostream& operator<<(ostream& s, Array2DDiagonal<Type> const& V)
-{ return out2D(s,V);}
-
-
 } // namespace STK
 
 

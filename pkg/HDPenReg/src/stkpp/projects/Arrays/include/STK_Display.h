@@ -43,6 +43,7 @@
 
 namespace STK
 {
+
 /** @ingroup Arrays
  *  Method for displaying any two dimensional Array.
  *  The Container is exported in ReadWriteCsv and the the csv is written
@@ -82,6 +83,15 @@ ostream& out1D( ostream& os, ITContainer1D<Array> const& V)
   return os;
 }
 
+
+/** @ingroup Arrays
+ *  ostream for all arrays and expressions.
+ *  @param s the output stream
+ *  @param V the Array2D to write
+ **/
+template<class Array>
+inline ostream& operator<<(ostream& s, ArrayBase<Array> const& V)
+{ return out2D<Array>(s,V);}
 
 } // namespace STK
 

@@ -55,7 +55,7 @@ namespace Algo
  *  x_{n+1} = x_n - f(x_n)\frac{x_{n}-x_{n-1}}{f(x_{n}-f(x_{n-1})}
  *  \f]
  * in order to find the zero of the function f.
- * T
+ *
  * Some details of the implementation :
  * - If at some step the root is bracketed, the method switch immediately
  * to the Brent's method.
@@ -65,17 +65,18 @@ namespace Algo
  * @param f the function
  * @param x0 the first point of the algorithm
  * @param x1 the second point of the algorithm
+ * @param tol the tolerance of the method
  * @return the zero of the function if the method converge, a NA value otherwise
 **/
 template <class Function>
-Real SecantMethod( IFunction<Function> const& f, Real const& x0, Real const& x1)
+Real SecantMethod( IFunction<Function> const& f, Real const& x0, Real const& x1, Real tol)
 {
   Real a = x0, b = x1, fa = f(x0), fb = f(x1);
   // trivial cases
   if (fa==0.) return a;
   if (fb==0.) return b;
   // check if root is bracketed
-  if (fa * fb <0.) { return BrentMethod(f, a, b);}
+  if (fa * fb <0.) { return BrentMethod(f, a, b, tol);}
   // set low and high values
   if (std::abs(fa) < std::abs(fb))
   {
@@ -83,7 +84,7 @@ Real SecantMethod( IFunction<Function> const& f, Real const& x0, Real const& x1)
     std::swap(fa, fb);
   }
   // start secant iterations
-  while( (fb != 0) && (std::abs(b-a)>Arithmetic<Real>::epsilon()))
+  while( (std::abs(b-a)>tol))
   {
     Real delta = fb * (b - a) / (fb - fa);
     Real s = b - delta;
@@ -91,7 +92,7 @@ Real SecantMethod( IFunction<Function> const& f, Real const& x0, Real const& x1)
     if (s<f.xmin() || s > f.xmax()) return Arithmetic<Real>::NA();
     Real fs = f(s);
     // check if we can switch to Brent method
-    if (fb * fs < 0) { return BrentMethod(f, b, s); }
+    if (fb * fs < 0) { return BrentMethod(f, b, s, tol); }
     // handle divergence
     if (std::abs(fs)>std::abs(fb))// divergence
     {
@@ -102,7 +103,7 @@ Real SecantMethod( IFunction<Function> const& f, Real const& x0, Real const& x1)
         s = b - delta;
         fs = f(s);
         // check if we can switch to Brent method
-        if (fb * fs < 0) { return BrentMethod(f, b, s); }
+        if (fb * fs < 0) { return BrentMethod(f, b, s, tol); }
         // ok !
         if (std::abs(fs)<std::abs(fb)) { break ; dv = false;}
       }
@@ -112,6 +113,8 @@ Real SecantMethod( IFunction<Function> const& f, Real const& x0, Real const& x1)
     // update
     a =b; fa = fb;
     b =s; fb = fs;
+    // trivial case
+    if (fb==0.) return b;
   }
   return b;
 }
@@ -119,19 +122,14 @@ Real SecantMethod( IFunction<Function> const& f, Real const& x0, Real const& x1)
 /** @ingroup Analysis
  *  @brief perform the brent's algorithm.
  *
- * Compute iteratively
- *  \f[
- *  x_{n+1} = x_n - f(x_n)\frac{x_{n+1}-x_n}{f(x_{n+1}-f(x_n)}
- *  \f]
- * in order to find the zero of the function f.
- *
  * @param f the function
  * @param x0 the first point of the algorithm
  * @param x1 the second point of the algorithm
+ * @param tol the tolerance of the method
  * @return the new value
 **/
 template <class Function>
-Real BrentMethod( IFunction<Function> const& f, Real const& x0, Real const& x1)
+Real BrentMethod( IFunction<Function> const& f, Real const& x0, Real const& x1, Real tol)
 {
   Real ak = x0, bk = x1, fak = f(x0), fbk = f(x1);
   // trivial cases
@@ -139,7 +137,7 @@ Real BrentMethod( IFunction<Function> const& f, Real const& x0, Real const& x1)
   if (fbk==0.) return bk;
   // check if root is bracketed
   if (fak * fbk >0.) // secant method have to be used
-  { return SecantMethod(f, ak, bk);}
+  { return SecantMethod(f, ak, bk, tol);}
   // set low and high values
   if (std::abs(fak) < std::abs(fbk))
   {
@@ -155,7 +153,7 @@ Real BrentMethod( IFunction<Function> const& f, Real const& x0, Real const& x1)
   stk_cout << _T("iter = ") << iter <<_T(". bkm1, ak, bk = ") << bkm1 << _T(" ") << ak << _T(" ") << bk << _T("\n");
   stk_cout << _T("iter = ") << iter <<_T(". fbkm1, fak, fbk = ") << fbkm1 << _T(" ") << fak << _T(" ") << fbk << _T("\n");
 #endif
-  while( (fbk != 0) && (std::abs(bk-ak)>Arithmetic<Real>::epsilon()))
+  while( (std::abs(bk-ak)>tol) )
   {
     iter++;
     Real s;
@@ -175,8 +173,8 @@ Real BrentMethod( IFunction<Function> const& f, Real const& x0, Real const& x1)
     // check if we shall fall-back to dichotomy
     Real tmp = (3. * ak + bk) / 4., diff1 =std::abs(bk - bkm1), diff2 = std::abs(bkm1-bkm2);
     if (!( ((s > tmp) && (s < bk)) || ((s < tmp) && (s > bk)) ) // s not between bk and tmp
-       ||( mflag &&(  (std::abs(s-bk) >= diff1 / 2.)||(diff1 < Arithmetic<Real>::epsilon())))
-       ||(!mflag &&( (std::abs(s-bk) >= diff2/2.)||(diff2 < Arithmetic<Real>::epsilon())))
+       ||( mflag &&(  (std::abs(s-bk) >= diff1 / 2.)||(diff1 < tol)))
+       ||(!mflag &&( (std::abs(s-bk) >= diff2/2.)||(diff2 < tol)))
        )
     {
        s = (ak + bk) / 2.;
@@ -184,6 +182,7 @@ Real BrentMethod( IFunction<Function> const& f, Real const& x0, Real const& x1)
        mflag = true;
     }
     else { mflag = false;}
+
     Real fs = f(s);
     bkm2 = bkm1; bkm1 = bk; fbkm1 = fbk;
     // check for bracketing the root
@@ -199,6 +198,7 @@ Real BrentMethod( IFunction<Function> const& f, Real const& x0, Real const& x1)
     stk_cout << _T("iter = ") << iter <<_T(". bkm1, ak, bk = ") << bkm1 << _T(" ") << ak << _T(" ") << bk << _T("\n");
     stk_cout << _T("iter = ") << iter <<_T(". fbkm1, fak, fbk = ") << fbkm1 << _T(" ") << fak << _T(" ") << fbk << _T("\n");
 #endif
+    if (fbk==0.) return bk;
     if (iter > MAX_ITER) return Arithmetic<Real>::NA();
   }
   return bk;
@@ -210,20 +210,22 @@ Real BrentMethod( IFunction<Function> const& f, Real const& x0, Real const& x1)
  *  function and call the Brent's method.
  *
  * @param f the function
- * @param x0 the first point of the algorithm
- * @param x1 the second point of the algorithm
+ * @param x0 the first starting point of the algorithm
+ * @param x1 the second starting point of the algorithm
+ * @param tol the tolerance to apply
  * @return the zero of the function if any, a NA value otherwise
 **/
 template <class Function>
-Real findZero( IFunction<Function> const& f, Real const& x0, Real const& x1)
+Real findZero( IFunction<Function> const& f, Real const& x0, Real const& x1, Real tol = Arithmetic<Real>:: epsilon())
 {
   if (x0<f.xmin() || x0>f.xmax() || x1<f.xmin() || x1>f.xmax())
     STKDOMAIN_ERROR_2ARG(BrentMethod,x0,x1,An initial point is out of the domain);
-  return BrentMethod(f, x0, x1);
+  return BrentMethod(f, x0, x1, tol);
 }
 
 } // namesapce Law
 
 } // namespace STK
 
+#undef MAX_ITER
 #endif /*STK_ALGO_FINDZERO_H*/

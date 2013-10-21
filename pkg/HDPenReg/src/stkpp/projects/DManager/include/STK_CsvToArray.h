@@ -120,12 +120,21 @@ class CsvToArray : public IRunnerBase
     CsvToArray( Rw const& rw, Real const& propMiss = 0.)
               : rw_(rw), p_data_(0), propMiss_(propMiss)
     {}
+    /** copy constructor.
+     *  @param exporter the CsvToArray to copy
+     */
+    CsvToArray( CsvToArray const& exporter)
+              : rw_(exporter.rw_), p_data_(exporter.p_data_), propMiss_(exporter.propMiss_)
+    {}
     /** destructor */
-    ~CsvToArray() { if (p_data_) delete p_data_;}
-    /** @return the maximal proportion of missing value allowed
-     * in each column */
+    virtual ~CsvToArray() { if (p_data_) delete p_data_;}
+    /** clone pattern */
+    CsvToArray* clone() const { return new CsvToArray(*this);}
+    /** @return the maximal proportion of missing value allowed in each column */
     inline Real const& propMiss() const { return propMiss_;}
-    /** Set the maximal proportion of missing value allowed */
+    /** Set the maximal proportion of missing value allowed
+     *  @param propMiss the allowed proportion of missiong values
+     **/
     inline void setPropMiss(Real const& propMiss) { propMiss_ = propMiss;}
     /** run the export. */
     bool run()

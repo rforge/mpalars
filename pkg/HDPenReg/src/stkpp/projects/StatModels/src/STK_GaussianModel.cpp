@@ -48,7 +48,7 @@ GaussianModel::GaussianModel( Matrix const* p_data)
                             : IGaussianModel<Matrix>(p_data)
                             , cov_(p_data_->cols())
 {
-  setnbFreeParameters(nbVar() + (nbVar()* (nbVar()-1))/2);
+  setNbFreeParameters(nbVar() + (nbVar()* (nbVar()-1))/2);
 }
 
 /* constructor */
@@ -56,7 +56,7 @@ GaussianModel::GaussianModel( Matrix const& data)
                             : IGaussianModel<Matrix>(data)
                             , cov_(data.cols())
 {
-  setnbFreeParameters(nbVar() + (nbVar()* (nbVar()-1))/2);
+  setNbFreeParameters(nbVar() + (nbVar()* (nbVar()-1))/2);
 }
 
 /* destructor */

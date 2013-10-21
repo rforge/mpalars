@@ -46,7 +46,7 @@
 namespace STK
 {
 /**  @ingroup Base
-  *  @defgroup stream STKernel::Base I/O stream declarations
+  *  @defgroup iostream I/O stream declarations
   *
   *  Nearly all of the I/O classes are parameterized on the type of
   *  characters they read and write (The major exception is ios_base at
@@ -62,73 +62,36 @@ namespace STK
   *  These declarations in the STK namespace would be very useful if you
   *  modifiy the built-in type representation of Char (say wchar_t).
   *  @{
- */
+  **/
 
-/** @ingroup stream
- *  ios for Char
- **/
+/** ios for Char */
 typedef std::basic_ios<Char>           ios;
-
-/** @ingroup stream
- *  streambuf for Char
- **/
+/** streambuf for Char*/
 typedef std::basic_streambuf<Char>     streambuf;
-
-/** @ingroup stream
- *  istream for Char
- **/
+/** istream for Char*/
 typedef std::basic_istream<Char>       istream;
-
-/** @ingroup stream
- *  ostream for Char
- **/
+/** ostream for Char*/
 typedef std::basic_ostream<Char>       ostream;
-
-/** @ingroup stream
- *  iostream for Char
- **/
+/** iostream for Char*/
 typedef std::basic_iostream<Char>      iostream;
-
-/** @ingroup stream
- *  stringbuf for Char
- **/
+/** stringbuf for Char */
 typedef std::basic_stringbuf<Char>     stringbuf;
-
-/** @ingroup stream
- *  istringstream (istringstream) for Char
- **/
+/** istringstream for Char */
 typedef std::basic_istringstream<Char> istringstream;
-
-/** @ingroup stream
- *  ostringstream (ostringstream) for Char
- **/
+/** ostringstream (ostringstream) for Char */
 typedef std::basic_ostringstream<Char> ostringstream;
-
-/** @ingroup stream
- *  stringstream (stringstream) for Char
- **/
+/** stringstream for Char */
 typedef std::basic_stringstream<Char>  stringstream;
-
-/** @ingroup stream
- *  filebuf for Char
- **/
+/** filebuf for Char */
 typedef std::basic_filebuf<Char>       filebuf;
-
-/** @ingroup stream
- *  ifstream for Char
- **/
+/** ifstream for Char */
 typedef std::basic_ifstream<Char>      ifstream;
-
-/** @ingroup stream
- *  ofstream for Char
- **/
+/** ofstream for Char */
 typedef std::basic_ofstream<Char>      ofstream;
-
-/** @ingroup stream
- *  fstream for Char
- **/
+/***/
 typedef std::basic_fstream<Char>       fstream;
 
-} // namespaceSTK
+/** @} */
+} // namespace STK
 
 #endif /* STK_STREAM_H */

@@ -53,11 +53,11 @@ template<typename> class Array2DDiagonal;
 template<typename> class Array2DPoint;
 template<typename> class Array2DVector;
 
-template< typename, int, int, bool> class CArray;
-template< typename, int, bool> class CArraySquare;
-template< typename, int, int, bool> class CArrayPoint;
-template< typename, int, int, bool> class CArrayVector;
-template< typename, int, int, bool> class CArrayNumber;
+//template< typename, int, int, bool> class CArray;
+//template< typename, int, bool> class CArraySquare;
+//template< typename, int, bool> class CArrayPoint;
+//template< typename, int, int, bool> class CArrayVector;
+//template< typename, int, int, bool> class CArrayNumber;
 
 namespace hidden
 {
@@ -174,7 +174,8 @@ struct ProductTraitsBase
 
 /** @ingroup hidden
  *  @brief Traits class to get the correct returned Structure, Type, allocator,...
- *  of operator*.
+ *  of operator*. This Traits class is used by the functors classes operating
+ *  on the Array2D  classes.
  *  @note the impossible cases are tracked in MatrixByMatrixProduct class.
  **/
 template<typename Lhs, typename Rhs, int LStructure_, int RStructure_>
@@ -189,7 +190,7 @@ struct ProductTraits<Lhs, Rhs, Arrays::array2D_, RStructure_>
   typedef ProductTraitsBase<Lhs, Rhs> Base;
   typedef typename hidden::Promote< typename Lhs::Type, typename Rhs::Type>::result_type Type;
   typedef typename ProductArray2DReturnType<Type, Lhs::structure_, Rhs::structure_>::result_type Result2D;
-  typedef CArray<Type, Base::sizeRows_, Base::sizeCols_, Base::orient_> CResult;
+//  typedef CArray<Type, Base::sizeRows_, Base::sizeCols_, Base::orient_> CResult;
   typedef CAllocator<Type, Arrays::array2D_, Base::sizeRows_, Base::sizeCols_, Base::orient_> Allocator;
   enum
   {
@@ -207,7 +208,7 @@ struct ProductTraits<Lhs, Rhs, Arrays::array2D_, Arrays::vector_>
   typedef ProductTraitsBase<Lhs, Rhs> Base;
   typedef typename hidden::Promote< typename Lhs::Type, typename Rhs::Type>::result_type Type;
   typedef typename ProductArray2DReturnType<Type, Lhs::structure_, Rhs::structure_>::result_type Result2D;
-  typedef CArrayVector<Type , Base::sizeRows_, 1, Arrays::by_col_> CResult;
+//  typedef CArrayVector<Type , Base::sizeRows_, 1, Arrays::by_col_> CResult;
   typedef CAllocator<Type, Arrays::vector_, Base::sizeRows_ , 1, Arrays::by_col_> Allocator;
   enum
   {
@@ -228,7 +229,7 @@ struct ProductTraits<Lhs, Rhs, Arrays::square_, RStructure_>
   typedef ProductTraitsBase<Lhs, Rhs> Base;
   typedef typename hidden::Promote< typename Lhs::Type, typename Rhs::Type>::result_type Type;
   typedef typename ProductArray2DReturnType<Type, Lhs::structure_, Rhs::structure_>::result_type Result2D;
-  typedef CArray<Type ,Base::sizeRows_ , Base::sizeCols_, Base::orient_> CResult;
+//  typedef CArray<Type ,Base::sizeRows_ , Base::sizeCols_, Base::orient_> CResult;
   typedef CAllocator<Type, Arrays::array2D_,Base::sizeRows_ , Base::sizeCols_, Base::orient_> Allocator;
   enum
   {
@@ -246,7 +247,7 @@ struct ProductTraits<Lhs, Rhs, Arrays::square_, Arrays::square_>
   typedef ProductTraitsBase<Lhs, Rhs> Base;
   typedef typename hidden::Promote< typename Lhs::Type, typename Rhs::Type>::result_type Type;
   typedef typename ProductArray2DReturnType<Type, Lhs::structure_, Rhs::structure_>::result_type Result2D;
-  typedef CArraySquare<Type ,Base::sizeRows_, Base::orient_> CResult;
+//  typedef CArraySquare<Type ,Base::sizeRows_, Base::orient_> CResult;
   typedef CAllocator<Type, Arrays::square_,Base::sizeRows_ , Base::sizeCols_, Base::orient_> Allocator;
   enum
   {
@@ -264,7 +265,7 @@ struct ProductTraits<Lhs, Rhs, Arrays::square_, Arrays::diagonal_>
   typedef ProductTraitsBase<Lhs, Rhs> Base;
   typedef typename hidden::Promote< typename Lhs::Type, typename Rhs::Type>::result_type Type;
   typedef typename ProductArray2DReturnType<Type, Lhs::structure_, Rhs::structure_>::result_type Result2D;
-  typedef CArraySquare<Type , Base::sizeRows_, Base::orient_> CResult;
+//  typedef CArraySquare<Type , Base::sizeRows_, Base::orient_> CResult;
   enum
   {
     structure_ = Arrays::square_,
@@ -281,7 +282,7 @@ struct ProductTraits<Lhs, Rhs, Arrays::square_, Arrays::vector_>
   typedef ProductTraitsBase<Lhs, Rhs> Base;
   typedef typename hidden::Promote< typename Lhs::Type, typename Rhs::Type>::result_type Type;
   typedef typename ProductArray2DReturnType<Type, Lhs::structure_, Rhs::structure_>::result_type Result2D;
-  typedef CArrayVector<Type , Base::sizeRows_, 1, Base::orient_> CResult;
+//  typedef CArrayVector<Type , Base::sizeRows_, 1, Base::orient_> CResult;
   typedef CAllocator<Type, Arrays::vector_,Base::sizeRows_ , 1, Base::orient_> Allocator;
   enum
   {
@@ -302,7 +303,7 @@ struct ProductTraits<Lhs, Rhs, Arrays::diagonal_, RStructure_>
   typedef ProductTraitsBase<Lhs, Rhs> Base;
   typedef typename hidden::Promote< typename Lhs::Type, typename Rhs::Type>::result_type Type;
   typedef typename ProductArray2DReturnType<Type, Lhs::structure_, Rhs::structure_>::result_type Result2D;
-  typedef CArray<Type ,Base::sizeRows_ , Base::sizeCols_, Base::orient_> CResult;
+//  typedef CArray<Type ,Base::sizeRows_ , Base::sizeCols_, Base::orient_> CResult;
   typedef CAllocator<Type, Arrays::array2D_,Base::sizeRows_ , Base::sizeCols_, Base::orient_> Allocator;
   enum
   {
@@ -323,7 +324,7 @@ struct ProductTraits<Lhs, Rhs, Arrays::lower_triangular_, RStructure_>
   enum { structure_ = Arrays::array2D_};
   typedef typename hidden::Promote< typename Lhs::Type, typename Rhs::Type>::result_type Type;
   typedef typename ProductArray2DReturnType<Type, Lhs::structure_, Rhs::structure_>::result_type Result2D;
-  typedef CArray<Type ,Base::sizeRows_ , Base::sizeCols_, Base::orient_> CResult;
+//  typedef CArray<Type ,Base::sizeRows_ , Base::sizeCols_, Base::orient_> CResult;
   typedef CAllocator<Type, Arrays::array2D_,Base::sizeRows_ , Base::sizeCols_, Base::orient_> Allocator;
 };
 template<typename Lhs, typename Rhs>
@@ -345,7 +346,7 @@ struct ProductTraits<Lhs, Rhs, Arrays::lower_triangular_, Arrays::vector_>
   enum { structure_ = Arrays::vector_};
   typedef typename hidden::Promote< typename Lhs::Type, typename Rhs::Type>::result_type Type;
   typedef typename ProductArray2DReturnType<Type, Lhs::structure_, Rhs::structure_>::result_type Result2D;
-  typedef CArrayVector<Type , Base::sizeRows_, 1, Base::orient_> CResult;
+//  typedef CArrayVector<Type , Base::sizeRows_, 1, Base::orient_> CResult;
   typedef CAllocator<Type, Arrays::vector_,Base::sizeRows_ , 1, Base::orient_> Allocator;
 };
 
@@ -359,7 +360,7 @@ struct ProductTraits<Lhs, Rhs, Arrays::upper_triangular_, RStructure_>
   enum { structure_ = Arrays::array2D_};
   typedef typename hidden::Promote< typename Lhs::Type, typename Rhs::Type>::result_type Type;
   typedef typename ProductArray2DReturnType<Type, Lhs::structure_, Rhs::structure_>::result_type Result2D;
-  typedef CArray<Type ,Base::sizeRows_ , Base::sizeCols_, Base::orient_> CResult;
+//  typedef CArray<Type ,Base::sizeRows_ , Base::sizeCols_, Base::orient_> CResult;
   typedef CAllocator<Type, Arrays::array2D_,Base::sizeRows_ , Base::sizeCols_, Base::orient_> Allocator;
 };
 template<typename Lhs, typename Rhs>
@@ -380,7 +381,7 @@ struct ProductTraits<Lhs, Rhs, Arrays::upper_triangular_, Arrays::vector_>
   typedef ProductTraitsBase<Lhs, Rhs> Base;
   typedef typename hidden::Promote< typename Lhs::Type, typename Rhs::Type>::result_type Type;
   typedef typename ProductArray2DReturnType<Type, Lhs::structure_, Rhs::structure_>::result_type Result2D;
-  typedef CArrayVector<Type , Base::sizeRows_, 1, Base::orient_> CResult;
+//  typedef CArrayVector<Type , Base::sizeRows_, 1, Base::orient_> CResult;
   typedef CAllocator<Type, Arrays::vector_,Base::sizeRows_ , Base::sizeCols_, Base::orient_> Allocator;
   enum
   {
@@ -403,7 +404,7 @@ struct ProductTraits<Lhs, Rhs, Arrays::vector_, Arrays::point_>
   enum { structure_ = Arrays::array2D_};
   typedef typename hidden::Promote< typename Lhs::Type, typename Rhs::Type>::result_type Type;
   typedef typename ProductArray2DReturnType<Type, Lhs::structure_, Rhs::structure_>::result_type Result2D;
-  typedef CArray<Type ,Base::sizeRows_ , Base::sizeCols_, Base::orient_> CResult;
+//  typedef CArray<Type ,Base::sizeRows_ , Base::sizeCols_, Base::orient_> CResult;
   typedef CAllocator<Type, Arrays::array2D_,Base::sizeRows_ , Base::sizeCols_, Base::orient_> Allocator;
 };
 
@@ -416,7 +417,7 @@ struct ProductTraits<Lhs, Rhs, Arrays::point_, RStructure_>
   typedef ProductTraitsBase<Lhs, Rhs> Base;
   typedef typename hidden::Promote< typename Lhs::Type, typename Rhs::Type>::result_type Type;
   typedef typename ProductArray2DReturnType<Type, Lhs::structure_, Rhs::structure_>::result_type Result2D;
-  typedef CArrayPoint<Type ,1, Base::sizeCols_, Base::orient_> CResult;
+//  typedef CArrayPoint<Type , Base::sizeCols_, Base::orient_> CResult;
   typedef CAllocator<Type, Arrays::point_,1, Base::sizeCols_, Base::orient_> Allocator;
   enum
   {

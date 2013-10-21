@@ -62,8 +62,8 @@ HDpredict=function(x,Xnew, lambda, mode="fraction")
 #' @title Compute coefficients
 #' @author Quentin Grimonprez
 #' @param x a LarsParth object
-#' @param lambda If mode =\"norm\", lambda represents the l1-norm of the coefficients with which we want to predict. If mode=\"fraction\", lambda represents the ratio (l1-norm of the coefficientswith which we want to predict)/(l1-norm maximal of the LarsPath object).
-#' @param mode "fraction" or "norm".
+#' @param lambda If mode ="norm", lambda represents the l1-norm of the coefficients with which we want to predict. If mode="fraction", lambda represents the ratio (l1-norm of the coefficientswith which we want to predict)/(l1-norm maximal of the LarsPath object).
+#' @param mode "fraction" or "norm" or "lambda.
 #' @return A list containing 
 #' \describe{
 #'   \item{variable}{Index of non-zeros coefficients.}
@@ -81,7 +81,7 @@ computeCoefficients = function(x,lambda,mode="fraction")
 		stop("x is missing.")
 	if(class(x)!="LarsPath")
 		stop("x must be a LarsPath object.")
-	if( !(mode%in%c("fraction","norm"))  ) 
+	if( !(mode%in%c("fraction","norm","lambda"))  ) 
 		stop("mode must be \"fraction\" or \"norm\".")
 	if(!is.numeric(lambda))
 		stop("lambda must be a positive real.")
@@ -89,6 +89,9 @@ computeCoefficients = function(x,lambda,mode="fraction")
 		stop("lambda must be a positive real.")
 	if(mode == "fraction")
 		lambda = lambda * x@l1norm[x@nbStep+1]
+	abscissa = x@l1norm
+	if(mode == "lambda")
+	   abscissa = x@lambda
 	if(lambda < 0)
 		stop("lambda must be a positive real.")
 	if(lambda >= x@l1norm[x@nbStep+1])
@@ -98,8 +101,17 @@ computeCoefficients = function(x,lambda,mode="fraction")
 	
 
 	index = 1;
-	while( x@l1norm[index] < lambda )
-		index=index+1;
+	if(mode=="lambda")
+	{
+	   while( abscissa[index] > lambda )
+        index=index+1;
+	}
+	else
+	{
+	   while( abscissa[index] < lambda )
+        index=index+1;
+	}
+
 	index=index-1
 	if(x@dropIndex[index]==0)#no drop variable
 	{
@@ -107,15 +119,15 @@ computeCoefficients = function(x,lambda,mode="fraction")
 		if(x@addIndex[index]!=0)
 		{
 			coeff=c(
-			.computeOrdinate(x@l1norm[index], x@l1norm[index+1], lambda, x@coefficient[[index]], x@coefficient[[index+1]][-length(x@coefficient[[index+1]])]), 
-			.computeOrdinate(x@l1norm[index], x@l1norm[index+1], lambda, 0, x@coefficient[[index+1]][length(x@coefficient[[index+1]])]))
+			.computeOrdinate(abscissa[index], abscissa[index+1], lambda, x@coefficient[[index]], x@coefficient[[index+1]][-length(x@coefficient[[index+1]])]), 
+			.computeOrdinate(abscissa[index], abscissa[index+1], lambda, 0, x@coefficient[[index+1]][length(x@coefficient[[index+1]])]))
 			variable=x@variable[[index+1]]
 
 			return(list(variable=variable,coefficient=coeff))
 		}
 		else
 		{
-			coeff=.computeOrdinate(x@l1norm[index], x@l1norm[index+1], lambda, x@coefficient[[index]], x@coefficient[[index+1]])
+			coeff=.computeOrdinate(abscissa[index], abscissa[index+1], lambda, x@coefficient[[index]], x@coefficient[[index+1]])
 			variable=x@variable[[index+1]]
 
 			return(list(variable=variable,coefficient=coeff))
@@ -132,10 +144,10 @@ computeCoefficients = function(x,lambda,mode="fraction")
 		if(x@addIndex[index]!=0)
 		{
 			coeff=c(
-			.computeOrdinate(x@l1norm[index], x@l1norm[index+1], lambda, x@coefficient[[index]][1:(delIndex-1)], x@coefficient[[index+1]][1:(delIndex-1)]),
-			.computeOrdinate(x@l1norm[index], x@l1norm[index+1], lambda, x@coefficient[[index]][delIndex], 0),
-			.computeOrdinate(x@l1norm[index], x@l1norm[index+1], lambda, x@coefficient[[index]][-c(1:delIndex)], x@coefficient[[index+1]][delIndex:(length(x@coefficient[[index]])-1)]),
-			.computeOrdinate(x@l1norm[index], x@l1norm[index+1], lambda, 0, x@coefficient[[index+1]][length(x@coefficient[[index+1]])]))
+			.computeOrdinate(abscissa[index], abscissa[index+1], lambda, x@coefficient[[index]][1:(delIndex-1)], x@coefficient[[index+1]][1:(delIndex-1)]),
+			.computeOrdinate(abscissa[index], abscissa[index+1], lambda, x@coefficient[[index]][delIndex], 0),
+			.computeOrdinate(abscissa[index], abscissa[index+1], lambda, x@coefficient[[index]][-c(1:delIndex)], x@coefficient[[index+1]][delIndex:(length(x@coefficient[[index]])-1)]),
+			.computeOrdinate(abscissa[index], abscissa[index+1], lambda, 0, x@coefficient[[index+1]][length(x@coefficient[[index+1]])]))
 			variable=c(x@variable[[index]], x@variable[[index+1]][length(x@variable[[index+1]])])
 
 			return(list(variable=variable,coefficient=coeff))
@@ -143,9 +155,9 @@ computeCoefficients = function(x,lambda,mode="fraction")
 		else
 		{	##no add
 			coeff=c(
-			.computeOrdinate(x@l1norm[index], x@l1norm[index+1], lambda, x@coefficient[[index]][1:(delIndex-1)], x@coefficient[[index+1]][1:(delIndex-1)]),
-			.computeOrdinate(x@l1norm[index], x@l1norm[index+1], lambda, x@coefficient[[index]][delIndex], 0),
-			.computeOrdinate(x@l1norm[index], x@l1norm[index+1], lambda, x@coefficient[[index]][-c(1:delIndex)], x@coefficient[[index+1]][delIndex:length(x@coefficient[[index]])]))
+			.computeOrdinate(abscissa[index], abscissa[index+1], lambda, x@coefficient[[index]][1:(delIndex-1)], x@coefficient[[index+1]][1:(delIndex-1)]),
+			.computeOrdinate(abscissa[index], abscissa[index+1], lambda, x@coefficient[[index]][delIndex], 0),
+			.computeOrdinate(abscissa[index], abscissa[index+1], lambda, x@coefficient[[index]][-c(1:delIndex)], x@coefficient[[index+1]][delIndex:length(x@coefficient[[index]])]))
 
 			variable=x@variable[[index]]
 			

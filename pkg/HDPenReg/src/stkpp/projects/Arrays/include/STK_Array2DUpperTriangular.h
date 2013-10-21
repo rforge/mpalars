@@ -169,15 +169,6 @@ class Array2DUpperTriangular : public IArray2D< Array2DUpperTriangular<Type> >
     inline Array2DUpperTriangular& operator=(Type const& v) { this->setValue(v); return *this;}
 };
 
-/** @ingroup Arrays
- *  ostream for Array2DUpperTriangular.
- *  @param s the output stream
- *  @param V the Array2DUpperTriangular to write
- **/
-template<typename Type>
-ostream& operator<<(ostream& s, Array2DUpperTriangular<Type> const& V)
-{ return out2D(s,V);}
-
 } // namespace STK
 
 #endif

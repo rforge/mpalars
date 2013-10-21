@@ -70,11 +70,13 @@
 
 // namespace Law
 // probabilities laws
+#include "../projects/STatistiK/include/STK_Law_Util.h"
 #include "../projects/STatistiK/include/STK_Law_Bernoulli.h"
 #include "../projects/STatistiK/include/STK_Law_Cauchy.h"
 #include "../projects/STatistiK/include/STK_Law_Exponential.h"
-#include "../projects/STatistiK/include/STK_Law_Normal.h"
 #include "../projects/STatistiK/include/STK_Law_Gamma.h"
+#include "../projects/STatistiK/include/STK_Law_Normal.h"
+#include "../projects/STatistiK/include/STK_Law_Uniform.h"
 
 #include "../projects/STatistiK/include/STK_Law_JointBernoulli.h"
 #include "../projects/STatistiK/include/STK_Law_JointCauchy.h"
@@ -86,7 +88,6 @@
 // namespace Stat
 // Univariate Statistics
 #include "../projects/STatistiK/include/STK_Stat_Functors.h"
-#include "../projects/STatistiK/include/STK_Stat_Univariate.h"
 #include "../projects/STatistiK/include/STK_Stat_UnivariateReal.h"
 
 // bivariate Statistics

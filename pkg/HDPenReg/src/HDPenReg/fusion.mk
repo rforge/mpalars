@@ -7,7 +7,6 @@ all:lib
 #-----------------------------------------------------------------------
 # Variables
 # 
-#LIB = ./libHD.a
 LIB = ./lib/libHDPenReg.a
 STK_INC_DIR = -I./ -I../
 

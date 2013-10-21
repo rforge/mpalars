@@ -29,34 +29,52 @@
  * Originally created by Parmeet bhatia <b..._DOT_p..._AT_gmail_Dot_com>
  **/
 
-/** @file STK_IMixtureModel.cpp
+/** @file STK_MixtureAlgo.cpp
  *  @brief In this file we implement the run method of the mixture algorithms.
  **/
 
+#include "../../STKernel/include/STK_Exceptions.h"
 #include "../include/STK_MixtureAlgo.h"
 #include "../include/STK_IMixtureModelBase.h"
 
 namespace STK
 {
 
+/* run the CEM allgorithm */
 bool CEMAlgo::run()
 {
+#ifdef STK_MIXTURE_VERY_VERBOSE
+  stk_cout << _T("Entering CEMAlgo::run() with:\n")
+           << _T("nbIterMax_ = ") << nbIterMax_ << _T("\n")
+           << _T("epsilon_ = ") << epsilon_ << _T("\n");
+#endif
   try
   {
-    Real currentLikelihood = -STK::Arithmetic<Real>::max();
-    for (int iter = 0; iter < nbIterMax_; ++iter)
+    Real currentLnLikelihood =  p_model_->lnLikelihood();
+    for (int iter = 0; iter < nbIterMax_; iter++)
     {
-      p_model_->ceStep();
+      p_model_->cStep();
       p_model_->mStep();
-      p_model_->computeLnLikelihood();
-      // no abs as the likelihood should increase
-      if ( (p_model_->lnLikelihood() - currentLikelihood) < epsilon_) break;
-      currentLikelihood = p_model_->lnLikelihood();
+      p_model_->eStep();
+      Real lnLikelihood = p_model_->lnLikelihood();
+      if (std::abs(lnLikelihood - currentLnLikelihood) < epsilon_)
+      {
+#ifdef STK_MIXTURE_VERY_VERBOSE
+        stk_cout << _T("Terminating CEMAlgo::run() with:\n")
+                 << _T("iter = ") << iter << _T("\n")
+                 << _T("delta = ") << lnLikelihood - currentLnLikelihood << _T("\n");
+#endif
+        break;
+      }
+      currentLnLikelihood = lnLikelihood;
     }
   }
-  catch (Exception const& e)
+  catch (Clust::exceptions const& error)
   {
-    msg_error_ = e.error();
+    msg_error_ = Clust::exceptionToString(error);
+#ifdef STK_MIXTURE_VERY_VERBOSE
+  stk_cout << _T("An error occur in CEM algorithm: ") << msg_error_ << _T("\n");
+#endif
     return false;
   }
   return true;
@@ -64,27 +82,39 @@ bool CEMAlgo::run()
 
 bool EMAlgo::run()
 {
+#ifdef STK_MIXTURE_VERY_VERBOSE
+  stk_cout << _T("Entering EMAlgo::run() with:\n")
+           << _T("nbIterMax_ = ") << nbIterMax_ << _T("\n")
+           << _T("epsilon_ = ") << epsilon_ << _T("\n");
+#endif
+
   try
   {
-    for (int iter = 0; iter < this->nbIterMax_; ++iter)
+    Real currentLnLikelihood = p_model_->lnLikelihood();
+    for (int iter = 0; iter < nbIterMax_; iter++)
     {
-      Real currentLikelihood = -STK::Arithmetic<Real>::max();
-      for (int iter = 0; iter < nbIterMax_; ++iter)
+      p_model_->mStep();
+      p_model_->eStep();
+      Real lnLikelihood = p_model_->lnLikelihood();
+      // no abs as the likelihood should increase
+      if ( (lnLikelihood - currentLnLikelihood) < epsilon_)
       {
-        p_model_->eStep();
-        p_model_->mStep();
-        p_model_->computeLnLikelihood();
-        // no abs as the likelihood should increase
-        if ( (p_model_->lnLikelihood() - currentLikelihood) < epsilon_) break;
-        currentLikelihood = p_model_->lnLikelihood();
+#ifdef STK_MIXTURE_VERY_VERBOSE
+        stk_cout << _T("Terminating EMAlgo::run() with:\n")
+                 << _T("iter = ") << iter << _T("\n")
+                 << _T("delta = ") << lnLikelihood - currentLnLikelihood << _T("\n");
+#endif
+        break;
       }
-      // compute zi
-      p_model_->mapStep();
+      currentLnLikelihood = lnLikelihood;
     }
   }
-  catch (Exception const& e)
+  catch (Clust::exceptions const& error)
   {
-    msg_error_ = e.error();
+    msg_error_ = Clust::exceptionToString(error);
+#ifdef STK_MIXTURE_VERY_VERBOSE
+  stk_cout << _T("An error occur in EM algorithm: ") << msg_error_ << _T("\n");
+#endif
     return false;
   }
   return true;
@@ -92,18 +122,26 @@ bool EMAlgo::run()
 
 bool SEMAlgo::run()
 {
+#ifdef STK_MIXTURE_VERY_VERBOSE
+  stk_cout << _T("Entering SEMAlgo::run() with:\n")
+           << _T("nbIterMax_ = ") << nbIterMax_ << _T("\n")
+           << _T("epsilon_ = ") << epsilon_ << _T("\n");
+#endif
   try
   {
     for (int iter = 0; iter < this->nbIterMax_; ++iter)
     {
-      p_model_->seStep();
+      p_model_->sStep();
       p_model_->mStep();
+      p_model_->eStep();
     }
-    p_model_->computeLnLikelihood();
   }
-  catch (Exception const& e)
+  catch (Clust::exceptions const& error)
   {
-    msg_error_ = e.error();
+    msg_error_ = Clust::exceptionToString(error);
+#ifdef STK_MIXTURE_VERY_VERBOSE
+  stk_cout << _T("An error occur in SEM algorithm: ") << msg_error_ << _T("\n");
+#endif
     return false;
   }
   return true;

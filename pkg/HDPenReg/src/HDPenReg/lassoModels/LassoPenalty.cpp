@@ -19,7 +19,7 @@
     Boston, MA 02111-1307
     USA
 
-    Contact : Serge.Iovleff@stkpp.org
+    Contact : quentin.grimonprez@inria.fr
 */
 
 /*
@@ -36,18 +36,25 @@
 
 namespace HD
 {
+  /*default cosntructor*/
+  LassoPenalty::LassoPenalty()
+                            : IPenalty()
+                            , lambda_()
+                            , sqrtInvPenalty_()
+                            , sigma2_(1.)
+  {
+  }
+
   /* Constructor
   *  @param lambda penalization parameter for the l1-norm of the estimates
   *  @param n size of sample
   *  @param p size of Penalty (number of covariates)
   */
-  LassoPenalty::LassoPenalty( STK::Real lambda, int n, int p)
+  LassoPenalty::LassoPenalty(STK::Real lambda)
                             : IPenalty()
                             , lambda_(lambda)
-                            , invPenalty_(p,0)
-                            , sigma2_(1)
-                            , n_(n)
-                            , p_(p)
+                            , sqrtInvPenalty_(0)
+                            , sigma2_(1.)
   {
   }
 
@@ -58,11 +65,9 @@ namespace HD
    */
   LassoPenalty::LassoPenalty(LassoPenalty const& penalty)
               : IPenalty(penalty)
-              , lambda_(penalty.lamba())
-              , invPenalty_(penalty.invPenalty())
+              , lambda_(penalty.lambda())
+              , sqrtInvPenalty_(penalty.invPenalty())
               , sigma2_(penalty.sigma2())
-              , n_(penalty.n())
-              , p_(penalty.p())
   {
   }
 
@@ -81,7 +86,7 @@ namespace HD
   void LassoPenalty::update(STK::CVectorX const& beta, STK::Real const& normResidual)
   {
     updatePenalty(beta);
-    updateSigma2(beta,normResidual);
+//    updateSigma2(beta,normResidual);
   }
 
   /*
@@ -100,7 +105,7 @@ namespace HD
   STK::CVectorX LassoPenalty::multInvPenalty(STK::CVectorX const& x) const
   {
     STK::CVectorX a;
-    a = invPenalty_ * x;
+    a = sqrtInvPenalty_.square() * x;
 
     return a;
   }
@@ -112,7 +117,7 @@ namespace HD
   STK::CVectorX LassoPenalty::multSqrtInvPenalty(STK::CVectorX const& x) const
   {
     STK::CVectorX a;
-    a = invPenalty_.sqrt() * x;
+    a = sqrtInvPenalty_ * x;
 
     return a;
   }
@@ -124,8 +129,9 @@ namespace HD
    */
   STK::Real LassoPenalty::penaltyTerm(STK::CVectorX const& beta) const
   {
-    //t(beta) * penalty * beta = lambda_ * \sum_i beta[i]^2/abs(beta[i])
-    STK::Real penaltyTerm=beta.abs().sum() * lambda_;
+    //t(beta) * penalty * beta = lambda_ * \sum_i beta[i]^2(k)/abs(beta[i](k-1))
+    //STK::Real penaltyTerm=beta.abs().sum() * lambda_;
+    STK::Real penaltyTerm= lambda_ * beta.dot( (sqrtInvPenalty_.square()).inverse() * beta);
 
     return penaltyTerm;
   }
@@ -136,10 +142,11 @@ namespace HD
    */
   void LassoPenalty::updatePenalty(STK::CVectorX const& beta)
   {
-    invPenalty_.resize(beta.sizeRows());
+    if(beta.sizeRows()!=sqrtInvPenalty_.sizeRows())
+      sqrtInvPenalty_.resize(STK::Range(1,beta.sizeRows()),STK::Range(1,beta.sizeRows()));
 
-    for(int i = 1; i <= beta.sizeRows(); i++)
-      invPenalty_[i] = std::abs(beta[i]) / lambda_;
+    for(int i = 1; i <= sqrtInvPenalty_.sizeRows(); i++)
+      sqrtInvPenalty_[i] = std::sqrt(std::abs(beta[i]) / lambda_);
   }
 
   /*
@@ -147,15 +154,15 @@ namespace HD
    * @param beta current estimates
    * @param normResidual ||y-X*beta||_2^2
    */
-  void LassoPenalty::updateSigma2(STK::CVectorX const& beta, STK::Real const& normResidual)
-  {
-    //normbeta = t(beta) * invD * beta
-    //invD = matrix (1/tau_i^2, i=1,...,p)
-    //E[1/tau_i^2 | ] = lambda/|beta_i|
-    STK::Real normBeta=beta.abs().sum();
-    normBeta *= lambda_;
-    sigma2_ = (normResidual + normBeta) / (n_+p_-1.);
-  }
+//  void LassoPenalty::updateSigma2(STK::CVectorX const& beta, STK::Real const& normResidual)
+//  {
+//    //normbeta = t(beta) * invD * beta
+//    //invD = matrix (1/tau_i^2, i=1,...,p)
+//    //E[1/tau_i^2 | ] = lambda/|beta_i|
+//    STK::Real normBeta=beta.abs().sum();
+//    normBeta *= lambda_;
+//    sigma2_ = (normResidual + normBeta) / (n_+p_-1.);
+//  }
 
 }
 

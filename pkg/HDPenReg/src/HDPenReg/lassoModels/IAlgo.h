@@ -19,7 +19,7 @@
     Boston, MA 02111-1307
     USA
 
-    Contact : Serge.Iovleff@stkpp.org
+    Contact : quentin.grimonprez@inria.fr
 */
 
 /*
@@ -48,15 +48,35 @@ namespace HD
   {
     public:
       /**default constructor*/
-      IAlgo() {};
+      IAlgo() : maxStep_(0), eps_(0.) {};
+
       /**virtual destructor*/
       virtual ~IAlgo() {};
       /**
        * run an algorithm to solve the penalizedModels
        * @param model a pointer to the penalizedModels object to solve.
        */
-      virtual bool run(PenalizedModels*& model) = 0;
+      virtual bool run(PenalizedModelsBase* model) = 0;
 
+      /** set the threshold for convergence of the complete loglikelihood
+       * @param eps new value for the threshold
+       */
+      inline void setEps(STK::Real eps) {eps_=eps;}
+      /** set the maximum number of step
+       * @param maxStep new maximal number of step
+       */
+      inline void setMaxStep(int maxStep) {maxStep_=maxStep;}
+
+      /** @return the number of step*/
+      inline STK::Real eps() const {return eps_;}
+      /** @return the maximum number of steps*/
+      inline int maxStep() const {return maxStep_;}
+
+    protected:
+      ///maximum number of step
+      int maxStep_;
+      ///threshold for convergence of the complete loglikelihood
+      STK::Real eps_;
   };
 }
 

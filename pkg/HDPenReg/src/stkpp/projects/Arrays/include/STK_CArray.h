@@ -50,7 +50,7 @@ namespace STK
 template< typename Type, int SizeRows_ = UnknownSize, int SizeCols_ = UnknownSize, bool Orient_ = Arrays::by_col_>
 class CArray;
 
-template< typename Type, int SizeRows_, int SizeCols_, bool Orient_>
+template< typename Type, int SizeCols_, bool Orient_>
 class CArrayPoint;
 template< typename Type, int SizeRows_, int SizeCols_, bool Orient_>
 class CArrayVector;
@@ -74,11 +74,11 @@ struct Traits< CArray<Type_, SizeRows_, SizeCols_, Orient_> >
   private:
     class Void { };
 
-    typedef CArrayPoint<Type_, 1, SizeCols_, Arrays::by_col_> RowIndirect;
-    typedef CArrayPoint<Type_, 1, SizeCols_, Arrays::by_row_> RowDirect;
+    typedef CArrayPoint<Type_, SizeCols_, Arrays::by_col_> RowIndirect;
+    typedef CArrayPoint<Type_, SizeCols_, Arrays::by_row_> RowDirect;
 
-    typedef CArrayPoint<Type_, 1, UnknownSize, Arrays::by_col_> SubRowIndirect;
-    typedef CArrayPoint<Type_, 1, UnknownSize, Arrays::by_row_> SubRowDirect;
+    typedef CArrayPoint<Type_, UnknownSize, Arrays::by_col_> SubRowIndirect;
+    typedef CArrayPoint<Type_, UnknownSize, Arrays::by_row_> SubRowDirect;
 
     typedef CArrayVector<Type_, SizeRows_, 1, Arrays::by_row_> ColIndirect;
     typedef CArrayVector<Type_, SizeRows_, 1, Arrays::by_col_> ColDirect;
@@ -194,15 +194,6 @@ class CArray: public ICArray < CArray<Type, SizeRows_, SizeCols_, Orient_> >
      **/
     inline CArray& operator=(CArray const& rhs) { return LowBase::assign(rhs);}
 };
-
-/** @ingroup Arrays
- *  ostream for CArray.
- *  @param s the output stream
- *  @param V the CArray to write
- **/
-template <typename Type, int SizeRows_, int SizeCols_, bool Orient_>
-ostream& operator<<(ostream& s, const CArray<Type, SizeRows_, SizeCols_, Orient_>& V)
-{ return out2D(s,V);}
 
 } // namespace STK
 

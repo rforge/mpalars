@@ -2,16 +2,16 @@
 /*     Copyright (C) 2013-2013  Serge Iovleff, Quentin Grimonprez
 
     This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU Lesser General Public License as
+    it under the terms of the GNU General Public License as
     published by the Free Software Foundation; either version 2 of the
     License, or (at your option) any later version.
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU Lesser General Public License for more details.
+    GNU General Public License for more details.
 
-    You should have received a copy of the GNU Lesser General Public
+    You should have received a copy of the GNU General Public
     License along with this program; if not, write to the
     Free Software Foundation, Inc.,
     59 Temple Place,
@@ -19,7 +19,7 @@
     Boston, MA 02111-1307
     USA
 
-    Contact : Serge.Iovleff@stkpp.org
+    Contact : quentin.grimonprez@inria.fr
 */
 
 /*
@@ -51,9 +51,9 @@ namespace HD
        */
       STK::CVectorX operator()(STK::CVectorX &x) const
       {
-        STK::CVectorX a(x.sizeRowsImpl());
+        STK::CVectorX a(x.sizeRows());
         //a = sigI*x+invD*tX*X*invD*x
-        a = (*p_sigma2_ * x) + ((p_invPenalty_->sqrt() * p_data_->transpose()) * (((*p_data_) * (p_invPenalty_->sqrt() * x))));
+        a = (*p_sigma2_ * x) + ((*p_invPenalty_ * p_data_->transpose()) * (((*p_data_) * (*p_invPenalty_ * x))));
 
         return   a ;
       }
@@ -64,7 +64,7 @@ namespace HD
        * @param p_invPenalty constant pointer on the current estimates of invPenalty
        * @param p_sigma2 constant pointer on the current estimates of sigma2
        */
-      LassoMultiplicator(STK::CArrayXX const* p_data,STK::Array2DDiagonal<STK::Real> const* p_invPenalty,STK::Real const* p_sigma2)
+      LassoMultiplicator(STK::CArrayXX const* p_data = 0, STK::Array2DDiagonal<STK::Real> const* p_invPenalty = 0, STK::Real const* p_sigma2 = 0)
                         : p_data_(p_data), p_invPenalty_(p_invPenalty), p_sigma2_(p_sigma2)
       {
       }
@@ -85,12 +85,14 @@ namespace HD
   class LassoPenalty : public IPenalty
   {
     public:
+      /**default constructor*/
+      LassoPenalty();
       /** Constructor
        *  @param lambda penalization parameter for the l1-norm of the estimates
        *  @param n size of sample
        *  @param p size of Penalty (number of covariates)
        */
-      LassoPenalty(STK::Real lambda, int n, int p);
+      LassoPenalty(STK::Real lambda);
 
       /** Copy constructor
        *  @param penalty LassoPenalty object to copy
@@ -105,24 +107,21 @@ namespace HD
 
       //getter
       /**@return lambda parameter of the lasso */
-      inline STK::Real const& lamba() const {return lambda_;}
+      inline STK::Real const& lambda() const {return lambda_;}
       /**@return invPenalty diagonal matrix containing |beta_i| / lambda */
-      inline STK::Array2DDiagonal<STK::Real> const& invPenalty() const {return invPenalty_;}
-      /**@return n size of sample */
-      inline int const& n() const {return n_;}
-      /**@return p number of covariates */
-      inline int const& p() const {return p_;}
+      inline STK::Array2DDiagonal<STK::Real> const& invPenalty() const {return sqrtInvPenalty_;}
       /**@return sigma2 variance of the response*/
       inline STK::Real const& sigma2() const { return sigma2_;}
       /**@return A constant pointer on the matrix penalty*/
-      inline STK::Array2DDiagonal<STK::Real> const* p_invPenalty() const {return &invPenalty_;}
+      inline STK::Array2DDiagonal<STK::Real> const* p_invPenalty() const {return &sqrtInvPenalty_;}
       /**@return A constant pointer on sigma2*/
       inline STK::Real const*  p_sigma2() const { return &sigma2_;}
 
       //setter
       /** change the value of lambda_ */
-      inline void setLambda(STK::Real const& lambda) {lambda_=lambda;}
-
+      inline void setLambda(STK::Real const& lambda) {lambda_ = lambda;}
+      /** change the value of sigma2_ */
+      inline void setSigma2(STK::Real const& sigma2) {sigma2_ = sigma2;}
 
       //methods
       /**
@@ -173,13 +172,13 @@ namespace HD
       ///value associated to the l1 penalty of estimates
       STK::Real lambda_;
       ///diag(E[1/tau_i^2])^-1 =diag(|beta|/lambda_)
-      STK::Array2DDiagonal<STK::Real> invPenalty_;
+      STK::Array2DDiagonal<STK::Real> sqrtInvPenalty_;
       ///variance
       STK::Real sigma2_;
-      ///number of sample
-      int n_;
-      ///number of covariates
-      int p_;
+//      ///number of sample
+//      int n_;
+//      ///number of covariates
+//      int p_;
   };
 }
 

@@ -135,7 +135,7 @@ class IUnivStatModel : public IModelBase, public IRunnerUnsupervised<ColVector, 
         // compute log-likelihood
         this->setLnLikelihood(computeLnLikelihood());
         // set the number of free parameters
-        this->setnbFreeParameters(computeNbFreeParameters());
+        this->setNbFreeParameters(computeNbFreeParameters());
       }
       catch (Exception const& e)
       { this->msg_error_ = e.error(); return false;}
@@ -158,7 +158,7 @@ class IUnivStatModel : public IModelBase, public IRunnerUnsupervised<ColVector, 
         // compute log-likelihood
         this->setLnLikelihood(computeLnLikelihood());
         // set the number of free parameters
-        this->setnbFreeParameters(computeNbFreeParameters());
+        this->setNbFreeParameters(computeNbFreeParameters());
       }
       catch (Exception const& e)
       { this->msg_error_ = e.error(); return false;}

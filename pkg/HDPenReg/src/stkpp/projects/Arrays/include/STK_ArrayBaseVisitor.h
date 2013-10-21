@@ -353,7 +353,8 @@ template<typename Rhs>
 typename hidden::Traits<Derived>::Type  ArrayBase<Derived>::wmeanSafe(ArrayBase<Rhs> const& weights) const
 {
   Type size = weights.sum();
-  return (size > 0) ? wsum(weights)/size : Arithmetic<Type>::NA();}
+  return (size > 0) ? wsum(weights)/size : Arithmetic<Type>::NA();
+}
 /* @return the variance of all the elements of this using a Visitor*/
 template<typename Derived>
 template<typename Rhs>
@@ -361,7 +362,7 @@ typename hidden::Traits<Derived>::Type ArrayBase<Derived>::wvarianceSafe(ArrayBa
 {
   Type size = weights.sum();
   return (size > 0) ?
-    ((*this-(wsumSafe(weights)/size)).square().wsumSafe(weights)/size) : Arithmetic<Type>::NA();;
+    ((*this-(wsumSafe(weights)/size)).square().wsumSafe(weights)/size) : Arithmetic<Type>::NA();
 }
 
 

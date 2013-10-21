@@ -19,7 +19,7 @@
     Boston, MA 02111-1307
     USA
 
-    Contact : Serge.Iovleff@stkpp.org
+    Contact : quentin.grimonprez@inria.fr
 */
 
 /*
@@ -54,7 +54,17 @@ namespace HD
        * @param maxStep maximal number of steps of the algorithm
        * @param eps threshold for convergence of the completed loglikelihood
        */
-      EM(int maxStep, STK::Real eps=STK::Arithmetic<STK::Real>::epsilon()) : IAlgo(), maxStep_(maxStep), eps_(eps) {}
+      EM(int maxStep = 0, int burn = 0, STK::Real eps=1e-5) : IAlgo()
+      {
+        burn_ = burn;
+        eps_ = eps;
+        maxStep_ = maxStep;
+      }
+
+      /** set the burn period
+       * @param burn new burn period
+       */
+      inline void setBurn(int burn) {burn_ = burn;}
 
       /**@return the number of step of the algorithm*/
       inline int step() const {return step_;};
@@ -63,35 +73,37 @@ namespace HD
        * run the EM algorithm on a PenalizedModels object
        * @param model pointer to a PenalizedModels object
        */
-      bool run(PenalizedModels*& model)
+      bool run(PenalizedModelsBase* model)
       {
         try
         {
           //initialization
           step_ = 0;
           STK::Real diff = eps_+1;//for make at least one loop
-          STK::Real llc = model ->llc(), llcOld(0);
-
+          STK::Real llc = std::numeric_limits<STK::Real>::max(), llcOld(0);
           //we stop the algorithm after convergence of the completed loglikelihood or after reaching the maw number of step
           while( diff>eps_ && step_<maxStep_)
           {
-            //stk_cout<<" Step  "<<step_<<std::endl;
             model -> eStep();
-            model -> mStep();
+            model -> mStep( (burn_<=step_) );
 
             //difference between the loglikelihood of 2 successive steps.
             llcOld=llc;
-            llc = model -> llc();
-            diff = std::abs(llc-llcOld);
+            llc = model -> lnLikelihood();
+            diff = std::abs((llc-llcOld)/llcOld);
+
+//            stk_cout<<llc<<"  "<<llcOld<<"  "<<diff<<std::endl;
 
             step_++;
           }
+
         }
         catch(const STK::Exception& e)
         {
           msg_error_ = e.error();
           return false;
         }
+
         return true;
       }
 
@@ -99,12 +111,10 @@ namespace HD
       inline STK::String const& error() const { return msg_error_;}
 
     private:
-      ///maximum number of steps of the EM
-      int maxStep_;
       ///step of the algorithm
       int step_;
-      ///threshold for convergence of the complete loglikelihood
-      STK::Real eps_;
+      ///burn period
+      int burn_;
       ///last error message
       STK::String msg_error_;
   };

@@ -7,17 +7,19 @@ all:lib
 #-----------------------------------------------------------------------
 # Variables
 # 
-#LIB = ./libHD.a
 LIB = ./lib/libHDPenReg.a
 
-#SRC_DIR = ..
 STK_INC_DIR = -I./  -I../
 
 #-----------------------------------------------------------------------
 # Sources files
 #
 SRCS =  ./lassoModels/LassoPenalty.cpp \
-	./lassoModels/EnetPenalty.cpp \
+	./lassoModels/LassoSolver.cpp \
+	./lassoModels/FusedLassoPenalty.cpp \
+	./lassoModels/FusedLassoSolver.cpp \
+	./lassoModels/CV.cpp \
+#	./lassoModels/EnetPenalty.cpp \
 
 
 #-------------------------------------------------------------------------

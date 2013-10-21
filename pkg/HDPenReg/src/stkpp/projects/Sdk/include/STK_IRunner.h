@@ -136,8 +136,17 @@ class IRunnerUnsupervised : public IRunnerBase
     inline Array const* p_data() const { return p_data_;}
     /** Set the data set. If the state of the derived runner change when a new
      *  data set is set the user have to overload the udpate() method.
+     *  @param p_data A pointer on the data set to run
+     **/
+    inline virtual void setData( Array const* p_data)
+    {
+      p_data_ = p_data;
+      update();
+    }
+    /** Set the data set. If the state of the derived runner change when a new
+     *  data set is set the user have to overload the udpate() method.
      *  @param data The data set to run
-     */
+     **/
     inline virtual void setData( Array const& data)
     {
       p_data_ = &data;

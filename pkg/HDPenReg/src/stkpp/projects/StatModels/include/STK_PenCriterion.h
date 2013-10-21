@@ -70,7 +70,7 @@ class ICriterion : public IRunnerBase
     inline virtual ~ICriterion() {}
     /** @return The value of the criterion */
     inline Real const& value() const { return value_;}
-    /** @param model a pointer on the current model to set */
+    /** @param p_model a pointer on the current model to set */
      inline void setModel( IModelBase* const p_model) { p_model_ = p_model;}
     /** @param model the current model to set */
      inline void setModel( IModelBase const& model) { p_model_ = &model;}

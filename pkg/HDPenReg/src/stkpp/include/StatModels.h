@@ -56,6 +56,7 @@
 #define STATMODELS_H
 
 #include "../projects/StatModels/include/STK_Model_Util.h"
+#include "../projects/StatModels/include/STK_IModelBase.h"
 
 #include "../projects/StatModels/include/STK_BernoulliModel.h"
 #include "../projects/StatModels/include/STK_JointBernoulliModel.h"

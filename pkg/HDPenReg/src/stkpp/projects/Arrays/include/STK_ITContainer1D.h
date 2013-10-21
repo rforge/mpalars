@@ -29,8 +29,8 @@
  *
  **/
 
-/** @file STK_ITContainer2D1D.h
- *  @brief Interface class for 1D Container.
+/** @file STK_ITContainer1D.h
+ *  @brief in this file we define the interface class for ITContainer1D.
  **/
 
 #ifndef STK_ITContainer2D1D_H

@@ -26,6 +26,7 @@
  * Project:  stkpp::Clustering
  * created on: 24 août 2013
  * Author:   iovleff, serge.iovleff@stkpp.org
+ * Originally created by Parmeet Bhatia <b..._DOT_p..._AT_gmail_Dot_com>
  **/
 
 /** @file STK_MixtureInit.h
@@ -36,41 +37,57 @@
 #ifndef STK_MIXTUREINIT_H
 #define STK_MIXTUREINIT_H
 
-
 #include "../../Sdk/include/STK_IRunner.h"
+#include "STK_Clust_Util.h"
 
 namespace STK
 {
 // forward declaration
 class IMixtureModelBase;
+class IMixtureAlgo;
 
 /** @ingroup Clustering
- *  Interface base class for the initializations.
+ *  @brief Interface base class for the initializations.
  *  All derived class will apply on a model instance and have to implement the
- *  run method.
+ *  run method. An initialization determine in some way values for the parameters
+ *  of the mixture and perform a given number of iterations of the SEM algorithm.
  **/
 class IMixtureInit : public IRunnerBase
 {
   protected:
     /** default constructor */
-    inline IMixtureInit() : IRunnerBase(), p_model_(0) {}
+    inline IMixtureInit() : IRunnerBase(), nbTry_(Clust::defaultNbTrialInInit), p_model_(0), p_initAlgo_(0) {}
     /** copy constructor.
      * @param init the initializing method to copy
      **/
-    inline IMixtureInit(IMixtureInit const& init) : IRunnerBase(init), p_model_(init.p_model_) {}
-    /**  Instantiate the algorithm with a mixture model.
-     * @param p_model a pointer on an instance of a mixture model */
-    inline IMixtureInit(IMixtureModelBase* p_model) : p_model_(p_model) {}
+    inline IMixtureInit( IMixtureInit const& init)
+                       : IRunnerBase(init), nbTry_(init.nbTry_), p_model_(init.p_model_), p_initAlgo_(init.p_initAlgo_)
+    {}
 
   public:
     /** destructor */
-    inline virtual ~IMixtureInit() {}
+    virtual ~IMixtureInit();
+    /** clone pattern */
+    virtual IMixtureInit* clone() const = 0;
+    /** set a the number of try */
+    inline void setNbTrials(int nbTry) { nbTry_ = nbTry; }
     /** set a new model */
     inline void setModel(IMixtureModelBase* p_model) { p_model_ = p_model; }
+    /** set the initial algorithm  */
+    inline void setInitAlgo(IMixtureAlgo* p_initAlgo) { p_initAlgo_ = p_initAlgo; }
 
   protected:
+    /** number of retry in initialization */
+    int nbTry_;
     /** pointer on the mixture model */
     IMixtureModelBase* p_model_;
+    /** algorithm to use in the initialization */
+    IMixtureAlgo* p_initAlgo_;
+    /** launch the initialization algorithm.
+     * @return true if there is no initialization algorithm,
+     * otherwise return the result of the initialization algorithm.
+     **/
+    bool runInitAlgo();
 };
 
 /** @ingroup Clustering
@@ -81,11 +98,14 @@ class RandomInit: public IMixtureInit
   public:
     /** default constructor */
     inline RandomInit() : IMixtureInit() {}
-    /**  Instantiate the algorithm with a mixture model.
-     * @param p_model a pointer on an instance of a mixture model */
-    inline RandomInit(IMixtureModelBase* p_model) : IMixtureInit(p_model) {}
+    /** copy constructor
+     * @param init the initialization to copy
+     **/
+    inline RandomInit(RandomInit const& init) : IMixtureInit(init) {}
     /** destructor */
     inline virtual ~RandomInit(){}
+    /** clone pattern */
+    inline virtual RandomInit* clone() const { return new RandomInit(*this);}
     /** run the initialization by calling the randomInit method of the model.
      * @return @c true if no error occur, @c false otherwise*/
     virtual bool run();
@@ -100,12 +120,15 @@ class ClassInit: public IMixtureInit
   public:
     /** default constructor */
     inline ClassInit() : IMixtureInit() {}
-    /**  Instantiate the algorithm with a mixture model.
-     * @param p_model a pointer on an instance of a mixture model */
-    inline ClassInit(IMixtureModelBase* p_model) : IMixtureInit(p_model) {}
+    /** copy constructor
+     * @param init the initialization to copy
+     **/
+    inline ClassInit(ClassInit const& init) : IMixtureInit(init) {}
     /** destructor */
     inline virtual ~ClassInit(){}
-    /** run the initialization by calling the classInit method of the model.
+    /** clone pattern */
+    inline virtual ClassInit* clone() const { return new ClassInit(*this);}
+    /** run the initialization by calling the randomClassInit method of the model.
      * @return @c true if no error occur, @c false otherwise*/
     virtual bool run();
 };
@@ -113,16 +136,19 @@ class ClassInit: public IMixtureInit
 /** @ingroup Clustering
  *  Initialization by simulating the tik accordingly to the initial
  *  proportions. */
-class FuzziInit: public IMixtureInit
+class FuzzyInit: public IMixtureInit
 {
   public:
     /** default constructor */
-    inline FuzziInit() : IMixtureInit() {}
-    /**  Instantiate the algorithm with a mixture model.
-     * @param p_model a pointer on an instance of a mixture model */
-    inline FuzziInit(IMixtureModelBase* p_model) : IMixtureInit(p_model) {}
+    inline FuzzyInit() : IMixtureInit() {}
+    /** copy constructor
+     *   @param init the initialization to copy
+     **/
+    inline FuzzyInit(FuzzyInit const& init) : IMixtureInit(init) {}
     /** destructor */
-    inline virtual ~FuzziInit(){}
+    inline virtual ~FuzzyInit(){}
+    /** clone pattern */
+    inline virtual FuzzyInit* clone() const { return new FuzzyInit(*this);}
     /** run the algorithm on the model calling E step and M step.
      * @return @c true if no error occur, @c false otherwise*/
     virtual bool run();

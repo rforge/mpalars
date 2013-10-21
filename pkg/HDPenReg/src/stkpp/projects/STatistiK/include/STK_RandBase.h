@@ -43,7 +43,7 @@
 #include "../../STKernel/include/STK_Integer.h"
 #include "../../STKernel/include/STK_Real.h"
 
-#include "../../Arrays/include/STK_ITContainer2D.h"
+#include "../../Arrays/include/STK_ArrayBase.h"
 
 // MersenneTwister header.
 #include "MersenneTwister.h"
@@ -107,7 +107,7 @@ class RandBase : protected MTRand
      * @param gsize number of boxes
      **/
     template< class TContainer1D>
-    RandBase( const ITContainer<TContainer1D> &bigSeed
+    RandBase( const ArrayBase<TContainer1D> &bigSeed
   , Real const& glimit = 3.442619855899
   , Real const& gvol   = 9.91256303526217e-3
   , int const& gsize  = 128
@@ -177,9 +177,10 @@ class RandBase : protected MTRand
      *  @param A container to fill
      **/
     template< class TContainer1D>
-    inline void randDiscreteUnif(ITContainer<TContainer1D>& A)
-    { for (int i=A.firstIdx(); i<=A.lastIdx(); i++)
-        A[i] = randDiscreteUnif();
+    inline void randDiscreteUnif(ArrayBase<TContainer1D>& A)
+    { for (int i=A.firstIdxRows(); i<=A.lastIdxRows(); i++)
+        for (int j=A.firstIdxCols(); j<=A.lastIdxCols(); j++)
+          A(i,j) = randDiscreteUnif();
     }
 
     /** Pseudo-random Real uniform generator for a uni-dimensional
@@ -187,9 +188,10 @@ class RandBase : protected MTRand
      *  @param A container to fill
      **/
     template< class TContainer1D>
-    inline void randUnif(ITContainer<TContainer1D>& A)
-    { for (int i=A.firstIdx(); i<=A.lastIdx(); i++)
-        A[i] = randUnif();
+    inline void randUnif(ArrayBase<TContainer1D>& A)
+    { for (int i=A.firstIdxRows(); i<=A.lastIdxRows(); i++)
+        for (int j=A.firstIdxCols(); j<=A.lastIdxCols(); j++)
+          A(i,j) = randUnif();
     }
 
     /** Pseudo-random Real gaussian generator for a uni-dimensional
@@ -197,9 +199,10 @@ class RandBase : protected MTRand
      *  @param A container to fill
      **/
     template< class TContainer1D>
-    inline void randGauss(ITContainer< TContainer1D>& A)
-    { for (int i=A.firstIdx(); i<=A.lastIdx(); i++)
-        A[i] = randGauss();
+    inline void randGauss(ArrayBase< TContainer1D>& A)
+    { for (int i=A.firstIdxRows(); i<=A.lastIdxRows(); i++)
+        for (int j=A.firstIdxCols(); j<=A.lastIdxCols(); j++)
+          A(i,j) = randGauss();
     }
 
     /** Pseudo-random Real exponential generator for a uni-dimensional
@@ -207,9 +210,10 @@ class RandBase : protected MTRand
      *  @param A container to fill
      **/
     template< class TContainer1D>
-    inline void randExp(ITContainer< TContainer1D>& A)
-    { for (int i=A.firstIdx(); i<=A.lastIdx(); i++)
-        A[i] = randExp();
+    inline void randExp(ArrayBase< TContainer1D>& A)
+    { for (int i=A.firstIdxRows(); i<=A.lastIdxRows(); i++)
+        for (int j=A.firstIdxCols(); j<=A.lastIdxCols(); j++)
+          A(i,j) = randExp();
     }
 
   private:

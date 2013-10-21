@@ -37,7 +37,7 @@
 
 #include "../../Arrays/include/STK_ITContainer2D.h"
 
-#include "../include/STK_Stat_Univariate.h"
+#include "../include/STK_Stat_UnivariateReal.h"
 
 namespace STK
 {
@@ -58,9 +58,9 @@ class Bivariate
 {
   protected:
     /** Statistics of the X variable */
-    Univariate<XTYPE, TContainer1D>    xStat_;
+    Univariate< TContainer1D>    xStat_;
     /** Statistics of the Y variable */
-    Univariate<YTYPE, TContainer1D>    yStat_;
+    Univariate< TContainer1D>    yStat_;
 
   public:
     /** Default constructor. Compute the univariate statistics of the two

@@ -33,7 +33,6 @@
  *  @brief In this file we define the classes for mixture algorithms.
  **/
 
-
 #ifndef STK_MIXTUREALGO_H
 #define STK_MIXTUREALGO_H
 
@@ -51,21 +50,19 @@ class IMixtureModelBase;
  * Interface base class for the algorithms.
  * All algorithms are runners applying on a model instance given by pointer
  * and have to implement the run method.
+ *
+ * All algorithms start with an mStep(), so user have to provide an instance of
+ * the model with initial parameters values.
  **/
 class IMixtureAlgo : public IRunnerBase
 {
   protected:
     /** default constructor */
-    inline IMixtureAlgo() : IRunnerBase(), p_model_(0), nbIterMax_(Clust::maxIterShortRun), epsilon_(Clust::epsilonShortRun) {}
-    /** Constructor. Instantiate the algorithm with a mixture model.
-     *  @param p_model a pointer on an instance of a mixture model */
-    inline IMixtureAlgo( IMixtureModelBase* p_model, int nbIterMax, int epsilon)
-                       : IRunnerBase(), p_model_(p_model), nbIterMax_(nbIterMax), epsilon_(epsilon)
-    {}
+    inline IMixtureAlgo() : IRunnerBase(), p_model_(0), nbIterMax_(0), epsilon_(0.) {}
     /** Copy constructor.
-     *  @param mixtureAlgo the mixture to copy */
-    inline IMixtureAlgo( IMixtureAlgo const& mixtureAlgo) : IRunnerBase(mixtureAlgo)
-                       , p_model_(mixtureAlgo.p_model_), nbIterMax_(mixtureAlgo.nbIterMax_), epsilon_(mixtureAlgo.epsilon_)
+     *  @param algo the algorithm to copy */
+    inline IMixtureAlgo( IMixtureAlgo const& algo) : IRunnerBase(algo)
+                       , p_model_(algo.p_model_), nbIterMax_(algo.nbIterMax_), epsilon_(algo.epsilon_)
     {}
 
   public:
@@ -75,8 +72,8 @@ class IMixtureAlgo : public IRunnerBase
     inline void setModel(IMixtureModelBase* p_model) { p_model_ = p_model; }
     /** set the maximal number of iterations */
     inline void setNbIterMax(int nbIterMax) { nbIterMax_ = nbIterMax; }
-    /** set the maximal number of iterations */
-    inline void setEpsilon(int epsilon) { epsilon_ = epsilon; }
+    /** set the tolerance value */
+    inline void setEpsilon(Real epsilon) { epsilon_ = epsilon; }
 
   protected:
     /** pointer on the mixture model */
@@ -88,71 +85,89 @@ class IMixtureAlgo : public IRunnerBase
 };
 
 /** @ingroup Clustering
- *  Implementation of the EM algorithm.
+ *  @ brief Implementation of the EM algorithm.
+ *  The EM algorithm call alternatively the steps:
+ *  - mStep()
+ *  - eStep()
+ *  until the maximum number of iterations is reached or the variation of the
+ *  ln-likelihood is less than the tolerance.
  **/
 class EMAlgo: public IMixtureAlgo
 {
   public:
     /** default constructor */
     inline EMAlgo() : IMixtureAlgo() {}
-    /**  Instantiate the algorithm with a mixture model.
-     * @param p_model a pointer on an instance of a mixture model */
-    inline EMAlgo( IMixtureModelBase* p_model, int nbIterMax, int epsilon)
-                 : IMixtureAlgo(p_model, nbIterMax, epsilon) {}
     /** Copy constructor.
-     *  @param emAlgo the mixture to copy */
-    inline EMAlgo( EMAlgo const& emAlgo) : IMixtureAlgo(emAlgo) {}
+     *  @param algo the algorithm to copy */
+    inline EMAlgo( EMAlgo const& algo) : IMixtureAlgo(algo) {}
     /** destructor */
     inline virtual ~EMAlgo(){}
-    /** run the algorithm on the model calling eStep and mStep
+    /** clone pattern */
+    inline virtual EMAlgo* clone() const { return new EMAlgo(*this);}
+    /** run the algorithm on the model calling the eStep and mStep of the model
      *  until the maximal number of iteration is reached or the variation
      *  of the lnLikelihood is less than epsilon.
-     * @return @c true if no error occur, @c false otherwise*/
+     * @return @c true if no error occur, @c false otherwise
+     **/
     virtual bool run();
 };
 
 /** @ingroup Clustering
- *  Implementation of the CEM algorithm.
+ *  @brief Implementation of the CEM algorithm.
+ *  The CEM algorithm call alternatively the steps:
+ *  - cStep()
+ *  - mStep()
+ *  - eStep()
+ *  until the maximum number of iterations is reached or the variation of the
+ *  ln-likelihood is less than the tolerance.
  **/
 class CEMAlgo: public IMixtureAlgo
 {
   public:
     /** default constructor */
     inline CEMAlgo() : IMixtureAlgo() {}
-    /**  Instantiate the algorithm with a mixture model.
-     * @param p_model a pointer on an instance of a mixture model */
-    inline CEMAlgo( IMixtureModelBase* p_model, int nbIterMax, int epsilon)
-                  : IMixtureAlgo(p_model, nbIterMax, epsilon)
-    {}
+    /** Copy constructor.
+     *  @param algo the algorithm to copy */
+    inline CEMAlgo( CEMAlgo const& algo) : IMixtureAlgo(algo) {}
     /** destructor */
     inline virtual ~CEMAlgo(){}
-    /** run the algorithm  on the model calling ceStep and mStep
-     *  until the maximal number of iteration is reached or the variation
-     *  of the lnLikelihood is less than epsilon..
-     * @return @c true if no error occur, @c false otherwise*/
+    /** clone pattern */
+    inline virtual CEMAlgo* clone() const { return new CEMAlgo(*this);}
+    /** run the algorithm on the model calling cStep, mStep and eStep of the
+     *  model until the maximal number of iteration is reached or the variation
+     *  of the lnLikelihood is less than epsilon.
+     *  @return @c true if no error occur, @c false otherwise
+     **/
     virtual bool run();
 };
 
 /** @ingroup Clustering
- *  Implementation of the SEM algorithm.
+ *  @brief Implementation of the SEM algorithm.
+ *  The CEM algorithm call alternatively the steps:
+ *  - sStep()
+ *  - mStep()
+ *  - eStep()
+ *  until the maximum number of iterations is reached.
  **/
 class SEMAlgo: public IMixtureAlgo
 {
   public:
     /** default constructor */
     inline SEMAlgo() : IMixtureAlgo() {}
-    /** Instantiate the algorithm with a mixture model.
-     *  @param p_model a pointer on an instance of a mixture model */
-    inline SEMAlgo( IMixtureModelBase* p_model, int nbIterMax, int epsilon)
-                  : IMixtureAlgo(p_model, nbIterMax, epsilon)
-    {}
+    /** Copy constructor.
+     *  @param algo the algorithm to copy */
+    inline SEMAlgo( SEMAlgo const& algo) : IMixtureAlgo(algo) {}
     /** destructor */
     inline virtual ~SEMAlgo(){}
-    /** run the algorithm on the model calling SeStep
-     *  until the maximal number of iteration is reached.
-     *  @return @c true if no error occur, @c false otherwise. */
+    /** clone pattern */
+    inline virtual SEMAlgo* clone() const { return new SEMAlgo(*this);}
+    /** run the algorithm on the model calling sStep, mStep and eStep of the
+     *  model until the maximal number of iteration is reached.
+     *  @return @c true if no error occur, @c false otherwise.
+     **/
     virtual bool run();
 };
+
 } // namespace STK
 
 #endif /* STK_MIXTUREALGO_H */

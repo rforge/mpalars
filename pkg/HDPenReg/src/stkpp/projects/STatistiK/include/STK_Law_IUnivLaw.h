@@ -72,6 +72,11 @@ class IUnivLaw : public ILawBase
      **/
     IUnivLaw(String const& name) : ILawBase(name) {}
 
+    /** copy Constructor.
+     *  @param law the law to copy
+     **/
+    IUnivLaw(IUnivLaw const& law) : ILawBase(law.name_) {}
+
   public:
     /** Virtual destructor. **/
     virtual ~IUnivLaw() {}

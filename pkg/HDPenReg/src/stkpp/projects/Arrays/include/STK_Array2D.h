@@ -198,16 +198,6 @@ class Array2D : public IArray2D< Array2D<Type> >
     }
 };
 
-/** @ingroup Arrays
- *  ostream for Array2D.
- *  @param s the output stream
- *  @param V the Array2D to write
- **/
-template<class Type>
-ostream& operator<<(ostream& s, Array2D<Type> const& V)
-{ return out2D(s,V);}
-
-
 } // namespace STK
 
 #endif

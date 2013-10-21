@@ -28,9 +28,8 @@
  * Author:   Serge Iovleff, S..._Dot_I..._At_stkpp_Dot_org (see copyright for ...)
  **/
 
-/** @file STK_Stat_Univariate.h
- *  @brief This file contain the specialization of the class Univariate
- *  for the Real Type.
+/** @file STK_Stat_Functors.h
+ *  @brief This file contain the functors computing statistics.
  **/
 
 #ifndef STK_STAT_FUNCTORS_H
@@ -39,8 +38,6 @@
 #include "../../STKernel/include/STK_MetaTemplate.h"
 #include "../../Arrays/include/STK_ITContainer2D.h"
 #include "../../DManager/include/STK_HeapSort.h"
-
-#include "STK_Stat_Univariate.h"
 
 namespace STK
 {

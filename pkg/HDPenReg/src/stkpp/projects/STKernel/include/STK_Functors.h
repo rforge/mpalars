@@ -47,6 +47,8 @@ namespace STK
 namespace hidden
 {
 
+/** @ingroup hidden
+ * The functor to use.  */
 template< typename Functor, int NbParam_>
 struct UsedFunctor;
 

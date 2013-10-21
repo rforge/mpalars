@@ -28,7 +28,11 @@
 #
 #-----------------------------------------------------------------------
 # Macros and definitions
-include ./makevars
+RELATIVEMAKEVARS = ./makevars
+MAKEVARS = $(realpath $(RELATIVEMAKEVARS))
+export MAKEVARS
+
+include $(MAKEVARS)
 
 #-----------------------------------------------------------------------
 # all compiles the objects and create the library, no tests are build

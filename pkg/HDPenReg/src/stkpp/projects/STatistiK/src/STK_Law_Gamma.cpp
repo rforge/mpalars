@@ -128,7 +128,7 @@ Real Gamma::pdf( Real const& x) const
   if (x == 0.) return (a_<1) ? Arithmetic<Real>::infinity()
                              : (a_>1.) ?  0. : 1./b_;
   // general case
-  return (a_ < 1) ? Funct::poisson_pdf_raw(a_, x/b_) + x/(a_+1)
+  return (a_ < 1) ? Funct::poisson_pdf_raw(a_, x/b_) * a_/x
                   : Funct::poisson_pdf_raw(a_-1, x/b_)/b_;
 }
 
@@ -149,7 +149,7 @@ Real Gamma::lpdf( Real const& x) const
   if (x == 0.) return (a_<1) ? Arithmetic<Real>::infinity()
                              : (a_>1.) ?  -Arithmetic<Real>::infinity() : -std::log(b_);
   // general case
-  return (a_ < 1) ? Funct::poisson_lpdf_raw(a_, x/b_) +std::log(x) - std::log(a_+1.)
+  return (a_ < 1) ? Funct::poisson_lpdf_raw(a_, x/b_) +std::log(a_/x)
                   : Funct::poisson_lpdf_raw(a_-1, x/b_) - std::log(b_);
 }
 
@@ -243,6 +243,27 @@ Real Gamma::rand( Real const& a, Real const& b)
  *                      - k \ln(\theta) + \ln(\Gamma(k))
  *  \f]
  */
+Real Gamma::pdf( Real const& x, Real const& a, Real const& b)
+{
+  // check NA value
+  if (Arithmetic<Real>::isNA(x)) return x;
+  // trivial cases
+  if (x < 0.) return 0.;
+  if (Arithmetic<Real>::isInfinite(x)) return 0.;
+  if (x == 0.) return (a<1) ? Arithmetic<Real>::infinity()
+                             : (a>1.) ?  0. : 1./b;
+  // general case
+  return (a < 1) ? Funct::poisson_pdf_raw(a, x/b) * a/x
+                  : Funct::poisson_pdf_raw(a-1, x/b)/b;
+}
+
+/*
+ *  Give
+ *  \f[
+ *   \ln(f(x;k,\theta)) = - x/\theta + (k-1) \ln(x)
+ *                      - k \ln(\theta) + \ln(\Gamma(k))
+ *  \f]
+ */
 Real Gamma::lpdf( Real const& x, Real const& a, Real const& b)
 {
   // check NA value
@@ -253,7 +274,7 @@ Real Gamma::lpdf( Real const& x, Real const& a, Real const& b)
   if (x == 0.) return (a<1) ? Arithmetic<Real>::infinity()
                              : (a>1.) ?  -Arithmetic<Real>::infinity() : -std::log(b);
   // general case
-  return (a < 1) ? Funct::poisson_lpdf_raw(a, x/b) +std::log(x) - std::log(a+1.)
+  return (a < 1) ? Funct::poisson_lpdf_raw(a, x/b) +std::log(a/x)
                   : Funct::poisson_lpdf_raw(a-1, x/b) - std::log(b);
 }
 

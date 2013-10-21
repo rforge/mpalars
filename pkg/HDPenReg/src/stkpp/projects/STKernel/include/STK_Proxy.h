@@ -37,6 +37,7 @@
 #ifndef STK_PROXY_H
 #define STK_PROXY_H
 
+#include "STK_MetaTemplate.h"
 #include "STK_String.h"
 
 namespace STK 
@@ -53,17 +54,19 @@ namespace STK
  template<class Type>
  class Proxy
  {
-   private:
-
    protected:
      Type& x_; ///< A reference on the object wrapped
      Type const& y_; ///< A reference on the object wrapped
 
    public:
      /** constructor : create a reference of the Real x.
+      *  Avoid the case x is of type Type const and (thus ambiguity in the
+      *  choice of the constructor) using sfinae.
       *  @param x the object to wrap
       **/
-     inline Proxy(Type &x) : x_(x), y_(x) {}
+     template< typename U >
+     Proxy( typename hidden::If< hidden::isSame<Type const, U>::value, Type, U>::Result& x)
+          : x_(x), y_(x) {}
      /** constructor : create a reference of the Real x.
       *  @param x the object to wrap
       */

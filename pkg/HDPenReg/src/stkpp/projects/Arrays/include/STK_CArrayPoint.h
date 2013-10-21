@@ -47,7 +47,7 @@
 
 namespace STK
 {
-template< typename Type, int SizeRows_=1, int SizeCols_=UnknownSize, bool Orient_ = Arrays::by_row_>
+template< typename Type, int SizeCols_=UnknownSize, bool Orient_ = Arrays::by_row_>
 class CArrayPoint;
 
 template< typename Type, int SizeRows_, int SizeCols_, bool Orient_>
@@ -59,26 +59,26 @@ class CArrayVector;
 template< typename Type, int SizeRows_, int SizeCols_, bool Orient_>
 class CArrayNumber;
 
-typedef CArrayPoint<Real, 1, UnknownSize, Arrays::by_row_>   CPointX;
-typedef CArrayPoint<Real, 1, 2, Arrays::by_row_>             CPoint2;
-typedef CArrayPoint<Real, 1, 3, Arrays::by_row_>             CPoint3;
+typedef CArrayPoint<Real, UnknownSize, Arrays::by_row_>   CPointX;
+typedef CArrayPoint<Real, 2, Arrays::by_row_>             CPoint2;
+typedef CArrayPoint<Real, 3, Arrays::by_row_>             CPoint3;
 
 namespace hidden
 {
 /** @ingroup hidden
  *  @brief Specialization of the Traits class for CArray class.
  */
-template<typename Type_, int SizeRows_, int SizeCols_, bool Orient_>
-struct Traits< CArrayPoint<Type_, SizeRows_, SizeCols_, Orient_> >
+template<typename Type_, int SizeCols_, bool Orient_>
+struct Traits< CArrayPoint<Type_, SizeCols_, Orient_> >
 {
   private:
     class Void { };
 
-    typedef CArrayPoint<Type_, 1, SizeCols_, Arrays::by_col_> RowIndirect;
-    typedef CArrayPoint<Type_, 1, SizeCols_, Arrays::by_row_> RowDirect;
+    typedef CArrayPoint<Type_, SizeCols_, Arrays::by_col_> RowIndirect;
+    typedef CArrayPoint<Type_, SizeCols_, Arrays::by_row_> RowDirect;
 
-    typedef CArrayPoint<Type_, 1, UnknownSize, Arrays::by_col_> SubRowIndirect;
-    typedef CArrayPoint<Type_, 1, UnknownSize, Arrays::by_row_> SubRowDirect;
+    typedef CArrayPoint<Type_, UnknownSize, Arrays::by_col_> SubRowIndirect;
+    typedef CArrayPoint<Type_, UnknownSize, Arrays::by_row_> SubRowDirect;
 
     typedef CArrayVector<Type_, 1, 1, Arrays::by_row_> ColIndirect;
     typedef CArrayVector<Type_, 1, 1, Arrays::by_col_> ColDirect;
@@ -86,11 +86,11 @@ struct Traits< CArrayPoint<Type_, SizeRows_, SizeCols_, Orient_> >
     typedef CArrayVector<Type_, 1, 1, Arrays::by_row_> SubColIndirect;
     typedef CArrayVector<Type_, 1, 1, Arrays::by_col_> SubColDirect;
 
-    typedef CArrayPoint<Type_, 1, UnknownSize, Arrays::by_row_> FixedRowArrayIndirect;
-    typedef CArrayPoint<Type_, 1, SizeCols_, Arrays::by_row_> FixedColArrayDirect;
+    typedef CArrayPoint<Type_, UnknownSize, Arrays::by_row_> FixedRowArrayIndirect;
+    typedef CArrayPoint<Type_, SizeCols_, Arrays::by_row_> FixedColArrayDirect;
 
-    typedef CArrayPoint<Type_, 1, UnknownSize, Arrays::by_col_> FixedRowArrayDirect;
-    typedef CArrayPoint<Type_, 1, SizeCols_, Arrays::by_col_> FixedColArrayIndirect;
+    typedef CArrayPoint<Type_, UnknownSize, Arrays::by_col_> FixedRowArrayDirect;
+    typedef CArrayPoint<Type_, SizeCols_, Arrays::by_col_> FixedColArrayIndirect;
 
   public:
     typedef CArrayNumber<Type_, 1, 1, Orient_> Number;
@@ -101,23 +101,19 @@ struct Traits< CArrayPoint<Type_, SizeRows_, SizeCols_, Orient_> >
     typedef typename If<Orient_, SubRowIndirect, SubRowDirect >::Result  SubRow;
     typedef typename If<Orient_, SubColDirect, SubColIndirect >::Result  SubCol;
 
-    /** If one of the Size is 1, we have a Vector (a column) or a Point (a row)
-     *  (What to do if both are = 1 : Type or array (1,1) ?).
-     **/
-    typedef typename If< (SizeRows_ == 1)||(SizeCols_ == 1)   // one row or one column
-                       , typename If<(SizeCols_ == 1), SubCol, SubRow>::Result
-                       , Void
-                       >::Result SubVector;
+    /* Type or array (1,1) ? */
+    typedef typename If<(SizeCols_ == 1), SubCol, SubRow>::Result SubVector;
+
     // FIXME does not seem optimal if we want only to get a subset of rows (columns)
-    typedef CArrayPoint<Type_, 1, UnknownSize, Orient_> SubArray;
+    typedef CArrayPoint<Type_, UnknownSize, Orient_> SubArray;
 //    typedef typename If< Orient_ == Arrays::by_col_
 //                       , typename If<SizeRows_ != UnknownSize, FixedRowArrayDirect, FixedColArrayIndirect>::Result
 //                       , typename If<SizeCols_ != UnknownSize, FixedRowArrayIndirect, FixedColArrayDirect>::Result
 //                       >::Result SubArray;
     // Transposed type
-    typedef CArrayVector< Type_, SizeCols_, SizeRows_, !Orient_> Transposed;
+    typedef CArrayVector< Type_, SizeCols_, 1, !Orient_> Transposed;
     // The CAllocator have to have the same structure than the CArray
-    typedef CAllocator<Type_, Arrays::point_, SizeRows_, SizeCols_, Orient_> Allocator;
+    typedef CAllocator<Type_, Arrays::point_, 1, SizeCols_, Orient_> Allocator;
 
     typedef Type_ Type;
 
@@ -125,7 +121,7 @@ struct Traits< CArrayPoint<Type_, SizeRows_, SizeCols_, Orient_> >
     {
       structure_ = Arrays::point_,
       orient_    = Orient_,
-      sizeRows_  = SizeRows_,
+      sizeRows_  = 1,
       sizeCols_  = SizeCols_,
       storage_   = Arrays::dense_
     };
@@ -135,15 +131,14 @@ struct Traits< CArrayPoint<Type_, SizeRows_, SizeCols_, Orient_> >
 
 
 /** @ingroup Arrays
- * @brief specialization for the point case.
+ * @brief declaration of  the point case.
  */
 template <typename Type, int SizeCols_, bool Orient_>
-class CArrayPoint <Type, 1, SizeCols_, Orient_>
-      : public ICArray < CArrayPoint<Type, 1, SizeCols_, Orient_> >
+class CArrayPoint : public ICArray < CArrayPoint<Type, SizeCols_, Orient_> >
 {
   public:
-    typedef ICArray < CArrayPoint<Type, 1, SizeCols_, Orient_> > Base;
-    typedef ArrayBase < CArrayPoint<Type, 1, SizeCols_, Orient_> > LowBase;
+    typedef ICArray < CArrayPoint<Type, SizeCols_, Orient_> > Base;
+    typedef ArrayBase < CArrayPoint<Type, SizeCols_, Orient_> > LowBase;
     enum
     {
       structure_ = Arrays::point_,
@@ -191,15 +186,6 @@ class CArrayPoint <Type, 1, SizeCols_, Orient_>
      **/
     inline CArrayPoint& operator=(CArrayPoint const& rhs) { return LowBase::assign(rhs);}
 };
-
-/** @ingroup Arrays
- *  ostream for CArray.
- *  @param s the output stream
- *  @param V the CArray to write
- **/
-template <typename Type, int SizeRows_, int SizeCols_, bool Orient_>
-ostream& operator<<(ostream& s, const CArrayPoint<Type, SizeRows_, SizeCols_, Orient_>& V)
-{ return out2D(s,V);}
 
 } // namespace STK
 

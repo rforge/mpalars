@@ -28,7 +28,8 @@
 #-----------------------------------------------------------------------
 # Macro definitions
 #
-include ../../../makevars
+include $(MAKEVARS)
+include makevars
 
 #-----------------------------------------------------------------------
 # Paths
@@ -56,7 +57,7 @@ CPP_OBJS = $(CPP_SRCS:%.cpp=$(BIN_DIR)%.o)
 #
 $(BIN_DIR)%.o: $(INC_DIR)%.h makefile
 $(BIN_DIR)%.o: %.cpp
-	$(CXX) $(CFLAGS) $(CXXFLAGS) $(STK_FLAGS) $< -c -o $@
+	$(CXX) $(CFLAGS) $(CXXFLAGS) $(STK_FLAGS) $(STK_PROJECT_FLAGS) $< -c -o $@
 
 #-----------------------------------------------------------------------
 # creating objects files

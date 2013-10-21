@@ -19,7 +19,7 @@
     Boston, MA 02111-1307
     USA
 
-    Contact : Serge.Iovleff@stkpp.org
+    Contact : quentin.grimonprez@inria.fr
 */
 
 /*
@@ -56,11 +56,6 @@ namespace HD
       /**clone*/
       virtual IPenalty* clone() const = 0;
 
-      /** update penalty
-       *  @param beta current estimates
-       *  @param normResidual ||y-X*beta||_2^2
-       */
-      virtual void update(STK::CVectorX const& beta, STK::Real const& normResidual) = 0;
 
       /** update penalty
        *  @param beta current estimates

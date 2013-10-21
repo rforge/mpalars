@@ -207,16 +207,6 @@ class Array2DPoint : public IArray2D< Array2DPoint<Type> >
     inline Array2DPoint& operator=(Type const& v) { this->setValue(v); return *this;}
 };
 
-/** @ingroup Arrays
- *  ostream for Array2DPoint.
- *  @param s the output stream
- *  @param V the Array2DPoint to write
- **/
-template<class Type>
-ostream& operator<<(ostream& s, const Array2DPoint<Type>& V)
-{ return out2D(s,V);}
-
-
 } // namespace STK
 
 #endif // STK_ARRAYHO_H

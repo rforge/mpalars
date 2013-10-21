@@ -117,7 +117,7 @@ void GaussianAAModel::computeModelParameters()
 void GaussianAAModel::computeNbFreeParameters()
 {
   // get number of free parameters
-  setnbFreeParameters(p_regressor_->nbParameter() + dim() * (dim()+1)/2 + 1);
+  setNbFreeParameters(p_regressor_->nbParameter() + dim() * (dim()+1)/2 + 1);
 }
 
 /* compute the ln-likelihood of the model */

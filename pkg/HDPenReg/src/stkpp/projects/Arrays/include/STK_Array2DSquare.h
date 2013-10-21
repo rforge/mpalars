@@ -193,16 +193,6 @@ class Array2DSquare : public IArray2D< Array2DSquare<Type> >
     inline Array2DSquare& operator=(Type const& v) { this->setValue(v); return *this;}
 };
 
-/** @ingroup Arrays
- *  ostream for Array2D.
- *  @param s the output stream
- *  @param V the Array2D to write
- **/
-template<class Type>
-ostream& operator<<(ostream& s, Array2DSquare<Type> const& V)
-{ return out2D(s,V);}
-
-
 } // namespace STK
 
 

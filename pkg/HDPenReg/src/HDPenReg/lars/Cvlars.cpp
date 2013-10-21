@@ -19,7 +19,7 @@
     Boston, MA 02111-1307
     USA
 
-    Contact : Serge.Iovleff@stkpp.org
+    Contact : quentin.grimonprez@inria.fr
 */
 
 /*
@@ -143,7 +143,7 @@ namespace HD
     }
 
     //run for each size of fold
-    for(int i = 0; i < startIndex.size(); i++)
+    for(int i = 0; i < (int) startIndex.size(); i++)
       subrun(startIndex[i],endIndex[i]);
 
     // compute mean prediction error for each index
@@ -151,10 +151,13 @@ namespace HD
     cv_ = (residuals_ * one) / k_;
 
     // compute mean standard deviation of cv_ for each index
-    for(int i = 1; i <= index_.size(); i++)
-      for(int j = 1; j <= k_; j++)
-        residuals_(i,j) -= cv_[i];
-      //residuals_.row(i) -= cv_[i];
+//    for(int i = 1; i <= (int) index_.size(); i++)
+//      for(int j = 1; j <= k_; j++)
+//        residuals_(i,j) -= cv_[i];
+
+    for(int i = 1; i <= (int) index_.size(); i++)
+      residuals_.row(i) -= cv_[i];
+
     residuals_ = residuals_.square();
     cvError_ = (residuals_ * one)/(k_-1)/k_;
     cvError_ = cvError_.sqrt();
@@ -205,7 +208,7 @@ namespace HD
       HD::Lars lars(XControl,yControl,maxSteps_,intercept_,eps_);
       lars.run();
 
-      for(int s = 1 ; s <= index_.size(); s++)
+      for(int s = 1 ; s <= (int) index_.size(); s++)
       {
         //we compute the prediction of the y associated to XTest
         lars.predict(XTest,index_[s-1], yPred);
@@ -274,7 +277,7 @@ namespace HD
          HD::Lars lars(XControl,yControl,maxSteps_,intercept_,eps_);
          lars.run();
 
-         for(int s = 1 ; s <= index_.size(); s++)
+         for(int s = 1 ; s <= (int) index_.size(); s++)
          {
            //we compute the prediction of the y associated to XTest
            lars.predict(XTest,index_[s-1], yPred);
@@ -290,10 +293,11 @@ namespace HD
      cv_ = (residuals_ * one) / k_;
 
      // compute mean standard deviation of cv_ for each index
-     for(int i = 1; i <= index_.size(); i++)
-       for(int j = 1; j <= k_; j++)
-         residuals_(i,j) -= cv_[i];
-       //residuals_.row(i) -= cv_[i];
+//     for(int i = 1; i <= (int) index_.size(); i++)
+//       for(int j = 1; j <= k_; j++)
+//         residuals_(i,j) -= cv_[i];
+     for(int i = 1; i <= (int) index_.size(); i++)
+       residuals_.row(i) -= cv_[i];
      residuals_ = residuals_.square();
      cvError_ = (residuals_ * one)/(k_-1)/k_;
      cvError_ = cvError_.sqrt();

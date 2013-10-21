@@ -37,122 +37,203 @@
 #ifndef STK_IMIXTUREMODEL_H
 #define STK_IMIXTUREMODEL_H
 
-#include "../../StatModels/include/STK_ILatentModel.h"
+#include "STK_IMixtureModelBase.h"
+#include "STK_MixtureTraits.h"
+#include "../../Arrays/include/STK_Array1D.h"
 
 namespace STK
 {
-/** @brief Base class for Mixture model.
- *
- * In statistics, a mixture model is a probabilistic model for representing
- * the presence of sub-populations within an overall population, without
- * requiring that an observed data-set should identify the sub-population to
- * which an individual observation belongs. Formally a mixture model
- * corresponds to the mixture distribution that represents the probability
- * distribution of observations in the overall population. However, while
- * problems associated with "mixture distributions" relate to deriving the
- * properties of the overall population from those of the sub-populations,
- * "mixture models" are used to make statistical inferences about the
- * properties of the sub-populations given only observations on the pooled
- * population, without sub-population-identity information.
- *
- * Some ways of implementing mixture models involve steps that attribute
- * postulated sub-population-identities to individual observations (or weights
- * towards such sub-populations), in which case these can be regarded as types
- * unsupervised learning or clustering procedures. However not all inference
- * procedures involve such steps.
+/**@ingroup Clustering
+ * Main interface class for mixture models.
+ * At this level we add the array of Components and a
+ * pointer on the data set. The components are created in this class.
  *
  * @tparam Array can be any kind of container for the observable variables.
  * It should at least derive from ITContainer and provide an
  * access to a single row. @sa ITContainer, ICArray, IArray2DBase
  *
- * @tparam Parameters any structure encapsulating the parameters of the components.
- * @sa IMultiParameters
+ * @tparam Components any structure encapsulating the components
+ * and deriving from IMixtureComponent.
+ * @sa IMixtureComponent, IMultiStatModel, IMultiParameters
  **/
-template <class Array, class Parameters>
-class IMixtureModel : public IMixtureModelBase
+template <class Derived >
+class IMixtureModel : public IRecursiveTemplate<Derived>, public IMixtureModelBase
 {
-  protected:
-    using IMixtureModelBase::nbCluster_;
+  public:
+    typedef typename hidden::MixtureTraits<Derived>::Array Array;
+    typedef typename hidden::MixtureTraits<Derived>::Component Component;
+    typedef typename hidden::MixtureTraits<Derived>::Parameters Parameters;
+    using IMixtureModelBase::p_tik;
 
+  protected:
     /** Default constructor */
-    IMixtureModel() : IMixtureModelBase(), components_() {}
-    /** Constructor with data set. */
-    IMixtureModel( Array const& data) : p_data_(&data), IMixtureModelBase(), components_()
+    IMixtureModel( int nbCluster)
+                 : IMixtureModelBase(nbCluster), p_data_(0), components_(nbCluster, 0)
+    {
+      for (int k= components_.firstIdx(); k <= components_.lastIdx(); ++k)
+      { components_[k] = new Component(p_data_);}
+    }
+    /** Constructor with data set.
+     *  @param nbCluster the number of cluster
+     *  @param data a reference on the data set
+     **/
+    IMixtureModel( int nbCluster, Array const& data)
+                 : IMixtureModelBase(nbCluster), p_data_(&data), components_(nbCluster, 0)
     {
       this->initialize(p_data_->rows().size(), p_data_->cols().size());
-      this->setRangeSamples(p_data_->cols());
+      for (int k= components_.firstIdx(); k <= components_.lastIdx(); ++k)
+      { components_[k] = new Component(p_data_);}
     }
-    /** Constructor with pointer on the data set. */
-    IMixtureModel( Array const* p_data) : p_data_(p_data), IMixtureModelBase(), components_()
+    /** Constructor with pointer on the data set.
+     *  @param nbCluster the numebr of cluster
+     *  @param p_data a pointer on the data set
+     **/
+    IMixtureModel( int nbCluster, Array const* p_data)
+                 : IMixtureModelBase(nbCluster), p_data_(p_data), components_(nbCluster, 0)
     {
       if (p_data_)
       {
         this->initialize(p_data_->rows().size(), p_data_->cols().size());
-        this->setRangeSamples(p_data_->cols());
       }
+      for (int k= components_.firstIdx(); k <= components_.lastIdx(); ++k)
+      { components_[k] = new Component(p_data_);}
     }
     /** copy constructor.
+     *  Call the clone method of the Components class.
      *  @param model the model to copy
      **/
     IMixtureModel( IMixtureModel const& model)
-                 : p_data_(model.p_data_)
-                 , IMixtureModelBase(model)
-                 , components_(model.components_)
+                 : IMixtureModelBase(model), p_data_(model.p_data_), components_(model.components_)
     {
-      for (Integer k= components_.firstIdx(); k <= components_.lastIdx(); ++k)
-      { if (model.components_[k]) components_[k] = model.components_[k]->clone();}
+      for (int k= components_.firstIdx(); k <= components_.lastIdx(); ++k)
+      { components_[k] = model.components_[k]->clone();}
     }
-    /** destructor */
-    ~IMixtureModel() {}
-
   public:
-    /** compute the parameters. This is the default implementation
-     *  of the ILatentModel::MStep abstract virtual function.
-     *  This implementation assume that there is no dependencies between the
-     *  parameters of the components and have to be overloaded if some parameters
-     *  are shared between the components.
-     **/
-    virtual void mStep()
+    /** destructor */
+    virtual ~IMixtureModel()
     {
-      computeProportions();
-      for (int k=components_.firstIdxRows(); k<= components_.lastIdxRows(); k++)
-      { components_[k]->run(p_tik_->col(k));}
-      this->computeLnLikelihood();
+      for (int k= components_.firstIdx(); k <= components_.lastIdx(); ++k)
+      { if (components_[k]) delete components_[k];}
     }
-
-    typedef IMultiStatModel<Array, Array2DVector<Real>, Parameters> IComponents;
+    /** clone pattern */
+    IMixtureModel* clone() const
+    { return IRecursiveTemplate<Derived>::clone();}
+    /** create pattern */
+    IMixtureModel* create() const
+    {
+      IMixtureModel* p_model =new Derived(this->nbCluster(), this->p_data_);
+      if (this->isParametersCreated())
+      { p_model->createMixtureParameters();}
+      else
+      { p_model->setMixtureParameters(this->p_prop_, this->p_tik_, this->p_zi_);}
+      p_model->initializeModel();
+      return p_model;
+    }
+    /** @return a pointer on the current data set */
+    Array const* p_data() const { return p_data_;};
     /** @return the array with the components */
-    Array1D< IComponents* > const& components() const { return components_;}
-
-    /** @return a constant reference on the k_th component */
-    IComponents* const& p_components(int k) const { return components_[k];}
-    /** @return a reference on the k_th component */
-    IComponents*& p_components(int k) { return components_[k];}
-
-    /** @return the value of the probability of the sample sample in  teh component k.
-     *  @param index of the sample
+    Array1D< Component* > const& components() const { return components_;}
+    /** @return a constant reference on the k-th component */
+    Component* const& components(int k) const { return components_[k];}
+    /** @brief Initialize the model before its first use.
+     *  This function can be overloaded in derived class for initialization of
+     *  the specific model parameters. It should be called prior to any used of
+     *  the class. In this interface, the @c initializeModel() method
+     *  - set the number of variables of the mixture model
+     *  - set the range of the samples in the base class
+     *  - call the base class IMixtureModelBase::initializeModel() method.
+     **/
+    virtual void initializeModel()
+    {
+      if (!p_data_)
+      { STKRUNTIME_ERROR_NO_ARG(IMixtureModel,data set is not set);}
+      this->initialize(p_data_->rows().size(), p_data_->cols().size());
+      IMixtureModelBase::initializeModel();
+    }
+    /** set a new data set
+     *  @param data the data set to set*/
+    virtual void setData(Array const& data)
+    {
+      p_data_ = &data;
+      this->initialize(p_data_->rows().size(), p_data_->cols().size());
+      // update components
+      for (int k= components_.firstIdx(); k <= components_.lastIdx(); ++k)
+      { components_[k]->setData(p_data_);}
+    }
+    /** @return the value of the probability of the i-th sample in the k-th component.
+     *  @param i index of the sample
      *  @param k index of the component
      **/
-    virtual Real componentProbability(int i, int k)
-    { return std::exp(components_[k]->computeLnLikelihood(p_data_->row(i)));}
+    virtual Real lnComponentProbability(int i, int k)
+    { return components_[k]->computeLnLikelihood(p_data_->row(i));}
+
+    /** Call static method mStep() implemented by end-user */
+    virtual void mStep()
+    { computeProportions();
+      MixtureModelImpl< Array, Parameters, Component >::mStep(components_, p_tik());
+    }
+    /** use the default static method randomInit() implemented by end-users
+     *  get an initial value of the parameters and compute tik and zi.
+     **/
+    virtual void randomInit()
+    { MixtureModelImpl< Array, Parameters, Component >::randomInit(components_);
+      eStep();
+    }
+    /** use the default static method initializeStep() for a first initialization
+     *  of the parameters using tik values.
+     **/
+    virtual void initializeStep()
+    { MixtureModelImpl< Array, Parameters, Component >::initializeStep(components_,  p_tik());}
 
   protected:
     /** pointer on the data set */
     Array const* p_data_;
     /** Array of the components of the mixture model */
-    Array1D< IComponents* > components_;
+    Array1D< Component* > components_;
+};
 
-    /** create the components */
-    void createComponentsArray() { components_.resize(nbCluster_);}
-    /** compute the proportions
-     *  @note This method have to be overloaded if we estimate a model with
-     *  equal proportions.
+/**@ingroup Clustering
+ * Utility interface class for mixture models with fixed proportions.
+ * In this class we overload the computeProportions() method
+ * defined in the Interface base class IMixtureModelBase and let them
+ * unchanged.
+ **/
+template <class Derived>
+class IMixtureModelFixedProp : public IMixtureModel<Derived >
+{
+  protected:
+    typedef typename hidden::MixtureTraits<Derived>::Array Array;
+    typedef IMixtureModel<Derived> Base;
+    /** Default constructor */
+    IMixtureModelFixedProp( int nbCluster): Base(nbCluster)
+    {}
+    /** Constructor with data set.
+     *  @param nbCluster the number of cluster
+     *  @param data a reference on the data set
      **/
-    virtual void computeProportions()
-    {
-      for (int k=this->p_prop_->firstIdx(); k<= this->p_prop_->lastIdx(); k++)
-      { this->p_prop_->elt(k) = p_tik_->col(k).sum()/this->nbSample();}
-    }
+    IMixtureModelFixedProp( int nbCluster, Array const& data)
+                          : Base(nbCluster, data)
+    {}
+    /** Constructor with pointer on the data set.
+     *  @param nbCluster the numebr of cluster
+     *  @param p_data a pointer on the data set
+     **/
+    IMixtureModelFixedProp( int nbCluster, Array const* p_data)
+                          : Base(nbCluster, p_data)
+    { }
+    /** copy constructor.
+     *  Call the clone method of the Components class.
+     *  @param model the model to copy
+     **/
+    IMixtureModelFixedProp( IMixtureModelFixedProp const& model)
+                 : Base(model)
+    {}
+    /** destructor */
+    ~IMixtureModelFixedProp() {}
+    /** overloading of the computePropotions() method.
+     * Let them initialized to 1/K. */
+    virtual void computeProportions() {}
+
 };
 
 } // namespace STK

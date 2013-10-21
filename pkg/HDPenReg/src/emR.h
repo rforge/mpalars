@@ -22,7 +22,11 @@
 
 void copySTKVectorInSTDVector(STK::CVectorX const& stkvector, std::vector<STK::Real> &stdvector);
 void copySTKArray2DVectorInSTDVector(STK::Array2DVector<int> const& stkvector, std::vector<int> &stdvector);
-RcppExport SEXP EMlasso(SEXP data, SEXP response, SEXP nbIndiv, SEXP nbVar, SEXP lambda, SEXP maxStep, SEXP eps);
+RcppExport SEXP EMlasso(SEXP data, SEXP response, SEXP nbIndiv, SEXP nbVar, SEXP lambda, SEXP intercept, SEXP maxStep, SEXP burn, SEXP threshold, SEXP eps, SEXP epsCG);
+RcppExport SEXP EMfusedLasso(SEXP data, SEXP response, SEXP nbIndiv, SEXP nbVar, SEXP lambda1, SEXP lambda2, SEXP intercept, SEXP maxStep, SEXP burn, SEXP eps, SEXP eps0, SEXP epsCG);
+RcppExport SEXP EMCVLasso(SEXP data, SEXP response, SEXP nbIndiv, SEXP nbVar, SEXP lambda, SEXP nbFolds, SEXP intercept, SEXP maxStep, SEXP burn, SEXP threshold, SEXP eps, SEXP epsCG);
+RcppExport SEXP EMCVFusedLasso1D(SEXP data, SEXP response, SEXP nbIndiv, SEXP nbVar, SEXP lambda1, SEXP lambda2, SEXP optimL1, SEXP nbFolds, SEXP intercept, SEXP maxStep, SEXP burn, SEXP threshold, SEXP eps, SEXP epsCG);
+RcppExport SEXP EMCVFusedLasso2D(SEXP data, SEXP response, SEXP nbIndiv, SEXP nbVar, SEXP lambda1, SEXP lambda2, SEXP nbFolds, SEXP intercept, SEXP maxStep, SEXP burn, SEXP threshold, SEXP eps, SEXP epsCG);
 
 
 #endif

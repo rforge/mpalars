@@ -199,7 +199,7 @@ class MultiNormal: public IMultiLaw<Container1D>
     {
       // check ranges
       if (data.cols() != mu_.range() )
-      { STKRUNTIME_ERROR_NO_ARG(MultiNormal::logLikelihood(x),data.cols() != mu_.range());}
+      { STKRUNTIME_ERROR_NO_ARG(MultiNormal::lnLikelihood(x),data.cols() != mu_.range());}
       // compute x - mu
       Point xres(mu_.range()), xrot(mu_.range());
       // get dimensions of the samples and sum over all ln-likelihood values

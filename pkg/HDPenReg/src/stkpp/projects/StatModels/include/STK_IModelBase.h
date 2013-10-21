@@ -33,8 +33,8 @@
  **/
 
 
-#ifndef STK_IMODELBASE_H_
-#define STK_IMODELBASE_H_
+#ifndef STK_IMODELBASE_H
+#define STK_IMODELBASE_H
 
 #include <cmath>
 #include "../../STKernel/include/STK_Real.h"
@@ -54,24 +54,24 @@ class IModelBase
 {
   protected:
     /** Default constructor. */
-    IModelBase() { initialize(0, 0);}
+    inline IModelBase() { initialize(0, 0);}
     /** Constructor with specified dimension.
      *  @param nbSample number of sample of the model
      *  @param nbVar number of variable of the model
      **/
-    IModelBase(int const& nbSample, int const& nbVar)
+    inline IModelBase( int const& nbSample, int const& nbVar)
     { initialize(nbSample, nbVar);}
     /** Copy constructor.
      *  @param model the model to copy
      **/
-    IModelBase( IModelBase const& model)
-              : nbSample_(model.nbSample_)
-              , nbVar_(model.nbVar_)
-              , lnLikelihood_(model.lnLikelihood_)
-              , nbFreeParameters_(model.nbFreeParameters_)
+    inline IModelBase( IModelBase const& model)
+                     : nbSample_(model.nbSample_)
+                     , nbVar_(model.nbVar_)
+                     , lnLikelihood_(model.lnLikelihood_)
+                     , nbFreeParameters_(model.nbFreeParameters_)
     {}
     /** destructor */
-    ~IModelBase() {}
+    inline ~IModelBase() {}
 
   public:
     /** @return the total available observations */
@@ -93,7 +93,7 @@ class IModelBase
     /** set the number of free parameters of the model
      *  @param nbFreeParameters number of free parameters of the model
      * */
-    inline void setnbFreeParameters( int const& nbFreeParameters) { nbFreeParameters_ = nbFreeParameters;}
+    inline void setNbFreeParameters( int const& nbFreeParameters) { nbFreeParameters_ = nbFreeParameters;}
     /** set the number of sample of the model
      *  @param nbSample number of sample of the model
      * */
@@ -105,12 +105,12 @@ class IModelBase
     /** set the log-likelihood of the model
      *  @param lnLikelihood the log-likelihood of the model
      * */
-    inline void setLnLikelihood( int const& lnLikelihood) { lnLikelihood_ = lnLikelihood;}
+    inline void setLnLikelihood( Real const& lnLikelihood) { lnLikelihood_ = lnLikelihood;}
     /** set the dimensions of the parameters of the model
      *  @param nbSample number of sample of the model
      *  @param nbVar number of variable of the model
      * */
-    void initialize( int const& nbSample, int const& nbVar)
+    inline void initialize( int const& nbSample, int const& nbVar)
     {
       nbSample_ = nbSample;
       nbVar_ = nbVar;
@@ -131,4 +131,4 @@ class IModelBase
 
 } // namespace STK
 
-#endif /* STK_IMODELBASE_H_ */
+#endif /* STK_IMODELBASE_H */

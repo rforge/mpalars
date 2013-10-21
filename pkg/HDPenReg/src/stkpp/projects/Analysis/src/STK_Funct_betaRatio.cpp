@@ -724,27 +724,29 @@ Real betaRatio( Real const& a, Real const& b, Real const& x
     return (x<=0.5) ? betaRatio_sr(a, b, x, lower_tail)
                     : betaRatio_sr(b, a, y, !lower_tail);
   }
-  // (1<a<=15) and (1<b<=15)
-  if (std::max(a,b)<=15)
+  // (1<a<=80) and (1<b<=80)
+  if (std::max(a,b)<=120)
   {
     // general case
     return (x < p) ? betaRatio_cf(a, b, x,  lower_tail)
                    : betaRatio_cf(b, a, y, !lower_tail);
   }
-  // ((1<a<=15) and (15<b)) or ((15<a) and (1<b<=15))
+  // ((1<a<=15) and (120<b)) or ((120<a) and (1<b<=15))
   if (std::min(a,b)<=15)
   {
     return (a<=15) ? betaRatio_up(a, b, x, false, lower_tail)
                    : betaRatio_up(b, a, x, true, !lower_tail);
   }
-  // (a>15) and (b>15) and (a<b)
-  if (a<b)
+  // ()
+  if ((std::min(a,b)<=120)&& (std::max(a,b)<=200))
   {
-    // center region for x in [p , q]
-      return betaRatio_se(a-1, b-1, x, false, lower_tail);
+    // general case
+    return (x < p) ? betaRatio_cf(a, b, x,  lower_tail)
+                   : betaRatio_cf(b, a, y, !lower_tail);
   }
-  // (a>15) and (b>15) and (b<a)
-    return betaRatio_se(b-1, a-1, x, true, !lower_tail);
+  // other cases
+  return (a<b) ? betaRatio_se(a-1, b-1, x, false, lower_tail)
+               : betaRatio_se(b-1, a-1, x, true, !lower_tail);
 }
 
 } // namespace Funct

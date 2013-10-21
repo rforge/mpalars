@@ -262,18 +262,18 @@ class TReadWriteCsv
      *  @param j index of the column
      **/
     inline Var& var(int j) { return str_data_.elt(j); }
-//    /** @return a constant reference of the icol variable.
-//     *  @param icol index of the col
-//     **/
-//    inline Var const& var(int icol) const { return str_data_.elt(icol); }
+    /** @return a constant reference of the icol variable.
+     *  @param icol index of the col
+     **/
+    inline Var const& var(int icol) const { return str_data_.elt(icol); }
     /** @return the element with the index icol.
      *  @param icol index of the col
      **/
     inline Var& at(int icol) { return str_data_.at(icol); }
-//    /** @return a constant reference of the icol variable.
-//     *  @param icol index of the col
-//     **/
-//    inline Var const& at(int icol) const { return str_data_.at(icol); }
+    /** @return a constant reference of the icol variable.
+     *  @param icol index of the col
+     **/
+    inline Var const& at(int icol) const { return str_data_.at(icol); }
     /** @return a reference of the icol variable
      *  @param icol index of the col
      **/
@@ -284,12 +284,12 @@ class TReadWriteCsv
     inline Var const operator[](int const& icol) const { return str_data_[icol]; }
    /** @return the first variable. */
     inline Var& front() { return str_data_.at(firstIdx());}
-//    /** @return the first variable (const). */
-//    inline Var const& front() const { return str_data_.at(firstIdx());}
+    /** @return the first variable (const). */
+    inline Var const& front() const { return str_data_.at(firstIdx());}
     /** @return the last variable. */
     inline Var& back() { return str_data_.at(lastIdx());}
-//    /** @return the last variable (const). */
-//    inline Var const& back() const { return str_data_.at(lastIdx());}
+    /** @return the last variable (const). */
+    inline Var const& back() const { return str_data_.at(lastIdx());}
     /** Attempts to add a column with the values contained in data.
      *  @param data the column to push back
      *  @return @c true if successful, @c false if an error is encountered.

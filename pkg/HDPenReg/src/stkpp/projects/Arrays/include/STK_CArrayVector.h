@@ -54,7 +54,7 @@ template< typename Type, int SizeRows_, int SizeCols_, bool Orient_>
 class CArray;
 template< typename Type, int Size_, bool Orient_>
 class CArraySquare;
-template< typename Type, int SizeRows_, int SizeCols_, bool Orient_>
+template< typename Type, int SizeCols_, bool Orient_>
 class CArrayPoint;
 template< typename Type, int SizeRows_, int SizeCols_, bool Orient_>
 class CArrayNumber;
@@ -74,11 +74,11 @@ struct Traits< CArrayVector<Type_, SizeRows_, SizeCols_, Orient_> >
   private:
     class Void { };
 
-    typedef CArrayPoint<Type_, 1, 1, Arrays::by_col_> RowIndirect;
-    typedef CArrayPoint<Type_, 1, 1, Arrays::by_row_> RowDirect;
+    typedef CArrayPoint<Type_, 1, Arrays::by_col_> RowIndirect;
+    typedef CArrayPoint<Type_, 1, Arrays::by_row_> RowDirect;
 
-    typedef CArrayPoint<Type_, 1, 1, Arrays::by_col_> SubRowIndirect;
-    typedef CArrayPoint<Type_, 1, 1, Arrays::by_row_> SubRowDirect;
+    typedef CArrayPoint<Type_, 1, Arrays::by_col_> SubRowIndirect;
+    typedef CArrayPoint<Type_, 1, Arrays::by_row_> SubRowDirect;
 
     typedef CArrayVector<Type_, SizeRows_, 1, Arrays::by_row_> ColIndirect;
     typedef CArrayVector<Type_, SizeRows_, 1, Arrays::by_col_> ColDirect;
@@ -115,7 +115,7 @@ struct Traits< CArrayVector<Type_, SizeRows_, SizeCols_, Orient_> >
 //                       , typename If<SizeCols_ != UnknownSize, FixedRowArrayIndirect, FixedColArrayDirect>::Result
 //                       >::Result SubArray;
     // Transposed type
-    typedef CArrayPoint< Type_, SizeCols_, SizeRows_, !Orient_> Transposed;
+    typedef CArrayPoint< Type_, SizeRows_, !Orient_> Transposed;
     // The CAllocator have to have the same structure than the CArray
     typedef CAllocator<Type_, Arrays::vector_, SizeRows_, SizeCols_, Orient_> Allocator;
 
@@ -190,15 +190,6 @@ class CArrayVector <Type, SizeRows_, 1, Orient_>
      **/
     inline CArrayVector& operator=(CArrayVector const& rhs) { return LowBase::assign(rhs);}
 };
-
-/** @ingroup Arrays
- *  ostream for CArrayVector.
- *  @param s the output stream
- *  @param V the CArray to write
- **/
-template <typename Type, int SizeRows_, int SizeCols_, bool Orient_>
-ostream& operator<<(ostream& s, const CArrayVector<Type, SizeRows_, SizeCols_, Orient_>& V)
-{ return out2D(s,V);}
 
 } // namespace STK
 

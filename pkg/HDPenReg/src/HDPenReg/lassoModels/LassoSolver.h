@@ -19,7 +19,7 @@
     Boston, MA 02111-1307
     USA
 
-    Contact : Serge.Iovleff@stkpp.org
+    Contact : quentin.grimonprez@inria.fr
 */
 
 /*
@@ -41,27 +41,6 @@
 
 namespace HD
 {
-  /**
-   * Functor for initialization in the conjugate gradient
-   */
-  struct InitFunctor
-  {
-      /**
-       * Operator
-       * @return pointer on the value for initialization
-       */
-      STK::CVectorX operator()() const
-      { return *p_x_;}
-
-      /**
-       * Constructor
-       * @param p_x pointer on the value for initialization
-       */
-      InitFunctor(STK::CVectorX const* p_x) : p_x_(p_x) {};
-
-      ///pointer on the value for initialization
-      STK::CVectorX const* p_x_;
-  };
 
   /** @ingroup lassoModels
    *  @brief This class inherits from the @c IPenalizedSolver class. It implements the way to solve the Mstep for a lasso penalty
@@ -70,64 +49,85 @@ namespace HD
   {
     public:
 
+      /**default constructor*/
+      LassoSolver();
+
       /**
        * Constructor
-       * @param p_currentData pointer to the current Data
-       * @param p_currentSet pointer to the current Set
-       * @param Xty t(X) * y
+       * @param p_data pointer to the current Data
+       * @param beta initial solution
+       * @param p_y pointer to the response
+       * @param threshold threshold for shrinkage
        * @param p_solver pointer to the solver
        * @param p_penalty pointer to the lasso penalty
        */
-      LassoSolver(STK::CArrayXX const* p_currentData, STK::Array2DVector<int> const* p_currentSet, STK::CVectorX const& Xty, STK::CG<LassoMultiplicator,STK::CVectorX,InitFunctor>* p_solver = 0, LassoPenalty* p_penalty = 0 )
-                  : IPenalizedSolver(p_currentData, p_currentSet)
-                  , p_solver_(p_solver)
-                  , p_penalty_(p_penalty)
-                  , Xty_(Xty)
-      {
-      }
+      LassoSolver(STK::CArrayXX const* p_data, STK::CVectorX const& beta, STK::CVectorX const* p_y = 0,  STK::Real const& threshold = 1e-10,
+                  STK::CG<LassoMultiplicator,STK::CVectorX,InitFunctor>* p_solver = 0, LassoPenalty* p_penalty = 0 );
+
       /**destructor*/
       virtual ~LassoSolver() {};
 
-      /**
-       * Solve the M-step with a conjugate gradient
-       * @return new estimate of beta
+      /**Solve the M-step with a conjugate gradient
+       * @return the completed loglikelihood
+       * */
+      STK::Real run(bool const& burn = true);
+
+      /**run the update of the penalty*/
+      void update();
+
+      /**Initialization of the solver*/
+      void initializeSolver();
+
+      //getter
+      /**@return the pointer to the penalty*/
+      inline LassoPenalty* p_penalty() const { return p_penalty_;}
+      /**@return a pointer to the CG solver*/
+      inline STK::CG<LassoMultiplicator,STK::CVectorX,InitFunctor>* p_solver() {return p_solver_;}
+
+      //setter
+      /** set the conjugate gradient solver
+       * @param p_solver pointer to the solver
        */
-      STK::CVectorX run()
-      {
-        //compute the b of the linear system Ax=b
-        STK::CVectorX XtyTemp(p_currentSet_->sizeRows());
-        for(int i = 1; i <= XtyTemp.sizeRows(); i++)
-          XtyTemp[i]=Xty_[(*p_currentSet_)[i]];
+      inline void setSolver(STK::CG<LassoMultiplicator,STK::CVectorX,InitFunctor>* p_solver) {p_solver_ = p_solver;}
 
-        //set the b of the linear system Ax=b
-        STK::CVectorX bTemp = p_penalty_->multSqrtInvPenalty(XtyTemp);
-        p_solver_->setB(bTemp);
+      /**
+       * set the LassoPenalty
+       * @param p_penalty pointer to the penakty
+       */
+      inline void setPenalty(LassoPenalty* p_penalty) {p_penalty_ = p_penalty;}
+      /**
+       * set the threshold
+       * @param threshold threshold for shrinkage to 0
+       */
+      inline void setThreshold(STK::Real threshold) {threshold_ = threshold;}
 
-        //run the conjugate gradient
-        bool convergence;
-        convergence = p_solver_->run();
+    protected:
+      /**Thresholding of the new estimates : estimated coefficients < threshold_ become 0*/
+      void thresholding();
 
-        //backtransform the solution x to beta
-        STK::CVectorX beta = p_penalty_->multSqrtInvPenalty(p_solver_->x());
-        //stk_cout<<p_solver_->x().sizeRows()<<"   "<<p_solver_->x().sizeRows()<<std::endl;
-        return beta;
-      }
+      /** update all the current variables*/
+      void updateCurrent();
 
-      /** set the conjugate gradient solver*/
-      inline void setSolver(STK::CG<LassoMultiplicator,STK::CVectorX,InitFunctor>* p_solver) {p_solver_=p_solver;}
-      /** set the pointer to the lassopenalty*/
-      inline void setPenalty(LassoPenalty* p_penalty) {p_penalty_=p_penalty;}
-      /**set Xty_*/
-      inline void setXty(STK::CVectorX const& Xty) {Xty_=Xty;}
+      /**Update the currentBeta_ and currentData_*/
+      void updateCurrentData();
 
+      /** Computation of the completed loglikelihood*/
+      STK::Real computeLlc();
 
     private:
       ///pointer to the conjugate gradient with LassoMultiplicator
       STK::CG<LassoMultiplicator,STK::CVectorX,InitFunctor>* p_solver_;
-      ///pointer to the lasso penalty
-      LassoPenalty* p_penalty_;
       ///t(X) * y
       STK::CVectorX Xty_;
+      ///b from ax=b for CG
+      STK::CVectorX b_;
+      ///number of active variables in the current set
+      int nbActiveVariables_;
+      ///threshold under we consider a beta equal to 0
+      STK::Real threshold_;
+      ///pointer to the lasso penalty
+      LassoPenalty* p_penalty_;
+
   };
 }
 

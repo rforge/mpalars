@@ -19,7 +19,7 @@
     Boston, MA 02111-1307
     USA
 
-    Contact : Serge.Iovleff@stkpp.org
+    Contact : quentin.grimonprez@inria.fr
 */
 
 /*
@@ -29,7 +29,7 @@
  **/
 
 /** @file FusedLassoPenalty.h
- *  @brief In this file .
+ *  @brief In this file, definition of the @c FusedLassoPenalty class .
  **/
 
 
@@ -41,120 +41,192 @@
 
 namespace HD
 {
+/**
+ * FusedLassoMultiplicator associated to the FusedLassoPenalty for the @c CG.
+ */
   struct FusedLassoMultiplicator
   {
+      /**
+       * multiplicator for the CG in the mstep
+       * @param x a vector
+       * @return the product M*x
+       */
       STK::CVectorX operator()(STK::CVectorX &x) const
       {
-        STK::Array2DDiagonal<STK::Real> sigIdx(p_data_->sizeColsImpl(),*p_sigma2_);
-        STK::CVectorX a(x.sizeRowsImpl());
-
-        for(int i = 1; i <= x.sizeRowsImpl(); i++)
-        {
-          sigIdx[i] *= x[i];
-          a[i] = std::sqrt((*p_invPenalty_)[i]) * x[i];//invD*x
-        }
-
-        //a = (p_invPenalty->sqrt()) * x;
-        a = (*p_data_) * a;//X*invD*x
-        a = p_data_->transpose() * a;//tX*X*invD*x
-        //a = (p_invPenalty->sqrt()) * a;
-        for(int i = 1; i <= x.sizeRowsImpl(); i++)
-          a[i] = std::sqrt((*p_invPenalty_)[i]) * a[i];//invD*tX*X*invD*x
-
-        a += sigIdx;//sigI*x+invD*tX*X*invD*x
+        STK::CVectorX a(x.sizeRows());
+        //a = (sigma2*B+tX*X)*x
+        a =  tridiagMult(x) + (p_data_->transpose() * ((*p_data_) * x));
 
         return   a ;
       }
-      STK::CArrayXX A()
+
+      /**
+       * Product of a the tridiagonal matrix penalty with a vector x
+       * @param x vector
+       * @return the product penalty matrix * x
+       */
+      STK::CVectorX tridiagMult(STK::CVectorX &x) const
       {
-        STK::Array2DDiagonal<STK::Real> sigId(p_data_->sizeColsImpl(),*p_sigma2_),sqrtInvPen(p_data_->sizeColsImpl());
+        STK::CVectorX a(x.sizeRows());
+        //check the size
+        if(x.sizeRows() != p_mainDiagonal_->sizeRows())
+          throw(STK::out_of_range("size mismatch."));
 
-        for(int i = 1; i< p_data_->sizeColsImpl();i++)
-          sqrtInvPen[i] = std::sqrt((*p_invPenalty_)[i]);
-        STK::CArrayXX b;
-        b =  *p_invPenalty_ * ( p_data_->transpose() * (*p_data_) ) + sigId;
 
-        return b;
+        if(x.sizeRows() > 0)
+        {
+          //matrix of size 1, no offDiagonal
+          if(x.sizeRows() == 1)
+            a[1] = (*p_mainDiagonal_)[1] * x[1];
+          else
+          {
+            //first element of the product
+            a[1] = (*p_mainDiagonal_)[1] * x[1] +  (*p_offDiagonal_)[1] * x[2];
+            if(x.sizeRows() > 2)
+            {
+              for(int i = 2; i < x.sizeRows(); i++)
+                a[i] =(*p_offDiagonal_)[i-1] * x[i-1] + (*p_mainDiagonal_)[i] * x[i] +  (*p_offDiagonal_)[i] * x[i+1] ;
+            }
+            //last element of the product
+            a.back() = x.back() * (*p_mainDiagonal_).back() + x[x.sizeRows()-1] * (*p_offDiagonal_)[x.sizeRows()-1] ;
+          }
+        }
+
+        return a;
       }
-      FusedLassoMultiplicator(STK::CArrayXX const* p_data,STK::Array2DDiagonal<STK::Real> const* p_invPenalty,STK::Real const* p_sigma2)
-                        : p_data_(p_data), p_invPenalty_(p_invPenalty), p_sigma2_(p_sigma2)
+      /**
+       * constructor
+       * @param p_data pointer to the current data
+       * @param p_tridiag pointer to the penalty matrix
+       * @param p_sigma2 pointer to the sigma2 value
+       */
+      FusedLassoMultiplicator(STK::CArrayXX const* p_data = 0, STK::CVectorX const* p_mainDiagonal = 0, STK::CVectorX const* p_offDiagonal = 0, STK::Real const* p_sigma2 = 0)
+                        : p_data_(p_data), p_mainDiagonal_(p_mainDiagonal), p_offDiagonal_(p_offDiagonal), p_sigma2_(p_sigma2)
       {
       }
 
+      ///pointer to the current data
       STK::CArrayXX const* p_data_;
-      STK::Array2DDiagonal<STK::Real> const* p_invPenalty_;
+      ///pointer to the current data
+      STK::CVectorX const* p_mainDiagonal_;
+      ///pointer to the current data
+      STK::CVectorX const* p_offDiagonal_;
+      ///pointer to the sigma2 value
       STK::Real const* p_sigma2_;
   };
 
 
-
+  /**
+   * Class FusedLassoPenalty derived from @c IPenalty
+   * This class contains the penalty term of a fused lasso in a EM algorithm and the way to update the penalty
+   *
+   */
   class FusedLassoPenalty : public IPenalty
   {
     public:
+      /**default constructor*/
+      FusedLassoPenalty();
       /** Constructor
-       *  @param lambda penalization parameter for the l1-norm of the estimates
-       *  @param n size of sample
-       *  @param p size of Penalty (number of covariates)
+       *  @param lambda1 penalization parameter for the l1-norm of the estimates
+       *  @param lambda2 penalization parameter for the l1-norm of the difference between successive estimates
+       *  @param eps epsilon to add to denominator of fraction to avoid zeros.
        */
-      FusedLassoPenalty(STK::Real lambda, int n, int p);
+      FusedLassoPenalty(STK::Real lambda1, STK::Real lambda2, STK::Real eps = 1e-8);
 
       /** Copy constructor
        *  @param penalty LassoPenalty object to copy
        */
-      FusedLassoPenalty(LassoPenalty const& penalty);
+      FusedLassoPenalty(FusedLassoPenalty const& penalty);
 
       /** destructor */
-      inline virtual ~LassoPenalty() {};
+      virtual ~FusedLassoPenalty() {};
 
       /**clone*/
-      FusedLassoPenalty* clone() const;
+      FusedLassoPenalty* clone() const ;
 
       //getter
-      /**@return lambda parameter of the lasso */
-      inline STK::Real const& lamba() const {return lambda_;}
-      /**@return invPenalty diagonal matrix containing |beta_i| / lambda */
-      inline STK::Array2DDiagonal<STK::Real> const& invPenalty() const {return invPenalty_;}
-      /**@return n size of sample */
-      inline int const& n() const {return n_;}
-      /**@return p number of covariates */
-      inline int const& p() const {return p_;}
+      /**@return lambda1_ parameter of the lasso penalty */
+      inline STK::Real const& lambda1() const {return lambda1_;}
+      /**@return lambda2_ parameter of the fusion penalty */
+      inline STK::Real const& lambda2() const {return lambda2_;}
       /**@return sigma2 variance of the response*/
       inline STK::Real const& sigma2() const { return sigma2_;}
-
-      inline STK::Array2DDiagonal<STK::Real> const* p_invPenalty() const {return &invPenalty_;}
+      /**@return a pointer to sigma2*/
       inline STK::Real const*  p_sigma2() const { return &sigma2_;}
+      /**@return */
+      inline STK::Real const& eps() const {return eps_;}
+      /**@return the main diagonal of the penalty matrix.*/
+      inline STK::CVectorX const& mainDiagonal() const {return mainDiagonal_;}
+      /**@return a pointer to the main diagonal of the penalty matrix.*/
+      inline STK::CVectorX const* p_mainDiagonal() const {return &mainDiagonal_;}
+      /**@return the off diagonal of the penalty matrix.*/
+      inline STK::CVectorX const& offDiagonal() const {return offDiagonal_;}
+      /**@return a pointer to the off diagonal of the penalty matrix.*/
+      inline STK::CVectorX const* p_offDiagonal() const {return &offDiagonal_;}
 
-      STK::CArrayXX A() const;
+      //setter
+      /**
+       * Set the parameter of the penalty value.
+       * @param lambda1 new value of lambda1
+       */
+      inline void setLambda1(STK::Real const& lambda1) {lambda1_ = lambda1;}
+      /**
+       * Set the parameter of the penalty value.
+       * @param lambda2 new value of lambda2
+       */
+      inline void setLambda2(STK::Real const& lambda2) {lambda2_ = lambda2;}
+      /**
+       * Set eps
+       * @param eps epsilon to add to the denominator
+       */
+      inline void setEps(STK::Real const& eps) {eps_ = eps;}
+
 
       /**
-       * update sigma2 and the lasso penalty
+       * update sigma2 and the fused lasso penalty
        * @param beta current estimates
        * @param normResidual ||y-X*beta||_2^2
        */
-      void update(STK::CVectorX const& beta, STK::Real const& normResidual);
+      void update(STK::CVectorX const& beta, STK::Real const& normResidual){};
+      void update(STK::CVectorX const& beta);
 
-      STK::CVectorX multInvPenalty(STK::CVectorX const& x) const;
-      STK::CVectorX multSqrtInvPenalty(STK::CVectorX const& x) const;
-
+      /**
+       * @param beta current estimates
+       * @return t(beta) * matrixB * beta
+       */
+      STK::Real penaltyTerm(STK::CVectorX const& beta) const;
 
     protected:
-      /** update the penalty
+      /** update the penalty matrix : matrixB_
        *  @param beta current estimates
        */
       void updatePenalty(STK::CVectorX const& beta);
 
-      /** update sigma2
+      /** update sigma2_
        *  @param beta current estimates
        *  @param normResidual ||y-X*beta||_2^2
        */
       void updateSigma2(STK::CVectorX const& beta, STK::Real const& normResidual);
 
+      /**
+       * initialization in the constructor
+       */
+      void initialization();
+
+
     private:
-      STK::Real lambda_;
-      STK::Array2DDiagonal<STK::Real> invPenalty_;//diag(E[1/tau_i^2])^-1
+      /// parameter associated with the l1 norm of estimates
+      STK::Real lambda1_;
+      /// parameter associated with the l1 norm of the difference of successive estimates
+      STK::Real lambda2_;
+      /// main diagonal of the penalty matrix
+      STK::CVectorX mainDiagonal_;
+      /// off diagonal of the penalty matrix
+      STK::CVectorX  offDiagonal_;
+      /// variance
       STK::Real sigma2_;
-      int n_;
-      int p_;
+      /// eps to add to the denominator in order to avoid 0
+      STK::Real eps_;
   };
 }
 

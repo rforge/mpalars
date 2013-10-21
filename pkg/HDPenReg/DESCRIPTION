@@ -1,7 +1,7 @@
 Package: HDPenReg
-Version: 0.81
-Date: 2013-09-10
-Title: lars algorithm
+Version: 0.86
+Date: 2013-10-21
+Title: Algorithms for lasso and fused-lasso problems.
 Author: Quentin Grimonprez
 Maintainer: Quentin Grimonprez <quentin.grimonprez@inria.fr>
 Depends:
@@ -19,3 +19,4 @@ Collate:
     'cvlars.R'
     'predict.R'
     'EM.R'
+    'cvEM.R'

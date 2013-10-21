@@ -140,7 +140,7 @@ setMethod(
 #' @examples 
 #' dataset=simul(50,10000,0.4,10,50,matrix(c(0.1,0.8,0.02,0.02),nrow=2))
 #' result=HDfusion(dataset$data,dataset$response) 
-#' plotCoefficient(result,45) #plot coefficients at the step 45
+#' plotCoefficient(result,result@@nbStep) #plot coefficients at the last step
 #' @export 
 #' 
 plotCoefficient=function(x,step,ylab="coefficients",xlab="variables",...)
@@ -177,8 +177,8 @@ plotCoefficient=function(x,step,ylab="coefficients",xlab="variables",...)
   }
   else
   {
-    plot(x@variable[[step+1]],x@coefficient[[step+1]],xlab=xlab,ylab=ylab,...)
-    points((1:x@p)[-x@variable[[step+1]]],rep(0,x@p-length(x@coefficient[[step+1]])),...)
+    plot((1:x@p)[-x@variable[[step+1]]],rep(0,x@p-length(x@coefficient[[step+1]])),ylim=c(min(x@coefficient[[step+1]],0),max(x@coefficient[[step+1]])),xlim=c(1,x@p),xlab=xlab,ylab=ylab,...)
+    points(x@variable[[step+1]],x@coefficient[[step+1]],...)    
   }
 }
 
@@ -193,7 +193,7 @@ plotCoefficient=function(x,step,ylab="coefficients",xlab="variables",...)
 #' @examples 
 #' dataset=simul(50,10000,0.4,10,50,matrix(c(0.1,0.8,0.02,0.02),nrow=2))
 #' result=HDfusion(dataset$data,dataset$response)
-#' coeff(result,25) #get the coefficients
+#' coeff(result,result@@nbStep) #get the coefficients
 #' @export 
 #'
 coeff=function(x,step)

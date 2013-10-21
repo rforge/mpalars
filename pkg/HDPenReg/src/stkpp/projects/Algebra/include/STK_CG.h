@@ -39,6 +39,7 @@
 #include "../../STKernel/include/STK_Macros.h"
 #include "../../Sdk/include/STK_IRunner.h"
 
+#define MAXITER 100
 namespace STK
 {
 
@@ -102,6 +103,7 @@ class CG : public IRunnerBase
       , p_init_(p_init)
       , p_b_(&b)
     {};
+
     /**Copy constructor. The constructor to copy.
      * @param cg the conjugate gradient to copy
      */
@@ -124,11 +126,13 @@ class CG : public IRunnerBase
     inline Real const& x(int const& i) const { return x_[i];}
     /**@return the residuals b-A*x*/
     inline ColVector const& r() const { return r_;}
+    /** Set the tolerance*/
+    inline void setEps(Type const& eps) {eps_ = eps;}
     /** Set the constant vector */
     inline void setB(ColVector const& b) { p_b_=&b;}
     /** Set functor computing Ax */
     inline void setMultFunctor(MultFunctor const& mult) { p_mult_= &mult; }
-    /** Set functor computing Ax */
+    /** Set functor computing @b x at initialization */
     inline void setInitFunctor(InitFunctor* const& p_init) { p_init_=p_init; }
     /** run the conjugate gradient */
     virtual bool run()
@@ -180,22 +184,11 @@ class CG : public IRunnerBase
           beta = 1/rnorm2;
           if ((rnorm2=r_.norm2())/bnorm2 <eps_) { nbStart = 2; break;}
           beta *= rnorm2;
-
-          // if beta>1 : residuals have increased between 2 consecutive iterations
-          if (beta>1)
-          {
-            x_.exchange(xOld);
-            // divergence after a restart -> bad behavior
-            if ((nbStart>0)&&(step!=0) )
-            { throw logic_error(String("Divergence in CG"));}
-            // divergence at step 0 -> there is no solution, break
-            if ((nbStart>0)&&(step==0) ) { nbStart = 2; break;}
-            // restart algorithm  (nbStart==0)
-            break;
-          }
           //update p_
           p_ = (p_ * beta) + r_;
           step++;
+          if( step > MAXITER )
+            throw runtime_error("CG reaches MAXITER before convergence.");
         }
         nbStart++;
       };
@@ -278,16 +271,16 @@ class PCG : public IRunnerBase
        , p_b_(&b)
     {};
     /**Copy constructor. The constructor to copy.
-     * @param cg the conjugate gradient to copy
+     * @param pcg the preconditioned conjugate gradient to copy
      */
-    PCG( PCG const& cg)
-      : x_(cg.x_)
-      , r_(cg.r_)
-      , eps_(cg.eps_)
-      , p_mult_(cg.p_mult_)
-      , p_cond_(cg.p_cond_)
-      , p_init_(cg.p_init_)
-      , p_b_(cg.p_b_)
+    PCG( PCG const& pcg)
+      : x_(pcg.x_)
+      , r_(pcg.r_)
+      , eps_(pcg.eps_)
+      , p_mult_(pcg.p_mult_)
+      , p_cond_(pcg.p_cond_)
+      , p_init_(pcg.p_init_)
+      , p_b_(pcg.p_b_)
     {};
     /**destructor*/
     virtual ~PCG() {};
@@ -300,13 +293,15 @@ class PCG : public IRunnerBase
     inline Real const& x(int const& i) const { return x_[i];}
     /**@return the residuals b-A*x*/
     inline ColVector const& r() const { return r_;}
+    /** Set the tolerance*/
+    inline void setEps(Type const& eps) {eps_ = eps;}
     /** Set the constant vector */
     inline void setB(ColVector const& b) { p_b_=&b;}
     /** Set functor computing @b x at initialization */
     inline void setInitFunctor(InitFunctor const& init) { p_init_= &init; }
     /** Set functor computing Ax */
     inline void setMultFunctor(MultFunctor const& mult) { p_mult_= &mult; }
-    /** Set functor computing Ax */
+    /** Set functor computing the value \f$ \mathbf{M}^{-1} \mathbf{r}\f$ */
     inline void setCondFunctor(CondFunctor const& cond) { p_cond_= &cond; }
     /** run the conjugate gradient */
     virtual bool run()
@@ -364,22 +359,11 @@ class PCG : public IRunnerBase
           if ((rnorm2=r_.norm2())/bnorm2 <eps_) { nbStart = 2; break;}
           rty = r_.dot(y);
           beta *= rty;
-
-          // if beta>1 : residuals have increased between 2 consecutive iterations
-          if (beta>1)
-          {
-            x_.exchange(xOld);
-            // divergence after a restart -> bad behavior
-            if ((nbStart>0)&&(step!=0) )
-            { throw logic_error(String("Divergence in PCG"));}
-            // divergence at step 0 -> there is no solution, break
-            if ((nbStart>0)&&(step==0) ) { nbStart = 2; break;}
-            // restart algorithm  (nbStart==0)
-            break;
-          }
           //update p_
           p = (p * beta) + y;
           step++;
+          if( step > MAXITER )
+            throw runtime_error("CG reaches MAXITER before convergence.");
         }
         nbStart++;
       };
@@ -394,7 +378,7 @@ class PCG : public IRunnerBase
     Type eps_;
     /** pointer on the functor performing @b Ax */
     MultFunctor const*  p_mult_;
-    /** pointer on the functor performing @b Ax */
+    /** pointer on the functor performing \f$ \mathbf{M}^{-1} \mathbf{r}\f$*/
     CondFunctor const*  p_cond_;
     /** pointer on the functor initializing @b x*/
     InitFunctor const*  p_init_;
@@ -403,5 +387,7 @@ class PCG : public IRunnerBase
 };
 
 } // namespace STK
+
+#undef MAXITER
 
 #endif /* STK_CG_H_ */

@@ -54,7 +54,7 @@ template< typename Type, int SizeRows_, int SizeCols_, bool Orient_>
 class CArray;
 template< typename Type, int Size_, bool Orient_>
 class CArraySquare;
-template< typename Type, int SizeRows_, int SizeCols_, bool Orient_>
+template< typename Type, int SizeCols_, bool Orient_>
 class CArrayPoint;
 template< typename Type, int SizeRows_, int SizeCols_, bool Orient_ >
 class CArrayVector;
@@ -180,15 +180,6 @@ class CArrayNumber <Type, 1, 1, Orient_>
      **/
     inline CArrayNumber& operator=(CArrayNumber const& rhs) { return LowBase::assign(rhs);}
 };
-
-/** @ingroup Arrays
- *  ostream for CArrayNumber.
- *  @param s the output stream
- *  @param V the CArrayNumber to write
- **/
-template <typename Type, Arrays::Structure Structure_ , int SizeRows_, int SizeCols_, bool Orient_>
-ostream& operator<<(ostream& s, const CArrayNumber<Type, SizeRows_, SizeCols_, Orient_>& V)
-{ return out2D(s,V);}
 
 } // namespace STK
 

@@ -28,7 +28,7 @@
  * Author:   Serge Iovleff, S..._Dot_I..._At_stkpp_Dot_org (see copyright for ...)
  **/
 
-/** @file STK_Stat_Univariate.h
+/** @file STK_Stat_UnivariateReal.h
  *  @brief This file contain the specialization of the class Univariate
  *  for the Real Type.
  **/
@@ -38,13 +38,15 @@
 
 #include "../../Arrays/include/STK_ITContainer2D.h"
 #include "../../DManager/include/STK_HeapSort.h"
-
-#include "STK_Stat_Univariate.h"
+#include "../../DManager/include/STK_Variable.h"
 
 namespace STK
 {
 namespace Stat
 {
+
+template < class TContainer1D, typename Type =  typename TContainer1D::Type  >
+class Univariate;
 
 /** @ingroup StatDesc
  *  @brief Computation of the univariate Statistics of a Real Variable.
@@ -58,8 +60,8 @@ namespace Stat
  *  This specialization propose also statics methods for computing
  *  the (weighted) mean and the (weighted) variance.
  **/
-template < class TContainer1D >
-class Univariate<Real, TContainer1D>
+template < class TContainer1D>
+class Univariate<TContainer1D, Real>
 {
   public:
     /** Default constructor
@@ -72,7 +74,7 @@ class Univariate<Real, TContainer1D>
               : nbSamples_(V.size())
               , nbAvailable_(V.size())
               , nbMiss_(0)
-              , V_(V.asDerived())
+              , V_(V)
               , W_()
               , weighted_(false)
               , sorted_(sorted)
@@ -114,8 +116,8 @@ class Univariate<Real, TContainer1D>
               : nbSamples_(V.size())
               , nbAvailable_(V.size())
               , nbMiss_(0)
-              , V_(V.asDerived())
-              , W_(W.asDerived())
+              , V_(V)
+              , W_(W)
               , weighted_(true)
               , sorted_(sorted)
               , comporder_(false)
@@ -138,7 +140,7 @@ class Univariate<Real, TContainer1D>
     {
       // check weights size
       if ((V_.range() != W_.range()))
-      {  throw runtime_error("Univariate<Real, TContainer1D>::Univariate(V, W, sorted) "
+      {  throw runtime_error("Univariate<TContainer1D>::Univariate(V, W, sorted) "
                                   "V and W have not the same range");
       }
       initializeVariableAndWeights();
@@ -267,7 +269,7 @@ class Univariate<Real, TContainer1D>
     {
       // check weights size
       if ((V.range() != W.range()))
-      {  throw runtime_error("Univariate<Real>::setData(V, W, sorted) "
+      {  throw runtime_error("Univariate<TContainer1D>::setData(V, W, sorted) "
                                   "V and W have not the same range");
       }
       // initialize dimensions
@@ -339,13 +341,42 @@ class Univariate<Real, TContainer1D>
     inline const Real skewness() const {return skewness_;}
 
     /** get the quartiles of the variable (25%) */
-    inline TContainer1D const& quartiles() const {return quartiles_;}
+    inline Variable<Real> const& quartiles() const {return quartiles_;}
     /** get the deciles of the varibales (10%) */
-    inline TContainer1D const& deciles() const {return deciles_;}
+    inline Variable<Real> const& deciles() const {return deciles_;}
     /** get the viceciles of the variable (5%) */
-    inline TContainer1D const& viceciles() const { return viceciles_;}
+    inline Variable<Real> const& viceciles() const { return viceciles_;}
     /** get the percentiles of the variable (1%) */
-    inline TContainer1D const& percentiles() const { return percentiles_;}
+    inline Variable<Real> const& percentiles() const { return percentiles_;}
+
+    /** Compute the quantiles of the sorted variable V_ and store the
+     *  result in the array T. The number of quantiles is given by the
+     *  size of T. For exemple, if T.size() == 9, compQuantiles will
+     *  return the deciles.
+     *  @param T TContainer1Ds of the *tiles
+     **/
+    template<class OtherArray>
+    void compQuantiles(OtherArray& T)
+    {
+      if (!sorted_)
+      {  STKRUNTIME_ERROR_NO_ARG(Univariate<TContainer1D>::compQuantiles(T),V_ is not sorted);}
+      // number of quantiles
+      int  nt = T.size(), shift = V_.firstIdx()-1;
+      Real n1 = Real(nbAvailable_+1), nt1 = Real(nt+1);
+
+      for (int j=T.firstIdx(), k=1; j<=T.lastIdx(); j++, k++)
+      {
+        // find index of the k-th quantile
+        Real find  = Real(k*n1)/nt1;  // compute the index in Real
+        int  tind  = std::max(1, int(find));   // in int
+        int  tind1 = std::min(nbAvailable_, tind+1); // next
+        Real aux   = find - Real(tind); // lower ponderation
+
+        // nbAvailable_+1 not perfectly divisible ? weighting...
+        aux ? T[j] = aux * V_[shift+tind] + (1.0-aux)*V_[shift+tind1]
+            : T[j] = V_[shift+tind];
+      }
+    }
 
   private:
     /** Initialize the container in order to discard the missing
@@ -643,36 +674,6 @@ class Univariate<Real, TContainer1D>
       median_ = quartiles_[2];
     }
 
-    /** Compute the quantiles of the sorted variable V_ and store the
-     *  result in the array T. The number of quantiles is given by the
-     *  size of T. For exemple, if T.lastIdx() == 9, compQuantiles will
-     *  return the deciles.
-     *  @param T TContainer1Ds of the *tiles
-     **/
-    void compQuantiles(TContainer1D& T)
-    {
-       if (!sorted_)
-      {  STKRUNTIME_ERROR_NO_ARG(Univariate<Real>::comptiles(T),V_ is not sorted);}
-      // in case of
-      T.shift(1);
-      // number of quantiles
-      int  nt = T.size(), shift = V_.firstIdx()-1;
-      Real n1 = Real(nbAvailable_+1), nt1 = Real(nt+1);
-
-      for (int j=T.firstIdx(), k=1; j<=T.lastIdx(); j++, k++)
-      {
-        // find index of the k-th quantile
-        Real    find  = Real(k)*n1/nt1;  // compute the index in Real
-        int tind  = std::max(int(1), int(find));  // in int
-        int tind1 = std::min(nbAvailable_, tind+1);       // next
-        Real    aux   = find - Real(tind); // lower ponderation
-
-        // nbAvailable_+1 not perfectly divisible ? weighting...
-        aux ? T[j] = aux * V_[shift+tind] + (1.0-aux)*V_[shift+tind1]
-            : T[j] = V_[shift+tind];
-      }
-    }
-
   protected:
     // dimensions
     int    nbSamples_;    ///< Number of samples
@@ -706,10 +707,10 @@ class Univariate<Real, TContainer1D>
     Real kurtosis_;       ///< kurtosis of the variable
     Real skewness_;       ///< Skewness of the variable
 
-    TContainer1D quartiles_;    ///< Quartiles (25%)
-    TContainer1D deciles_;      ///< Deciles (10%)
-    TContainer1D viceciles_;    ///< viceciles (5%)
-    TContainer1D percentiles_;  ///< percentiles (1%)
+    Variable<Real> quartiles_;    ///< Quartiles (25%)
+    Variable<Real> deciles_;      ///< Deciles (10%)
+    Variable<Real> viceciles_;    ///< viceciles (5%)
+    Variable<Real> percentiles_;  ///< percentiles (1%)
 };
 
 }  // namespace Stat

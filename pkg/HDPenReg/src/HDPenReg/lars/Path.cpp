@@ -19,7 +19,7 @@
     Boston, MA 02111-1307
     USA
 
-    Contact : Serge.Iovleff@stkpp.org
+    Contact : quentin.grimonprez@inria.fr
 */
 
 /*
@@ -80,14 +80,14 @@ namespace HD
     {
       //search off the interval of m_l1norm containing l1norm
       int indexl1norm=0;
-      while( ( states_[indexl1norm].l1norm() < l1norm ) && ( indexl1norm < states_.size()-1 ) )
+      while( ( states_[indexl1norm].l1norm() < l1norm ) && ( indexl1norm < (int) states_.size()-1 ) )
         indexl1norm++;
 
       if(l1norm==states_[indexl1norm].l1norm())//if l1norm is equal to an actual l1norm
         coeff=states_[indexl1norm].coefficients();
       else
       {
-        if( indexl1norm == states_.size()-1 )//last m_l1norm, we return the last coefficient
+        if( indexl1norm == (int) states_.size()-1 )//last m_l1norm, we return the last coefficient
           coeff=states_[indexl1norm].coefficients();
         else
           coeff=computeCoefficients(states_[indexl1norm-1],states_[indexl1norm],evolution_[indexl1norm-1],l1norm);
@@ -199,7 +199,7 @@ namespace HD
     l1norm = abs((p-states_[1].varIdx(1)+1)*states_[1].varCoeff(1));
     states_[1].setl1norm(l1norm);
 
-    for(int step=2; step<states_.size(); step++)
+    for(int step=2; step < (int) states_.size(); step++)
     {
       //if a variable is drop at this step
       if(evolution_[step-1].second!=0)
@@ -244,7 +244,7 @@ namespace HD
       }
 
       //if there is a drop variable at the next step, we search its position in the actual coefficients before coefficients are sorting
-      if(step<states_.size()-1)
+      if(step < (int) states_.size()-1)
       {
         if(evolution_[step].second!=0)
         {

@@ -3,7 +3,7 @@
 \alias{HDPenReg}
 \docType{package}
 \title{
-Lars algorithm
+Algorithms for lasso and fused-lasso problems.
 }
 
 \description{
@@ -15,8 +15,8 @@ This package contains an implementation of the lars algorithm [1], for the lasso
 \tabular{ll}{
 Package: \tab HDPenReg\cr
 Type: \tab Package\cr
-Version: \tab 0.81\cr
-Date: \tab 2013-09-10\cr
+Version: \tab 0.86\cr
+Date: \tab 2013-10-21\cr
 License: \tab GPL(>=2)\cr
 }
 

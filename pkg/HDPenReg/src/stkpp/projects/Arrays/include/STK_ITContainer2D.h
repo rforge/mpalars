@@ -242,17 +242,6 @@ class ITContainerBase  : public IRecursiveTemplate<Derived>, hidden::NoAssignOpe
      *  @param i index of the ith element
      **/
     inline Type& operator[](int const& i) { return this->asDerived().elt1Impl(i);}
-    /** @return safely the jth element
-     *  @param i index of the element
-     **/
-//    Type& at(int i)
-//    {
-//      if (this->asDerived().firstIdx() > i)
-//      { STKOUT_OF_RANGE_1ARG(ITContainer::at, i, firstIdx() > i);}
-//      if (this->asDerived().lastIdx() < i)
-//      { STKOUT_OF_RANGE_1ARG(ITContainer::at, i, lastIdx() < i);}
-//      return this->asDerived().elt1Impl(i);
-//    }
     /** @return the number */
     inline Type& elt() { return this->asDerived().elt0Impl();}
     /** @return the number */

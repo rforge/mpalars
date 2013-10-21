@@ -89,14 +89,15 @@ namespace STK
   being (eventually) divided into subproject:
   - @subpage STKernel  "STKernel: Kernel tools"
   - @subpage Sdk       "Sdk: Software Development Kits"
-  - @subpage Arrays    "Arrays: A complete set of containers oriented to numerical computation"
-  - @subpage Analysis  "Analysis: Special functions"
+  - @subpage Arrays    "Arrays: Containers oriented to numerical computation"
+  - @subpage DManager  "DManager: Tools for handling data and input/output"
+  - @subpage Analysis  "Analysis: Special functions and templated algorithms"
   - @subpage Algebra   "Algebra: Linear Algebra tools"
   - @subpage STatistiK "STatistiK: Statistical Tools"
-  - @subpage DManager  "DManager: Tools for data management"
+  - @subpage StatModels "StatModels: Usual Statistical Models"
+  - @subpage Clustering "Clustering: Usual Mixture Models"
   - @subpage Reduct    "Reduct: Dimension reduction tools"
   - @subpage Regress   "Regress: Regression tools"
-  - @subpage StatModels "StatModels: Statistical Models"
   - @subpage AAModels  "AAModels: Auto-Associative Models"
   </p>
 
