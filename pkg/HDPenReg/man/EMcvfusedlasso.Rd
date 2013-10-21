@@ -1,0 +1,59 @@
+\name{EMcvfusedlasso}
+\alias{EMcvfusedlasso}
+\title{cross validation for EM fused-lasso}
+\usage{
+  EMcvfusedlasso(X, y, lambda1, lambda2, nbFolds = 10,
+    maxSteps = 1000, burn = 30, intercept = TRUE,
+    threshold = .Machine$double.eps^0.5, eps = 1e-05,
+    epsCG = 1e-08)
+}
+\arguments{
+  \item{X}{the matrix (of size n*p) of the covariates.}
+
+  \item{y}{a vector of length n with the response.}
+
+  \item{nbFolds}{the number of folds for the
+  cross-validation.}
+
+  \item{lambda1}{Values of lambda1 at which prediction
+  error should be computed. Can be a single value.}
+
+  \item{lambda2}{Values of lambda2 at which prediction
+  error should be computed. Can be a single value.}
+
+  \item{maxSteps}{Maximal number of steps for EM
+  algorithm.}
+
+  \item{burn}{Number of steps for the burn period.}
+
+  \item{intercept}{If TRUE, there is an intercept in the
+  model.}
+
+  \item{threshold}{zero tolerance.}
+
+  \item{eps}{Tolerance of the algorithm.}
+
+  \item{epsCG}{Epsilon for the convergence of the conjugate
+  gradient.}
+}
+\value{
+  A list containing \describe{ \item{cv}{Mean prediction
+  error for each value of index.} \item{cvError}{Standard
+  error of cv.} \item{minCv}{Minimal cv criterion.}
+  \item{lambda1}{Values of lambda1 at which prediction
+  error should be computed.} \item{lambda2}{Values of
+  lambda2 at which prediction error should be computed.}
+  \item{lambda.optimal}{Value of (lambda1,lambda2) for
+  which the cv criterion is minimal.} }
+}
+\description{
+  cross validation function for EM lasso.
+}
+\examples{
+dataset=simul(50,100,0.4,1,10,matrix(c(0.1,0.8,0.02,0.02),nrow=2))
+result=EMcvfusedlasso(dataset$data,dataset$response,5,lambda1=5:1,lambda2=5:1,intercept=FALSE)
+}
+\author{
+  Quentin Grimonprez
+}
+
