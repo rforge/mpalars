@@ -4,8 +4,8 @@
 \usage{
   EMcvlasso(X, y, nbFolds = 10, lambda = NULL,
     maxSteps = 1000, burn = 30, intercept = TRUE,
-    threshold = .Machine$double.eps^0.5, eps = 1e-05,
-    epsCG = 1e-08)
+    model = "linear", threshold = .Machine$double.eps^0.5,
+    eps = 1e-05, epsCG = 1e-08)
 }
 \arguments{
   \item{X}{the matrix (of size n*p) of the covariates.}
@@ -25,6 +25,8 @@
 
   \item{intercept}{If TRUE, there is an intercept in the
   model.}
+
+  \item{model}{"linear" or "logistic".}
 
   \item{threshold}{zero tolerance.}
 

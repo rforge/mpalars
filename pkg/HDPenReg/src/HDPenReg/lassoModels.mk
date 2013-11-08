@@ -18,6 +18,10 @@ SRCS =  ./lassoModels/LassoPenalty.cpp \
 	./lassoModels/LassoSolver.cpp \
 	./lassoModels/FusedLassoPenalty.cpp \
 	./lassoModels/FusedLassoSolver.cpp \
+	./lassoModels/LogisticLassoPenalty.cpp \
+	./lassoModels/LogisticLassoSolver.cpp \
+	./lassoModels/LogisticFusedLassoPenalty.cpp \
+	./lassoModels/LogisticFusedLassoSolver.cpp \
 	./lassoModels/CV.cpp \
 #	./lassoModels/EnetPenalty.cpp \
 

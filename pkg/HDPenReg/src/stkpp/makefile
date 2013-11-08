@@ -28,16 +28,12 @@
 #
 #-----------------------------------------------------------------------
 # Macros and definitions
-RELATIVEMAKEVARS = ./makevars
-MAKEVARS = $(realpath $(RELATIVEMAKEVARS))
+
+MAKEVARS = $(abspath makevars)
 export MAKEVARS
 
 include $(MAKEVARS)
 
-#-----------------------------------------------------------------------
-# all compiles the objects and create the library, no tests are build
-.PHONY: all
-all: lib
 
 #-----------------------------------------------------------------------
 # main Paths
@@ -105,11 +101,6 @@ CPP_OBJS = \
 #  $(REDUCT_OBJS) \
 #  $(AAMODELS_OBJS)
 
-# obj compiles the objects of the projects you need
-.PHONY: obj
-obj: stkernel sdk dmanager arrays algebra analysis statistik statmodel #\
-#     aamodels regress reduct
-
 #-----------------------------------------------------------------------
 # rules for compiling each projects
 .PHONY: stkernel arrays sdk dmanager algebra analysis statistik statmodel \
@@ -138,9 +129,17 @@ statmodel:
 	$(MAKE) -C $(SRC_STATMODELS_DIR)
 
 #-----------------------------------------------------------------------
+# all compiles the objects and create the library, no tests are build
+.PHONY: all obj lib
+all: lib
+
+#-----------------------------------------------------------------------
 # Create the library. Build the objects of each projects and then add them
-.PHONY: lib
 lib: obj $(STK_LIB)
+
+# obj compiles the objects of the projects you need
+obj: stkernel sdk dmanager arrays algebra analysis statistik statmodel #\
+#     aamodels regress reduct
 
 #-----------------------------------------------------------------------
 # create the library adding the objects
@@ -149,11 +148,50 @@ $(STK_LIB): $(CPP_OBJS)
 
 #-----------------------------------------------------------------------
 # rules for cleaning objects
-.PHONY: clean cleanlib cleanobj
-clean: cleanlib cleanobj
+.PHONY: clean_lib clean_obj clean clean_stkernel clean_arrays clean_sdk \
+  clean_dmanager clean_algebra clean_analysis clean_statistik clean_statmodel \
+  clean_clustering  clean_aamodels clean_regress clean_reduct
 
-cleanlib:
+clean: clean_lib clean_obj
+
+clean_lib:
 	$(RM) $(LIB_DIR)$(LIB_STKPP_A)
-cleanobj:
-	$(RM) $(BIN_DIR)*.o
 
+clean_obj: \
+  clean_stkernel \
+  clean_arrays \
+  clean_sdk \
+  clean_dmanager \
+  clean_algebra \
+  clean_analysis \
+  clean_statistik \
+  clean_statmodel \
+  clean_clustering \
+  clean_aamodels \
+  clean_regress \
+  clean_reduct
+
+clean_stkernel:
+	$(RM) $(STKERNEL_OBJS)
+clean_arrays:
+	$(RM) $(ARRAYS_OBJS)
+clean_sdk:
+	$(RM) $(SDK_OBJS)
+clean_dmanager:
+	$(RM) $(DMANAGER_OBJS)
+clean_algebra:
+	$(RM) $(ALGEBRA_OBJS)
+clean_analysis:
+	$(RM) $(ANALYSIS_OBJS)
+clean_statistik:
+	$(RM) $(STATISTIK_OBJS)
+clean_statmodel:
+	$(RM) $(STATMODELS_OBJS)
+clean_clustering:
+	$(RM) $(CLUSTERING_OBJS)
+clean_aamodels:
+	$(RM) $(AAMODELS_OBJS)
+clean_regress:
+	$(RM) $(REGRESS_OBJS)
+clean_reduct:
+	$(RM) $(REDUCT_OBJS)

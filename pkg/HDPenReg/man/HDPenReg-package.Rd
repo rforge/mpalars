@@ -15,8 +15,8 @@ This package contains an implementation of the lars algorithm [1], for the lasso
 \tabular{ll}{
 Package: \tab HDPenReg\cr
 Type: \tab Package\cr
-Version: \tab 0.86\cr
-Date: \tab 2013-10-21\cr
+Version: \tab 0.87\cr
+Date: \tab 2013-11-06\cr
 License: \tab GPL(>=2)\cr
 }
 

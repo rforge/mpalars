@@ -9,6 +9,7 @@
 #' @param maxSteps Maximal number of steps for EM algorithm.
 #' @param burn Number of steps for the burn period.
 #' @param intercept If TRUE, there is an intercept in the model.
+#' @param model "linear" or "logistic".
 #' @param threshold zero tolerance.
 #' @param eps Tolerance of the algorithm.
 #' @param epsCG Epsilon for the convergence of the conjugate gradient.
@@ -25,7 +26,7 @@
 #' result=EMcvlasso(dataset$data,dataset$response,5,lambda=5:1,intercept=FALSE)
 #' @export
 #' 
-EMcvlasso <- function(X,y,nbFolds=10,lambda=NULL,maxSteps=1000,burn=30,intercept=TRUE,threshold=.Machine$double.eps^0.5,eps=1e-5,epsCG=1e-8)
+EMcvlasso <- function(X,y,nbFolds=10,lambda=NULL,maxSteps=1000,burn=30,intercept=TRUE,model="linear",threshold=.Machine$double.eps^0.5,eps=1e-5,epsCG=1e-8)
 {
   #check arguments
   if(missing(X))
@@ -61,9 +62,16 @@ EMcvlasso <- function(X,y,nbFolds=10,lambda=NULL,maxSteps=1000,burn=30,intercept
   if( (burn<=0) || (burn>maxSteps) )
     stop("burn must be a positive integer lesser than maxSteps.")
   
+    #model
+    if(!(model%in%c("linear","logistic")))
+        stop("The model must be \"linear\" or \"logistic\"")
   
   # call cv for lasso
-  val=.Call( "EMCVLasso",X,y,nrow(X),ncol(X),lambda,nbFolds,intercept,maxSteps,burn,threshold,eps,epsCG,PACKAGE = "HDPenReg" )
+    val=list()
+    if(model=="linear")
+        val=.Call( "EMCVLasso",X,y,nrow(X),ncol(X),lambda,nbFolds,intercept,maxSteps,burn,threshold,eps,epsCG,PACKAGE = "HDPenReg" )
+    else
+        val=.Call( "EMCVLogisticLasso",X,y,nrow(X),ncol(X),lambda,nbFolds,intercept,maxSteps,burn,threshold,eps,epsCG,PACKAGE = "HDPenReg" )
   
   #create the output object
   #cv=list(cv=val$cv,cvError=val$cvError,minCv=min(val$cv),lambda.optim=val$lambdaMin,fraction=index[which.min(val$cv)],lambda=val$lambda,maxSteps=maxSteps)
@@ -87,6 +95,7 @@ EMcvlasso <- function(X,y,nbFolds=10,lambda=NULL,maxSteps=1000,burn=30,intercept
 #' @param maxSteps Maximal number of steps for EM algorithm.
 #' @param burn Number of steps for the burn period.
 #' @param intercept If TRUE, there is an intercept in the model.
+#' @param model "linear" or "logistic".
 #' @param threshold zero tolerance.
 #' @param eps Tolerance of the algorithm.
 #' @param epsCG Epsilon for the convergence of the conjugate gradient.
@@ -104,7 +113,7 @@ EMcvlasso <- function(X,y,nbFolds=10,lambda=NULL,maxSteps=1000,burn=30,intercept
 #' result=EMcvfusedlasso(dataset$data,dataset$response,5,lambda1=5:1,lambda2=5:1,intercept=FALSE)
 #' @export
 #' 
-EMcvfusedlasso <- function(X,y,lambda1,lambda2,nbFolds=10,maxSteps=1000,burn=30,intercept=TRUE,threshold=.Machine$double.eps^0.5,eps=1e-5,epsCG=1e-8)
+EMcvfusedlasso <- function(X,y,lambda1,lambda2,nbFolds=10,maxSteps=1000,burn=30,intercept=TRUE,model="linear",threshold=.Machine$double.eps^0.5,eps=1e-5,epsCG=1e-8)
 {
   #check arguments
   if(missing(X))
@@ -144,6 +153,10 @@ EMcvfusedlasso <- function(X,y,lambda1,lambda2,nbFolds=10,maxSteps=1000,burn=30,
   .check.lambda(lambda2)
   lambda2=sort(lambda2)
   
+    #model
+    if(!(model%in%c("linear","logistic")))
+        stop("The model must be \"linear\" or \"logistic\"")
+  
   val=list()
   if( (length(lambda1)==1) && (length(lambda2)==1) )
   {
@@ -156,7 +169,11 @@ EMcvfusedlasso <- function(X,y,lambda1,lambda2,nbFolds=10,maxSteps=1000,burn=30,
     if(length(lambda1)==1)
     {
         optimL1=FALSE
-        val=.Call( "EMCVFusedLasso1D",X,y,nrow(X),ncol(X),lambda1,lambda2,optimL1,nbFolds,intercept,maxSteps,burn,threshold,eps,epsCG,PACKAGE = "HDPenReg" )       
+        if(model=="linear")
+            val=.Call( "EMCVFusedLasso1D",X,y,nrow(X),ncol(X),lambda1,lambda2,optimL1,nbFolds,intercept,maxSteps,burn,threshold,eps,epsCG,PACKAGE = "HDPenReg" )
+        else
+            val=.Call( "EMCVLogisticFusedLasso1D",X,y,nrow(X),ncol(X),lambda1,lambda2,optimL1,nbFolds,intercept,maxSteps,burn,threshold,eps,epsCG,PACKAGE = "HDPenReg" )
+                   
         names(val)[1]="lambda2"
         val$lambda1=lambda1
     }
@@ -165,13 +182,21 @@ EMcvfusedlasso <- function(X,y,lambda1,lambda2,nbFolds=10,maxSteps=1000,burn=30,
         if(length(lambda2)==1)
         {
             optimL1=TRUE
-            val=.Call( "EMCVFusedLasso1D",X,y,nrow(X),ncol(X),lambda1,lambda2,optimL1,nbFolds,intercept,maxSteps,burn,threshold,eps,epsCG,PACKAGE = "HDPenReg" )       
+            if(model=="linear")
+                val=.Call( "EMCVFusedLasso1D",X,y,nrow(X),ncol(X),lambda1,lambda2,optimL1,nbFolds,intercept,maxSteps,burn,threshold,eps,epsCG,PACKAGE = "HDPenReg" ) 
+            else
+                val=.Call( "EMCVLogisticFusedLasso1D",X,y,nrow(X),ncol(X),lambda1,lambda2,optimL1,nbFolds,intercept,maxSteps,burn,threshold,eps,epsCG,PACKAGE = "HDPenReg" ) 
+                      
             names(val)[1]="lambda1"
             val$lambda2=lambda2
         }
         else
         {
-            val=.Call( "EMCVFusedLasso2D",X,y,nrow(X),ncol(X),lambda1,lambda2,nbFolds,intercept,maxSteps,burn,threshold,eps,epsCG,PACKAGE = "HDPenReg" )
+            if(model=="linear")
+                val=.Call( "EMCVFusedLasso2D",X,y,nrow(X),ncol(X),lambda1,lambda2,nbFolds,intercept,maxSteps,burn,threshold,eps,epsCG,PACKAGE = "HDPenReg" )
+            else
+                val=.Call( "EMCVLogisticFusedLasso2D",X,y,nrow(X),ncol(X),lambda1,lambda2,nbFolds,intercept,maxSteps,burn,threshold,eps,epsCG,PACKAGE = "HDPenReg" )
+            
             val$lambda1=lambda1
             val$lambda2=lambda2            
         }

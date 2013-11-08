@@ -7,6 +7,7 @@
 #' @param lambda a sequence of l1 penalty regularization term. If no sequence is provided, the function computes his own sequence.
 #' @param maxSteps Maximal number of steps for EM algorithm.
 #' @param intercept If TRUE, there is an intercept in the model.
+#' @param model "linear" or "logistic"
 #' @param burn Number of steps before thresholding some variables to zero.
 #' @param threshold Zero tolerance.
 #' @param eps Epsilon for the convergence of the EM algorithm.
@@ -25,7 +26,7 @@
 #' result=EMlasso(dataset$data,dataset$response)
 #' @export
 #' 
-EMlasso <- function(X,y,lambda,maxSteps=10000,intercept=TRUE,burn=50,threshold=1e-10,eps=1e-5,epsCG=1e-8)
+EMlasso <- function(X,y,lambda,maxSteps=10000,intercept=TRUE,model="linear",burn=50,threshold=1e-10,eps=1e-5,epsCG=1e-8)
 {
 	#check arguments
 	if(missing(X))
@@ -55,10 +56,17 @@ EMlasso <- function(X,y,lambda,maxSteps=10000,intercept=TRUE,burn=50,threshold=1
 		lambda=lambda[lambda>0]
 	}
 
+    #model
+    if(!(model%in%c("linear","logistic")))
+        stop("The model must be \"linear\" or \"logistic\"")
 
-	# call lars algorithm
-	val=.Call("EMlasso",X,y,nrow(X),ncol(X),lambda,intercept,maxSteps,burn,threshold,eps,epsCG,PACKAGE = "HDPenReg" )
-	
+	# call em algorithm
+	val=list()
+	if(model=="linear")
+	   val=.Call("EMlasso",X,y,nrow(X),ncol(X),lambda,intercept,maxSteps,burn,threshold,eps,epsCG,PACKAGE = "HDPenReg" )
+	else
+	   val=.Call("EMlogisticLasso",X,y,nrow(X),ncol(X),lambda,intercept,maxSteps,burn,threshold,eps,epsCG,PACKAGE = "HDPenReg" )
+	   
 	return(val)
 }
 
@@ -73,6 +81,7 @@ EMlasso <- function(X,y,lambda,maxSteps=10000,intercept=TRUE,burn=50,threshold=1
 #' @param lambda2 a positive real. Parameter associated with the fusion penalty.
 #' @param maxSteps Maximal number of steps for EM algorithm.
 #' @param burn Number of steps before regrouping some variables in segment.
+#' @param model "linear" or "logistic"
 #' @param intercept If TRUE, there is an intercept in the model.
 #' @param eps tolerance for convergence of the EM algorithm.
 #' @param eps0 epsilon to add to avoid 0 to denominator of fraction.
@@ -91,7 +100,7 @@ EMlasso <- function(X,y,lambda,maxSteps=10000,intercept=TRUE,burn=50,threshold=1
 #' result=EMfusedlasso(dataset$data,dataset$response,1,1)
 #' @export
 #' 
-EMfusedlasso <- function(X,y,lambda1,lambda2,maxSteps=10000,burn=50,intercept=TRUE,eps=1e-5,eps0=1e-12, epsCG=1e-8)
+EMfusedlasso <- function(X,y,lambda1,lambda2,maxSteps=10000,burn=50,intercept=TRUE,model="linear",eps=1e-5,eps0=1e-12, epsCG=1e-8)
 {
     #check arguments
     if(missing(X))
@@ -119,9 +128,16 @@ EMfusedlasso <- function(X,y,lambda1,lambda2,maxSteps=10000,burn=50,intercept=TR
     if( (burn<=0) || (burn>=maxSteps) )
         stop("burn must be a positive integer lower than maxSteps.")
         
+    #model
+    if(!(model%in%c("linear","logistic")))
+        stop("The model must be \"linear\" or \"logistic\"")
+        
     # call lars algorithm
-    val=.Call("EMfusedLasso",X,y,nrow(X),ncol(X),lambda1,lambda2,intercept,maxSteps,burn,eps,eps0,epsCG,PACKAGE = "HDPenReg" )
-    
+    val=list()
+    if(model=="linear")
+        val=.Call("EMlogisticFusedLasso",X,y,nrow(X),ncol(X),lambda1,lambda2,intercept,maxSteps,burn,eps,eps0,epsCG,PACKAGE = "HDPenReg" )
+    else
+        val=.Call("EMfusedLasso",X,y,nrow(X),ncol(X),lambda1,lambda2,intercept,maxSteps,burn,eps,eps0,epsCG,PACKAGE = "HDPenReg" )
     return(val)
 }
 

@@ -77,40 +77,53 @@ HDpredict=function(x,Xnew, lambda, mode="fraction")
 #' 
 computeCoefficients = function(x,lambda,mode="fraction")
 {
-	if(missing(x))
-		stop("x is missing.")
-	if(class(x)!="LarsPath")
-		stop("x must be a LarsPath object.")
-	if( !(mode%in%c("fraction","norm","lambda"))  ) 
-		stop("mode must be \"fraction\" or \"norm\".")
-	if(!is.numeric(lambda))
-		stop("lambda must be a positive real.")
-	if(length(lambda)>1)
-		stop("lambda must be a positive real.")
-	if(mode == "fraction")
-		lambda = lambda * x@l1norm[x@nbStep+1]
-	abscissa = x@l1norm
-	if(mode == "lambda")
-	   abscissa = x@lambda
-	if(lambda < 0)
-		stop("lambda must be a positive real.")
-	if(lambda >= x@l1norm[x@nbStep+1])
-		return(list(variable=x@variable[[x@nbStep+1]],coefficient=x@coefficient[[x@nbStep+1]]))
-	if(lambda == 0)
-		return(list(variable=c(),coefficient=c()))
-	
+  if(missing(x))
+    stop("x is missing.")
+  if(class(x)!="LarsPath")
+    stop("x must be a LarsPath object.")
+  if( !(mode%in%c("fraction","norm","lambda"))  ) 
+    stop("mode must be \"fraction\" or \"norm\" or \"lambda\".")
+  #lambda
+  if(!is.numeric(lambda))
+    stop("lambda must be a positive real.")
+  if(length(lambda)>1)
+    stop("lambda must be a positive real.")
+  if(lambda < 0)
+    stop("lambda must be a positive real.")
+  
+  if(mode == "fraction")
+    lambda = lambda * x@l1norm[x@nbStep+1]
+  
+  abscissa = c() 
+  
+  if(mode == "lambda")
+  {
+    abscissa = c(x@lambda,0)
+    if(lambda ==0)
+      return(list(variable=x@variable[[x@nbStep+1]],coefficient=x@coefficient[[x@nbStep+1]]))  
+    if(lambda >= x@lambda[1])
+      return(list(variable=c(),coefficient=c()))    
+  }
+  else
+  {
+    abscissa = x@l1norm
+    if(lambda >= x@l1norm[x@nbStep+1])
+      return(list(variable=x@variable[[x@nbStep+1]],coefficient=x@coefficient[[x@nbStep+1]]))  
+    if(lambda == 0)
+      return(list(variable=c(),coefficient=c()))
+  }
 
-	index = 1;
-	if(mode=="lambda")
-	{
-	   while( abscissa[index] > lambda )
-        index=index+1;
-	}
-	else
-	{
-	   while( abscissa[index] < lambda )
-        index=index+1;
-	}
+  index = 1;
+  if(mode=="lambda")
+  {
+    while( abscissa[index] > lambda )
+      index=index+1;
+  }
+  else
+  {
+    while( abscissa[index] < lambda )
+      index=index+1;
+  }
 
 	index=index-1
 	if(x@dropIndex[index]==0)#no drop variable
@@ -157,7 +170,7 @@ computeCoefficients = function(x,lambda,mode="fraction")
 			coeff=c(
 			.computeOrdinate(abscissa[index], abscissa[index+1], lambda, x@coefficient[[index]][1:(delIndex-1)], x@coefficient[[index+1]][1:(delIndex-1)]),
 			.computeOrdinate(abscissa[index], abscissa[index+1], lambda, x@coefficient[[index]][delIndex], 0),
-			.computeOrdinate(abscissa[index], abscissa[index+1], lambda, x@coefficient[[index]][-c(1:delIndex)], x@coefficient[[index+1]][delIndex:length(x@coefficient[[index]])]))
+			.computeOrdinate(abscissa[index], abscissa[index+1], lambda, x@coefficient[[index]][-c(1:delIndex)], x@coefficient[[index+1]][delIndex:length(x@coefficient[[index+1]])]))
 
 			variable=x@variable[[index]]
 			

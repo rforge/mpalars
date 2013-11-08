@@ -3,8 +3,8 @@
 \title{EM algorithm for fused lasso penalty}
 \usage{
   EMfusedlasso(X, y, lambda1, lambda2, maxSteps = 10000,
-    burn = 50, intercept = TRUE, eps = 1e-05, eps0 = 1e-12,
-    epsCG = 1e-08)
+    burn = 50, intercept = TRUE, model = "linear",
+    eps = 1e-05, eps0 = 1e-12, epsCG = 1e-08)
 }
 \arguments{
   \item{X}{the matrix (of size n*p) of the covariates.}
@@ -22,6 +22,8 @@
 
   \item{burn}{Number of steps before regrouping some
   variables in segment.}
+
+  \item{model}{"linear" or "logistic"}
 
   \item{intercept}{If TRUE, there is an intercept in the
   model.}
