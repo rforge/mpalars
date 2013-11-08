@@ -188,7 +188,9 @@ namespace HD
        * @param normResidual ||y-X*beta||_2^2
        */
       void update(STK::CVectorX const& beta, STK::Real const& normResidual){};
-      void update(STK::CVectorX const& beta);
+      virtual void update(STK::CVectorX const& beta);
+      virtual void update(STK::CVectorX const& beta, std::vector<STK::Range> const& segment);
+
 
       /**
        * @param beta current estimates
@@ -201,6 +203,8 @@ namespace HD
        *  @param beta current estimates
        */
       void updatePenalty(STK::CVectorX const& beta);
+      void updatePenalty(STK::CVectorX const& beta, std::vector<STK::Range> const& segment);
+
 
       /** update sigma2_
        *  @param beta current estimates

@@ -213,7 +213,7 @@ namespace HD
         else
         {
           setLnLikelihood(p_solver_->run(burn));
-          beta_=p_solver_->beta();
+          beta_ = p_solver_->beta();
         }
       }
 

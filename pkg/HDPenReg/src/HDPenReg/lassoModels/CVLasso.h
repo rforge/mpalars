@@ -39,6 +39,7 @@
 #include "CV.h"
 #include "EM.h"
 #include "Lasso.h"
+#include "IMeasure.h"
 
 namespace HD
 {
@@ -46,6 +47,7 @@ namespace HD
  * Class derived from @c CV, implementing the cross validation for @c Lasso with @c EM algorithm.
  * This class contains setters and implementation of the pure virtual runModel method from @c CV.
  */
+  template<class LassoModel>
   class CVLasso : public CV
   {
     public:
@@ -65,6 +67,8 @@ namespace HD
       inline void setEpsCG(STK::Real const& epsCG) {epsCG_ = epsCG;}
       /**set the threshold of the @c LassoSolver*/
       inline void setThreshold(STK::Real const& threshold) {threshold_ = threshold;}
+      /**set the type of measure for evaluate the model*/
+      inline void setTypeMeasure(IMeasure* p_typeMeasure) {p_typeMeasure_ = p_typeMeasure;}
 
 
     protected:
@@ -84,7 +88,7 @@ namespace HD
         EM algo(maxStep_,burn_,eps_);
 
         //create model
-        Lasso lasso;
+        LassoModel lasso;
         //set parameters of the model
         lasso.setCGEps(epsCG_);
         lasso.setThreshold(threshold_);
@@ -104,7 +108,7 @@ namespace HD
           //we compute the prediction of the y associated to XTest
           yPred = XTest * lasso.beta();
           //compute the residuals
-          residuals_(s,i+1) = (yPred-yTest).square().sum()/sizePartition_[i];
+          measure_(s,i+1) = p_typeMeasure_->measure(yTest,yPred);
         }
       }
 
@@ -119,7 +123,11 @@ namespace HD
       int maxStep_;
       /// burn for EM algorithm
       int burn_;
+      ///type of measure
+      IMeasure* p_typeMeasure_;
   };
+
+
 }
 
 

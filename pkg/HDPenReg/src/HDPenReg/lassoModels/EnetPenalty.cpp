@@ -48,7 +48,7 @@ namespace HD
                           : IPenalty()
                           , lambda1_(lambda1)
                           , lambda2_(lambda2)
-                          , invPenalty_(p,0)
+                          , sqrtInvPenalty_(p,0)
                           , sigma2_(1)
                           , n_(n)
                           , p_(p)
@@ -64,7 +64,7 @@ namespace HD
               : IPenalty(penalty)
               , lambda1_(penalty.lamba1())
               , lambda2_(penalty.lamba2())
-              , invPenalty_(penalty.invPenalty())
+              , sqrtInvPenalty_(penalty.sqrtInvPenalty())
               , sigma2_(penalty.sigma2())
               , n_(penalty.n())
               , p_(penalty.p())
@@ -88,6 +88,12 @@ namespace HD
     updateSigma2(beta,normResidual);
   }
 
+  void EnetPenalty::update(STK::CVectorX const& beta)
+  {
+    updatePenalty(beta);
+  }
+
+
   /*
    * @param x a vector of length p_
    * @return the product invPenalty_*x
@@ -95,7 +101,7 @@ namespace HD
   STK::CVectorX EnetPenalty::multInvPenalty(STK::CVectorX const& x) const
   {
     STK::CVectorX a;
-    a = invPenalty_ * x;
+    a = sqrtInvPenalty_.square() * x;
 
     return a;
   }
@@ -107,7 +113,7 @@ namespace HD
   STK::CVectorX EnetPenalty::multSqrtInvPenalty(STK::CVectorX const& x) const
   {
     STK::CVectorX a;
-    a = invPenalty_.sqrt() * x;
+    a = sqrtInvPenalty_ * x;
 
     return a;
   }
@@ -118,8 +124,8 @@ namespace HD
    */
   STK::Real EnetPenalty::penaltyTerm(STK::CVectorX const& beta) const
   {
-    STK::Real penaltyTerm=beta.abs().sum() * lambda1_;
-    penaltyTerm += beta.square().sum();
+    STK::Real penaltyTerm = beta.dot( (sqrtInvPenalty_.square()).inverse() * beta);
+
 
     return penaltyTerm;
   }
@@ -131,10 +137,10 @@ namespace HD
    */
   void EnetPenalty::updatePenalty(STK::CVectorX const& beta)
   {
-    invPenalty_.resize(beta.sizeRows());
+    sqrtInvPenalty_.resize(beta.sizeRows());
 
     for(int i = 1; i <= beta.sizeRows(); i++)
-      invPenalty_[i] = std::abs(beta[i]) / ( lambda1_ + lambda2_ * std::abs(beta[i]) );
+      sqrtInvPenalty_[i] = std::sqrt(std::abs(beta[i]) / ( lambda1_ + lambda2_ * std::abs(beta[i]) ) );
   }
 
   /*

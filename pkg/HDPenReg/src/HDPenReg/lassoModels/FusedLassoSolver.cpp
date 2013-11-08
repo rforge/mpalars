@@ -90,7 +90,8 @@ namespace HD
     if(p_penalty_ == 0)
       throw STK::invalid_argument(STK::String("p_penalty_ has not be set"));
 
-    p_penalty_->update(currentBeta_);
+//    p_penalty_->update(currentBeta_);
+    p_penalty_->update(currentBeta_,segment_);
   }
 
   /*initialize the container of the class*/
@@ -129,13 +130,8 @@ namespace HD
    */
   STK::Real FusedLassoSolver::computeLlc()
   {
-    STK::Real llc, temp (0);
-    //when regrouping variables in segments, the part : beta^(k+1) ^2/|beta^(k)| is missing for all variable in the segment
-    for(int i = 0; i < (int) segment_.size(); i++)
-      temp += (currentBeta_[i+1] * currentBeta_[i+1]) * (segment_[i].size()-1) / (std::abs(beta_[segment_[i].firstIdx()]) + p_penalty_->eps());
-    temp *= p_penalty_->lambda1();
-
-    llc = - ( ( (*p_y_ - (currentData_ * currentBeta_) ).square().sum() )/p_penalty_->sigma2() +  p_penalty_->penaltyTerm(currentBeta_) + temp)/2;
+    STK::Real llc;
+    llc = - ( ( (*p_y_ - (currentData_ * currentBeta_) ).square().sum() )/p_penalty_->sigma2() +  p_penalty_->penaltyTerm(currentBeta_))/2;
 
     return llc;
   }
@@ -146,8 +142,6 @@ namespace HD
    */
   STK::Real FusedLassoSolver::run(bool const& burn)
   {
-//    p_solver_->setB(currentXty_);
-
     //run the conjugate gradient
     p_solver_->run();
 
@@ -173,7 +167,6 @@ namespace HD
         updateCurrentData();
 
         //update currentXty_ because currentData_ change
-//        currentXty_.resize(currentData_.sizeCols());
         currentXty_ = currentData_.transpose() * (*p_y_);
       }
     }

@@ -55,7 +55,7 @@ namespace HD
         STK::CVectorX a(x.sizeRowsImpl());
 
         //a = sigI*x+invD*tX*X*invD*x
-        a = (*p_sigma2_ * x) + ((p_invPenalty_->sqrt() * p_data_->transpose()) * (((*p_data_) * (p_invPenalty_->sqrt() * x))));
+        a = (*p_sigma2_ * x) + ((*p_sqrtInvPenalty_ * p_data_->transpose()) * (((*p_data_) * (*p_sqrtInvPenalty_ * x))));
 
         return   a ;
       }
@@ -66,15 +66,15 @@ namespace HD
        * @param p_invPenalty constant pointer on the current estimates of invPenalty
        * @param p_sigma2 constant pointer on the current estimates of sigma2
        */
-      EnetMultiplicator(STK::CArrayXX const* p_data,STK::Array2DDiagonal<STK::Real> const* p_invPenalty,STK::Real const* p_sigma2)
-                        : p_data_(p_data), p_invPenalty_(p_invPenalty), p_sigma2_(p_sigma2)
+      EnetMultiplicator(STK::CArrayXX const* p_data,STK::Array2DDiagonal<STK::Real> const* p_sqrtInvPenalty,STK::Real const* p_sigma2)
+                        : p_data_(p_data), p_sqrtInvPenalty_(p_sqrtInvPenalty), p_sigma2_(p_sigma2)
       {
       }
 
       ///pointer to the current data
       STK::CArrayXX const* p_data_;
       ///pointer to the penalty matrix
-      STK::Array2DDiagonal<STK::Real> const* p_invPenalty_;
+      STK::Array2DDiagonal<STK::Real> const* p_sqrtInvPenalty_;
       ///matrix to sigma2
       STK::Real const* p_sigma2_;
   };
@@ -112,7 +112,7 @@ namespace HD
       /**@return lambda2 parameter of the enet */
       inline STK::Real const& lamba2() const {return lambda2_;}
       /**@return invPenalty diagonal matrix containing |beta_i| / lambda */
-      inline STK::Array2DDiagonal<STK::Real> const& invPenalty() const {return invPenalty_;}
+      inline STK::Array2DDiagonal<STK::Real> const& sqrtInvPenalty() const {return sqrtInvPenalty_;}
       /**@return n size of sample */
       inline int const& n() const {return n_;}
       /**@return p number of covariates */
@@ -120,7 +120,7 @@ namespace HD
       /**@return sigma2 variance of the response*/
       inline STK::Real const& sigma2() const { return sigma2_;}
       /**@return A constant pointer on the matrix penalty*/
-      inline STK::Array2DDiagonal<STK::Real> const* p_invPenalty() const {return &invPenalty_;}
+      inline STK::Array2DDiagonal<STK::Real> const* p_sqrtInvPenalty() const {return &sqrtInvPenalty_;}
       /**@return A constant pointer on sigma2*/
       inline STK::Real const*  p_sigma2() const { return &sigma2_;}
 
@@ -131,7 +131,7 @@ namespace HD
        * @param normResidual ||y-X*beta||_2^2
        */
       void update(STK::CVectorX const& beta, STK::Real const& normResidual);
-
+      void update(STK::CVectorX const& beta);
       /**
        * @param x a vector of length p_
        * @return the product invPenalty_*x
@@ -169,7 +169,7 @@ namespace HD
       ///value associated to the l2 penalty of estimates
       STK::Real lambda2_;
       ///diag(E[1/tau_i^2]+lambda2)^-1
-      STK::Array2DDiagonal<STK::Real> invPenalty_;
+      STK::Array2DDiagonal<STK::Real> sqrtInvPenalty_;
       ///variance
       STK::Real sigma2_;
       ///number of sample

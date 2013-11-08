@@ -47,11 +47,12 @@ namespace HD
  * Cross validation for lasso with EM algorithm.
  * Optimization of either lambda1 or lambda2
  */
+  template<class FusedLassoModel>
   class CVFusedLasso1D : public CV
   {
     public:
-      /**default cosntructor*/
-      CVFusedLasso1D() : CV(){};
+      /**default constructor*/
+      CVFusedLasso1D() : CV(), lambda_(1.), optimL1_(false), eps_(1e-6),threshold_(1e-10), epsCG_(1e-8), maxStep_(1000), burn_(30), p_typeMeasure_(0) {};
 
       /**set optimL1 parameter
        * @param optimL1 If true, optimization of lambda1
@@ -81,6 +82,8 @@ namespace HD
        * @param burn number of burn step for the em
        */
       inline void setBurn(int const& burn) {maxStep_ = burn;}
+      /**set the type of measure for evaluate the model*/
+      inline void setTypeMeasure(IMeasure* p_typeMeasure) {p_typeMeasure_ = p_typeMeasure;}
 
       /**initialize CV*/
       void initialize() {initializeCV();};
@@ -91,7 +94,7 @@ namespace HD
         STK::CVectorX yPred(sizePartition_[i] );
 
         //create model
-        FusedLasso fusedlasso;
+        FusedLassoModel fusedlasso;
         //set parameters of the model
         fusedlasso.setP_data(p_XControl);
         fusedlasso.setP_y(p_yControl);
@@ -121,7 +124,7 @@ namespace HD
           yPred = XTest * fusedlasso.beta();
           //compute the residuals
 //          stk_cout<<(fusedlasso.p_penalty())->lambda1()<<"   "<<(fusedlasso.p_penalty())->lambda2()<<"  "<<index_[s-1]<<"  "<<i+1<<"   "<<(yPred-yTest).square().sum()/sizePartition_[i]<<std::endl;
-          residuals_(s,i+1) = (yPred-yTest).square().sum()/sizePartition_[i];
+          measure_(s,i+1) = p_typeMeasure_->measure(yTest,yPred);
 
         }
       }
@@ -177,17 +180,20 @@ namespace HD
       int maxStep_;
       /// burn for EM algorithm
       int burn_;
+      ///type of measure
+      IMeasure* p_typeMeasure_;
   };
 
   /**
    * Cross validation for lasso with EM algorithm.
    * Optimization on a grid of values for lambda1 and lambda2
    */
+  template<class FusedLassoModel>
   class CVFusedLasso2D : public CV
   {
     public:
       /**default constructor*/
-      CVFusedLasso2D() : CV(){};
+      CVFusedLasso2D() : CV(), indexL2_(), eps_(1e-6),threshold_(1e-10), epsCG_(1e-8), maxStep_(1000), burn_(30), p_typeMeasure_(0){};
 
       /**set the eps for th EM
        * @param eps eps for the convergence of the em
@@ -213,12 +219,14 @@ namespace HD
        * @param indexL2 values of lambda2 to test
        */
       inline void setIndexL2(std::vector<STK::Real> const& indexL2) {indexL2_ = indexL2;}
+      /**set the type of measure for evaluate the model*/
+      inline void setTypeMeasure(IMeasure* p_typeMeasure) {p_typeMeasure_ = p_typeMeasure;}
 
       /**initialize class and containers*/
       void initialize()
       {
         initializeCV();
-        residuals_.resize(index_.size() * indexL2_.size(),nbFolds_);
+        measure_.resize(index_.size() * indexL2_.size(),nbFolds_);
         cv_.resize(index_.size() * indexL2_.size());
         cvError_.resize(index_.size() * indexL2_.size());
       };
@@ -229,7 +237,7 @@ namespace HD
         STK::CVectorX yPred(sizePartition_[i] );
 
         //create model
-        FusedLasso fusedlasso;
+        FusedLassoModel fusedlasso;
         //set parameters of the model
         fusedlasso.setP_data(p_XControl);
         fusedlasso.setP_y(p_yControl);
@@ -259,7 +267,7 @@ namespace HD
             yPred = XTest * fusedlasso.beta();
 
             //compute the residuals
-            residuals_((s-1)*indexL2_.size() + j,i+1) = (yPred-yTest).square().sum()/sizePartition_[i];
+            measure_((s-1)*indexL2_.size() + j,i+1) = p_typeMeasure_->measure(yTest,yPred);
           }
         }
       }
@@ -278,6 +286,8 @@ namespace HD
       int maxStep_;
       /// burn for EM algorithm
       int burn_;
+      ///type of measure
+      IMeasure* p_typeMeasure_;
 
   };
 }

@@ -125,8 +125,8 @@ namespace HD
       std::vector<int> sizePartition_;
       ///vector with real between 0 and 1 (ratio (norm coefficient)/max(norm coefficient) for which we compute the prediction error)
       std::vector<double> index_;
-      ///residuals
-      STK::CArrayXX residuals_;
+      ///measure of good fitness : mse, auc
+      STK::CArrayXX measure_;
       ///criterion
       STK::CVectorX cv_;
       ///criterion error

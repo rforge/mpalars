@@ -101,6 +101,7 @@ namespace HD
        */
       inline void setThreshold(STK::Real threshold) {threshold_ = threshold;}
 
+
     protected:
       /**Thresholding of the new estimates : estimated coefficients < threshold_ become 0*/
       void thresholding();

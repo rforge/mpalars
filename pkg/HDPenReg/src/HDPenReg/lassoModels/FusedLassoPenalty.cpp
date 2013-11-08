@@ -149,8 +149,43 @@ namespace HD
         }
       }
 
-      mainDiagonal_[beta.sizeRows()] = 1/(std::abs(beta[beta.sizeRows()]) + eps_) - offDiagonal_[beta.sizeRows()-1];
+      mainDiagonal_[beta.sizeRows()] = lambda1_/(std::abs(beta[beta.sizeRows()]) + eps_) - offDiagonal_[beta.sizeRows()-1];
     }
+  }
+
+  /* update the penalty matrix : matrixB_
+   *  @param beta current estimates
+   *  @param segment segment repartition from FusedLassoSolver
+   */
+  void FusedLassoPenalty::updatePenalty(STK::CVectorX const& beta, std::vector<STK::Range> const& segment)
+  {
+    //resize to the current size
+    offDiagonal_.resize(beta.sizeRows()-1);
+    mainDiagonal_.resize(beta.sizeRows());
+
+    //we have to multiply lambda1 by the number of element of the segment to keep the tight structure when regrouping variable
+    if(beta.sizeRows() == 1)
+      mainDiagonal_[1] = segment[0].size() * lambda1_/(std::abs(beta[1]) + eps_);
+    else
+    {
+      offDiagonal_[1] = -lambda2_/(std::abs(beta[2]-beta[1]) + eps_);
+      mainDiagonal_[1] = segment[0].size() * lambda1_/(std::abs(beta[1]) + eps_) - offDiagonal_[1];
+
+      if(beta.sizeRows() > 2)
+      {
+        for(int i = 2; i < beta.sizeRows(); i++)
+        {
+          offDiagonal_[i] = -lambda2_/(std::abs(beta[i+1]-beta[i]) + eps_);
+          mainDiagonal_[i] = segment[i-1].size() * lambda1_/(std::abs(beta[i]) + eps_) - offDiagonal_[i] - offDiagonal_[i-1];
+        }
+      }
+      mainDiagonal_[beta.sizeRows()] = segment.back().size() *  lambda1_/(std::abs(beta[beta.sizeRows()]) + eps_) - offDiagonal_[beta.sizeRows()-1];
+    }
+  }
+
+  void FusedLassoPenalty::update(STK::CVectorX const& beta, std::vector<STK::Range> const& segment)
+  {
+    updatePenalty(beta,segment);
   }
 
 }

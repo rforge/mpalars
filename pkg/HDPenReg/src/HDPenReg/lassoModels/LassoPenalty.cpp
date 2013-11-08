@@ -131,7 +131,7 @@ namespace HD
   {
     //t(beta) * penalty * beta = lambda_ * \sum_i beta[i]^2(k)/abs(beta[i](k-1))
     //STK::Real penaltyTerm=beta.abs().sum() * lambda_;
-    STK::Real penaltyTerm= lambda_ * beta.dot( (sqrtInvPenalty_.square()).inverse() * beta);
+    STK::Real penaltyTerm= beta.dot( (sqrtInvPenalty_.square()).inverse() * beta);
 
     return penaltyTerm;
   }

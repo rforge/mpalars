@@ -124,6 +124,8 @@ namespace HD
       //thresholding + update currentBeta_ and currentData_;
       updateCurrent();
     }
+    else
+      beta_ = currentBeta_;
 
     return llc;
   }

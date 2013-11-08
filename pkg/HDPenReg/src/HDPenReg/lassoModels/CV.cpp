@@ -43,7 +43,7 @@ namespace HD
   CV::CV()
         : p_X_(0), p_y_(0), partition_()
         , sizePartition_(), index_()
-        , residuals_(), cv_()
+        , measure_(), cv_()
         , cvError_(), nbFolds_(0)
         , n_(0), p_(0)
   {
@@ -61,7 +61,7 @@ namespace HD
                 , partition_(X.sizeRows())
                 , sizePartition_(nbFolds,0)
                 , index_(index)
-                , residuals_(index.size(),nbFolds)
+                , measure_(index.size(),nbFolds)
                 , cv_(index.size(),0)
                 , cvError_(index.size())
                 , nbFolds_(nbFolds)
@@ -97,7 +97,7 @@ namespace HD
     p_ = p_X_->sizeCols();
     partition_.resize(p_X_->sizeRows());
     sizePartition_.resize(nbFolds_);
-    residuals_.resize(index_.size(),nbFolds_);
+    measure_.resize(index_.size(),nbFolds_);
     cv_.resize(index_.size());
     cvError_.resize(index_.size());
     partition();
@@ -128,15 +128,15 @@ namespace HD
 
     // compute mean prediction error for each index
     STK::CVectorX one(nbFolds_,1);
-    cv_ = (residuals_ * one) / nbFolds_;
+    cv_ = (measure_ * one) / nbFolds_;
 
     // compute mean standard deviation of cv_ for each index
     for(int i = 1; i <= (int) index_.size(); i++)
       for(int j = 1; j <= nbFolds_; j++)
-        residuals_(i,j) -= cv_[i];
+        measure_(i,j) -= cv_[i];
       //residuals_.row(i) -= cv_[i];
-    residuals_ = residuals_.square();
-    cvError_ = (residuals_ * one)/(nbFolds_-1)/nbFolds_;
+    measure_ = measure_.square();
+    cvError_ = (measure_ * one)/(nbFolds_-1)/nbFolds_;
     cvError_ = cvError_.sqrt();
 
   }
@@ -237,14 +237,14 @@ namespace HD
 
      // compute mean prediction error for each index
      STK::CVectorX one(nbFolds_,1);
-     cv_ = (residuals_ * one) / nbFolds_;
+     cv_ = (measure_ * one) / nbFolds_;
 
      // compute mean standard deviation of cv_ for each index
      for(int i = 1; i <= (int) index_.size(); i++)
-       residuals_.row(i) -= cv_[i];
+       measure_.row(i) -= cv_[i];
 
-     residuals_ = residuals_.square();
-     cvError_ = (residuals_ * one)/(nbFolds_-1)/nbFolds_;
+     measure_ = measure_.square();
+     cvError_ = (measure_ * one)/(nbFolds_-1)/nbFolds_;
      cvError_ = cvError_.sqrt();
 
    }
@@ -300,14 +300,14 @@ namespace HD
 
      // compute mean prediction error for each index
      STK::CVectorX one(nbFolds_,1);
-     cv_ = (residuals_ * one) / nbFolds_;
+     cv_ = (measure_ * one) / nbFolds_;
 
      // compute mean standard deviation of cv_ for each index
      for(int i = 1; i <= (int) index_.size(); i++)
-       residuals_.row(i) -= cv_[i];
+       measure_.row(i) -= cv_[i];
 
-     residuals_ = residuals_.square();
-     cvError_ = (residuals_ * one)/(nbFolds_-1)/nbFolds_;
+     measure_ = measure_.square();
+     cvError_ = (measure_ * one)/(nbFolds_-1)/nbFolds_;
      cvError_ = cvError_.sqrt();
 
    }

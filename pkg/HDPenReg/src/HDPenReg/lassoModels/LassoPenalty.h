@@ -135,7 +135,7 @@ namespace HD
        * update the lasso penalty (for fixed sigma)
        * @param beta current estimates
        */
-      void update(STK::CVectorX const& beta);
+      virtual void update(STK::CVectorX const& beta);
 
       /**
        * @param x a vector of length p_
