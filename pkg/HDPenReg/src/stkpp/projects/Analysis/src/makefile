@@ -28,7 +28,12 @@
 #-----------------------------------------------------------------------
 # Macro definitions
 #
-include $(MAKEVARS)
+ifeq ($(MAKEVARS),)
+	include ../../../makevars
+else
+	include $(MAKEVARS)
+endif
+
 
 #-----------------------------------------------------------------------
 # Paths

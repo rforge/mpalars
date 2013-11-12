@@ -29,11 +29,14 @@
 #-----------------------------------------------------------------------
 # Macros and definitions
 
-MAKEVARS = $(abspath makevars)
+MAKEVARS = $(realpath makevars)
 export MAKEVARS
 
-include $(MAKEVARS)
-
+ifeq ($(MAKEVARS),)
+	include makevars
+else
+	include $(MAKEVARS)
+endif
 
 #-----------------------------------------------------------------------
 # main Paths
@@ -106,6 +109,8 @@ CPP_OBJS = \
 .PHONY: stkernel arrays sdk dmanager algebra analysis statistik statmodel \
         aamodels regress reduct 
 stkernel:
+	@echo $(MAKEVARS)
+	@echo "$(MAKEVARS)"
 	$(MAKE) -C $(SRC_STKERNEL_DIR)
 arrays:
 	$(MAKE) -C $(SRC_ARRAYS_DIR)
