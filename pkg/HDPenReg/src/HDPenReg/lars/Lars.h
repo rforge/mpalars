@@ -117,7 +117,7 @@ namespace HD
       inline std::vector<STK::Real> const lambda() const {return path_.lambda();}
 
       /** @return the historic of add and drop variable*/
-      inline std::vector< std::pair<int,int> > evolution() const {return path_.evolution();}
+      inline std::vector< std::pair<std::vector<int> ,std::vector<int> > > evolution() const {return path_.evolution();}
 
       /**@return Number of step of the algorithm*/
       inline int step() const {return step_;}
@@ -128,6 +128,8 @@ namespace HD
       /** @return the ignored variable*/
       inline std::vector<bool> toIgnore() const {return toIgnore_;}
 
+      /** @return msg_error_*/
+      inline std::string msg_error() const {return msg_error_;}
 
       //methods
       /** run lars algorithm*/
@@ -160,7 +162,7 @@ namespace HD
        * @param signC sign of correlation of active variable
        * @param action a pair with first element is a bool (true for addcase, false for dropcase) and second the idx variable to drop/add
        */
-      void updateR(int idxVar, STK::Array2DVector<int> &signC, std::pair<bool,int> &action);
+      void updateR(int idxVar, STK::Array2DVector<int> &signC, std::pair<bool,std::vector<int> > &action);
 
       /**
        * compute inv(Xi'*Xi)*1 from qr decomposition
@@ -186,7 +188,7 @@ namespace HD
        * @param idxVar index of active variable to drop
        * @param signC sign of correlation of active variable
        */
-      void dropStep(int idxVar, STK::Array2DVector<int> &signC);
+      void dropStep(std::vector<int> const& idxVar, STK::Array2DVector<int> &signC);
 
       /**
        * Compute gammahat for the update of coefficient in add case
@@ -203,7 +205,7 @@ namespace HD
        * @param idxMin we stock the index (in the activeVariable vector) of the variable with the min value
        * @return gammatilde a real
        */
-      STK::Real computeGamTilde(STK::Array2DVector<STK::Real> const& w, int &idxMin) const;
+      STK::Real computeGamTilde(STK::Array2DVector<STK::Real> const& w, std::vector<int> &idxMin) const;
 
 
       /**
@@ -214,7 +216,7 @@ namespace HD
        * @param isAddCase true if we add a variable
        * @param dropId id top potentially drop
        */
-      void updateBeta(STK::Real gamma, STK::Array2DVector<STK::Real> const& w, std::pair<bool,int> action, bool isAddCase, int dropId);
+      void updateBeta(STK::Real gamma, STK::Array2DVector<STK::Real> const& w, std::pair<bool,std::vector<int> > action, bool isAddCase, std::vector<int> dropId);
 
 
       /**
@@ -231,14 +233,14 @@ namespace HD
        * @param gam the step for update coefficients
        * @return
        */
-      bool firstStep(STK::Real &Cmax, std::vector<int> &newId, STK::Array2DVector<int> &signC, std::pair<bool,int> &action, STK::Real &Aa,
+      bool firstStep(STK::Real &Cmax, std::vector<int> &newId, STK::Array2DVector<int> &signC, std::pair<bool,std::vector<int> > &action, STK::Real &Aa,
                      STK::Array2DVector<STK::Real> &Gi1, STK::Array2DVector<STK::Real> &w, STK::CVectorX &u, STK::CVectorX &a, STK::Real &gam);
 
       /**
        * updateR only for the first step
        * @see updateR
        */
-      void firstUpdateR(int idxVar, STK::Array2DVector<int> &signC, std::pair<bool,int> &action);
+      void firstUpdateR(int idxVar, STK::Array2DVector<int> &signC, std::pair<bool,std::vector<int> > &action);
 
     private:
       ///number of individuals
@@ -279,6 +281,8 @@ namespace HD
       STK::CVectorX c_;
       /// if true, there is an intercept in the model
       bool intercept_;
+      ///last error message
+      std::string msg_error_;
   };
 
 }//end namespace

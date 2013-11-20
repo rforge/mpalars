@@ -63,97 +63,114 @@ Real computeOrdinate(Real x1,Real x2,Real x3,Real y1,Real y2)
  * @param l1norm abscissa to compute ordinates
  * @return value of coefficients for l1norm
  */
-STK::Array1D< pair<int,Real> > computeCoefficients(PathState const& state1,PathState const& state2,pair<int,int> const& evolution, Real const& l1norm)
+STK::Array1D< pair<int,Real> > computeCoefficients(PathState const& state1,PathState const& state2,pair<std::vector<int> ,std::vector<int> > const& evolution, Real const& l1norm)
 {
-  int maxSize=std::max(state1.size(),state2.size());
-  if(evolution.first!=0 && evolution.second!=0)
-   maxSize++;
+  int maxSize = state1.size() + evolution.first.size();
+
   STK::Array1D< pair<int,Real> > coeff(maxSize);
 
-  if(evolution.second==0)
+  if(evolution.second.size() == 0)
   {//no drop variable
     int j(1);
     for(j=1; j <= state1.size(); j++)
       coeff[j]=make_pair(state1.varIdx(j),computeOrdinate(state1.l1norm(), state2.l1norm(), l1norm, state1.varCoeff(j), state2.varCoeff(j)));
 
     //add variable case
-    if(evolution.first!=0)
-      coeff[j]=make_pair( evolution.first, computeOrdinate(state1.l1norm(), state2.l1norm(), l1norm, 0., state2.varCoeff(j)));
+    if(evolution.first.size() != 0)
+    {
+      for(int i = 0; i < (int) evolution.first.size(); i++)
+        coeff[j]=make_pair( evolution.first[i], computeOrdinate(state1.l1norm(), state2.l1norm(), l1norm, 0., state2.varCoeff(j)));
+    }
   }
   else
   {
     //delete variable case
     int i = 1;
-    //while we don't meet the delete variable, variable has the same index in the two sets
-    while(evolution.second!=state1.varIdx(i))
+    for( int j = 0; j < (int) evolution.second.size(); j++)
     {
-      coeff[i]=make_pair(state1.varIdx(i),computeOrdinate(state1.l1norm(), state2.l1norm(), l1norm, state1.varCoeff(i), state2.varCoeff(i)));
+      //while we don't meet the delete variable, variable has the same index in the two sets
+      while(evolution.second[j]!=state1.varIdx(i))
+      {
+        coeff[i]=make_pair(state1.varIdx(i),computeOrdinate(state1.l1norm(), state2.l1norm(), l1norm, state1.varCoeff(i), state2.varCoeff(i)));
+        i++;
+      }
+      //compute coefficient for the delete variable
+      coeff[i]=make_pair(state1.varIdx(i),computeOrdinate(state1.l1norm(), state2.l1norm(), l1norm, state1.varCoeff(i),0.));
       i++;
     }
-    //compute coefficient for the delete variable
-    coeff[i]=make_pair(state1.varIdx(i),computeOrdinate(state1.l1norm(), state2.l1norm(), l1norm, state1.varCoeff(i),0.));
-    i++;
-
     //compute coefficient for the other variable
-    while(i<state1.size()+1)
+    while(i < state1.size()+1)
     {
       coeff[i]=make_pair(state1.varIdx(i),computeOrdinate(state1.l1norm(), state2.l1norm(), l1norm, state1.varCoeff(i), state2.varCoeff(i-1)));
       i++;
     }
 
     //drop with an add variable
-    if(evolution.first!=0)
-      coeff[i]=make_pair(evolution.first, computeOrdinate(state1.l1norm(), state2.l1norm(), l1norm, 0., state2.varCoeff(i-1)));
+    if(evolution.first.size()!=0)
+    {
+      for(int j = 0; j < (int) evolution.first.size(); j++)
+        coeff[i]=make_pair(evolution.first[j], computeOrdinate(state1.l1norm(), state2.l1norm(), l1norm, 0., state2.varCoeff(i-1)));
+    }
+
   }
 
   return coeff;
 }
 
-void computeCoefficients(PathState const& state1,PathState const& state2,pair<int,int> const& evolution, Real const& l1norm, STK::Array2DVector< pair<int,Real> > &coeff)
+void computeCoefficients(PathState const& state1,PathState const& state2,pair<std::vector<int> ,std::vector<int> > const& evolution, Real const& l1norm, STK::Array2DVector< pair<int,Real> > &coeff)
 {
   //STK::Array2DVector< pair<int,Real> > coeff(std::max(state1.size(),state2.size()));
-  int maxSize=std::max(state1.size(),state2.size());
-  if(evolution.first!=0 && evolution.second!=0)
-   maxSize++;
+  int maxSize = state1.size() + evolution.first.size();
 
   coeff.resize1D(Range(1,maxSize));
 
-  if(evolution.second==0)
+  if(evolution.second.size()==0)
   {//no drop variable
     int j(1);
-    for(j=1; j <= state1.size(); j++)
+    for(j = 1; j <= state1.size(); j++)
       coeff[j]=make_pair(state1.varIdx(j),computeOrdinate(state1.l1norm(), state2.l1norm(), l1norm, state1.varCoeff(j), state2.varCoeff(j)));
 
     //add variable case
-    if(evolution.first!=0)
-      coeff[j]=make_pair( evolution.first, computeOrdinate(state1.l1norm(), state2.l1norm(), l1norm, 0., state2.varCoeff(j)));
+    if(evolution.first.size()!=0)
+    {
+      for(int i = 0; i < (int) evolution.first.size(); i++)
+        coeff[j]=make_pair( evolution.first[i], computeOrdinate(state1.l1norm(), state2.l1norm(), l1norm, 0., state2.varCoeff(j)));
+    }
   }
   else
   {
     //delete variable case
     int i = 1;
 
-    //while we don't meet the delete variable, variable has the same index in the two sets
-    while(evolution.second!=state1.varIdx(i))
+    for( int j = 0; j < (int) evolution.second.size(); j++)
     {
-      coeff[i]=make_pair(state1.varIdx(i),computeOrdinate(state1.l1norm(), state2.l1norm(), l1norm, state1.varCoeff(i), state2.varCoeff(i)));
+      //while we don't meet the delete variable, variable has the same index in the two sets
+      while(evolution.second[j]!=state1.varIdx(i))
+      {
+        coeff[i]=make_pair(state1.varIdx(i),computeOrdinate(state1.l1norm(), state2.l1norm(), l1norm, state1.varCoeff(i), state2.varCoeff(i)));
+        i++;
+      }
+
+      //compute coefficient for the delete variable
+      coeff[i]=make_pair(state1.varIdx(i),computeOrdinate(state1.l1norm(), state2.l1norm(), l1norm, state1.varCoeff(i),0.));
       i++;
     }
 
-    //compute coefficient for the delete variable
-    coeff[i]=make_pair(state1.varIdx(i),computeOrdinate(state1.l1norm(), state2.l1norm(), l1norm, state1.varCoeff(i),0.));
-    i++;
 
     //compute coefficient for the other variable
-    while(i<state1.size()+1)
+    while(i < state1.size()+1)
     {
       coeff[i]=make_pair(state1.varIdx(i),computeOrdinate(state1.l1norm(), state2.l1norm(), l1norm, state1.varCoeff(i), state2.varCoeff(i-1)));
       i++;
     }
 
     //drop with an add variable
-    if(evolution.first!=0)
-      coeff[i]=make_pair(evolution.first, computeOrdinate(state1.l1norm(), state2.l1norm(), l1norm, 0., state2.varCoeff(i-1)));
+    if(evolution.first.size()!=0)
+    {
+      for(int j = 0; j < (int) evolution.first.size(); j++)
+        coeff[i]=make_pair(evolution.first[j], computeOrdinate(state1.l1norm(), state2.l1norm(), l1norm, 0., state2.varCoeff(i-1)));
+
+    }
 
   }
 }
@@ -178,7 +195,7 @@ bool import(std::string adressFichier,int n,int p,STK::CArrayXX &data)
   Real real;
   int i(1),j(1);
 
-  if (flux)//si le fichier est ouvert
+  if (flux.is_open())//si le fichier est ouvert
   {
      while(flux>>real)//on lit le fichier entier par entier
      {
@@ -203,7 +220,7 @@ bool import(std::string adressFichier,int n,STK::CVectorX &data)
   Real real;
   int i(1);
 
-  if (flux)//si le fichier est ouvert
+  if (flux.is_open())//si le fichier est ouvert
   {
      while(flux>>real)//on lit le fichier entier par entier
      {

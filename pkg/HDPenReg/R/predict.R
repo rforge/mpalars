@@ -126,59 +126,57 @@ computeCoefficients = function(x,lambda,mode="fraction")
   }
 
 	index=index-1
-	if(x@dropIndex[index]==0)#no drop variable
-	{
-		#add variable case
-		if(x@addIndex[index]!=0)
-		{
-			coeff=c(
-			.computeOrdinate(abscissa[index], abscissa[index+1], lambda, x@coefficient[[index]], x@coefficient[[index+1]][-length(x@coefficient[[index+1]])]), 
-			.computeOrdinate(abscissa[index], abscissa[index+1], lambda, 0, x@coefficient[[index+1]][length(x@coefficient[[index+1]])]))
-			variable=x@variable[[index+1]]
 
-			return(list(variable=variable,coefficient=coeff))
-		}
-		else
-		{
-			coeff=.computeOrdinate(abscissa[index], abscissa[index+1], lambda, x@coefficient[[index]], x@coefficient[[index+1]])
-			variable=x@variable[[index+1]]
-
-			return(list(variable=variable,coefficient=coeff))
-		}
-		
-	}
-	else
-	{
-		#delete variable case
-		i = 1;
-		delIndex = which(x@variable[[index]] == x@dropIndex[index])
-
-		##drop with an add variable
-		if(x@addIndex[index]!=0)
-		{
-			coeff=c(
-			.computeOrdinate(abscissa[index], abscissa[index+1], lambda, x@coefficient[[index]][1:(delIndex-1)], x@coefficient[[index+1]][1:(delIndex-1)]),
-			.computeOrdinate(abscissa[index], abscissa[index+1], lambda, x@coefficient[[index]][delIndex], 0),
-			.computeOrdinate(abscissa[index], abscissa[index+1], lambda, x@coefficient[[index]][-c(1:delIndex)], x@coefficient[[index+1]][delIndex:(length(x@coefficient[[index]])-1)]),
-			.computeOrdinate(abscissa[index], abscissa[index+1], lambda, 0, x@coefficient[[index+1]][length(x@coefficient[[index+1]])]))
-			variable=c(x@variable[[index]], x@variable[[index+1]][length(x@variable[[index+1]])])
-
-			return(list(variable=variable,coefficient=coeff))
-		}
-		else
-		{	##no add
-			coeff=c(
-			.computeOrdinate(abscissa[index], abscissa[index+1], lambda, x@coefficient[[index]][1:(delIndex-1)], x@coefficient[[index+1]][1:(delIndex-1)]),
-			.computeOrdinate(abscissa[index], abscissa[index+1], lambda, x@coefficient[[index]][delIndex], 0),
-			.computeOrdinate(abscissa[index], abscissa[index+1], lambda, x@coefficient[[index]][-c(1:delIndex)], x@coefficient[[index+1]][delIndex:length(x@coefficient[[index+1]])]))
-
-			variable=x@variable[[index]]
-			
-			return(list(variable=variable,coefficient=coeff))
-		}
-
-	}
+    addId=c()
+    if(length(x@addIndex[[index]])!=0)
+    {
+        for(i in 1:length(x@addIndex[[index]]) )
+        {
+            addId=c(addId,which(x@variable[[index+1]]==x@addIndex[[index]][i]))
+        }
+    }
 	
+	dropId=c()
+    if(length(x@dropIndex[[index]])!=0)
+    {
+        for(i in 1:length(x@dropIndex[[index]]) )
+        {
+            dropId=c(dropId,which(x@variable[[index]]==x@dropIndex[[index]][i]))
+        }
+    }
+    
+    normalId=c()
+    if(length(x@variable[[index]])>0)
+    {
+        for(i in 1:length(x@variable[[index]]))
+        {
+            if(!(x@variable[[index]][i]%in%x@dropIndex[[index]]))
+            {
+                normalId=c(normalId,i)
+            }
+        }
+    }
+    
+  coeff=c()
+  if(length(addId)!=0)
+  {
+    coeff=c(
+      .computeOrdinate(abscissa[index], abscissa[index+1], lambda, x@coefficient[[index]][normalId], x@coefficient[[index+1]][-addId]),
+      .computeOrdinate(abscissa[index], abscissa[index+1], lambda, x@coefficient[[index]][dropId], rep(0,length(dropId))),
+      .computeOrdinate(abscissa[index], abscissa[index+1], lambda, rep(0,length(addId)), x@coefficient[[index+1]][addId])
+    )
+  }
+  else
+  {
+    coeff=c(
+      .computeOrdinate(abscissa[index], abscissa[index+1], lambda, x@coefficient[[index]][normalId], x@coefficient[[index+1]]),
+      .computeOrdinate(abscissa[index], abscissa[index+1], lambda, x@coefficient[[index]][dropId], rep(0,length(dropId)))
+    )
+  } 
+    
+    variable=c(x@variable[[index]][normalId],x@variable[[index]][dropId],x@variable[[index+1]][addId])
+    
+    return(list(variable=variable,coefficient=coeff))
 }
 
 .computeOrdinate=function(x1,x2,x3,y1,y2)

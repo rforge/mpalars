@@ -15,6 +15,7 @@
 #'	 \item{ignored}{A vector containing index of ignored variables during the algorithm.}
 #'   \item{p}{Total number of covariates.}
 #'	 \item{fusion}{If TRUE,  results from HDfusion function.}
+#'   \item{error}{Error message from lars.}
 #' }
 #'
 #'
@@ -29,26 +30,28 @@ setClass(
     coefficient="list",
     l1norm="numeric",
     lambda="numeric",
-    dropIndex="numeric",
-    addIndex="numeric",
+    dropIndex="list",
+    addIndex="list",
     nbStep="numeric",
     mu="numeric",
     ignored="numeric",
     fusion="logical",
-    p="numeric"
+    p="numeric",
+    error="character"
     ),
   prototype=prototype(
     variable=list(),
     coefficient=list(),
     l1norm=numeric(0),
     lambda=numeric(0),
-    dropIndex=numeric(0),
-    addIndex=numeric(0),
+    dropIndex=list(),
+    addIndex=list(),
     nbStep=numeric(0),
     mu=numeric(0),
     ignored=numeric(0),
     fusion=FALSE,
-    p=numeric(0)
+    p=numeric(0),
+    error=character()
     )
   )
 
@@ -75,57 +78,74 @@ setMethod(
   signature="LarsPath",
   definition=function(x,sep.line=TRUE,...)
   {
-      miny=0
-      maxy=0
-      for(i in 2:length(x@coefficient))
-      {
-        miny=min(miny,x@coefficient[[i]])
-        maxy=max(maxy,x@coefficient[[i]])
-      }
-      var=unique(unlist(x@variable))
-      plot(NA,xlim=c(min(x@l1norm),max(x@l1norm)),ylim=c(miny,maxy),main="Path",xlab="l1norm",ylab="coefficients") 
-      abline(h=0)
-      lines(x@l1norm[1:2],c(0,x@coefficient[[2]][1]),col=which(var==x@variable[[2]][1]))
+    miny=0
+    maxy=0
+    for(i in 2:length(x@coefficient))
+    {
+      miny=min(miny,x@coefficient[[i]])
+      maxy=max(maxy,x@coefficient[[i]])
+    }
+    var=unique(unlist(x@variable))
+    plot(NA,xlim=c(min(x@l1norm),max(x@l1norm)),ylim=c(miny,maxy),main="Path",xlab="l1norm",ylab="coefficients") 
+    abline(h=0)
+    lines(x@l1norm[1:2],c(0,x@coefficient[[2]][1]),col=which(var==x@variable[[2]][1]))
+    
+    for(i in 2:(length(x@l1norm)-1))
+    {
+      if(sep.line)
+        abline(v=x@l1norm[i],col="blue",lty=2)
       
-      for(i in 2:(length(x@l1norm)-1))
+      if(length(x@dropIndex[[i]])==0)##plot add case 
       {
-        if(sep.line)
-          abline(v=x@l1norm[i],col="blue",lty=2)
+        for(j in 1:length(x@coefficient[[i]]))
+          lines(x@l1norm[i:(i+1)],c(x@coefficient[[i]][j],x@coefficient[[i+1]][j]),col=which(var==x@variable[[i]][j]))
         
-        if(x@dropIndex[i]==0)##plot add case 
+        if(length(x@addIndex[[i]])!=0)
         {
-          for(j in 1:length(x@coefficient[[i]]))
-            lines(x@l1norm[i:(i+1)],c(x@coefficient[[i]][j],x@coefficient[[i+1]][j]),col=which(var==x@variable[[i]][j]))
+          for(j in (length(x@coefficient[[i]])+1):(length(x@coefficient[[i]])+length(x@addIndex[[i]])) )
+            lines(x@l1norm[i:(i+1)],c(0,x@coefficient[[i+1]][j]),col=which(var==x@variable[[i+1]][j]))
           
-          if(x@addIndex[i]!=0)
-            lines(x@l1norm[i:(i+1)],c(0,x@coefficient[[i+1]][j+1]),col=which(var==x@variable[[i+1]][j+1]))
         }
-        else
+      }
+      else
+      {
+        j=1  
+        for(k in 1:length(x@dropIndex[[i]]))
         {
-          j=1  
-
-          while(x@variable[[i]][j]!=x@dropIndex[i])
+          #plot line for variables before a dropped variable
+          while(x@variable[[i]][j]!=x@dropIndex[[i]][k])
           {
             lines(x@l1norm[i:(i+1)],c(x@coefficient[[i]][j],x@coefficient[[i+1]][j]),col=which(var==x@variable[[i]][j]))
             j=j+1
           }
+          
+          #plot the line of the dropped variable
           lines(x@l1norm[i:(i+1)],c(x@coefficient[[i]][j],0),col=which(var==x@variable[[i]][j]))
           j=j+1
-          while(j<=length(x@coefficient[[i]]))
-          {
-            lines(x@l1norm[i:(i+1)],c(x@coefficient[[i]][j],x@coefficient[[i+1]][j-1]),col=which(var==x@variable[[i]][j]))
-            j=j+1
-          }
-          if(x@addIndex[i]!=0)
-            lines(x@l1norm[i:(i+1)],c(0,x@coefficient[[i+1]][length(x@coefficient[[i]])]),col=which(var==x@variable[[i+1]][length(x@coefficient[[i]])]))        
+          
+        }
+        
+        #plot the line of variables after every drop variable
+        while(j<=length(x@coefficient[[i]]))
+        {
+          lines(x@l1norm[i:(i+1)],c(x@coefficient[[i]][j],x@coefficient[[i+1]][j-1]),col=which(var==x@variable[[i]][j]))
+          j=j+1
+        }
+        
+        #plot the line for added variables
+        if(length(x@addIndex[[i]])!=0)
+        {         
+          for(j in length(x@coefficient[[i+1]]):(length(x@coefficient[[i+1]])-length(x@addIndex[[i]])+1) )
+            lines(x@l1norm[i:(i+1)],c(0,x@coefficient[[i+1]][j]),col=which(var==x@variable[[i+1]][j]))        
         }
       }
-      
-      if(sep.line)
-        abline(v=x@l1norm[length(x@l1norm)],col="blue",lty=2)
-      axis(4, at=x@coefficient[[length(x@coefficient)]],labels=x@variable[[length(x@variable)]])
+    }
+    
+    if(sep.line)
+      abline(v=x@l1norm[length(x@l1norm)],col="blue",lty=2)
+    axis(4, at=x@coefficient[[length(x@coefficient)]],labels=x@variable[[length(x@variable)]])
   }
-  )
+)
 
 
 

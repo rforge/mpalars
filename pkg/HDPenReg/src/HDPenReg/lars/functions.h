@@ -56,8 +56,8 @@ STK::Real computeOrdinate(STK::Real x1,STK::Real x2,STK::Real x3,STK::Real y1,ST
  * @param lambda abscissa to compute ordinates
  * @return value of coefficients for lambda
  */
-STK::Array1D< std::pair<int,STK::Real> > computeCoefficients(HD::PathState const& state1,HD::PathState const& state2,std::pair<int,int> const& evolution, STK::Real const& lambda);
-void computeCoefficients(HD::PathState const& state1,HD::PathState const& state2,std::pair<int,int> const& evolution, STK::Real const& lambda, STK::Array2DVector< std::pair<int,STK::Real> > &coeff);
+STK::Array1D< std::pair<int,STK::Real> > computeCoefficients(HD::PathState const& state1,HD::PathState const& state2,std::pair<std::vector<int> ,std::vector<int> > const& evolution, STK::Real const& lambda);
+void computeCoefficients(HD::PathState const& state1,HD::PathState const& state2,std::pair<std::vector<int> ,std::vector<int> > const& evolution, STK::Real const& lambda, STK::Array2DVector< std::pair<int,STK::Real> > &coeff);
 
 void print(STK::Array2DVector< std::pair<int,STK::Real> > const& state);
 bool import(std::string adressFichier,int n,int p,STK::CArrayXX &data);

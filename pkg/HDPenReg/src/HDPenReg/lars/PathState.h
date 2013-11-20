@@ -105,7 +105,7 @@ namespace HD
        * @param addIdxVar index of the variable to add
        * @param dropIdx index (in the vector of coefficients of the previous step) of the variable to delete
        */
-      void addWithDropUpdate(STK::Array2DVector<STK::Real> const& w, STK::Real gamma, int addIdxVar, int dropIdx);
+      void addWithDropUpdate(STK::Array2DVector<STK::Real> const& w, STK::Real gamma, std::vector<int> const& addIdxVar, std::vector<int> const& dropIdx);
 
       /**
        * update of the coefficients of the previous state with a variable to drop
@@ -113,7 +113,7 @@ namespace HD
        * @param gamma step of the update
        * @param dropIdx index (in the vector of coefficients of the previous step) of the variable to delete
        */
-      void dropAfterDropUpdate(STK::Array2DVector<STK::Real> const& w, STK::Real gamma, int dropIdx);
+      void dropAfterDropUpdate(STK::Array2DVector<STK::Real> const& w, STK::Real gamma, std::vector<int> const& dropIdx);
 
       /**
        * update of the coefficients of the previous state with a new variable
@@ -121,7 +121,7 @@ namespace HD
        * @param gamma step of the update
        * @param addIdxVar index of the variable to add
        */
-      void addUpdate(STK::Array2DVector<STK::Real> const& w, STK::Real gamma, int addIdxVar);
+      void addUpdate(STK::Array2DVector<STK::Real> const& w, STK::Real gamma, std::vector<int> const& addIdxVar);
 
       /**print coefficients*/
       void printCoeff() const;

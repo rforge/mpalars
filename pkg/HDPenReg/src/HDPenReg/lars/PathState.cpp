@@ -101,31 +101,47 @@ namespace HD
    * @param addIdxVar index of the variable to add
    * @param dropIdx index (in the vector of coefficients of the previous step) of the variable to delete
    */
-  void PathState::addWithDropUpdate(STK::Array2DVector<Real> const& w, Real gamma, int addIdxVar, int dropIdx)
+  void PathState::addWithDropUpdate(STK::Array2DVector<Real> const& w, Real gamma, vector<int> const& addIdxVar, vector<int> const& dropIdx)
   {
     //update the other variable
     l1norm_=0;
-    if(dropIdx!=1)
-      for(int i=1; i<dropIdx; i++)
+    if(dropIdx[0]!=1)
+      for(int i=1; i < dropIdx[0]; i++)
       {
         coefficients_[i].second += gamma*w[i];
         l1norm_ += std::abs(coefficients_[i].second);
       }
 
-    if(dropIdx!=coefficients_.size())
-      for(int i=dropIdx+1; i<=coefficients_.size(); i++)
+    if(dropIdx.size() > 1)
+    {
+      for(int j = 0; j < (int) dropIdx.size(); j++)
+      {
+        for(int i = dropIdx[j]+1; i < dropIdx[j]; i++)
+        {
+          coefficients_[i].second += gamma*w[i];
+          l1norm_ += std::abs(coefficients_[i].second);
+        }
+      }
+    }
+
+    if(dropIdx.back()!=coefficients_.size())
+      for(int i=dropIdx.back()+1; i <= coefficients_.size(); i++)
       {
         coefficients_[i].second += gamma*w[i];
         l1norm_ += std::abs(coefficients_[i].second);
       }
 
     //add the new variable
-    coefficients_.pushBack();
-    coefficients_.back()=make_pair(addIdxVar,gamma*w.back());
-    l1norm_ += std::abs(coefficients_.back().second);
+    for(int i = 0; i < (int) addIdxVar.size(); i++)
+    {
+      coefficients_.pushBack(1);
+      coefficients_.back()=make_pair(addIdxVar[i],gamma*w[coefficients_.size()]);
+      l1norm_ += std::abs(coefficients_.back().second);
+    }
 
     //delete the variable to delete
-    coefficients_.erase(dropIdx,1);
+    for(int i = dropIdx.size()-1; i >= 0; i--)
+      coefficients_.erase(dropIdx[i],1);
   }
 
   /*
@@ -134,26 +150,39 @@ namespace HD
    * @param gamma step of the update
    * @param dropIdx index (in the vector of coefficients of the previous step) of the variable to delete
    */
-  void PathState::dropAfterDropUpdate(STK::Array2DVector<Real> const& w, Real gamma, int dropIdx)
+  void PathState::dropAfterDropUpdate(STK::Array2DVector<Real> const& w, Real gamma, vector<int> const& dropIdx)
   {
     l1norm_=0;
     //update the other coefficient
-    if(dropIdx!=1)
-      for(int i=1; i<dropIdx; i++)
+    if(dropIdx[0]!=1)
+      for(int i = 1; i < dropIdx[0]; i++)
       {
         coefficients_[i].second += gamma*w[i];
         l1norm_ += std::abs(coefficients_[i].second);
       }
 
-    if(dropIdx!=coefficients_.size())
-      for(int i=dropIdx+1; i<=coefficients_.size(); i++)
+    if(dropIdx.size() > 1)
+    {
+      for(int j = 0; j < (int) dropIdx.size(); j++)
+      {
+        for(int i = dropIdx[j]+1; i < dropIdx[j]; i++)
+        {
+          coefficients_[i].second += gamma*w[i];
+          l1norm_ += std::abs(coefficients_[i].second);
+        }
+      }
+    }
+
+    if(dropIdx.back()!=coefficients_.size())
+      for(int i = dropIdx.back() + 1; i <= coefficients_.size(); i++)
       {
         coefficients_[i].second += gamma*w[i];
         l1norm_ += std::abs(coefficients_[i].second);
       }
 
     //delete the variable to delete
-    coefficients_.erase(dropIdx,1);
+    for(int i = dropIdx.size()-1; i >= 0; i--)
+      coefficients_.erase(dropIdx[i],1);
   }
 
   /*
@@ -162,7 +191,7 @@ namespace HD
    * @param gamma step of the update
    * @param addIdxVar index of the variable to add
    */
-  void PathState::addUpdate(STK::Array2DVector<Real> const& w, Real gamma, int addIdxVar)
+  void PathState::addUpdate(STK::Array2DVector<Real> const& w, Real gamma, vector<int> const& addIdxVar)
   {
     //update previous coefficients
     l1norm_=0;
@@ -172,9 +201,13 @@ namespace HD
       l1norm_ += std::abs(coefficients_[i].second);
     }
 
-    coefficients_.pushBack(1);
-    coefficients_.back()=make_pair(addIdxVar,gamma * w.back());
-    l1norm_ += std::abs(coefficients_.back().second);
+    for(int i = 0; i < (int) addIdxVar.size(); i++)
+    {
+      coefficients_.pushBack(1);
+      coefficients_.back() = make_pair(addIdxVar[i], gamma * w[coefficients_.size()]);
+      l1norm_ += std::abs(coefficients_.back().second);
+    }
+
   }
 
 }//end namespace

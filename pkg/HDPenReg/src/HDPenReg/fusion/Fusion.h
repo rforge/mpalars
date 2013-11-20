@@ -119,13 +119,16 @@ namespace HD
       inline std::vector<STK::Real> lambda() const {return path_.lambda();}
 
       /** @return the historic of add and drop variable*/
-      inline std::vector< std::pair<int,int> > evolution() const {return path_.evolution();}
+      inline std::vector< std::pair<std::vector<int>,std::vector<int> > > evolution() const {return path_.evolution();}
 
       /** @return the intercept of the solution*/
       inline STK::Real mu() const {return mu_;}
 
       /** @return the ignored variable*/
       inline std::vector<bool> toIgnore() const {return toIgnore_;}
+
+      /** @return msg_error_*/
+      inline std::string msg_error() const {return msg_error_;}
 
       /**
        * run the lars algorithm for solving the fusion problem on Z=X*L^-1 (L^-1 = lower triangular matrix of 1)
@@ -157,6 +160,8 @@ namespace HD
       std::vector<bool> toIgnore_;
       /// if true, there is an intercept in the model
       bool intercept_;
+      ///last error message
+      std::string msg_error_;
 
   };
 }

@@ -102,13 +102,14 @@ namespace HD
    * @param gamma step of the update
    * @param addIdxVar index of the variable to add
    */
-  void Path::addCaseUpdate(Real gamma, STK::Array2DVector<Real> const& w, int addIdxVar)
+  void Path::addCaseUpdate(Real gamma, STK::Array2DVector<Real> const& w, std::vector<int> const& addIdxVar)
   {
     //copy the previous states
     states_.push_back(states_.back());
 
     //update of evolution with the new index
-    evolution_.push_back(make_pair(addIdxVar,0));
+    vector<int> vide;
+    evolution_.push_back(make_pair(addIdxVar,vide));
 
     //update of the coefficients
     states_.back().addUpdate(w,gamma,addIdxVar);
@@ -125,7 +126,8 @@ namespace HD
     states_.push_back(states_.back());
 
     //update of evolution with the new index
-    evolution_.push_back(make_pair(0,0));
+    vector<int> vide;
+    evolution_.push_back(make_pair(vide,vide));
 
     //update of the coefficients
     states_.back().update(w,gamma);
@@ -139,7 +141,7 @@ namespace HD
    * @param dropIdxVar index of the delete variable
    * @param dropIdx index (in the vector of coefficients of the previous step) of the variable to delete
    */
-  void Path::addWithDropCaseUpdate(Real gamma, STK::Array2DVector<Real> const& w, int addIdxVar, int dropIdxVar, int dropIdx)
+  void Path::addWithDropCaseUpdate(Real gamma, STK::Array2DVector<Real> const& w, std::vector<int> const& addIdxVar, std::vector<int> const& dropIdxVar, std::vector<int> const& dropIdx)
   {
     //copy the previous states
     states_.push_back(states_.back());
@@ -158,13 +160,14 @@ namespace HD
    * @param dropIdxVar index of the delete variable
    * @param dropIdx index (in the vector of coefficients of the previous step) of the variable to delete
    */
-  void Path::dropAfterDropCaseUpdate(Real gamma, STK::Array2DVector<Real> const& w, int dropIdxVar, int dropIdx)
+  void Path::dropAfterDropCaseUpdate(Real gamma, STK::Array2DVector<Real> const& w, std::vector<int> const& dropIdxVar, std::vector<int> const& dropIdx)
   {
     //copy the previous states
     states_.push_back(states_.back());
 
     //update of evolution with the new index
-    evolution_.push_back(make_pair(0,dropIdxVar));
+    vector<int> vide;
+    evolution_.push_back(make_pair(vide,dropIdxVar));
 
     //update of the coefficients
     states_.back().dropAfterDropUpdate(w,gamma,dropIdx);
@@ -185,109 +188,111 @@ namespace HD
    * transform the path from lars problem to fusion problem
    * @param p Number of variables
    */
-  void Path::transform2fusion(int const& p)
-  {
-    STK::Array2DVector<int> order(1,1);// the first element contains the index (in the vector
-    order.reserveCols(states_.size());
-    STK::Array1D< pair<int,Real> > coeffTemp;
-    coeffTemp.reserve(states_.size());
-
-    Real l1norm;
-    int drop = 1;
-
-    //step=1. only 1 variable, so we only update l1norm
-    l1norm = abs((p-states_[1].varIdx(1)+1)*states_[1].varCoeff(1));
-    states_[1].setl1norm(l1norm);
-
-    for(int step=2; step < (int) states_.size(); step++)
-    {
-      //if a variable is drop at this step
-      if(evolution_[step-1].second!=0)
-      {
-        //we delete the position found
-        for(int j=1; j<=order.size(); j++)
-        {
-          if( order[j]==drop )
-          {
-            order.erase(j,1);
-            break;
-          }
-        }
-
-        for(int j=1; j<=order.size(); j++)
-        {
-          if( order[j]>drop )
-            order[j]--;
-        }
-      }
-
-      //if a variable is add at this step
-      if(evolution_[step-1].first!=0)
-      {
-        //update order
-        for(int j=1; j<states_[step].size(); j++)
-        {
-          //we look after the first index greater than the new index
-          if( states_[step].varIdx(states_[step].size()) < states_[step].varIdx(order[j]) )
-          {
-            order.insertElt(j,1);
-            order[j]=states_[step].size();
-
-            break;
-          }
-        }
-        if(order.size()<states_[step].size())
-        {
-          order.pushBack(1);
-          order.back()=states_[step].size();
-        }
-      }
-
-      //if there is a drop variable at the next step, we search its position in the actual coefficients before coefficients are sorting
-      if(step < (int) states_.size()-1)
-      {
-        if(evolution_[step].second!=0)
-        {
-          for(int i=1; i<=states_[step].size(); i++)
-          {
-            if(states_[step].varIdx(i)==evolution_[step].second)
-            {
-              drop=i;
-              break;
-            }
-          }
-        }
-      }
-
-      //transform to fusion coefficient
-      coeffTemp=states_[step].coefficients();
-      l1norm=0;
-
-      coeffTemp[1]=states_[step].coefficients(order[1]);
-
-      for(int i=2; i<states_[step].size(); i++)
-      {
-        //we sort the index
-        coeffTemp[i]=states_[step].coefficients(order[i]);
-
-        //compute coefficients of fusion
-        coeffTemp[i].second += coeffTemp[i-1].second;
-
-        //update l1norm
-        l1norm += abs((coeffTemp[i].first-coeffTemp[i-1].first)*coeffTemp[i-1].second);
-      }
-
-      coeffTemp.back()=states_[step].coefficients(order.back());
-      coeffTemp.back().second += coeffTemp[coeffTemp.size()-1].second;
-      if(coeffTemp.size()>1)
-        l1norm += abs((coeffTemp.back().first-coeffTemp[coeffTemp.size()-1].first)*coeffTemp[coeffTemp.size()-1].second);
-
-      l1norm += abs((p-coeffTemp.back().first+1)*coeffTemp.back().second);
-      states_[step].setCoefficients(coeffTemp);
-      states_[step].setl1norm(l1norm);
-
-    }
-  }
+  ///DEPRECATED :
+  ///TODO : need to be updated
+//  void Path::transform2fusion(int const& p)
+//  {
+//    STK::Array2DVector<int> order(1,1);// the first element contains the index (in the vector
+//    order.reserveCols(states_.size());
+//    STK::Array1D< pair<int,Real> > coeffTemp;
+//    coeffTemp.reserve(states_.size());
+//
+//    Real l1norm;
+//    int drop = 1;
+//
+//    //step=1. only 1 variable, so we only update l1norm
+//    l1norm = abs((p-states_[1].varIdx(1)+1)*states_[1].varCoeff(1));
+//    states_[1].setl1norm(l1norm);
+//
+//    for(int step=2; step < (int) states_.size(); step++)
+//    {
+//      //if a variable is drop at this step
+//      if(evolution_[step-1].second.size()!=0)
+//      {
+//        //we delete the position found
+//        for(int j=1; j<=order.size(); j++)
+//        {
+//          if( order[j]==drop )
+//          {
+//            order.erase(j,1);
+//            break;
+//          }
+//        }
+//
+//        for(int j=1; j<=order.size(); j++)
+//        {
+//          if( order[j]>drop )
+//            order[j]--;
+//        }
+//      }
+//
+//      //if a variable is add at this step
+//      if(evolution_[step-1].first.size()!=0)
+//      {
+//        //update order
+//        for(int j=1; j<states_[step].size(); j++)
+//        {
+//          //we look after the first index greater than the new index
+//          if( states_[step].varIdx(states_[step].size()) < states_[step].varIdx(order[j]) )
+//          {
+//            order.insertElt(j,1);
+//            order[j]=states_[step].size();
+//
+//            break;
+//          }
+//        }
+//        if(order.size()<states_[step].size())
+//        {
+//          order.pushBack(1);
+//          order.back()=states_[step].size();
+//        }
+//      }
+//
+//      //if there is a drop variable at the next step, we search its position in the actual coefficients before coefficients are sorting
+//      if(step < (int) states_.size()-1)
+//      {
+//        if(evolution_[step].second.size()!=0)
+//        {
+//          for(int i=1; i<=states_[step].size(); i++)
+//          {
+//            if(states_[step].varIdx(i)==evolution_[step].second)
+//            {
+//              drop=i;
+//              break;
+//            }
+//          }
+//        }
+//      }
+//
+//      //transform to fusion coefficient
+//      coeffTemp=states_[step].coefficients();
+//      l1norm=0;
+//
+//      coeffTemp[1]=states_[step].coefficients(order[1]);
+//
+//      for(int i=2; i<states_[step].size(); i++)
+//      {
+//        //we sort the index
+//        coeffTemp[i]=states_[step].coefficients(order[i]);
+//
+//        //compute coefficients of fusion
+//        coeffTemp[i].second += coeffTemp[i-1].second;
+//
+//        //update l1norm
+//        l1norm += abs((coeffTemp[i].first-coeffTemp[i-1].first)*coeffTemp[i-1].second);
+//      }
+//
+//      coeffTemp.back()=states_[step].coefficients(order.back());
+//      coeffTemp.back().second += coeffTemp[coeffTemp.size()-1].second;
+//      if(coeffTemp.size()>1)
+//        l1norm += abs((coeffTemp.back().first-coeffTemp[coeffTemp.size()-1].first)*coeffTemp[coeffTemp.size()-1].second);
+//
+//      l1norm += abs((p-coeffTemp.back().first+1)*coeffTemp.back().second);
+//      states_[step].setCoefficients(coeffTemp);
+//      states_[step].setl1norm(l1norm);
+//
+//    }
+//  }
 
 }//end namespace
 

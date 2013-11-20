@@ -82,7 +82,7 @@ namespace HD
       /**@return last index variable*/
       inline int lastVarIdx(int i) const {return states_.back().varIdx(i);}
       /**@return last step change*/
-      inline std::pair<int,int> const& lastStep() const {return evolution_.back();}
+      inline std::pair<std::vector<int> ,std::vector<int> > const& lastStep() const {return evolution_.back();}
       /**@return size of path*/
       inline int size() const {return states_.size();}
       /**@return size of path*/
@@ -90,11 +90,11 @@ namespace HD
       /** print states_[i]*/
       inline void print(int i) const {states_[i].printCoeff();}
       /** print evolution_*/
-      inline void printEvolution() const {for(std::vector< std::pair<int,int> >::const_iterator it=evolution_.begin();it!=evolution_.end();it++){std::cout<<(*it).first<<"   "<<(*it).second<<std::endl;}}
+      //inline void printEvolution() const {for(std::vector< std::pair<int,std::vector<int> > >::const_iterator it=evolution_.begin();it!=evolution_.end();it++){std::cout<<(*it).first<<"   "<<(*it).second<<std::endl;}}
       /** @return evolution_*/
-      inline std::vector< std::pair<int,int> > evolution() const {return evolution_;}
+      inline std::vector< std::pair<std::vector<int> ,std::vector<int> > > evolution() const {return evolution_;}
       /** @return evolution_[i]*/
-      inline std::pair<int,int> evolution(int i) const {return evolution_[i];}
+      inline std::pair<std::vector<int> ,std::vector<int> > evolution(int i) const {return evolution_[i];}
 
       //methods
 
@@ -118,7 +118,7 @@ namespace HD
        * @param gamma step of the update
        * @param addIdxVar index of the variable to add
        */
-      void addCaseUpdate(STK::Real gamma, STK::Array2DVector<STK::Real> const& w, int addIdxVar);
+      void addCaseUpdate(STK::Real gamma, STK::Array2DVector<STK::Real> const& w, std::vector<int> const& addIdxVar);
 
       /**
        * update of the coefficients of the previous step
@@ -135,7 +135,7 @@ namespace HD
        * @param dropIdxVar index of the delete variable
        * @param dropIdx index (in the vector of coefficients of the previous step) of the variable to delete
        */
-      void addWithDropCaseUpdate(STK::Real gamma, STK::Array2DVector<STK::Real> const& w, int addIdxVar, int dropIdxVar, int dropIdx);
+      void addWithDropCaseUpdate(STK::Real gamma, STK::Array2DVector<STK::Real> const& w, std::vector<int> const& addIdxVar, std::vector<int> const& dropIdxVar, std::vector<int> const& dropIdx);
 
       /**
        * update of the coefficients of the previous state with a variable to drop
@@ -144,7 +144,7 @@ namespace HD
        * @param dropIdxVar index of the delete variable
        * @param dropIdx index (in the vector of coefficients of the previous step) of the variable to delete
        */
-      void dropAfterDropCaseUpdate(STK::Real gamma, STK::Array2DVector<STK::Real> const& w, int dropIdxVar, int dropIdx);
+      void dropAfterDropCaseUpdate(STK::Real gamma, STK::Array2DVector<STK::Real> const& w, std::vector<int> const& dropIdxVar, std::vector<int> const& dropIdx);
 
       /**
        * transform the path from lars problem to fusion problem
@@ -163,7 +163,7 @@ namespace HD
       ///path solution
       std::vector< PathState > states_;
       ///the first index is the index of the add variable, the second the index of the drop variable
-      std::vector< std::pair<int,int> > evolution_;
+      std::vector< std::pair<std::vector<int> ,std::vector<int> > > evolution_;
       ///vector containing the lambda (correlation max at each step)
       std::vector< STK::Real > lambda_;
   };

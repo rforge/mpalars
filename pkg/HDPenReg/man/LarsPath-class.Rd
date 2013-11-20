@@ -24,6 +24,7 @@
   \item{mu}{Intercept.} \item{ignored}{A vector containing
   index of ignored variables during the algorithm.}
   \item{p}{Total number of covariates.} \item{fusion}{If
-  TRUE, results from HDfusion function.} }
+  TRUE, results from HDfusion function.} \item{error}{Error
+  message from lars.} }
 }
 

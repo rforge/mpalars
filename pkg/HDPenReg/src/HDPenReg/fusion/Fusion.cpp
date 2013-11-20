@@ -109,6 +109,7 @@ void Fusion::run()
   step_=lars.step();
   mu_=lars.mu();
   toIgnore_=lars.toIgnore();
+  msg_error_=lars.msg_error();
 
   //transform the coefficient B in L^-1 * B
   //int p=X_.sizeCols();

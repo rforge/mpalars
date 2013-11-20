@@ -68,6 +68,7 @@ namespace HD
             , Xi_(n_,1)
             , c_()
             , intercept_(intercept)
+            , msg_error_()
   { initialization();}
 
   /*
@@ -97,6 +98,7 @@ namespace HD
             , Xi_(n_,1)
             , c_()
             , intercept_(intercept)
+            , msg_error_()
   { initialization();}
 
   //Methods
@@ -134,8 +136,11 @@ namespace HD
   Real Lars::computeCmax()
   {
     Real Cmax = 0.;
-    for(int i=1; i<=p_; i++)
-      Cmax = max(Cmax, std::abs(c_[i]));
+    for(int i = 1; i <= p_; i++)
+    {
+      if(!isActive_[i-1])
+        Cmax = max(Cmax, std::abs(c_[i]));
+    }
     return Cmax;
   }
 
@@ -150,11 +155,17 @@ namespace HD
     {
       if(!isActive_[i])//update with only variable non active
       {
+
+//        stk_cout<<(abs(c_[i+1])-Cmax)<<"  ";
+
         //don't care about ignore variable
         if( !toIgnore_[i] & (abs(c_[i+1]) >= Cmax-eps_) )
+        {
           newId.push_back(i+1);
+        }
       }
     }
+//    stk_cout<<std::endl;
   }
 
 
@@ -164,7 +175,7 @@ namespace HD
    * @param signC sign of correlation of active variable
    * @param action a pair with first element is a bool (true for addcase, false for dropcase) and second the idx variable to drop/add
    */
-  void Lars::updateR(int idxVar,Array2DVector<int> &signC, pair<bool,int> &action)
+  void Lars::updateR(int idxVar,Array2DVector<int> &signC, pair<bool,vector<int> > &action)
   {
     //update Xi_
     Xi_.pushBackCols(1);
@@ -175,16 +186,19 @@ namespace HD
 
 #ifdef VERBOSE
       cout<<"Step "<<step_<<" : Variable "<< idxVar<<" added"<<endl;
+//      cout<<std::abs(qrX_.R()( min(n_,nbActiveVariable_+1), nbActiveVariable_+1) )<<std::endl;
 #endif
 
     //check if the variable added is not colinear with an other
     if( std::abs(qrX_.R()( min(n_,nbActiveVariable_+1), nbActiveVariable_+1) ) < eps_ )
     {
+      //we cancel the add of the variable in the qr decomposition
       qrX_.popBackCols();
 
 #ifdef VERBOSE
         cout<<"Step "<<step_<<" : Variable "<< idxVar<<" dropped (colinearity)"<<endl;
 #endif
+
 
       toIgnore_[idxVar-1]=true;//the variable is add to the ignore set
       nbIgnoreVariable_++;
@@ -192,6 +206,12 @@ namespace HD
     }
     else
     {
+      //update action
+
+      action.second.push_back(idxVar);
+      action.first = true;
+
+      //add the index to the set of active variable
       activeVariables_.pushBack(1);
       activeVariables_.back() = idxVar;
 
@@ -201,8 +221,8 @@ namespace HD
       //compute signC
       signC.pushBack(1);
       signC[nbActiveVariable_] = ( c_[idxVar] > 0 ) ? 1 : -1;
+//      cout<<"add "<<idxVar<<"  cor "<<c_[idxVar]<<" sign "<<signC[nbActiveVariable_]<<endl;
 
-      action=make_pair(true,idxVar);
     }
 
   }
@@ -284,24 +304,27 @@ namespace HD
    * @param idxMin we stock the index (in the activeVariable vector) of the variable with the min value
    * @return gammatilde a real
    */
-  Real Lars::computeGamTilde(Array2DVector<Real> const& w,int &idxMin) const
+  Real Lars::computeGamTilde(Array2DVector<Real> const& w,vector<int> &idxMin) const
   {
     Real gamTilde(std::numeric_limits<Real>::max()),gam(0);
-    idxMin=0;
+    idxMin.erase(idxMin.begin(),idxMin.end());
     for(int i=1; i <= path_.lastState().size(); i++)
     {
       if(w[i]) gam = -path_.lastVarCoeff(i)/w[i];
 
       //we search the minimum only on positive value
-      if(gam>eps_)
+      if(gam > eps_)
       {
-        if(gam<gamTilde)
+        if(gam < gamTilde)
         {
-          gamTilde=gam;
-          idxMin=i;
+          gamTilde = gam;
+          idxMin.erase(idxMin.begin(),idxMin.end());
         }
+        if(gam==gamTilde)
+          idxMin.push_back(i);
       }
     }
+
     return gamTilde;
   }
 
@@ -313,7 +336,7 @@ namespace HD
    * @param isAddCase true if we add a variable
    * @param dropId id top potentially drop
    */
-  void Lars::updateBeta(Real gamma, STK::Array2DVector<Real> const& w, pair<bool,int> action, bool isAddCase, int dropId)
+  void Lars::updateBeta(Real gamma, STK::Array2DVector<Real> const& w, pair<bool,vector<int> > action, bool isAddCase, vector<int> dropId)
   {
     if( (action.first) && (isAddCase) )
     {
@@ -325,7 +348,11 @@ namespace HD
       if( (action.first) && (!isAddCase) )
       {
         //add situation with a drop
-        path_.addWithDropCaseUpdate(gamma,w,action.second,activeVariables_[dropId],dropId);
+        vector<int> drop(dropId.size());
+        for(int i = 0; i < (int) dropId.size(); i++)
+          drop[i] = activeVariables_[dropId[i]];
+
+        path_.addWithDropCaseUpdate(gamma,w,action.second,drop,dropId);
       }
       else
       {
@@ -336,8 +363,12 @@ namespace HD
         }
         else
         {
+          vector<int> drop(dropId.size());
+          for(int i = 0; i < (int) dropId.size(); i++)
+            drop[i] = activeVariables_[dropId[i]];
+
           //drop step after a drop step
-          path_.dropAfterDropCaseUpdate(gamma,w,activeVariables_[dropId],dropId);
+          path_.dropAfterDropCaseUpdate(gamma,w,drop,dropId);
         }
       }
     }
@@ -349,20 +380,26 @@ namespace HD
    * @param idxVar index of active variable to drop
    * @param signC sign of correlation of active variable
    */
-  void Lars::dropStep(int idxVar,Array2DVector<int> &signC)
+  void Lars::dropStep(vector<int> const& idxVar,Array2DVector<int> &signC)
   {
 #ifdef VERBOSE
-      cout<<"Step "<<step_+1<<" : Variable "<< activeVariables_[idxVar]<<" dropped"<<endl;
+      for(int i = 0; i < (int) idxVar.size(); i++)
+        cout<<"Step "<<step_+1<<" : Variable "<< activeVariables_[idxVar[i]]<<" dropped"<<endl;
 #endif
 
-    //downdate R
-    qrX_.eraseCol(idxVar);
+      //idxVar are sort in the increasing order, we erase first the element with the greater index
+    for(int i = idxVar.size()-1; i >= 0 ; i--)
+    {
+      //downdate R
+      qrX_.eraseCol(idxVar[i]);
 
-    //downdate Xi_
-    Xi_.eraseCols(idxVar,1);
-    signC.erase(idxVar,1);
-    isActive_[activeVariables_[idxVar]-1]=false;
-    activeVariables_.erase(idxVar,1);
+      //downdate Xi_
+      Xi_.eraseCols(idxVar[i],1);
+      signC.erase(idxVar[i],1);
+      isActive_[activeVariables_[idxVar[i]]-1] = false;
+      activeVariables_.erase(idxVar[i],1);
+    }
+
   }
 
   /*
@@ -379,7 +416,7 @@ namespace HD
    * @param gam the step for update coefficients
    * @return
    */
-  bool Lars::firstStep(Real &Cmax, vector<int> &newId, Array2DVector<int> &signC, pair<bool,int> &action,
+  bool Lars::firstStep(Real &Cmax, vector<int> &newId, Array2DVector<int> &signC, pair<bool, vector<int> > &action,
                        Real &Aa, Array2DVector<Real> &Gi1, Array2DVector<Real> &w, CVectorX &u, CVectorX &a, Real &gam)
   {
     step_++;
@@ -418,13 +455,13 @@ namespace HD
     computeGi1(Gi1,signC);
 
     //compute Aa
-    Aa=1/sqrt(Gi1.sum());
+    Aa = 1/sqrt(Gi1.sum());
 
     //compute w
-    w=Gi1*signC*Aa;
+    w = Gi1 * signC * Aa;
 
     //compute equiangular vector
-    u=Xi_*w;
+    u = Xi_ * w;
 
     //computation of gamma hat
     //if the number of active variable is equal to the max number authorized, we don't search a new index
@@ -433,17 +470,18 @@ namespace HD
     else
     {
       //computation of a
-      a=X_.transpose()*u;
+      a = X_.transpose() * u;
 
       //computation of gamma hat
-      gam=computeGamHat(Aa,a,Cmax);
+      gam = computeGamHat(Aa,a,Cmax);
     }
 
     //update beta
-    updateBeta(gam,w,action,true,0);
+    vector<int> vide;
+    updateBeta(gam,w,action,true,vide);
 
     //update of c
-    c_ -= (X_.transpose()*u)*gam;
+    c_ -= (X_.transpose() * u) * gam;
 
     return true;
   }
@@ -452,7 +490,7 @@ namespace HD
    * updateR only for the first step
    * @see updateR
    */
-  void Lars::firstUpdateR(int idxVar,Array2DVector<int> &signC, pair<bool,int> &action)
+  void Lars::firstUpdateR(int idxVar,Array2DVector<int> &signC, pair<bool,vector<int> > &action)
   {
     //create Xi_ and qrXi_
     Xi_.col(Xi_.lastIdxCols()) = X_.col(idxVar);
@@ -487,7 +525,8 @@ namespace HD
       signC.pushBack(1);
       signC[nbActiveVariable_] = ( c_[idxVar] > 0 ) ? 1 : -1;
 
-      action=make_pair(true,idxVar);
+      action.first = true;
+      action.second.push_back(idxVar);
     }
 
   }
@@ -506,14 +545,14 @@ namespace HD
     //initialization();
 
     bool isAddCase(true), continuer;
-    int dropId(0);
+    vector<int> dropId;
     Real Aa(0),gam(0),gammaTilde(0),Cmax(0);
 
     Array2DVector<Real> Gi1(1), w;
     Array2DVector<int> signC;
     vector<int> newId;
     CVectorX a(p_,0),u(n_,0);
-    pair<bool,int> action;
+    pair<bool,vector<int> > action;
 
     newId.reserve(p_);
     Gi1.reserveCols(min(n_-1,p_));
@@ -538,16 +577,19 @@ namespace HD
 #ifdef VERBOSE
           std::cout << "Correlation max is equal to 0."<<std::endl;
 #endif
+          msg_error_ = "Correlation max is equal to 0.";
           break;
         }
 
         //if correlation max increased, we stop, Cmax must decreased
         if( Cmax > oldCmax)
         {
+//          stk_cout<<Cmax<<endl;
           step_--;
 #ifdef VERBOSE
           std::cout << "Correlation max has increased."<<std::endl;
 #endif
+          msg_error_ = "Correlation max has increased";
           break;
         }
 
@@ -563,9 +605,11 @@ namespace HD
 #ifdef VERBOSE
             std::cout << "No variable selected for add in the add step."<<std::endl;
 #endif
+            msg_error_ = "No variable selected for add in the add step.";
             break;
           }
 
+          action.second.erase(action.second.begin(),action.second.end());
           for(vector<int>::iterator it = newId.begin() ; it != newId.end(); it++)
             updateR(*it,signC,action);
         }
@@ -602,11 +646,35 @@ namespace HD
         //computation of gamma tilde
         gammaTilde = computeGamTilde(w,dropId);
 
+//        cout<<"gamhat "<<gam<<"  gamtilde "<<gammaTilde<<std::endl;
+//        for(int i=1;i<=path_.lastState().size();i++)
+//          stk_cout<<path_.lastState()[i].first<<"       ";
+//        stk_cout<<endl;
+//        for(int i=1;i<=path_.lastState().size();i++)
+//          stk_cout<<path_.lastState()[i].second<<" ";
+//        stk_cout<<endl;
+//        stk_cout<<signC;
+//        stk_cout<<w;
+//        stk_cout<<signC.size()<<"   "<<path_.lastState().size()<<"   "<<nbActiveVariable_<<std::endl;
+
         if( gammaTilde < gam )
         {
           gam = gammaTilde;
           isAddCase = false;
-          nbActiveVariable_--;
+//          cout<<"to drop: ";
+          for(int i = 0; i<(int) dropId.size(); i++)
+          {
+            nbActiveVariable_--;
+//            cout<<activeVariables_[dropId[i]]<<"  ";
+          }
+//          cout<<endl;
+
+//          cout<<action.second.size()<<" addcancel: ";
+//          for(int i = 0; i < (int) action.second.size(); i++)
+//          {
+//            cout<<activeVariables_[action.second[i]]<<"  ";
+//          }
+//          cout<<endl;
         }
         else
           isAddCase = true;
@@ -676,7 +744,6 @@ namespace HD
     STK::Array2DVector< pair<int,Real> > coeff(std::max(path_.states(index-2).size(),path_.states(index-1).size()));
     //coeff.move(computeCoefficients(path_.states(index-2),path_.states(index-1),path_.evolution(index-2),fraction));
     computeCoefficients(path_.states(index-2),path_.states(index-1),path_.evolution(index-2),fraction,coeff);
-
 
     for( int i = 1; i <= yPred.sizeRowsImpl(); i++)
       for( int j = 1; j <= coeff.sizeRows(); j++)
