@@ -63,8 +63,8 @@ RcppExport SEXP lars(SEXP data, SEXP response, SEXP nbIndiv, SEXP nbVar, SEXP ma
   vector<STK::Real> lambda=lars.lambda();
   vector<vector<int> > varIdx(step+1);
   vector<vector<double> > varCoeff(step+1);
-  vector<int> evoIdxDrop(step,0);
-  vector<int> evoIdxAdd(step,0);
+  vector<vector<int> > evoIdxDrop(step);
+  vector<vector<int> > evoIdxAdd(step);
 
   l1norm[0]=0;
   for(int i=1;i<=step;i++)
@@ -77,9 +77,9 @@ RcppExport SEXP lars(SEXP data, SEXP response, SEXP nbIndiv, SEXP nbVar, SEXP ma
       varIdx[i][j-1]=lars.varIdx(i,j);
     }
     l1norm[i]=lars.l1norm(i);
-    if(lars.evolution()[i-1].first!=0)
+    if(lars.evolution()[i-1].first.size()!=0)
         evoIdxAdd[i-1]=lars.evolution()[i-1].first;
-    if(lars.evolution()[i-1].second!=0)
+    if(lars.evolution()[i-1].second.size()!=0)
         evoIdxDrop[i-1]=lars.evolution()[i-1].second;
 
   }
@@ -94,7 +94,7 @@ RcppExport SEXP lars(SEXP data, SEXP response, SEXP nbIndiv, SEXP nbVar, SEXP ma
   //cout<<"Temps extraction des données:"<<(double) (t2-t1)/CLOCKS_PER_SEC<<"s"<<endl;
 
   return List::create(Named("l1norm")=wrap(l1norm), Named("lambda")=wrap(lambda), Named("varIdx")=wrap(varIdx), Named("varCoeff")=wrap(varCoeff),
-                      Named("evoDropIdx")=wrap(evoIdxDrop), Named("evoAddIdx")=wrap(evoIdxAdd),Named("step")=wrap(step),Named("mu")=wrap(lars.mu()),Named("ignored")=wrap(ignored));
+                      Named("evoDropIdx")=wrap(evoIdxDrop), Named("evoAddIdx")=wrap(evoIdxAdd),Named("step")=wrap(step),Named("mu")=wrap(lars.mu()),Named("ignored")=wrap(ignored),Named("error")=wrap(lars.msg_error()));
 
 }
 
@@ -132,8 +132,8 @@ RcppExport SEXP fusion(SEXP data, SEXP response, SEXP nbIndiv, SEXP nbVar, SEXP 
   vector<vector<int> > varIdx(step+1);
   vector<vector<double> > varCoeff(step+1);
   vector<STK::Real> lambda=fusion.lambda();
-  vector<int> evoIdxDrop(step,0);
-  vector<int> evoIdxAdd(step,0);
+  vector<vector<int> > evoIdxDrop(step);
+  vector<vector<int> > evoIdxAdd(step);
 
   l1norm[0]=0;
   for(int i=1;i<=step;i++)
@@ -146,9 +146,9 @@ RcppExport SEXP fusion(SEXP data, SEXP response, SEXP nbIndiv, SEXP nbVar, SEXP 
       varIdx[i][j-1]=fusion.varIdx(i,j);
     }
     l1norm[i]=fusion.l1norm(i);
-    if(fusion.evolution()[i-1].first!=0)
+    if(fusion.evolution()[i-1].first.size()!=0)
         evoIdxAdd[i-1]=fusion.evolution()[i-1].first;
-    if(fusion.evolution()[i-1].second!=0)
+    if(fusion.evolution()[i-1].second.size()!=0)
         evoIdxDrop[i-1]=fusion.evolution()[i-1].second;
 
   }
@@ -161,7 +161,7 @@ RcppExport SEXP fusion(SEXP data, SEXP response, SEXP nbIndiv, SEXP nbVar, SEXP 
   //cout<<"Temps extraction des données:"<<(double) (t2-t1)/CLOCKS_PER_SEC<<"s"<<endl;
 
   return List::create(Named("l1norm")=wrap(l1norm), Named("lambda")=wrap(lambda), Named("varIdx")=wrap(varIdx),Named("varCoeff")=wrap(varCoeff),
-                      Named("step")=wrap(step),Named("evoDropIdx")=wrap(evoIdxDrop), Named("evoAddIdx")=wrap(evoIdxAdd),Named("mu")=wrap(fusion.mu()),Named("ignored")=wrap(ignored));
+                      Named("step")=wrap(step),Named("evoDropIdx")=wrap(evoIdxDrop), Named("evoAddIdx")=wrap(evoIdxAdd),Named("mu")=wrap(fusion.mu()),Named("ignored")=wrap(ignored),Named("error")=wrap(fusion.msg_error()));
 
 }
 
