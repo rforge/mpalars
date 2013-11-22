@@ -88,6 +88,8 @@ namespace HD
       inline STK::CVectorX const& cvError() const {return cvError_;}
       /** @return return the index*/
       inline std::vector<double> const& index() const {return index_;}
+      /**@param partition of the */
+      void setPartition(std::vector<int> const& partition);
 
     private:
       /**

@@ -28,7 +28,7 @@ HDlars <- function(X,y,maxSteps=3*min(dim(X)),intercept=TRUE,eps=.Machine$double
 	
 	#create the output object
 	path=new("LarsPath",variable=val$varIdx,coefficient=val$varCoeff,lambda=val$lambda,l1norm=val$l1norm,addIndex=val$evoAddIdx,dropIndex=val$evoDropIdx,
-           nbStep=val$step,mu=val$mu,ignored=val$ignored,p=ncol(X))
+           nbStep=val$step,mu=val$mu,ignored=val$ignored,p=ncol(X),error=val$error)
 	return(path)
 }
 
@@ -60,7 +60,8 @@ HDfusion <- function(X,y,maxSteps=3*min(dim(X)),intercept=TRUE,eps=.Machine$doub
 	val=.Call( "fusion",X,y,nrow(X),ncol(X),maxSteps,intercept,eps,PACKAGE = "HDPenReg" )
 	
 	#create the output object
-	path=new("LarsPath",nbStep=val$step,variable=val$varIdx,coefficient=val$varCoeff,lambda=val$lambda,l1norm=val$l1norm,addIndex=val$evoAddIdx,dropIndex=val$evoDropIdx,p=ncol(X),fusion=TRUE)
+	path=new("LarsPath",nbStep=val$step,variable=val$varIdx,coefficient=val$varCoeff,lambda=val$lambda,l1norm=val$l1norm,addIndex=val$evoAddIdx,
+	           dropIndex=val$evoDropIdx,p=ncol(X),fusion=TRUE,error=val$error)
 
 	return(path)
 }

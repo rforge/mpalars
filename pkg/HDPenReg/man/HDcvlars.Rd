@@ -4,8 +4,8 @@
 \usage{
   HDcvlars(X, y, nbFolds = 10,
     index = seq(0, 1, by = 0.01),
-    maxSteps = 3 * min(dim(X)), intercept = TRUE,
-    eps = .Machine$double.eps^0.5)
+    maxSteps = 3 * min(dim(X)), partition = NULL,
+    intercept = TRUE, eps = .Machine$double.eps^0.5)
 }
 \arguments{
   \item{X}{the matrix (of size n*p) of the covariates.}
@@ -21,6 +21,10 @@
 
   \item{maxSteps}{Maximal number of steps for lars
   algorithm.}
+
+  \item{partition}{partition in nbFolds folds of y. Must be
+  a vector of same size than y containing the index of
+  folds.}
 
   \item{intercept}{If TRUE, there is an intercept in the
   model.}

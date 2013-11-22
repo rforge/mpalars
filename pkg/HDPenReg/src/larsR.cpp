@@ -166,13 +166,14 @@ RcppExport SEXP fusion(SEXP data, SEXP response, SEXP nbIndiv, SEXP nbVar, SEXP 
 }
 
 
-RcppExport SEXP cvlars(SEXP data, SEXP response, SEXP nbIndiv, SEXP nbVar, SEXP maxStep, SEXP intercept, SEXP eps, SEXP nbFold, SEXP index)
+RcppExport SEXP cvlars(SEXP data, SEXP response, SEXP nbIndiv, SEXP nbVar, SEXP maxStep, SEXP intercept, SEXP eps, SEXP nbFold, SEXP partition, SEXP index)
 {
   double t1,t2;
   t1=clock();
   //convert parameters
   int p(as<int>(nbVar)), n(as<int>(nbIndiv)), maxStepC(as<int>(maxStep)), nbFoldC(as<int>(nbFold));
   vector<double> indexC=as<vector<double> >(index);
+  vector<int> partitionC=as<vector<int> >(partition);
   bool interceptC = as<bool>(intercept);
   Real epsC(as<Real>(eps));
 
@@ -186,6 +187,8 @@ RcppExport SEXP cvlars(SEXP data, SEXP response, SEXP nbIndiv, SEXP nbVar, SEXP 
   //run algorithm
   t1=clock();
   Cvlars cvlars(x,y,nbFoldC,indexC,maxStepC,interceptC,epsC);
+  if(partitionC[0]!=-1)
+    cvlars.setPartition(partitionC);
   cvlars.run();
   t2=clock();
 

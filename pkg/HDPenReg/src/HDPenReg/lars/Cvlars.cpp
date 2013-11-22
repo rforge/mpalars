@@ -123,6 +123,18 @@ namespace HD
     random_shuffle(partition_.begin(),partition_.end());
   }
 
+  void Cvlars::setPartition(std::vector<int> const& partition)
+  {
+    partition_ = partition;
+    sizePartition_.resize(k_);
+    for(int i = 0; i < k_; i++)
+      sizePartition_[i] = 0;
+
+    for(int i = 0; i < n_; i++)
+      sizePartition_[partition_[i]]++;
+
+  }
+
   /*
    * run the cross validation
    */

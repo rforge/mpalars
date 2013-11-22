@@ -7,6 +7,7 @@
 #' @param nbFolds the number of folds for the cross-validation.
 #' @param index Values at which prediction error should be computed. This is the fraction of the saturated |beta|. The default value is seq(0,1,by=0.01).
 #' @param maxSteps Maximal number of steps for lars algorithm.
+#' @param partition partition in nbFolds folds of y. Must be a vector of same size than y containing the index of folds.
 #' @param intercept If TRUE, there is an intercept in the model.
 #' @param eps Tolerance of the algorithm.
 #' @return A list containing 
@@ -23,7 +24,7 @@
 #' result=HDcvlars(dataset$data,dataset$response,5)
 #' @export
 #' 
-HDcvlars <- function(X,y,nbFolds=10,index=seq(0,1,by=0.01),maxSteps=3*min(dim(X)),intercept=TRUE,eps=.Machine$double.eps^0.5)
+HDcvlars <- function(X,y,nbFolds=10,index=seq(0,1,by=0.01),maxSteps=3*min(dim(X)),partition=NULL,intercept=TRUE,eps=.Machine$double.eps^0.5)
 {
 	#check arguments
 	if(missing(X))
@@ -33,8 +34,39 @@ HDcvlars <- function(X,y,nbFolds=10,index=seq(0,1,by=0.01),maxSteps=3*min(dim(X)
 	index=unique(index)
 	.checkcvlars(X,y,maxSteps,eps,nbFolds,index,intercept)
 
+    if(!is.null(partition))
+    {
+        if(!is.numeric(partition) || !is.vector(partition))
+            stop("partition must be a vector of integer.")
+        if(length(partition)!=length(y))
+            stop("partition and y must have the same size.")
+                        
+        part=table(partition)
+        nbFolds=length(part)
+        
+        if(max(part)-min(part)>1)
+            stop("Size of different folds are not good.")
+            
+        nam=as.numeric(names(part))
+        for(i in 1:length(nam))
+        {
+            if(!(nam[i]==i))
+                stop("check the number in the partition vector.")  
+        }
+        
+        #reorder the  partition in decreasing order of size
+        ord=order(part,decreasing=TRUE)
+        partb=partition
+        for(i in 1:nbFolds)
+            partition[partb==ord[i]]=i
+        
+        partition=partition-1
+    }
+    else
+        partition=-1
+
 	# call lars algorithm
-	val=.Call( "cvlars",X,y,nrow(X),ncol(X),maxSteps,intercept,eps,nbFolds,index,PACKAGE = "HDPenReg" )
+	val=.Call( "cvlars",X,y,nrow(X),ncol(X),maxSteps,intercept,eps,nbFolds,partition,index,PACKAGE = "HDPenReg" )
 	
 	#create the output object
 	cv=list(cv=val$cv,cvError=val$cvError,minCv=min(val$cv),fraction=index[which.min(val$cv)],index=index,maxSteps=maxSteps)

@@ -1,6 +1,6 @@
 Package: HDPenReg
-Version: 0.88.1
-Date: 2013-11-20
+Version: 0.88.2
+Date: 2013-11-22
 Title: Algorithms for lasso and fused-lasso problems.
 Author: Quentin Grimonprez
 Maintainer: Quentin Grimonprez <quentin.grimonprez@inria.fr>

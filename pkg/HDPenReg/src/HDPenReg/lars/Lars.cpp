@@ -111,7 +111,7 @@ namespace HD
       //we center y
       mu_=y_.sum()/n_;
       y_-=mu_;
-
+// *p_data - (Const::Vector<Real>(p_data->rows()) * paramk->mean_))
       for(int j=1;j <= p_; j++)
       {
         muX_[j] = X_.col(j).sum()/n_;
@@ -207,7 +207,6 @@ namespace HD
     else
     {
       //update action
-
       action.second.push_back(idxVar);
       action.first = true;
 
@@ -320,8 +319,10 @@ namespace HD
           gamTilde = gam;
           idxMin.erase(idxMin.begin(),idxMin.end());
         }
+
         if(gam==gamTilde)
           idxMin.push_back(i);
+
       }
     }
 
@@ -429,6 +430,7 @@ namespace HD
 #ifdef VERBOSE
       std::cout << "Correlation max is equal to 0.";
 #endif
+      msg_error_ = "Correlation max is equal to 0.";
 
       return false;
     }
@@ -442,6 +444,7 @@ namespace HD
 #ifdef VERBOSE
       std::cout << "No variable selected for add in the add step."<<std::endl;
 #endif
+      msg_error_ = "No variable selected for add in the add step.";
 
       return false;
     }
@@ -646,35 +649,12 @@ namespace HD
         //computation of gamma tilde
         gammaTilde = computeGamTilde(w,dropId);
 
-//        cout<<"gamhat "<<gam<<"  gamtilde "<<gammaTilde<<std::endl;
-//        for(int i=1;i<=path_.lastState().size();i++)
-//          stk_cout<<path_.lastState()[i].first<<"       ";
-//        stk_cout<<endl;
-//        for(int i=1;i<=path_.lastState().size();i++)
-//          stk_cout<<path_.lastState()[i].second<<" ";
-//        stk_cout<<endl;
-//        stk_cout<<signC;
-//        stk_cout<<w;
-//        stk_cout<<signC.size()<<"   "<<path_.lastState().size()<<"   "<<nbActiveVariable_<<std::endl;
 
         if( gammaTilde < gam )
         {
           gam = gammaTilde;
           isAddCase = false;
-//          cout<<"to drop: ";
-          for(int i = 0; i<(int) dropId.size(); i++)
-          {
-            nbActiveVariable_--;
-//            cout<<activeVariables_[dropId[i]]<<"  ";
-          }
-//          cout<<endl;
-
-//          cout<<action.second.size()<<" addcancel: ";
-//          for(int i = 0; i < (int) action.second.size(); i++)
-//          {
-//            cout<<activeVariables_[action.second[i]]<<"  ";
-//          }
-//          cout<<endl;
+          nbActiveVariable_ -= dropId.size();
         }
         else
           isAddCase = true;
@@ -683,7 +663,10 @@ namespace HD
         updateBeta(gam,w,action,isAddCase,dropId);
 
         //update of c
-        c_ -= (X_.transpose()*u)*gam;
+        if( nbActiveVariable_ == min(n_-1, p_-nbIgnoreVariable_) )
+          c_ -= (X_.transpose()*u)*gam;
+        else
+          c_ -= a * gam;
 
         //drop situation
         if(!isAddCase)
