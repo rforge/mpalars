@@ -1,0 +1,37 @@
+\name{findPlateau}
+\alias{findPlateau}
+\title{Find the best choice of segmentation parameter.}
+\usage{
+  findPlateau(resSeg, Lambda, plot = TRUE, verbose = TRUE)
+}
+\arguments{
+  \item{resSeg}{a list, each element of the list is a
+  vector with the breakpoints for a value of Lambda.}
+
+  \item{Lambda}{vector with the values of Lambda .}
+
+  \item{plot}{if TRUE, some graphics will be plotted.}
+
+  \item{verbose}{if TRUE print some informations.}
+}
+\value{
+  a list containing: \describe{ \item{lambda}{Optimal
+  parameter found.} \item{maxPlateau}{A vector with the
+  first and the last position of the biggest plateau.}
+  \item{plateau}{A matrix of 3 columns, each row
+  corresponds to a different plateau. The first colum is
+  the starting value of a plateau, the second, the length
+  of the plateau and the third, the number of values of
+  lambda contained int the plateau.} }
+}
+\description{
+  From the results of a segmentation of a signal for
+  different values of a segmentation parameter lambda, this
+  function will search an optimal value of lambda
+  corresponding to the biggest plateau (stabilization in
+  the number of breakpoints).
+}
+\examples{
+#####
+}
+

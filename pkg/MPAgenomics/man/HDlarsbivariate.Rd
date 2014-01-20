@@ -1,0 +1,42 @@
+\name{HDlarsbivariate}
+\alias{HDlarsbivariate}
+\title{lars algorithm for bivariate signal}
+\usage{
+  HDlarsbivariate(CN, fracB, y,
+    weightsCN = 1/apply(CN, 1, sd),
+    weightsFracB = 1/apply(fracB, 1, sd), meanCN = 2,
+    maxSteps, eps)
+}
+\arguments{
+  \item{CN}{matrix containing copy-number signals. Each row
+  corresponds to a different signal.}
+
+  \item{fracB}{matrix containing copy-number signals. Each
+  row corresponds to a different signal.}
+
+  \item{y}{vector containing the response associated to
+  each signal}
+
+  \item{weightsCN}{vector of length nrow(CN). weights
+  associated to each signal for the copy-number signal}
+
+  \item{weightsFracB}{vector of length nrow(fracB). weights
+  associated to each signal for the copy-number signal}
+
+  \item{meanCN}{value for centering the copy-number signal
+  (default value = 2)}
+
+  \item{maxSteps}{maximum number of steps for the lars
+  algorithm}
+
+  \item{eps}{tolerance}
+}
+\value{
+  a LarsPath object
+}
+\description{
+  This function transforms the two matrices CN and fracB in
+  one matrix to use in the lars algorithm. Each signal is
+  weighted
+}
+

@@ -1,0 +1,69 @@
+\name{signalPreProcess}
+\alias{signalPreProcess}
+\title{normalization process}
+\usage{
+  signalPreProcess(dataSetName, chipType, normalTumorArray,
+    dataSetPath, chipFilesPath = dataSetPath, path = ".",
+    createArchitecture = TRUE, savePlot = TRUE)
+}
+\arguments{
+  \item{dataSetName}{name of the data set. If you use
+  architecture=FALSE, the name must correspond to a name of
+  folder in the rawData folder.}
+
+  \item{chipType}{type of the chip used for obtaining the
+  data (e.g. "GenomeWideSNP_6"). If architecture=FALSE, the
+  files of the chip must be contained in the annotationData
+  folder, if TRUE, they have to be in the "chipTypePath"
+  folder.}
+
+  \item{normalTumorArray}{only if you have normal and tumor
+  profile in your data folder. A csv file or a data.frame
+  with 2 columns: "normal" and "tumor". The first column
+  contains the name of normal files and the second the
+  names of associated tumor files.}
+
+  \item{dataSetPath}{(only if createArchitecture=TRUE) path
+  where to find the data files.}
+
+  \item{path}{(only if createArchitecture=TRUE) path where
+  create rawData and annotationData folders.}
+
+  \item{chipFilesPath}{(only if createArchitecture=TRUE)
+  path where to find the chip files.}
+
+  \item{createArchitecture}{if TRUE, the required
+  architecture for store the results will be automatically
+  created. CEL files of the data and chip files will be
+  copied (not moved).}
+
+  \item{savePlot}{if TRUE, graphics of the CN signal and
+  allele B fraction signal will be saved in the figures
+  folder.}
+}
+\description{
+  normalization process for estimating raw copy-numbers and
+  allele B fraction.
+}
+\details{
+  If you want to use the normalization process. You have to
+  used the following architecture : <working directory> +-
+  annotationData/ | +- chipTypes/ | +- <chipType>/ <-- must
+  match exactly the name of the CDF file (fullname minus
+  tags) | +- CDF file(s) and other annotation (possibly
+  subdirectories) | +- rawData/ +- <nameOfDataSet>/ +-
+  <chipType>/ <-- must match exactly a chip type folder
+  under annotationData/ +- CEL files
+
+  If you use createArchitecture=TRUE, this function creates
+  this architecture for you and copy your files in the
+  right folders.
+
+  The functions will create other folders which contains
+  figures, results of normalization.
+
+  If you have already the required architecture, you have
+  just to add your data in the rawData folder with respect
+  to the architecture.
+}
+

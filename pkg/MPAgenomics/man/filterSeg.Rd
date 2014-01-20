@@ -1,0 +1,33 @@
+\name{filterSeg}
+\alias{filterSeg}
+\title{Filter segments}
+\usage{
+  filterSeg(segmentList, minLength = 1, minProbes = 1,
+    keptLabel = c("loss", "gain"))
+}
+\arguments{
+  \item{segmentList}{A data.frame containing a description
+  of segments, it must have at least columns :
+  "chromStart", "chromEnd", "probes" and "calls". (see the
+  output of \link{cnSegCallingProcess} function).}
+
+  \item{minLength}{The minimum length (in bp) for a
+  segment. All the shorter segments are removed.}
+
+  \item{minProbes}{The minimum number of probes for a
+  segment. All the segments with less probes are removed.}
+
+  \item{keptLabel}{Only segment with one of the specified
+  label will be kept.}
+}
+\value{
+  a data.frame of the same format as segmentList.
+}
+\description{
+  This function filter the output of a segmentation and
+  label process. It allows to keep only the segment of a
+  minimal length or containing at least a minimal number of
+  probes. Using the normalFilter, you can just keep the
+  segment called non normal.
+}
+

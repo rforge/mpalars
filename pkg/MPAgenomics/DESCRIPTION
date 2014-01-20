@@ -1,0 +1,39 @@
+Package: MPAgenomics
+Type: Package
+Title: Preprocess and analyze of genomic data
+Version: 0.4
+Date: 2013-12-11
+Author: Quentin Grimonprez
+Maintainer: Quentin Grimonprez <quentin.grimonprez@inria.fr>
+Description: This package provides functions to preprocess and analyze genomic
+    data.
+License: GPL(>=2)
+Copyright: aroma packages are developped by Henrik Bengtsson, James Bullard,
+    Kasper Hansen, Pierre Neuvial, Elizabeth Purdom, Mark Robinson, Ken
+    Simpson. changepoint package is developped by Rebecca Killick, Idris A.
+    Eckley with contributions from Paul Fearnhead. CGHcall package is
+    developped by Sjoerd Vosse and Mark van de Wiel.
+Depends:
+    R.utils
+Suggests:
+    aroma.affymetrix,aroma.cn,snowfall,changepoint(>= 1.1),HDPenReg,glmnet,CGHcall
+Collate:
+    'findPlateau.R'
+    'alleleNormalization.R'
+    'createAromaArchitecture.R'
+    'genotypeCalls.R'
+    'getCNSignal.R'
+    'getFracBSignal.R'
+    'tumorboost.R'
+    'SNPselection.R'
+    'bivariateSignal.R'
+    'cghcall.R'
+    'expandcghcall.R'
+    'preprocess.R'
+    'private.R'
+    'pelt_cghcall.R'
+    'pelt.R'
+    'aromafunctions.R'
+    'getGenotypeCalls.R'
+    'segFracB.R'
+    'getSymFracBsignal.R'

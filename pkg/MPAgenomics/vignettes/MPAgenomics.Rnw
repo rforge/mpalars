@@ -1,0 +1,1348 @@
+%\VignetteIndexEntry{Using MPAgenomics}
+\documentclass[a4paper,10pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage[english]{babel}
+\usepackage{graphicx}
+\usepackage{geometry}
+\usepackage{hyperref}
+\usepackage{ulem}
+\usepackage{url}
+\geometry{top=3cm, bottom=3cm, left=2cm, right=2cm}
+
+% Title Page
+\title{ \texttt{MPAgenomics} : An \texttt{R} package for Multi-Patients Analysis of Genomic Markers.}
+\author{Quentin Grimonprez, Alain Celisse, Guillemette Marot}
+\date{December, 2013}
+
+\begin{document}
+\maketitle
+
+\tableofcontents
+
+
+\section{Introduction}
+%	\setkeys{Gin}{width=0.8\textwidth}
+	\subsection{Overview}
+		This package provides functions to preprocess and analyze genomic data. 
+		The package was initially developed to select genomic markers associated with a given phenotype when several samples are available.
+		In this context, markers refer to SNPs or copy number variations which are designed on the arrays. 
+	
+		The package also enables to preprocess all samples individually in order to keep maximum information from the original signals and improve the multi-patients analysis. In particular, this is useful to keep quantitative data for SNPs rather than usual genotype calls (AA, AB or BB) when these states are not relevant (eg in cancer studies where the number of copies differs from two copies).
+	
+		All functions or methods which treat patients individually will be referred as functionalities of a single-patient analysis  while those which gather the information of all the patients will be referred as multi-patients analysis. For both types of analysis, a pre-processing step \ref{sec:norm} is proposed as a wrapper of \texttt{aroma.*} packages \cite{aroma}\cite{affy}. 
+		Note that this implies that the pre-processing step is only available for Affymetrix DNA chips. The other functionalities of the package can however be used independently and such procedures are explained in the sections which detail each step of the proposed analysis. The main functionalities proposed for a single-patient analysis are normalization, segmentation, calling and filtering. Multi-patients analysis relies on the use of penalized regularization techniques implemented in glmnet \cite{glmnet}. For the users who would like to go further in the use of penalized regularization techniques, we also provide some guidelines to quickly build inputs for the HDPenReg package and interpret some outputs of this latter one.
+		%discussion du papier: HDPenReg toujours en construction
+
+
+
+	\subsection{Note on the installation of the package and its dependencies}
+	
+		The package can be installed either from a GUI (selecting the R-forge repository) or with the command line
+<<eval=FALSE>>=
+install.packages("MPAgenomics", repos="http://R-Forge.R-project.org")
+@		 
+		This vignette can be produced with the command
+<<eval=FALSE>>=
+vignette("MPAgenomics")
+@	
+	
+		
+		Since the package provides simple wrappers of many existing packages and all users are not interested by the same wrappers, we did not force \texttt{MPAgenomics} to depend on all the packages. We however recommend the user who would like to preprocess data to install \texttt{aroma} packages \cite{aroma} with the following commands:
+		
+<<eval=FALSE>>=
+source("http://www.braju.com/R/hbLite.R")
+hbLite("sfit")
+source("http://bioconductor.org/biocLite.R")
+biocLite("affxparser")
+source("http://aroma-project.org/hbLite.R")
+hbInstall("aroma.affymetrix")
+hbInstall("aroma.cn")
+@	
+	
+		
+		For users who want to perform the single analysis (segmentation and calling), we recommand to install the packages \texttt{changepoint}\cite{pelt} and \texttt{CGHcall} \cite{CGHcall}.
+
+<<eval=FALSE>>=
+#for segmentation
+install.packages("changepoint")
+#for calling
+source("http://bioconductor.org/biocLite.R")
+biocLite("CGHcall")
+@
+    
+		
+		The installation of all these packages at the very beginning of the use of \texttt{MPAgenomics} is only for convenience, not mandatory. Indeed, the user who would have forgotten to install some packages would be reminded to install them when applying the corresponding wrapper.
+	
+	\subsection{Starting example}
+
+		This introductory example aims at helping the user understand the main functions of the package. For more details on each step, we invite the user to read the appropriate section. 
+	
+		\subsubsection{Download a toy data-set}	
+	
+			The example is based on a free data-set containing 8 .CEL files (251Mo) which can be downloaded from the Broad Institute website, following this link:
+			\url{http://www.broadinstitute.org/mpg/birdsuite/downloads/birdsuite_inputs_1.5.3.tgz}
+			If you are used to decompress .tgz files, extract this file and copy the following command in the R console, replacing the path to the directory where the raw data (.CEL files) are stored with the appropriate one. Note that we deliberately use "/" and not "$\backslash$ " in \texttt{celPATH}. If you copy paste paths from Windows (e.g. looking at properties of the directory), you must change "$\backslash$ " by "/" or "$\backslash\backslash$ ".
+	
+<<eval=FALSE>>=
+celPATH="/home/user/Documents/workdir/CELdata/cel"
+@
+
+In this example, the directory pointed by celPATH must contain the files shown in Figure \ref{dfSingle2}.
+
+			\begin{figure}[!h]
+				\centering
+				\includegraphics[width=0.6\textwidth]{fig/dataFilesSingle2}
+				\caption{CEL files in \texttt{celPATH} (variable containing the path to the downloaded CEL  files).}%\texttt{"./Documents/datatest1"}.}
+				\label{dfSingle2}
+			\end{figure}
+	
+			If it is not the case, e.g. if you do not know how to download and extract .tgz files (e.g. via a right click) , you can use the following commands in the R console:
+	
+	
+			\begin{scriptsize}
+<<eval=FALSE>>=
+#set your working directory (replace with the appropriate path)
+workdir="/home/user/Documents/workdir"
+setwd(workdir)
+#download file
+download.file("http://www.broadinstitute.org/mpg/birdsuite/downloads/birdsuite_inputs_1.5.3.tgz",
+destfile="./CELdata.tgz")
+#untar the file
+untar("./CELdata.tgz",files="cel",exdir=".")
+#indicate the path containing .cel files
+celPATH="./cel"
+@
+			\end{scriptsize}
+
+
+			Once .CEL files are extracted, you must download all the GenomeWideSNP\_6 annotation files which are needed to pre-process the data. These files have extensions .cdf, .ufl, .ugp, .acs. 
+			You can download the cdf files (258Mo) from the Affymetrix website (an user account is required), following this link 
+			\begin{small}
+					\url{http://www.affymetrix.com/Auth/support/downloads/library_files/genomewidesnp6_libraryfile.zip}
+			\end{small}
+		
+			Extract these files and replace the following path with the appropriate one pointing to the folder containing the extracted .cdf files (only GenomeWideSNP\_6.cdf and GenomeWideSNP\_6.Full.cdf are needed but you can leave the other files in the same folder):	
+		
+<<eval=FALSE>>=
+chipPATH="/home/user/Documents/workdir/CD_GenomeWideSNP_6_rev3/Full/GenomeWideSNP_6/LibFiles/"
+@	
+			
+			If you do not know how to decompress .zip files, you can use the following commands in the R console for convenience:
+	
+			\begin{scriptsize}
+<<eval=FALSE>>=
+#unzip required files
+unzip("./genomewidesnp6_libraryfile.zip",
+ files=c("CD_GenomeWideSNP_6_rev3/Full/GenomeWideSNP_6/LibFiles/GenomeWideSNP_6.cdf",
+"CD_GenomeWideSNP_6_rev3/Full/GenomeWideSNP_6/LibFiles/GenomeWideSNP_6.Full.cdf"),exdir=".")
+#indicate the path containing .cdf files
+chipPATH="./home/user/Documents/workdir/CD_GenomeWideSNP_6_rev3/Full/GenomeWideSNP_6/LibFiles/"
+@		
+			\end{scriptsize}
+
+		
+			The other annotation files can be downloaded from \url{http://www.aroma-project.org/data/annotationData/chipTypes/GenomeWideSNP_6/}. For this example, we download GenomeWideSNP\_6,Full,na31,hg19,HB20110328.ufl.gz (6Mo), GenomeWideSNP\_6,Full,na31,hg19,HB20110328.ugp.gz (7Mo), GenomeWideSNP\_6,HB20080710.acs.gz (37Mo). Extract these files in the folder where your cdf files are in order to have all the annotation files in the same folder (see Figure \ref{chipfileinit}).
+
+			\begin{figure}[!h]
+				\centering
+				\includegraphics[width=0.6\textwidth]{fig/chipFiles2}\\
+				\caption{Chip GenomeWideSNP\_6 files in \texttt{chipPATH} (variable containing the path to the downloaded chip files).}%\texttt{./Documents/chips/SNP6}.}
+				\label{chipfileinit}
+			\end{figure}			
+			
+
+%			Because names of cdf files in the aroma architecture must have the following format : \\
+%			<chip type>,<tags>.cdf.
+		
+%			So, we have to change \texttt{GenomeWideSNP\_6.Full.cdf} into \texttt{GenomeWideSNP\_6,Full.cdf}.
+%			\begin{small}
+%				\begin{verbatim}
+%			chipPATH=paste0(exdirChip,"/CD_GenomeWideSNP_6_rev3/Full/GenomeWideSNP_6/LibFiles/")
+%			renameFile(paste0(chipPATH,"GenomeWideSNP_6.Full.cdf"),paste0(chipPATH,"GenomeWideSNP_6,Full.cdf"))
+%				\end{verbatim}
+%			\end{small}
+%		cela devrait etre inclus dans l'architecture		
+	
+			If you do not know how to download or decompress .gz files, you can use the following commands in the R console for convenience:
+	
+			\begin{scriptsize}
+<<eval=FALSE>>=
+#set the directory where the .cdf files are as your working directory 
+setwd(chipPATH) 	
+##download the 3 files .ufl, .ugp, .acs
+download.file("http://www.aroma-project.org/data/annotationData/chipTypes/GenomeWideSNP_6/GenomeWideSNP_6,Full,na31,hg19,HB20110328.ufl.gz",
+destfile="GenomeWideSNP_6,Full,na31,hg19,HB20110328.ufl.gz")
+download.file("http://www.aroma-project.org/data/annotationData/chipTypes/GenomeWideSNP_6/GenomeWideSNP_6,Full,na31,hg19,HB20110328.ugp.gz",
+destfile="GenomeWideSNP_6,Full,na31,hg19,HB20110328.ugp.gz")
+download.file("http://www.aroma-project.org/data/annotationData/chipTypes/GenomeWideSNP_6/GenomeWideSNP_6,HB20080710.acs.gz", 
+destfile="GenomeWideSNP_6,HB20080710.acs.gz")
+#unzip the gz files
+#install R.utils package containing the gunzip function
+install.packages("R.utils")
+library("R.utils")
+gunzip("GenomeWideSNP_6,Full,na31,hg19,HB20110328.ufl.gz",
+destname="GenomeWideSNP_6,Full,na31,hg19,HB20110328.ufl")
+gunzip("GenomeWideSNP_6,Full,na31,hg19,HB20110328.ugp.gz",
+destname="GenomeWideSNP_6,Full,na31,hg19,HB20110328.ugp")
+gunzip("GenomeWideSNP_6,HB20080710.acs.gz",destname="GenomeWideSNP_6,HB20080710.acs")
+@						
+			\end{scriptsize}
+
+
+		\subsubsection{Use of the main functions of the package}	
+			\label{mainuse}
+        		We suggest to perform single-patient analysis before a multi-patient analysis even if only the pre-processing step, which estimates the copy-number and the allele B fraction signal, is required for the last one.
+
+        		We assume that all the required chip files are in the \texttt{chipPATH} folder and that the .CEL files are in the \texttt{celPATH} folder.
+
+
+			First, we normalize .CEL files using the CRMAv2 method \cite{CRMAv2} from aroma packages. These packages require a specific architecture containing .CEL and annotation files. This normalization step is required before any statistical analysis. The following command performs the creation of architecture and the normalization at the same time :
+			
+<<eval=FALSE>>=
+chipPATH #check that your path to annotation files (.cdf, .ugp, .ufl, .acs) is correctly set
+celPATH  #check that your path to cel files (.cel) is correctly set
+setwd(workdir) #set your working directory (where you have rights to write)
+#normalize data (might take several hours)
+signalPreProcess(dataSetName="datatest1", chipType="GenomeWideSNP_6",
+dataSetPath=celPATH,chipFilesPath=chipPATH, path=".",
+createArchitecture=TRUE, savePlot=TRUE)
+@	
+	
+			The single-patient analysis consists in the segmentation of every copy-number signal of the data. Then, a calling method can be applied on all the segments to label them (e.g. "loss", "normal", "gain"). To perform segmentation and calling at the same time, type the following lines in your R console:
+
+<<eval=FALSE>>=
+segcall=cnSegCallingProcess("datatest1",chromosome=c(1,5))
+#summary of segmentation and calling process
+segcall$segment
+@
+
+			In this example, chromosomes 1 and 5 for all patients are studied. Figures can be found at \texttt{./figures/datatest1/segmentation/}. 
+			To better understand the way the results have been produced, we refer to sections \ref{sec:norm}, \ref{sec:seg} and \ref{sec:calling}.
+	
+			Results of the calling can be filtered to keep only segments of a minimal size or with a specific label. For example, if you want to only keep segments which represent losses or gains with a minimal size of $10$pb and containing at least 2 probes, run the following command:  
+	
+<<eval=FALSE>>=
+callfiltered=filterSeg(segcall$segment,minLength=10,minProbes=2,keptLabel=c("gain","loss"))
+head(callfiltered)
+@
+	
+			To perform a multi-patient analysis, a response is associated with each signal and the goal is to find the most relevant markers in the signal according to the response. You can run the following commands:
+
+<<eval=FALSE>>=
+dataResponse=data.frame(files=getListOfFiles("datatest1"),
+response=c(2.105092,1.442868,1.952103,1.857819,2.047897,1.654766,2.385327,2.113406))
+res=markerSelection("datatest1",dataResponse,chromosome=21:22,signal="CN",onlySNP=TRUE)
+@
+
+
+			For interpretation of all the results, we refer to section \ref{sec:select}.
+
+
+
+
+		\subsubsection{To go further\dots}
+
+			\paragraph{Use of control samples}
+
+				In the previous example, there was no control sample. By default, the median of all the samples is used as a reference to estimate the copy-number signal. It is generally better to provide control samples. When this is the case, it is necessary to provide a file or a data.frame giving the correspondence between each control and each sample. For this example, we assume that the control is arbitrarily the first file:
+
+<<eval=FALSE>>=
+#get the file names of our data-set
+files=getListOfFiles("datatest1")
+#create the data.frame linking normal and tumor files
+normalTumorArray=data.frame(normal=rep(files[1],7),tumor=files[2:8])
+@	
+	
+				\begin{figure}[!h]
+					\centering
+					\includegraphics[width=0.6\textwidth]{fig/normalTumorArrayExample}
+					\caption{CSV file linking normal sample with tumoral sample.}
+				\end{figure}
+
+				Note that the extension .CEL is not provided in the \texttt{normalTumorArray} dataframe.
+				In the following of the vignette, a study which provides both controls and tumoral samples will be refered as a normal-tumor study.
+				
+				You can now run the normalization taking into account information from the control sample (run with createArchitecture=FALSE because we suppose the architecture was already created during the previous example, if it is not the case you can add the missing parameters to the function and set createArchitecture=TRUE).
+
+<<eval=FALSE>>=
+signalPreProcess(dataSetName="datatest1", chipType="GenomeWideSNP_6",
+normalTumorArray=normalTumorArray, createArchitecture=FALSE, savePlot=TRUE)
+@		
+			\paragraph{Single-Patient Analysis of allele B fraction}
+
+				The segmentation example (\ref{mainuse}) was run on the copy number signal, the allele B fraction can also be  segmented after some transformation. First, we omit the homozygous SNPs of the signal and then symmetrize around 0.5 the signal and multiply by $2$ to have values between $0$ and $1$ (a point $x$ become $2 * |x - 0.5|$)(see Figure \ref{figsymFracB}).
+
+
+				\begin{figure}[!h]
+					\centering
+					\includegraphics[width=0.8\textwidth]{fig/fracB}\\
+					\includegraphics[width=0.8\textwidth]{fig/symFracB}
+					\caption{Top : Allele B fraction signal on a chromosome (in red : homozygous SNPs. Bottom : symmetrized signal without homozygous SNPs.}
+					\label{figsymFracB}
+				\end{figure}
+
+				To perform the segmentation on the allele B fraction, run the following command
+<<eval=FALSE>>=
+#run the segmentation
+segfracB=segFracBSignal("datatest1",chromosome=c(1,5))
+#print summary of segmentation
+segfracB
+@					
+				 	
+		
+			\paragraph{Selecting steps to be executed to avoid a complete procedure}
+
+				Each step can be performed with or without the aroma packages if arguments of functions are given in the right format (excepted for the normalization procedure described in section \ref{sec:norm}). Almost each wrapper can be used from matrices independently from the other steps and more details are given in the following of this vignette. 
+				The paper is organized as follows : the section \ref{sec:norm} presents the preprocessing step and how to access normalized copy-number and allele B fraction. If you already have these data, you can skip this section. Then, the single patient analysis is introduced in the next two sections. The segmentation process is described in section \ref{sec:seg}. In section \ref{sec:calling}, we present the calling process of segmented data. The multi-patients analysis is described in section \ref{sec:select}.
+
+
+	
+\section{Data Normalization}
+	\label{sec:norm}
+
+	This preprocessing step consists in a correction of biological and technical biaises due to the experiment.
+	
+	Raw data from Affymetrix DNA chip are provided in different CEL files. These data need to have some corrections and normalizations before being usable.
+
+	This normalization process can be performed via functions from \texttt{aroma.*} packages \cite{aroma}\cite{affy}. Here, we provide some user-friendly wrappers to these functions.
+	We assume that all the required chip files are in the \texttt{chipPATH} folder and the CEL files are in the \texttt{celPATH} folder.
+	
+	
+	\subsection{Folder architecture}\label{arch}
+		All the functions from aroma packages have to be used with a particular architecture in the working directory. In \texttt{MPAgenomics}, we use the same architecture and provide some functions to create it.
+
+		The function \texttt{createEmptyArchitecture} creates the minimal empty architecture.
+	
+		\begin{verbatim}
+	createEmptyArchitecture(dataSetName,chipType,path,verbose)
+		\end{verbatim}
+	
+		\begin{center}
+			\begin{tabular}{|l|l|}
+				\hline
+				Parameters & Description\\
+				\hline
+				\texttt{dataSetName} & The name of the data-set folder to create.\\
+				\texttt{chipType} & The name of the used chip.\\
+				\texttt{path} & Path where create the architecture (default=".").\\
+				\texttt{verbose} & Print information during the process (default=FALSE).\\
+				\hline	
+			\end{tabular}		
+		\end{center}
+
+		For example, run the following command:
+		
+		\begin{verbatim}
+	createEmptyArchitecture("datatest1","GenomeWideSNP_6",".",TRUE)
+		\end{verbatim}
+		
+		In your working directory, you must find the following architecture :
+		
+		\begin{verbatim}
+	<current working directory>
+  +- annotationData/
+  |  +- chipTypes/
+  |     +- GenomeWideSNP_6/ 
+  |
+  +- rawData/
+     +- datatest1/
+        +- GenomeWideSNP_6/ 
+		\end{verbatim}
+		
+		The minimal architecture contains 2 folders : \texttt{annotationData} and \texttt{rawData}. Some supplementary folders will be created during the execution of some functions.
+
+		In the \texttt{annotationData} folder, each type of chip used for the experiment has to have his own folder containing its definition files (.cdf) and other files (.ugp\footnote{See \url{http://www.aroma-project.org/node/43} for more details.}, .acs\footnote{See \url{http://www.aroma-project.org/node/100} for more details.}, .ufl\footnote{See \url{http://www.aroma-project.org/node/47} for more details.}). In this folder, every file name must begin with the type of the chip (see Fig. \ref{chipfile}).
+		
+		The \texttt{rawData} folder contains the different data-sets with the CEL files. Each data-set folder contains one or more folders (one per different chip type used) containing the CEL files, these files will not be modified during the process. Note that the \texttt{chipType} folder in the data-set folder must match exactly a chip type folder under annotationData.\\
+
+		Once the architecture created, you have to move CEL files in the \texttt{path/rawData/dataSetName/chipType} folder and your chip files in the \texttt{path/annotationData/chipTypes/chipType}.\\
+		
+		In case of new data-sets or new chip types, it is not useful to create a new architecture but just add new folders in the existing architecture as follows :
+		\begin{small}
+			\begin{verbatim}
+	<current working directory>
+  +- annotationData/
+  |  +- chipTypes/
+  |     +- <chipTypeA>/ <-- must match exactly the name of the CDF file (fullname minus tags)
+  |     |  +- CDF file(s) and other annotation (possibly subdirectories)
+  |     |
+  |     +- <chipTypeB>/ <-- must match exactly the name of the CDF file (fullname minus tags)
+  |        +- CDF file(s) and other annotation (possibly subdirectories)
+  |        ...
+  |
+  +- rawData/
+  |  +- <dataSet1>/
+  |  |  +- <chipTypeA>/ <-- must match exactly a chip type folder under annotationData/
+  |  |     +- CEL files
+  |  |
+  |  +- <dataSet2>/
+  |  |  +- <chipTypeB>/ <-- must match exactly a chip type folder under annotationData/
+  |  |     +- CEL files
+  |  |
+  |  +- <dataSet3>/
+  |  |  +- <chipTypeA>/ <-- must match exactly a chip type folder under annotationData/
+  |  |     +- CEL files
+  |  |  +- <chipTypeB>/ <-- must match exactly a chip type folder under annotationData/
+  |  |     +- CEL files
+  |  ...      
+			\end{verbatim}
+		\end{small}	
+	
+		~~\\
+		An other function is provided to create the architecture and copy the specified files in the right directory : \texttt{createArchitecture}. It also checks that the names of the chip files begin by the specified \texttt{chipType} argument.		
+		
+		\begin{verbatim}
+	createArchitecture(dataSetName,chipType,dataSetPath,chipFilesPath,path,verbose)
+		\end{verbatim}
+	
+		\begin{center}
+			\begin{tabular}{|l|l|}
+				\hline
+				Parameters & Description\\
+				\hline
+				\texttt{dataSetName} & The name of the data-set folder to create.\\
+				\texttt{chipType} & The name of the used chip.\\
+				\texttt{dataSetPath} &  Path to the folder containing the data CEL files.\\
+				\texttt{chipFilesPath} & Path to the folder containing the chip files.\\
+				\texttt{path} & Path where create the architecture (default=".").\\
+				\texttt{verbose} & Print information during the process (default=FALSE).\\
+				\hline	
+			\end{tabular}		
+		\end{center}
+		
+		
+		For example, assume that we have the downloaded files of the download section (Fig \ref{chipfile} \& \ref{datafileSingle2}).\\
+		
+		\begin{figure}[!h]
+			\centering
+			\includegraphics[width=0.6\textwidth]{fig/chipFiles2}\\
+			\caption{Chip GenomeWideSNP\_6 files in \texttt{chipPATH} (variable containing the path to the downloaded chip files).}%\texttt{./Documents/chips/SNP6}.}
+			\label{chipfile}
+		\end{figure}
+		
+		\begin{figure}[!h]
+			\centering
+			\includegraphics[width=0.6\textwidth]{fig/dataFilesSingle2}
+			\caption{CEL files in \texttt{celPATH} (variable containing the path to the downloaded CEL  files).}%\texttt{"./Documents/datatest1"}.}
+			\label{datafileSingle2}
+		\end{figure}
+		
+		The \texttt{celPATH} and \texttt{chipPATH} variables contain the different paths to the files downloaded. Now, create the architecture with our files and call this data-set "datatest1". So, we have to run the following command :
+<<eval=FALSE>>=
+createArchitecture("datatest1","GenomeWideSNP_6",celPATH,chipPATH,".",TRUE)
+@
+		
+		
+		In your working directory, you must found the following architecture :
+		
+		\begin{verbatim}
+	<current working directory>
+  +- annotationData/
+  |  +- chipTypes/
+  |     +- GenomeWideSNP_6/ 
+  |        +- CDF file(s) and other annotation 
+  |
+  +- rawData/
+     +- datatest1/
+        +- GenomeWideSNP_6/ 
+           +- CEL files
+		\end{verbatim}
+		
+		You can see that files are only copied and not moved.
+		~~\\
+		This architecture can also be created with the normalization function (see section \ref{norm}).\\
+		
+		In order to update easily your existing architecture you can use the following \texttt{addData} function.
+		
+		It enables to add to your existing architecture a new data-set in the \texttt{rawData} folder.
+		
+		\begin{verbatim}
+	addData(dataSetName,dataPath,chipType)
+		\end{verbatim}
+	
+		\begin{center}
+			\begin{tabular}{|l|l|}
+				\hline
+				Parameters & Description\\
+				\hline
+				\texttt{dataSetName} & The name of the data-set folder to create.\\
+				\texttt{dataPath} &  Path to the folder containing the data CEL files.\\
+				\texttt{chipType} & The name of the used chip.\\ 
+				\hline	
+			\end{tabular}		
+		\end{center}
+		
+		The \texttt{addChipType} function enables to add to your existing architecture a new chip type in the \texttt{annotationData} folder.
+		
+		\begin{verbatim}
+	addChiptype(chipType,chipPath)
+		\end{verbatim}
+	
+		\begin{center}
+			\begin{tabular}{|l|l|}
+				\hline
+				Parameters & Description\\
+				\hline
+				\texttt{chipType} & The type of the used chip.\\ 
+				\texttt{chipPath} & Path to the files to add.\\
+				\hline	
+			\end{tabular}		
+		\end{center}
+		
+		With the function \texttt{getListOfFiles}, you can obtain the list of the files contained in the specified data-set.
+		
+		\begin{verbatim}
+	getListOfFiles(dataSetName,chipType)
+		\end{verbatim}
+	
+		\begin{center}
+			\begin{tabular}{|l|l|}
+				\hline
+				Parameters & Description\\
+				\hline
+				\texttt{dataSetName} & The name of a data-set folder.\\
+				\texttt{chipType} & The name of the used chip.\\ 
+				\hline	
+			\end{tabular}		
+		\end{center}
+		
+		If you do not specify a \texttt{chipType}, it returns the files for the first chip in the alphabetic order in the \texttt{dataSetName} folder.
+		
+		
+	\subsection{Normalization process}\label{norm} 
+	
+		The main function for the normalization of CEL files is \texttt{signalPreProcess}. This function executes 3 different methods on your data:
+		\begin{itemize}
+			\item \textbf{CRMAv2} \cite{CRMAv2}: Normalize signals to obtain the copy-number and the allele B fraction. This step consists in the correction of biological and technical biases due to the experiment.
+			\item \textbf{Genotype calls}: Assign label $AA$, $AB$ or $BB$ to the allele B fraction.
+			\item \textbf{TumorBoost} \cite{TumorBoost}: Only in a case of normal-tumor study, normalization of the allele B fraction tumor signal using the control signal. 
+		\end{itemize}
+		
+		The function \texttt{signalPreProcess} executes all these steps and saves the results in different folders in the aroma architecture (\texttt{totalAndFracBData},\dots), you can also obtain some graphics (Fig \ref{plot}) in the \texttt{figures/signal} folder.
+		
+		\begin{figure}[!h]
+			\centering
+			\includegraphics[width=0.5\textwidth]{fig/plot1}\\
+			\includegraphics[width=0.5\textwidth]{fig/plot2}\\
+			\includegraphics[width=0.5\textwidth]{fig/plot3}\\
+			\includegraphics[width=0.5\textwidth]{fig/plot4}
+			\caption{From top to bottom : the normalized copy-number signal, the allele B fraction for the normal profile, the allele B fraction for the tumor profile, the allele B fraction for the tumor profile after Tumorboost normalization. Graphics from \texttt{http://aroma-project.org}. }
+			\label{plot}
+		\end{figure}
+
+
+		The \texttt{signalPreProcess} is defined as follows:
+		\begin{verbatim}	
+		signalPreProcess(dataSetName, chipType, normalTumorArray, dataSetPath, chipFilesPath, path,
+		createArchitecture, savePlot)
+		\end{verbatim}
+	
+		\begin{center}
+			\begin{tabular}{|l|l|}
+				\hline
+				Parameters & Description\\
+				\hline
+				\texttt{dataSetName} & The name of the data-set.\\
+				\texttt{chipType} & The type of the used chip (e.g. "GenomeWideSNP\_6").\\
+				\texttt{normalTumorArray} & Only in the case of normal-tumor study. A csv file or a data.frame\\
+				~~ & containing the mapping between normal and tumor files(Fig. \ref{normalTumorArray}).\\
+				\texttt{dataSetPath} & Only if \texttt{createArchitecture=TRUE}.\\
+				~~ & Path to the folder containing the CEL files of the data-set.\\
+				\texttt{chipFilesPath} & Only if \texttt{createArchitecture=TRUE}.\\
+				~~ & Path to the folder containing all the files for the specified chip type.\\
+				\texttt{path} & Only if \texttt{createArchitecture=TRUE}.\\
+				~~ & Path where the architecture should be created (default=".").\\
+				\texttt{createArchitecture} & if TRUE, the aroma architecture will be automatically created (default=TRUE).\\
+				\texttt{savePlot} & savePlot if TRUE, graphics of the CN signal and allele B fraction signal will be\\
+				~~ & saved in the \texttt{figures/signal} folder. (default=TRUE).\\
+				\hline	
+			\end{tabular}		
+		\end{center}
+	
+		\begin{figure}[!h]
+			\centering
+			\includegraphics[width=0.3\textwidth]{fig/normalTumorArray}\\
+			\caption{Example of the content of a csv file for \texttt{normalTumorArray} parameter. The first column contains the name of the different normal files (without the .cel extension) in the data-set folder in rawData. The second column contains the name of the tumor files. The name of the two columns are respectively normal and tumor. The extensions of the files (.CEL for example) should be removed}
+			\label{normalTumorArray}
+		\end{figure}
+
+		If you have specified \texttt{createArchitecture=TRUE} and have given the required parameters, the function will create the architecture and copy your files in the right folder. After the creation of the aroma architecture, it runs the normalization process and saves in the aroma architecture all the files necessary to obtain the allele B fraction and the copy-number signal.\\
+		
+		In the case of a study without reference, only parameters \texttt{dataSetName}, \texttt{chipType}, \texttt{createArchitecture} and \texttt{savePlot} have to be specified. In the case of a normal-tumor study, the genotype calls is only applied to normal signal and the TumorBoost process is executed.
+		
+		If you want a CEL file to be used as reference for all the tumor data, then fill the normal column of the \texttt{normalTumorArray} with the filename of your reference for all files.
+		
+	\subsection{Accessing the copy-number,  allele B fraction and genotype}		
+		\label{getter}
+		After running the \texttt{signalPreProcess} function, you can not directly access the copy-number signal and the allele B fraction with the files in the architecture, a treatment is required to read it (The copy-number signal saved is the raw signal, it needs a reference to normalize it). With the \texttt{getCopyNumberSignal} and \texttt{getFracBSignal} functions, you can access the copy-number signal and the allele B fraction.\\
+		
+		The \texttt{getCopyNumberSignal} allows you to extract the copy-number signal a chromosome at a time. In the case of a study without reference, the median of all the signal of the data-set is used to normalize every signal. In the normal-tumor study, the normal signal is used to normalize the tumor signal.
+		
+		The getter for the copy-number signal is defined as follows:
+		\begin{verbatim}	
+		getCopyNumberSignal(dataSetName,chromosome,normalTumorArray,onlySNP,listOfFiles,verbose)
+		\end{verbatim}
+	
+		\begin{center}
+			\begin{tabular}{|l|l|}
+				\hline
+				Parameters & Description\\
+				\hline
+				\texttt{dataSetName} & The name of the data-set folder.\\
+				\texttt{chromosome} & A vector containing the chromosomes for which you want to extract the signal.\\
+				\texttt{normalTumorArray} & Only in the case of normal-tumor study. A csv file or a data.frame\\
+				~~ & containing the mapping between normal and tumor files(Fig. \ref{normalTumorArray}).\\
+				\texttt{onlySNP} & If TRUE, only the copy-number for SNPs positions will be returned (default=FALSE).\\
+				\texttt{listOfFiles} & A vector containing the names of the files in dataSetName folder you want to\\
+				~ & extract the copy-number signal (default is all the files).\\
+				\texttt{verbose} & If TRUE print some information (default=TRUE).\\
+				\hline	
+			\end{tabular}		
+		\end{center}
+		
+		This function returns a list of size \texttt{length(chromosome} (each element is named \texttt{chrX} with \texttt{X} the number of the chromosome) containing a data.frame with columns:
+		\begin{itemize}
+			\item \textbf{chromosome} Chromosome of the signal.
+			\item \textbf{position} Positions associated with the copy-number.
+			\item \textbf{copynumber} Many columns (the number of selected files), the name of each column is the name of the associated data file name. It contains the CN signal for a different profile.
+			
+			\item \textbf{featureNames} Names of the probes.
+		\end{itemize}
+		~~\\
+		
+		If you want the allele B fraction, you can use the \texttt{getFracBSignal} function. In a normal-tumor study, allele B fraction for both normal sample and tumor sample is returned. For the tumor sample, it is the allele B fraction after the TumorBoost normalization.
+		
+		\begin{verbatim}	
+		getFracBSignal(dataSetName,chromosome,normalTumorArray,listOfFiles,verbose)
+		\end{verbatim}
+	
+		\begin{center}
+			\begin{tabular}{|l|l|}
+				\hline
+				Parameters & Description\\
+				\hline
+				\texttt{dataSetName} & The name of the data-set folder.\\
+				\texttt{chromosome} & A vector containing the chromosomes for which you want to extract the signal.\\
+				\texttt{normalTumorArray} & Only in the case of normal-tumor study. A csv file or a data.frame\\
+				~~ & containing the mapping between normal and tumor files(Fig. \ref{normalTumorArray}).\\
+				\texttt{listOfFiles} & A vector containing the names of the files in dataSetName folder you want to\\
+				~ & extract the copy-number signal (default is all the files).\\
+				\texttt{verbose} & If TRUE print some information (default=TRUE).\\
+				\hline	
+			\end{tabular}		
+		\end{center}
+				
+
+		This function returns a list of size \texttt{length(chromosome} (each element is named \texttt{chrX} with \texttt{X} the number of the chromosome) containing a data.frame with columns:
+		\begin{itemize}
+			\item \textbf{chromosome} Chromosome of the signal.
+			\item \textbf{position} Positions associated with the allele B fraction.
+			\item \textbf{fracB} Many columns (the number of selected files), the name of each column is the name of the associated data file name. It contains the fracB signal for a different profile.			
+			\item \textbf{featureNames} Names of the probes.
+		\end{itemize}
+		~~\\
+		
+		If you want the genotype call, you can use the \texttt{getGenotypeCalls} function. 
+		
+		\begin{verbatim}	
+		getGenotypeCalls(dataSetName,chromosome,listOfFiles=NULL,verbose=TRUE)
+		\end{verbatim}
+	
+		\begin{center}
+			\begin{tabular}{|l|l|}
+				\hline
+				Parameters & Description\\
+				\hline
+				\texttt{dataSetName} & The name of the data-set folder.\\
+				\texttt{chromosome} & A vector with the chromosomes you want to extract the genotype call.\\
+				\texttt{listOfFiles} & A vector containing the names of the files in dataSetName folder you want to\\
+				~ & extract the genotype signal (default is all the files).\\
+				\texttt{verbose} & If TRUE print some information (default=TRUE).\\
+				\hline	
+			\end{tabular}		
+		\end{center}
+				
+		This function returns a list of size \texttt{length(chromosome} (each element is named \texttt{chrX} with \texttt{X} the number of the chromosome) containing a data.frame with columns:
+		\begin{itemize}
+			\item \textbf{chromosome} Chromosome of the signal.
+			\item \textbf{position} Positions associated with the genotype.
+			\item \textbf{genotype} Many columns (the number of selected files), the name of each column is the name of the associated data file name. It contains the genotype signal for a different profile.			
+			\item \textbf{featureNames} Names of the probes.
+		\end{itemize}
+		
+		
+		~~\\
+		The next getter, \texttt{getGenotypeCalls}, returns the symmetrized allele B fraction only for heterozygous positions. To symmetrize the allele B fraction the transformation $x\mapsto 2*|x-0.5|$ is applied. It corresponds to center the data in $0.5$ corresponding to heterozygous allele B fraction then symmetrize and multiply by $2$ to have a signal between $0$ and $1$
+		
+		\begin{verbatim}	
+		getSymFracBSignal(dataSetName,chromosome,normalTumorArray,file,verbose=TRUE)
+		\end{verbatim}
+	
+		\begin{center}
+			\begin{tabular}{|l|l|}
+				\hline
+				Parameters & Description\\
+				\hline
+				\texttt{dataSetName} & The name of the data-set folder.\\
+				\texttt{chromosome} & A vector with the chromosomes you want to extract the signal.\\
+				\texttt{normalTumorArray} & Only in the case of normal-tumor study. A csv file or a data.frame\\
+				\texttt{file} & The name of The file in dataSetName folder you want to\\
+				~ & extract the genotype signal.\\
+				\texttt{verbose} & If TRUE print some information (default=TRUE).\\
+				\hline	
+			\end{tabular}		
+		\end{center}
+				
+		This function returns a list of size \texttt{length(chromosome} (each element is named \texttt{chrX} with \texttt{X} the number of the chromosome) containing a data.frame with columns:
+		\begin{itemize}
+			\item \textbf{chromosome} Chromosome of the signal.
+			\item \textbf{position} Positions associated with the genotype.
+			\item \textbf{genotype} One column named by the data file name. It contains the symmetrized alle B fraction signal for a different profile.			
+			\item \textbf{featureNames} Names of the probes.
+		\end{itemize}
+		
+		
+	\subsection{Usage}
+		Assume you want to normalize your data \texttt{datatest1} obtained with a \texttt{GenomeWideSNP\_6} chip and plot the graphics.\\
+		
+		\paragraph*{Study without reference}~~\\		
+		Assume we have the same files as in the section \ref{arch} (Fig \ref{chipfile}, \ref{datafileSingle2}). The path to data files is stored in the variable \texttt{celPATH} and the one to chip files in \texttt{chipPATH}.\\
+
+
+
+		If you do not have the required architecture (Warning : the following command can take several hours):
+		
+<<eval=FALSE>>=
+signalPreProcess(dataSetName="datatest1", chipType="GenomeWideSNP_6",
+dataSetPath=celPATH,chipFilesPath=chipPATH, path="./Documents/normalization",
+createArchitecture=TRUE, savePlot=TRUE)
+@
+					
+		If you have already created the architecture, move your files in the appropriate folder and run the function with \texttt{createArchitecture=FALSE}
+		
+<<eval=FALSE>>=
+signalPreProcess(dataSetName="datatest1", chipType="GenomeWideSNP_6",
+createArchitecture=FALSE,savePlot=TRUE)
+@
+
+		
+		\paragraph*{Normal-tumor study}~~\\	
+		In our downloaded data-set, we have no control data. We will use the first sample of our data for control for every sample. The \texttt{normalTumorArray} files associated is in figure \ref{normalTumorArrayExample}. You can create the \texttt{normalTumorArray} with the following command
+		
+<<eval=FALSE>>=
+#get the file names of our data-set
+files=getListOfFiles("datatest1")
+#create the data.frame linking normal and tumor files
+normalTumorArray=data.frame(normal=rep(files[1],7),tumor=files[2:8])
+@	
+
+		
+		\begin{figure}[!h]
+			\centering
+			\includegraphics[width=0.6\textwidth]{fig/normalTumorArrayExample}\\
+			\caption{\texttt{normalTumorArray} file with the first sample as control for every file.}
+			\label{normalTumorArrayExample}
+		\end{figure}
+		
+		If you do not have the required architecture, assume that you want to create the architecture in
+		 your working directory (path stored in variable  \texttt{workdir}), then you have to execute :		
+		
+<<eval=FALSE>>=
+signalPreProcess(dataSetName="datatest1", chipType="GenomeWideSNP_6",
+normalTumorArray=normalTumorArray,dataSetPath=celPATH,
+chipFilesPath=chipPATH,path=workdir,createArchitecture=TRUE, savePlot=TRUE)
+@
+					
+		If you have already created the architecture, move your files in the appropriate folder and run the function with \texttt{createArchitecture=FALSE} :
+		
+<<eval=FALSE>>=
+signalPreProcess(dataSetName="datatest1", chipType="GenomeWideSNP_6",
+normalTumorArray=normalTumorArray,createArchitecture=FALSE, savePlot=TRUE)
+@
+
+		\paragraph*{Get a signal}~~\\
+		Now if you want to extract the copy-number signal or the allele B fraction of all the files for the chromosome 5, you can run :
+		
+<<eval=FALSE>>=
+#normal-tumor study
+CNdata2=getCopyNumberSignal("datatest2",5,normalTumorArray=
+"./Documents/datatest2/normalTumorArray.csv",TRUE)
+fracBdata2=getFracBSignal("datatest2",5,normalTumorArray=
+"./Documents/datatest2/normalTumorArray.csv")
+symFracB2=getSymFracBSignal("datatest2",5,
+file="GIGAS_g_GAINmixHapMapAffy2_GenomeWideEx_6_A01_31218",
+normalTumorArray="./Documents/datatest2/normalTumorArray.csv")
+
+#study without reference
+CNdata1=getCopyNumberSignal("datatest1",5,onlySNP=TRUE)	
+fracBdata1=getFracBSignal("datatest1",5)		
+symFracB1=getSymFracBSignal("datatest1",5,
+file="GIGAS_g_GAINmixHapMapAffy2_GenomeWideEx_6_A01_31218")
+@
+		
+		and access the copy-number or allele B fraction signal with
+<<eval=FALSE>>=
+CNdata2$chr5
+fracBdata2$chr5$tumor
+fracBdata2$chr5$normal
+fracBdata1$chr5$tumor
+symFracB1$chr5
+symFracB2$chr5
+@
+				
+
+
+\section{Segmentation}
+	\label{sec:seg}
+	
+	In the package \texttt{MPAgenomics}, we provide a segmentation method, which uses the PELT method of the cpt.mean function from \texttt{changepoint} package \cite{pelt}.
+	
+	In the initial PELT method, the penalty is $\log(n)$ with $n$ the length of the signal. Here we will run the PELT method with a penalty $\lambda \times \log(n)$ for a range of $\lambda$. Then, we plot the evolution of the number of segments with regards to the $\lambda$ parameter (Fig \ref{plateau}). 
+	
+	\begin{figure}[!h]
+		\centering
+		\includegraphics[width=0.4\textwidth]{fig/plateau}
+		\caption{Variation of the number of segment with regards to lambda.}
+		\label{plateau}
+	\end{figure}
+	
+	We want to adjust the $\lambda$ parameter to have a reasonable number of segments. So, we look for the greatest stabilization of the number of segments that means we can be confident in the found breakpoints because the penalty has to increase significantly to remove some breakpoints. 
+	
+	
+	\subsection{From data normalized by aroma}	
+		
+		The previous processing is run by the \texttt{PELTaroma} function. The working directory must respect the aroma architecture.
+		 	
+		\begin{verbatim}	
+			PELTaroma(dataSetName,normalTumorArray,chromosome,Lambda,listOfFiles,onlySNP=TRUE,plot=TRUE)
+		\end{verbatim}
+	
+		\begin{center}
+			\begin{tabular}{|l|l|}
+				\hline
+				Parameters & Description\\
+				\hline
+				\texttt{dataSetName} & The name of the data-set folder.\\
+				\texttt{normalTumorArray} & Only in the case of normal-tumor study. A csv file or a data.frame\\
+				~~ & containing the mapping between normal and tumor files(Fig. \ref{normalTumorArray}).\\
+				\texttt{chromosome} & A vector with the chromosome you want to segment.\\
+				\texttt{Lambda} & A vector containing all the penalization values to test for the segmentation.\\
+				~ &  If no values are provided, default values will be used.\\
+				\texttt{onlySNP} & If TRUE, only the copy-number for SNPs positions will be returned (default=TRUE).\\
+				\texttt{listOfFiles} & A vector containing the names of the files in dataSetName folder you want to\\
+				~ & segment the copy-number signal (default is all the files).\\
+				\texttt{savePlot} & if TRUE, graphics of the segmented CN signal will be\\
+				~~ & saved in the \texttt{figures/dataSetName/segmentation/CN} folder. (default=TRUE).\\
+				\hline	
+			\end{tabular}		
+		\end{center}
+	
+			If \texttt{plot=TRUE}, some graphics will be plotted (see Fig \ref{outpelt}).\\
+	
+		\begin{figure}[!h]
+			\centering
+			\includegraphics[width=0.45\textwidth]{fig/decdata1}
+			\includegraphics[width=0.45\textwidth]{fig/freqdata1}\\		
+			\includegraphics[width=0.5\textwidth]{fig/segdata1}
+			\caption{Top left: variation of the number of segment with regards to $\lambda$. Top right: the frequency of occurrence of breakpoints in all segmentation. Bottom: Segmentation with the optimal $\lambda$ found.}
+			\label{outpelt}
+		\end{figure}
+		The graphic of the segmented signal is saved in the \texttt{figures/dataSetName/segmentation} folder. A summary of the segmented profile is saved in a BED file (Fig. \ref{outbedpelt}) in the \texttt{segmentation/dataSetName/} folder, it contains 5 columns : chrom, chromStart, chromEnd, probes and means containing the number of the chromosome, the starting position of the segment, the ending position of the segment, the number of probes in the segment and the mean of the segment.\\
+	
+		\begin{figure}[!h]
+			\centering
+			\includegraphics[width=0.4\textwidth]{fig/outbedpelt}
+			\caption{Summary of a segmentation for a profile.}
+			\label{outbedpelt}
+		\end{figure}
+		
+		The output of the function is a list where every element of the list contains the segmentation results for a different signal formatted in a list containing:
+		\begin{itemize}
+			\item \textbf{copynumber} A vector containing  the copy-number signal.
+			\item \textbf{segmented} A vector of the same size as copynumber containing the segmented values.
+			\item \textbf{startPos} The position of every probe.
+			\item \textbf{chromosome} A vector of the same size as copynumber containing the chromosome number.
+			\item \textbf{featureNames} Names of the probes.
+			\item \textbf{sampleNames} The name of the signal.
+			\item \textbf{segment} A data.frame that sums up the results of the segmentation. Each row is a different segment with the chromosome, start position, end position, number of probes in the segment and the value of the segment.
+		\end{itemize}
+				
+		The output for a signal is formatted to be used in input of the \texttt{callingProcess} function (see section \ref{calling}) but if you use the aroma architecture and want a calling of your segments, you can use directly the \texttt{cnSegCallingProcess} function (see section \ref{segcalling}). This function runs the segmentation and the calling processing.
+		
+		~~\\
+		
+		For example, run the segmentation processing on one file of the downloaded data.
+		
+<<eval=FALSE>>=
+file="GIGAS_g_GAINmixHapMapAffy2_GenomeWideEx_6_A02_31234"
+seg1=PELTaroma("datatest1",chromosome=21:22,onlySNP=TRUE,plot=TRUE,
+listOfFiles=file)
+@
+		
+		You will find results shown in figures \ref{outpelt} \& \ref{outbedpelt} for one profile.
+		
+		~~\\
+	
+		You can also segment the symmetrized allele B fraction with the function \texttt{segFracBSignal}.
+		 	
+		\begin{verbatim}	
+segFracBSignal(dataSetName,normalTumorArray,chromosome=1:22,Lambda=NULL,listOfFiles=NULL,
+savePlot=TRUE,verbose=TRUE)
+		\end{verbatim}
+	
+		\begin{center}
+			\begin{tabular}{|l|l|}
+				\hline
+				Parameters & Description\\
+				\hline
+				\texttt{dataSetName} & The name of the data-set folder.\\
+				\texttt{normalTumorArray} & Only in the case of normal-tumor study. A csv file or a data.frame\\
+				~~ & containing the mapping between normal and tumor files(Fig. \ref{normalTumorArray}).\\
+				\texttt{chromosome} & A vector with the chromosome you want to segment.\\
+				\texttt{Lambda} & A vector containing all the penalization values to test for the segmentation.\\
+				~ &  If no values are provided, default values will be used.\\
+				\texttt{listOfFiles} & A vector containing the names of the files in dataSetName folder you want to\\
+				~ & segment the signal (default is all the files).\\
+				\texttt{savePlot} & if TRUE, graphics of the segmented CN signal will be\\
+				~~ & saved in the \texttt{figures/dataSetName/segmentation/fracB} folder. (default=TRUE).\\
+				\hline	
+			\end{tabular}		
+		\end{center}		
+		
+			
+		The output of the function is a data.frame containing the segmentation results, each row corresponding to a different segment and with columns:
+		\begin{itemize}
+			\item \textbf{sampleName} Name of the file the segment belong to.
+			\item \textbf{chromosome} Chromosome the segment belong to.
+			\item \textbf{chromStart} Starting position of the segment.
+			\item \textbf{chromEnd} Ending position of the segment.
+			\item \textbf{probes} Number of probes in the segment.
+			\item \textbf{means} Mean of the segment.
+		\end{itemize}
+		
+		You can run the following code to test the function
+<<eval=FALSE>>=
+#run the segmentation
+segfracB=segFracBSignal("datatest1",chromosome=c(1,5))
+#print summary of segmentation
+segfracB
+@					
+	
+	\subsection{For any data provided in matrix}	
+		If you have your own normalized data stored in a matrix, you can use the \texttt{PELT} function.
+	
+		\begin{verbatim}	
+			PELT(signal,Lambda,position=NULL,plot=TRUE,verbose=TRUE)
+		\end{verbatim}
+	
+		\begin{center}
+			\begin{tabular}{|l|l|}
+				\hline
+				Parameters & Description\\
+				\hline
+				\texttt{signal} & A vector containing the signal.\\
+				\texttt{Lambda} & A vector containing all the penalization values to test for the segmentation.\\
+				~ &  If no values are provided, default values will be used.\\
+				\texttt{position} & A vector containing the position of all elements of the signal (not necessary).\\
+				\texttt{plot} & If TRUE, plot some graphics (default=TRUE	).\\
+				\texttt{verbose} & If TRUE, print some information (default=TRUE).\\
+				\hline	
+			\end{tabular}		
+		\end{center}
+		
+		If \texttt{plot=TRUE}, some graphics will be plotted (see Fig \ref{outpelt}).
+	
+		
+		The output of the function is a list containing:
+		\begin{itemize}
+			\item \textbf{signal} A vector containing the signal.
+			\item \textbf{segmented} A vector of the same size as signal containing the segmented values.
+			\item \textbf{startPos} The position of every probe.
+			\item \textbf{segment} A data.frame that sum up the results of the segmentation. Each row is a different segment with the start position, end position, number of points in the segment and the value of the segment.
+		\end{itemize}
+
+%		This output can be used directly in argument of the calling function \texttt{callingProcess} (see section \ref{calling}).
+		~~\\
+	
+		For example, assume you already have done the preprocessing of your data (see section \ref{norm}). You want to do the segmentation of the copy-number signal of one chromosome for one patient.
+	
+		First, get the signal :
+	
+<<eval=FALSE>>=
+file="GIGAS_g_GAINmixHapMapAffy2_GenomeWideEx_6_A07_31314"
+CNdata1=getCopyNumberSignal("datatest1",20,onlySNP=TRUE,listOfFiles=file)
+@
+	
+		Now, run the segmentation process :
+<<eval=FALSE>>=
+seg=PELT(CNdata1$copynumber,position=CNdata1$position,plot=TRUE,verbose=TRUE)
+@
+	
+		You obtain the plots seen previously (Fig \ref{outpelt}) and the results in the right format for the calling function (see section \ref{calling}).
+	
+		You can access to the list of found segments with : 
+<<eval=FALSE>>=
+seg$segment
+@
+	
+		and you obtain:
+	
+		\begin{figure}[!h]
+			\includegraphics[width=0.3\textwidth]{fig/outpelt2}
+		\end{figure}
+		
+		
+	
+\section{Calling aberrations in copy-number signal}
+	\label{sec:calling}
+	Once you have a segmentation of your copy-number signal, you may want to assign a label ($loss$, $normal$ or $gain$) to each segment. This can be done with the \texttt{CGHcall} \texttt{R} package \cite{CGHcall}. A wrapper of the CGHcall calling process is available in \texttt{MPAgenomics}.
+	
+	Starting with your signal and the associated segmented signal, the method assumes that the segmented values follow a mixture of normals. The variables of the model are estimated with an EM algorithm with a specific initialization. Then, every segment is calling by the most likely label according to the model. 
+	
+	\subsection{From data normalized by aroma}	
+		\label{segcalling}
+		The \texttt{cnSegCallingProcess} function executes the segmentation (see section \ref{sec:seg}) and the calling process. The specified data will be automatically imported by the function.\\
+			
+		\begin{verbatim}	
+		cnSegCallingProcess(dataSetName,normalTumorArray,chromosome,Lambda,listOfFile,onlySNP,plot,
+		nclass,cellularity,...)
+		\end{verbatim}
+		
+		\begin{tabular}{|l|l|}
+			\hline
+			Parameters & Details\\
+			\hline
+			\texttt{dataSetName} & name of the data-set folder in the rawData folder containing the signals to used.\\
+			\texttt{normalTumorArray} & Only in the case of normal-tumor study. A csv file or a data.frame\\
+			~~ & containing the mapping between normal and tumor files(Fig. \ref{normalTumorArray}).\\
+			\texttt{chromosome} & A vector containing the chromosome to segment.\\
+			\texttt{Lambda} & A vector containing all the penalization values to test for the segmentation.\\
+			~ &  If no values are provided, default values will be used.\\
+			\texttt{listOfFiles} & A vector containing the file names from the dataSetName to use.\\
+			\texttt{onlySNP} & If TRUE, only the SNP probes will be used.\\
+			\texttt{plot} & If TRUE, print some graphics (default=TRUE).\\
+			\texttt{nclass} & The number of levels to be used for calling. Either 3 (loss, normal, gain),\\
+			~ &   4 (including amplifications), 5 (including double deletions) (default=3).\\
+			\texttt{cellularity} &  Percentage of tumor cells in the sample (default=1).\\
+			\texttt{\dots} & Others parameters for CGHcall function \cite{CGHcall}.\\
+			\hline
+		\end{tabular}
+
+~~\\
+
+		This function will save every segment in a BED file in the \texttt{segmentation} folder in the working directory and return a data.frame with columns:
+			
+		\begin{itemize}
+			\item \textbf{sampleNames} Name of the file.
+			\item \textbf{chrom} The chromosome of the segment.
+			\item \textbf{chromStart} The starting position (in bp) of the segment. This position is not included in the segment.
+			\item \textbf{chromEnd} The ending position (in bp) of the segment. This position is included in the segment.
+			\item \textbf{probes} Number of probes in the segment.
+			\item \textbf{means} Mean of the segment.
+			\item \textbf{calls} The calling of the segment ("double loss", "loss", "normal", "gain" or "amplification").
+		\end{itemize}
+			
+		The graphic of the segmented signal is saved in the \texttt{figures} folder of the architecture.
+			
+<<eval=FALSE>>=
+seg2=cnSegCallingProcess("datatest1",chromosome=21:22)
+@
+			
+		The output of the function is shown in the figure \ref{segcalloutput}.
+		\begin{figure}[!h]
+			\centering
+			\includegraphics[width=0.5\textwidth]{fig/segdata1}
+			\includegraphics[width=0.5\textwidth]{fig/callsoutput}
+			\caption{Top: graphics saved in the \texttt{figures} folder. Bottom: output of the function (saved in a BED file too).}
+			\label{segcalloutput}
+		\end{figure}
+	
+	
+	\subsection{For any data provided in matrix}\label{calling}
+	
+		The function \texttt{callingProcess} executes all the calling process and can be used without the aroma architecture. You can use this function with the segmentation method provided in the package or any other methods as long as you give the results of the segmentation in the right format (see \texttt{segmentData} argument).
+	
+		\begin{verbatim}	
+		callingProcess(segmentData,nclass=5,cellularity=1,...)
+		\end{verbatim}
+	
+		\begin{center}
+			\begin{tabular}{|l|l|}
+				\hline
+				Parameters & Description\\
+				\hline
+				\texttt{segmentData} & A list (see details below).\\
+				\texttt{nclass} & Number of labels. 3 corresponding to"loss", "normal" and "gain", \\
+				~ & 4 with "amplification" and 5 with "double loss".\\
+				\texttt{cellularity} & Percentage of tumor cells in the sample.\\
+				\texttt{verbose} & If TRUE, print some information.\\
+				\texttt{\dots} & Others parameters for CGHcall function \cite{CGHcall}.\\
+				\hline	
+			\end{tabular}		
+		\end{center}
+		
+	
+		
+		\texttt{segmentData} is a list containing :
+		\begin{itemize}
+			\item \textbf{copynumber} A matrix. Every column represents a copy-number signal for a different sample.
+			\item \textbf{segmented} A matrix of the same size as \texttt{copynumber} containing the segmented values of the copy-number signal.
+			\item \textbf{chromosome} A vector, of length the number of rows of \texttt{copynumber} matrix,containing the number of the chromosome for each position.
+			\item \textbf{startPos} A vector, of length the number of rows of \texttt{copynumber} matrix, containing the genomic position of each probe.
+			\item \textbf{featureNames} A vector, of length the number of rows of \texttt{copynumber} matrix, containing the name of each probe.
+			\item \textbf{sampleNames} A vector, of length the number of columns of \texttt{copynumber} matrix, containing the name of each file.
+		\end{itemize}
+
+		\begin{figure}[!h]
+			\centering
+			\includegraphics[width=0.4\textwidth]{fig/matrixlabel}
+			\caption{Left : example of \texttt{copynumber} matrix for 2 samples. Right : example of the associated \texttt{segmented} matrix.}
+		\end{figure}
+		
+		
+		This function returns a list with the same elements as \texttt{segmentData} and some supplementary elements :
+		\begin{itemize}
+			\item \textbf{calls} A matrix, of the same size as \texttt{copynumber} matrix, containing the label of each point.
+			\item \textbf{segment} A data.frame that sums up all the segments found.
+			\item \textbf{probdloss} (if you have ran \texttt{callingProcess} with \texttt{nclass}=5) A matrix of the same size as \texttt{copynumber} matrix. It contains the probability for each segmented copy-number to be a double loss.
+			\item \textbf{probloss} A matrix of the same size as \texttt{copynumber} matrix. It contains the probability for each segmented copy-number to be a loss.
+			\item \textbf{probdnorm} A matrix of the same size as \texttt{copynumber} matrix. It contains the probability for each segmented copy-number to be normal.
+			\item \textbf{probdgain} A matrix of the same size as \texttt{copynumber} matrix. It contains the probability for each segmented copy-number to be a gain.
+			\item \textbf{probdamp} (if you have ran \texttt{callingProcess} with \texttt{nclass}=4 or 5) A matrix of the same size as \texttt{copynumber} matrix. It contains the probability for each segmented copy-number to be an amplification.
+
+		\end{itemize}
+		
+		A wrapper is provided for creating the \texttt{segmentData} argument :
+		\begin{verbatim}	
+		callingObject(copynumber, segmented, chromosome, position, featureNames, sampleNames)
+		\end{verbatim}
+		The parameters \texttt{featureNames} and \texttt{sampleNames} can be omitted.		
+		
+		Continue the example of the section \ref{sec:seg}. We will create the \texttt{segmentData} list and run the calling process. So, we execute :
+		
+<<eval=FALSE>>=
+#create the segmentData object
+callobj= callingObject(copynumber=seg$signal, segmented=seg$segmented,
+ chromosome=rep(CNdata$chromosome,length(seg$signal)), position=seg$position, 
+ sampleNames="sample1")
+#run the calling
+call=callingProcess(callobj,nclass=3,cellularity=1,verbose=TRUE)
+@
+		
+		We can see the result of the calling in figure \ref{callsoutput}.
+		
+		\begin{figure}[!h]
+			\centering
+			\includegraphics[width=0.5\textwidth]{fig/callsoutput2}
+			\caption{The summation of all the segments after running the function \texttt{callingProcess}.}
+			\label{callsoutput}
+		\end{figure}
+		~~\\				
+		A wrapper \texttt{CNAobjectToCGHcallObject} to convert CNA object from DNAcopy package \cite{DNAcopy} (CBS segmentation) to the desired format (see \texttt{segmentData}) is also provided.
+		
+		\begin{verbatim}
+			CNAobjectToCGHcallObject(CNAobject)
+		\end{verbatim}
+		
+		\begin{center}
+			\begin{tabular}{|l|l|}
+				\hline
+				Parameters & Description\\
+				\hline
+				\texttt{CNAobject} & Output of the \texttt{segment} function from \texttt{DNAcopy} package.\\
+				\hline	
+			\end{tabular}		
+		\end{center}
+		
+		
+		\subsection{\texttt{filterSeg} function}
+			
+			At the end of your calling process, if you have a lot of segments, you perhaps want to filter some uninteresting segments. The \texttt{filterSeg} function allows you to filter segments from 3 criteria : the  length in bp, the size in probes and the calling.
+			
+			\begin{verbatim}
+				filterSeg(segmentList,minLength=1,minProbes=1,normalFilter=TRUE)
+			\end{verbatim}
+			
+			\begin{tabular}{|l|l|}
+				\hline
+				Arguments & Description\\
+				\hline
+				\texttt{segmentList} & A data.frame containing a description of segments, it must have at least columns :\\
+				~ & "chromStart", "chromEnd", "probes" and "calls" (see the output of\\
+				~ & \texttt{cnSegLabelProcess} and \texttt{callingProcess} functions).\\
+				\texttt{minLength} & The minimum length (in bp) for a segment. All the shorter segments are removed.\\
+				\texttt{minProbes} & The minimum number of probes for a segment.\\
+				~ & All the segments with less probes are removed.\\
+				\texttt{normalFilter} & If TRUE only non normal segments are kept.\\
+				\hline			
+			\end{tabular}
+			
+			~~\\
+			
+			It returns a data.frame of the same format as \texttt{segmentList} without the filtered segments.\\
+			
+			Assume you have a variable called \texttt{call\$segment} containing :
+			\begin{figure}[!h]
+				\centering
+				\includegraphics[width=0.5\textwidth]{fig/callsoutput2}
+				\caption{\texttt{call\$segment} variable before filtering.}
+			\end{figure}
+			
+			You want to keep only non normal segment. So, you run the following command:
+<<eval=FALSE>>=
+segmentfilter=filterSeg(call$segment,normalFilter=TRUE)
+@
+			
+			We obtain
+			\begin{figure}[!h]
+				\centering
+				\includegraphics[width=0.5\textwidth]{fig/segapresfiltre2}
+				\caption{Result of the filtering.}
+			\end{figure}
+	
+			
+\section{SNPs selection}
+	\label{sec:select}
+	
+	
+	For the multi-patients analysis of the data-set, the goal is to select some relevant markers according to a response.\\
+	
+	
+	Let $X$ the matrix of size $n\times p$ containing the signals of copy-number (or allele B fraction) for $n$ patients and $y$ a vector of length $n$ containing a response for each signal.
+	
+	So, the lasso problem\cite{lasso} is to find $\hat{\beta}$ such that 
+	\begin{equation}
+		\hat{\beta}=argmin\left\{ \|y-\textbf{X}\beta\|_2^2 \right\} \text{~~subject~to~} \|\beta\|_1\leq t
+	\end{equation}
+
+	for a fixed $t$.
+	
+	Depending on the value of $t$, the solution $\hat{\beta}$ will contain more or less non-zero coefficients. The non-zero coefficients will be the most relevant markers.\\
+	
+	To solve this problem, we use the LARS algorithm \cite{lars} that solves the lasso problem for all the values of $t$. In order to choose the best solution, we use a cross validation to select the best values of $t$ and return the associated solution.\\
+	
+	
+	\subsection{From data normalized by aroma}	
+
+		The function \texttt{markerSelection} will extract the data from the aroma architecture and run the LARS algorithm and the cross-validation for each chromosome separately.
+	
+		\begin{verbatim}
+markerSelection(dataSetName,dataResponse,chromosome,signal,normalTumorArray,onlySNP,nbFolds,
+loss,plot,...)
+		\end{verbatim}
+	
+	
+		\begin{center}
+			\begin{tabular}{|l|l|}
+				\hline
+				Parameters & Description\\
+				\hline
+				\texttt{dataSetName} & The name of the data-set folder.\\
+				\texttt{dataResponse} & A csv files or a data.frame with 2 columns : "files" and "response".\\
+				~ & The column "files" contains the filename to extract and\\
+				~ &   the second column the response associated with the file.\\
+				\texttt{chromosome} & A vector containing the number of the chromosomes for the SNPs selection.\\
+				\texttt{signal} & "CN" or "fracB". On which signal we are working (default="CN").\\
+				\texttt{normalTumorArray} & Only in the case of normal-tumor study. A csv file or a data.frame\\
+			~~ & containing the mapping between normal and tumor files(Fig. \ref{normalTumorArray}).\\
+				\texttt{onlySNP} & Only if \texttt{signal="CN"}. If TRUE, use only the SNPs probes (default=FALSE).\\
+				\texttt{nbFolds} & Number of folds for the cross-validation (default=10).\\
+				\texttt{loss}  & either "logistic" (binary response) or "linear" (quantitative response), default is "logistic".\\
+				\texttt{plot} & If TRUE plot cross-validation mean squared error (default=TRUE).\\
+				\texttt{...} & supplementary arguments for \texttt{cv.glmnet} function \cite{glmnet} in case of \\
+				~ & logistic loss or for \texttt{HDlars} function for linear loss.\\
+				\hline	
+			\end{tabular}		
+		\end{center}
+	
+		For \texttt{signal="fracB"}, the markers selection is done for the tumor allele B fraction.
+	 
+		The function returns a list containing as many elements as the number of chromosomes specified in parameters. The name \texttt{chrX}, where $X$ is the number of a chromosome. Each element of this list is a list containing:
+	
+		\begin{itemize}
+			\item \textbf{chr} The chromosome corresponding to the signal.
+			\item \textbf{markers.index} A vector containing the index of all selected markers.
+			\item \textbf{markers.position} A vector containing the position of all selected markers.
+			\item \textbf{markers.names} A vector containing the name of all selected markers.
+			\item \textbf{coefficient} A vector containing the coefficients ($\hat{\beta}$) of all selected markers.
+			\item \textbf{intercept} Intercept of the model.
+
+			%\item \textbf{fraction} The fraction of the l1 norm of coefficient selected by cross validation.
+		\end{itemize}
+		~~\\
+	
+		For example, assume you have already created the architecture and preprocessed the data-set as in the previous examples (see section \ref{arch} and \ref{norm}). Now you want to select the relevant markers. Assume you have the response in a data.frame named \texttt{dataResponse} (see Fig \ref{dataresponse}).
+		
+		\begin{figure}[!h]
+			\centering
+			\includegraphics[width=0.5\textwidth]{fig/dataResponse}
+			\caption{Example of \texttt{dataResponse} parameters for the \texttt{markerSelection} function.}
+			\label{dataresponse}
+		\end{figure}
+		
+			
+		
+		Run the command :
+	
+<<eval=FALSE>>=
+dataResponse=data.frame(files=getListOfFiles("datatest1"),
+response=c(2.105092,1.442868,1.952103,1.857819,2.047897,1.654766,2.385327,2.113406))
+res=markerSelection("datatest1",dataResponse,chromosome=21:22,signal="CN",
+onlySNP=TRUE,loss="linear")
+@
+	
+		On figure \ref{SNPoutput}, you can see the output of the function.
+		\begin{figure}[!h]
+			\includegraphics[width=0.5\textwidth]{fig/cvcourbe}
+			\includegraphics[width=0.3\textwidth]{fig/snpselectres}
+			\caption{Left : cross-validation mean squared error. Right: results for chromosome 22.}
+			\label{SNPoutput}
+		\end{figure}
+
+		In this example, two markers are selected : the 1065th and 10046th markers of the signal (markers.index) at position 20192586 pb and 47227321 pb on the chromosome respectively. In coefficient you have the coefficient associated to each selected markers.
+
+	\subsection{For any data provided in matrix}	
+
+		A version of the markers selection without the aroma architecture is available.
+		
+		\begin{verbatim}
+			variableSelection(dataMatrix,dataResponse,nbFolds,plot)
+		\end{verbatim}
+		
+		\begin{center}
+			\begin{tabular}{|l|l|}
+				\hline
+				Parameters & Description\\
+				\hline
+				\texttt{dataMatrix} & A matrix containing the data, each row is a different signal.\\
+				\texttt{dataResponse} & A vector containing the response associated with each signal.\\
+				\texttt{nbFolds} & Number of folds for the cross-validation (default=10).\\							\texttt{loss}  & either "logistic" (binary response) or "linear" (quantitative response), default is "logistic".\\
+				~ & logistic loss or for \texttt{HDlars} function for linear loss.\\
+				\texttt{plot} & If TRUE plot cross-validation mean squared error (default=TRUE).\\
+				\texttt{...} & supplementary arguments for \texttt{cv.glmnet} function \cite{glmnet} in case of \\
+				~ & logistic loss or for \texttt{HDlars} function for linear loss.\\
+				\hline	
+			\end{tabular}		
+		\end{center}
+
+		The output of the functions is:
+		
+		\begin{itemize}
+			\item \textbf{variable} A vector containing the index of all selected markers.
+			\item \textbf{coefficient} A vector containing the coefficients ($\hat{\beta}$) of all selected variables.
+			\item \textbf{intercept} Intercept of the model.
+			%\item \textbf{fraction} The fraction of the l1 norm of coefficient selected by cross validation.
+		\end{itemize}
+		
+		For example, simulate a data-set and the associated response	
+<<eval=FALSE>>=
+dataMatrix=matrix(rnorm(5000,0,0.5),nrow=50)
+dataResponse=drop(dataMatrix%*%sample(c(rep(0,90),rep(1,10))))
+res=variableSelection(dataMatrix,dataResponse,nbFolds=5,loss="linear",plot=TRUE)
+@		
+\nocite{*}
+\bibliographystyle{abbrv}
+\bibliography{MPAgenomics} 	
+\end{document}

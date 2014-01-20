@@ -1,0 +1,22 @@
+\name{CNAobjectToCGHcallObject}
+\alias{CNAobjectToCGHcallObject}
+\title{convert CNAobject}
+\usage{
+  CNAobjectToCGHcallObject(CNAobject)
+}
+\arguments{
+  \item{CNAobject}{Output object of segment function from
+  DNAcopy package}
+}
+\value{
+  a list at the required format of \link{callingProcess}.
+}
+\description{
+  convert CNA object (output of the function segment from
+  DNAcopy package) into a list for the argument segmentData
+  of the function \link{callingProcess}.
+}
+\seealso{
+  callingProcess
+}
+
