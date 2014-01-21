@@ -19,6 +19,7 @@ SRCS =  ./lars/Lars.cpp \
 	./lars/PathState.cpp \
 	./lars/functions.cpp \
 	./lars/Cvlars.cpp \
+  ./lars/Fusion.cpp \
 
 
 

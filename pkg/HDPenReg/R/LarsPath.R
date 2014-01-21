@@ -12,6 +12,7 @@
 #'   \item{dropIndex}{Vector of length "step" containing the index of the dropped variable at the i-th step, 0 means no variable has been dropped at this step.}
 #'   \item{addIndex}{Vector of length "step" containing the index of the added variable at the i-th step, 0 means no variable has been added at this step.}
 #'	 \item{mu}{Intercept.}
+#'   \item{meanX}{Mean of columns of X.}
 #'	 \item{ignored}{A vector containing index of ignored variables during the algorithm.}
 #'   \item{p}{Total number of covariates.}
 #'	 \item{fusion}{If TRUE,  results from HDfusion function.}
@@ -34,6 +35,7 @@ setClass(
     addIndex="list",
     nbStep="numeric",
     mu="numeric",
+    meanX="numeric",
     ignored="numeric",
     fusion="logical",
     p="numeric",
@@ -48,6 +50,7 @@ setClass(
     addIndex=list(),
     nbStep=numeric(0),
     mu=numeric(0),
+    meanX=numeric(0),
     ignored=numeric(0),
     fusion=FALSE,
     p=numeric(0),

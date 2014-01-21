@@ -2,7 +2,7 @@
 #include "larsR.h"
 #include "HDPenReg/lars/Lars.h"
 #include "HDPenReg/lars/Cvlars.h"
-#include "HDPenReg/fusion/Fusion.h"
+#include "HDPenReg/lars/Fusion.h"
 
 #include <iostream>
 
@@ -65,7 +65,11 @@ RcppExport SEXP lars(SEXP data, SEXP response, SEXP nbIndiv, SEXP nbVar, SEXP ma
   vector<vector<double> > varCoeff(step+1);
   vector<vector<int> > evoIdxDrop(step);
   vector<vector<int> > evoIdxAdd(step);
+  vector<double> muX(p);
 
+  for(int i = 1; i<= p; i++)
+    muX[i-1] = lars.muX(i);
+    
   l1norm[0]=0;
   for(int i=1;i<=step;i++)
   {
@@ -94,7 +98,8 @@ RcppExport SEXP lars(SEXP data, SEXP response, SEXP nbIndiv, SEXP nbVar, SEXP ma
   //cout<<"Temps extraction des données:"<<(double) (t2-t1)/CLOCKS_PER_SEC<<"s"<<endl;
 
   return List::create(Named("l1norm")=wrap(l1norm), Named("lambda")=wrap(lambda), Named("varIdx")=wrap(varIdx), Named("varCoeff")=wrap(varCoeff),
-                      Named("evoDropIdx")=wrap(evoIdxDrop), Named("evoAddIdx")=wrap(evoIdxAdd),Named("step")=wrap(step),Named("mu")=wrap(lars.mu()),Named("ignored")=wrap(ignored),Named("error")=wrap(lars.msg_error()));
+                      Named("evoDropIdx")=wrap(evoIdxDrop), Named("evoAddIdx")=wrap(evoIdxAdd),Named("step")=wrap(step),Named("mu")=wrap(lars.mu()),
+                      Named("ignored")=wrap(ignored),Named("error")=wrap(lars.msg_error()),Named("muX")=muX);
 
 }
 
@@ -134,7 +139,10 @@ RcppExport SEXP fusion(SEXP data, SEXP response, SEXP nbIndiv, SEXP nbVar, SEXP 
   vector<STK::Real> lambda=fusion.lambda();
   vector<vector<int> > evoIdxDrop(step);
   vector<vector<int> > evoIdxAdd(step);
+  vector<double> muX(p);
 
+  for(int i = 1; i<= p; i++)
+    muX[i-1] = fusion.muX(i);
   l1norm[0]=0;
   for(int i=1;i<=step;i++)
   {
@@ -161,7 +169,8 @@ RcppExport SEXP fusion(SEXP data, SEXP response, SEXP nbIndiv, SEXP nbVar, SEXP 
   //cout<<"Temps extraction des données:"<<(double) (t2-t1)/CLOCKS_PER_SEC<<"s"<<endl;
 
   return List::create(Named("l1norm")=wrap(l1norm), Named("lambda")=wrap(lambda), Named("varIdx")=wrap(varIdx),Named("varCoeff")=wrap(varCoeff),
-                      Named("step")=wrap(step),Named("evoDropIdx")=wrap(evoIdxDrop), Named("evoAddIdx")=wrap(evoIdxAdd),Named("mu")=wrap(fusion.mu()),Named("ignored")=wrap(ignored),Named("error")=wrap(fusion.msg_error()));
+                      Named("step")=wrap(step),Named("evoDropIdx")=wrap(evoIdxDrop), Named("evoAddIdx")=wrap(evoIdxAdd),Named("mu")=wrap(fusion.mu()),
+                      Named("ignored")=wrap(ignored),Named("error")=wrap(fusion.msg_error()),Named("muX")=muX);
 
 }
 

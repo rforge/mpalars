@@ -709,7 +709,7 @@ namespace HD
 
       for(int i = 1; i <= yPred.sizeRowsImpl(); i++)
         for(int j = 1; j <= nbVar; j++)
-          yPred[i] += X(i, varIdx(lastStep,j)) * coefficient(lastStep,j);
+          yPred[i] += (X(i, varIdx(lastStep,j)) -muX_[varIdx(lastStep,j)]) * coefficient(lastStep,j);
 
       return ;
     }
@@ -730,7 +730,7 @@ namespace HD
 
     for( int i = 1; i <= yPred.sizeRowsImpl(); i++)
       for( int j = 1; j <= coeff.sizeRows(); j++)
-        yPred[i] += X(i, coeff[j].first) * coeff[j].second ;
+        yPred[i] += (X(i, coeff[j].first) - muX_[coeff[j].first] ) * coeff[j].second ;
 
     return ;
   }

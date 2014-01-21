@@ -4,8 +4,8 @@
 #' @author Quentin Grimonprez
 #' @param x a LarsParth object
 #' @param Xnew a matrix (of size n*x@@p) of covariates.
-#' @param lambda If mode =\"norm\", lambda represents the l1-norm of the coefficients with which we want to predict. If mode=\"fraction\", lambda represents the ratio (l1-norm of the coefficientswith which we want to predict)/(l1-norm maximal of the LarsPath object).
-#' @param mode "fraction" or "norm".
+#' @param lambda If mode ="norm", lambda represents the l1-norm of the coefficients with which we want to predict. If mode="fraction", lambda represents the ratio (l1-norm of the coefficientswith which we want to predict)/(l1-norm maximal of the LarsPath object).
+#' @param mode "fraction", "lambda" or "norm".
 #' @return The predicted response
 #' @examples 
 #' dataset=simul(50,10000,0.4,10,50,matrix(c(0.1,0.8,0.02,0.02),nrow=2))
@@ -21,7 +21,7 @@ HDpredict=function(x,Xnew, lambda, mode="fraction")
 	if(class(x)!="LarsPath")
 		stop("x must be a LarsPath object.")
 
-	if( !(mode%in%c("fraction","norm")) ) 
+	if( !(mode%in%c("fraction","norm","lambda")) ) 
 		stop("mode must be \"fraction\" or \"norm\".")
 	if(!is.numeric(lambda))
 		stop("lambda must be a positive real.")
@@ -33,25 +33,44 @@ HDpredict=function(x,Xnew, lambda, mode="fraction")
 	fraction = lambda
 	if(mode == "norm")
 		fraction = lambda/x@l1norm[x@nbStep+1]
-
- 
-    yPred=rep(x@mu,nrow(Xnew))
-
-    ##fraction = 0 : all coefficients are equal to 0
-    if(fraction == 0)
-      return(yPred)
-
-    ##fraction = 1 : coefficients of the last step
-	if (fraction >= 1)
+  
+	yPred=rep(x@mu,nrow(Xnew))
+	
+  if(mode=="lambda")
+  {
+    if(lambda==0)
     {
-		yPred=yPred + Xnew[,x@variable[[x@nbStep+1]]]%*%x@coefficient[[x@nbStep+1]]	
-		return(yPred)
+      yPred=yPred + Xnew[,x@variable[[x@nbStep+1]]]%*%x@coefficient[[x@nbStep+1]]	- sum(x@meanX[x@variable[[x@nbStep+1]]]*x@coefficient[[x@nbStep+1]])
+      return(yPred)
     }
-
+    
+    if(lambda>=x@lambda[1])
+      return(yPred)
+    
     ##fraction >0 and <1
-    coeff=computeCoefficients(x,fraction);
+    coeff=computeCoefficients(x,fraction,mode="lambda");
+    
+    yPred=yPred + Xnew[,coeff$variable,drop=FALSE]%*%coeff$coefficient - sum(x@meanX[coeff$variable]*coeff$coefficient)
+    
+    return(yPred)
+  }
+ 
 
-	yPred=yPred + Xnew[,coeff$variable,drop=FALSE]%*%coeff$coefficient
+  ##fraction = 0 : all coefficients are equal to 0
+  if(fraction == 0)
+    return(yPred)
+
+  ##fraction = 1 : coefficients of the last step
+	if (fraction >= 1)
+  {
+		yPred=yPred + Xnew[,x@variable[[x@nbStep+1]]]%*%x@coefficient[[x@nbStep+1]]	- sum(x@meanX[x@variable[[x@nbStep+1]]]*x@coefficient[[x@nbStep+1]])
+		return(yPred)
+  }
+
+  ##fraction >0 and <1
+  coeff=computeCoefficients(x,fraction);
+
+	yPred=yPred + Xnew[,coeff$variable,drop=FALSE]%*%coeff$coefficient - sum(x@meanX[coeff$variable]*coeff$coefficient)
 
 	return(yPred);
 }
@@ -63,7 +82,7 @@ HDpredict=function(x,Xnew, lambda, mode="fraction")
 #' @author Quentin Grimonprez
 #' @param x a LarsParth object
 #' @param lambda If mode ="norm", lambda represents the l1-norm of the coefficients with which we want to predict. If mode="fraction", lambda represents the ratio (l1-norm of the coefficientswith which we want to predict)/(l1-norm maximal of the LarsPath object).
-#' @param mode "fraction" or "norm" or "lambda.
+#' @param mode "fraction" or "norm" or "lambda".
 #' @return A list containing 
 #' \describe{
 #'   \item{variable}{Index of non-zeros coefficients.}

@@ -28,7 +28,7 @@ HDlars <- function(X,y,maxSteps=3*min(dim(X)),intercept=TRUE,eps=.Machine$double
 	
 	#create the output object
 	path=new("LarsPath",variable=val$varIdx,coefficient=val$varCoeff,lambda=val$lambda,l1norm=val$l1norm,addIndex=val$evoAddIdx,dropIndex=val$evoDropIdx,
-           nbStep=val$step,mu=val$mu,ignored=val$ignored,p=ncol(X),error=val$error)
+           nbStep=val$step,mu=val$mu,ignored=val$ignored,p=ncol(X),error=val$error,meanX=val$muX)
 	return(path)
 }
 

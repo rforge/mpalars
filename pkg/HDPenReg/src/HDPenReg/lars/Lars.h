@@ -130,6 +130,12 @@ namespace HD
 
       /** @return msg_error_*/
       inline std::string msg_error() const {return msg_error_;}
+      
+      /**@return muX_*/
+      inline STK::CVectorX muX() const {return muX_;}
+      
+      /**@return muX_[i]*/
+      inline STK::Real muX(int i) const {return muX_[i];}
 
       //methods
       /** run lars algorithm*/
