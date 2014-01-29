@@ -179,7 +179,7 @@ copyChipFiles=function(pathToChipFiles,chipName,path,verbose)
 }
 
 #check if the chipfiles are good
-.checkChipType=function(chipType,tag)
+.checkChipType=function(chipType,tag,path)
 {
   if(!suppressPackageStartupMessages(require("aroma.affymetrix", quietly=TRUE) ) )
   {
@@ -193,19 +193,42 @@ copyChipFiles=function(pathToChipFiles,chipName,path,verbose)
   }
   else
     cat("Package aroma.affymetrix loaded.\n")
-  
+  actualPath=getwd()
+  setwd(path)
   result <- try(cdf <- AffymetrixCdfFile$byChipType(chipType, tags=tag),silent=TRUE)
   if(class(result)[1]=="try-error")
-    stop(paste0("No cdf files for the chip ",chipType," with tag ",tag))
+  {
+    setwd(actualPath)
+    stop(geterrmessage())
+    #stop(paste0("Problem with cdf files for the chip ",chipType," with tag ",tag))
+  }
+
   result <- try(gi <- getGenomeInformation(cdf),silent=TRUE)
   if(class(result)[1]=="try-error")
-    stop(paste0("No ugp files for the chip ",chipType," with tag ",tag))
+  {
+    setwd(actualPath)
+    stop(geterrmessage())
+    #stop(paste0("No ugp files for the chip ",chipType," with tag ",tag))
+  }
+
   result <- try(si <- getSnpInformation(cdf),silent=TRUE)
   if(class(result)[1]=="try-error")
-    stop(paste0("No ufl files for the chip ",chipType," with tag ",tag))
+  {
+    setwd(actualPath)
+    stop(geterrmessage())
+    #stop(paste0("No ufl files for the chip ",chipType," with tag ",tag))
+  }
+
   result <- try(acs <- AromaCellSequenceFile$byChipType(getChipType(cdf, fullname=FALSE)),silent=TRUE)
   if(class(result)[1]=="try-error")
-    stop(paste0("No acs files for the chip ",chipType," with tag ",tag))
+  {
+    setwd(actualPath)
+    stop(geterrmessage())
+    #stop(paste0("No acs files for the chip ",chipType," with tag ",tag))
+  }
+
+  
+  setwd(actualPath)
   
   return(invisible(TRUE))
 }
@@ -246,7 +269,7 @@ createArchitecture=function(dataSetName,chipType,dataSetPath,chipFilesPath,path=
   createEmptyArchitecture(dataSetName,chipType,path,verbose)
   copyChipFiles(chipFilesPath,chipType,path,verbose)
   tag="Full"
-  .checkChipType(chipType,tag)
+  .checkChipType(chipType,tag,path)
   copyDataFiles(dataSetName,dataSetPath,chipType,path,verbose)
 
   

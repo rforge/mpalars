@@ -18,8 +18,8 @@ Multi Patients Analysis of Genomic Markers
 \tabular{ll}{
 Package: \tab MPAgenomics\cr
 Type: \tab Package\cr
-Version: \tab 0.4\cr
-Date: \tab 2013-12-11\cr
+Version: \tab 0.40.1\cr
+Date: \tab 2014-01-29\cr
 License: \tab gpl (>=2)\cr
 }
 
@@ -29,14 +29,11 @@ Quentin Grimonprez
 
 Maintainer: Quentin Grimonprez <quentin.grimonprez@inria.fr>
 }
-\references{
-A AJOUTER
-}
+
 
 \keyword{ package }
-\seealso{
-A AJOUTER
-}
+
 \examples{
-#A AJOUTER
+#see the vignette for detailled examples
+#vignette("MPAgenomics")
 }
