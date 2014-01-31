@@ -82,7 +82,7 @@ createEmptyArchitecture=function(dataSetName,chipType,path=".",verbose=TRUE)
 # @param verbose if TRUE, print details of the process
 #
 #
-#@note WARNING : Files are copied, not moved. Overwrite existing files with the same name.
+#@note WARNING : Files are copied, not moved. 
 copyDataFiles=function(dataSetName,dataSetPath,chipName,path,verbose)
 {
   if(verbose)
@@ -153,7 +153,7 @@ copyChipFiles=function(pathToChipFiles,chipName,path,verbose)
         #copy the file in annotationData/<chipType>/
         if(verbose)
           cat(paste0("Copying ",fileName,"..."))
-        file.copy(paste0(pathToChipFiles,"/",fileName),paste0(path,"/annotationData/chipTypes/",chipName,"/",fileName),overwrite=FALSE)
+        file.copy(paste0(pathToChipFiles,"/",fileName),paste0(path,"/annotationData/chipTypes/",chipName,"/",fileName),overwrite=TRUE)
         
         #change ".Full" in ",Full" in cdf files
         if(substr(fileName,nchar(fileName)-8,nchar(fileName)-4)==".Full")
@@ -266,11 +266,11 @@ createArchitecture=function(dataSetName,chipType,dataSetPath,chipFilesPath,path=
   else
     cat("Package aroma.affymetrix loaded.\n")
   
-  createEmptyArchitecture(dataSetName,chipType,path,verbose)
-  copyChipFiles(chipFilesPath,chipType,path,verbose)
+   createEmptyArchitecture(dataSetName,chipType,path,verbose)
+   copyChipFiles(chipFilesPath,chipType,path,verbose)
   tag="Full"
   .checkChipType(chipType,tag,path)
-  copyDataFiles(dataSetName,dataSetPath,chipType,path,verbose)
+   copyDataFiles(dataSetName,dataSetPath,chipType,path,verbose)
 
   
   return(invisible(TRUE))  
