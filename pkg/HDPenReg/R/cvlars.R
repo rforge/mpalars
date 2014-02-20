@@ -100,8 +100,10 @@ HDcvlars <- function(X,y,nbFolds=10,index=seq(0,1,by=0.01),maxSteps=3*min(dim(X)
 	## nbFolds
 	if(!.is.wholenumber(nbFolds))
 		stop("nbFolds must be a positive integer")
-	if(nbFolds<=0 || nbFolds>length(y))
+	if(nbFolds<=0)
 		stop("nbFolds must be a positive integer")
+  if(nbFolds>length(y))
+    stop("nbFolds must be lower than the number of samples")
 
 	## eps
 	if(!is.double(eps))
