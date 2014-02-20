@@ -18,16 +18,16 @@ Multi Patients Analysis of Genomic Markers
 \tabular{ll}{
 Package: \tab MPAgenomics\cr
 Type: \tab Package\cr
-Version: \tab 0.40.2\cr
-Date: \tab 2014-01-31\cr
+Version: \tab 0.40.3\cr
+Date: \tab 2014-02-20\cr
 License: \tab gpl (>=2)\cr
 }
 
 }
 \author{
-Quentin Grimonprez
+Quentin Grimonprez with contributions from Guillemette Marot and Samuel Blanck
 
-Maintainer: Quentin Grimonprez <quentin.grimonprez@inria.fr>
+Maintainer: Samuel Blanck <samuel.blanck@inria.fr>
 }
 
 
