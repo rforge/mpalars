@@ -126,12 +126,12 @@ SignalNormalization<-function(dataFolder,chipType,normalTumorArray,genotypeCalls
   
   ###genotype calls: genotypage of the NORMAL data only, not the TUMOR 
   if(genotypeCallsMethod=="naive")
-    naiveGenotypeCalls(dataFolder,normalTumorArray,singleStudy,plot) 
+    naiveGenotypeCalls(dataFolder,normalTumorArray,singleStudy,savePlot) 
   
   
   ###tumorBoost: normalization of fraction allele B tumor signal. normal and tumor fracB are required. 
   if(!singleStudy)
-    tumorboost(dataFolder,normalTumorArray,plot)
+    tumorboost(dataFolder,normalTumorArray,savePlot)
   
 }
 
@@ -208,7 +208,7 @@ signalPreProcess=function(dataSetName, chipType, normalTumorArray, dataSetPath, 
     setwd(path)
   }
 
-  SignalNormalization(dataSetName,chipType,normalTumorArray,"naive",plot)
+  SignalNormalization(dataSetName,chipType,normalTumorArray,"naive",savePlot)
   
 }
 
