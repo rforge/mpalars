@@ -19,6 +19,9 @@
 #' }
 #'
 #' @export
+#' 
+#' @author Quentin Grimonprez
+#' 
 PELT=function(signal,Lambda,position=NULL,plot=TRUE,verbose=TRUE)
 {
   #package for PELT method
@@ -145,6 +148,9 @@ PELT=function(signal,Lambda,position=NULL,plot=TRUE,verbose=TRUE)
 #' }
 #'
 #' @export
+#' 
+#' @author Quentin Grimonprez
+#' 
 PELTaroma=function(dataSetName,normalTumorArray,chromosome=1:22,Lambda=NULL,listOfFiles=NULL,onlySNP=TRUE,plot=TRUE,verbose=TRUE)
 {
   

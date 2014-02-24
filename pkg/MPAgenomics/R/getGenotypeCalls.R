@@ -23,7 +23,9 @@
 #' @examples 
 #' #DO NOT EXECUTE
 #' #fracB=getGenotypeCalls("data1",5)
-#'
+#' 
+#' @author Quentin Grimonprez
+#' 
 #' @export 
 getGenotypeCalls=function(dataSetName,chromosome,listOfFiles=NULL,verbose=TRUE)
 {

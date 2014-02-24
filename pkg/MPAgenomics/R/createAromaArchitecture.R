@@ -6,6 +6,7 @@
 #' @param path path where create folders
 #' @param verbose if TRUE, print details of the process
 #'
+#' @author Quentin Grimonprez
 #'
 #' @details This function creates the following architecture:
 #'Architecture to create:
@@ -81,7 +82,8 @@ createEmptyArchitecture=function(dataSetName,chipType,path=".",verbose=TRUE)
 # @param path path where to find rawData folder
 # @param verbose if TRUE, print details of the process
 #
-#
+# @author Quentin Grimonprez
+
 #@note WARNING : Files are copied, not moved. 
 copyDataFiles=function(dataSetName,dataSetPath,chipName,path,verbose)
 {
@@ -128,6 +130,8 @@ copyDataFiles=function(dataSetName,dataSetPath,chipName,path,verbose)
 #@note WARNING : Files are copied, not moved.  Overwrite existing files with the same name.
 # All the chip files have the form : chipName,Tags.extension.
 # Extension can be ugp, ufl, cdf or acs
+#
+# @author Quentin Grimonprez
 #
 copyChipFiles=function(pathToChipFiles,chipName,path,verbose)
 {
@@ -179,6 +183,7 @@ copyChipFiles=function(pathToChipFiles,chipName,path,verbose)
 }
 
 #check if the chipfiles are good
+#@author Quentin Grimonprez
 .checkChipType=function(chipType,tag,path)
 {
   if(!suppressPackageStartupMessages(require("aroma.affymetrix", quietly=TRUE) ) )
@@ -249,6 +254,8 @@ copyChipFiles=function(pathToChipFiles,chipName,path,verbose)
 #' 
 #' @examples
 #' #createArchitecture("data1","GenomeWideSNP_6",dataSetPath="./data/",chipFilesPath="./chip/",path="./aroma",verbose=TRUE)
+#' 
+#' @author Quentin Grimonprez
 #' 
 #' @export
 createArchitecture=function(dataSetName,chipType,dataSetPath,chipFilesPath,path=".",verbose=FALSE)

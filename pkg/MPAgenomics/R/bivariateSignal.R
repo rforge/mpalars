@@ -14,6 +14,7 @@
 #' 
 #' @return a LarsPath object
 #' 
+#' @author Quentin Grimonprez
 #' 
 #' @export
 HDlarsbivariate=function(CN,fracB,y,weightsCN=1/apply(CN,1,sd),weightsFracB=1/apply(fracB,1,sd),meanCN=2,maxSteps,eps)

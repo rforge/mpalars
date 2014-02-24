@@ -8,6 +8,8 @@
 #' 
 #' @details if chipType is not provided, the function returns the files for the first chip (in the alphabetic order)
 #' 
+#' @author Quentin Grimonprez
+#' 
 #' @export
 getListOfFiles=function(dataSetName,chipType)
 {
@@ -43,6 +45,8 @@ getListOfFiles=function(dataSetName,chipType)
 #' @param chipType Name of the new chiptype to add.
 #' @param chipPath Path to the files to add.
 #' 
+#' @author Quentin Grimonprez
+#' 
 #' @export
 addChipType=function(chipType,chipPath)
 {
@@ -67,6 +71,8 @@ addChipType=function(chipType,chipPath)
 #' @param dataSetName Name of the new data-set to add.
 #' @param dataPath Path to the files to add.
 #' @param chipType Name of the chip used for the data.
+#' 
+#' @author Quentin Grimonprez
 #' 
 #' @export
 addData=function(dataSetName,dataPath,chipType)

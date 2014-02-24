@@ -1,9 +1,3 @@
-#source("genotypeCalls.R")
-#source("tumorboost.R")
-#setwd("~/testArc/")
-#SignalNormalization("data1","GenomeWideSNP_6","RC","~/Documents//aromaRb/Rcode/colnamesAll.csv")
-#SignalNormalization("data2","GenomeWideSNP_6")
-
 #' normalization process for estimating raw copy-numbers and allele B fraction.
 #' 
 #' 
@@ -28,6 +22,8 @@
 #'        +- <nameOfDataSet>/
 #'           +- <chipType>/ <-- must match exactly a chip type folder under annotationData/
 #'              +- CEL files
+#' 
+#' @author Quentin Grimonprez
 #' 
 #' @export
 SignalNormalization<-function(dataFolder,chipType,normalTumorArray,genotypeCallsMethod="naive",savePlot=TRUE)
@@ -170,6 +166,9 @@ SignalNormalization<-function(dataFolder,chipType,normalTumorArray,genotypeCalls
 #' The functions will create other folders which contains figures, results of normalization.
 #' 
 #' If you have already the required architecture, you have just to add your data in the rawData folder with respect to the architecture.
+#' 
+#' 
+#' @author Quentin Grimonprez
 #' 
 #' @export
 signalPreProcess=function(dataSetName, chipType, normalTumorArray, dataSetPath, chipFilesPath=dataSetPath, path=".", createArchitecture=TRUE, savePlot=TRUE)

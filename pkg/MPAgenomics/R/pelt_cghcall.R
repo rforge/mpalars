@@ -33,6 +33,9 @@
 #' # seg2=cnSegCallingProcess("data2",chromosome=20:21)
 #'
 #' @export
+#' 
+#' @author Quentin Grimonprez
+#' 
 cnSegCallingProcess=function(dataSetName,normalTumorArray,chromosome=1:22,Lambda=NULL,listOfFiles=NULL,onlySNP=TRUE,savePlot=TRUE,nclass=3,cellularity=1,...)
 {
   
@@ -276,6 +279,9 @@ cnSegCallingProcess=function(dataSetName,normalTumorArray,chromosome=1:22,Lambda
 #' @return a data.frame of the same format as segmentList.
 #'
 #' @export
+#' 
+#' @author Quentin Grimonprez
+#' 
 filterSeg=function(segmentList,minLength=1,minProbes=1,keptLabel=c("loss","gain"))
 {
   ########check parameters

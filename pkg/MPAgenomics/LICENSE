@@ -1,0 +1,13 @@
+- CGHcall, ExpandCGHcall, functions in private.R and preprocess.R
+authors: Sjoerd Vosse, Mark van de Wiel
+copyright: Sjoerd Vosse, Mark van de Wiel
+
+- tumorboost.R
+function based on the code from http://aroma-project.org/vignettes/tumorboost-highlevel from Pierre Neuvial
+
+- genotypeCalls.R
+function based on the code from http://aroma-project.org/vignettes/naive-genotyping from Pierre Neuvial
+
+- other functions
+author: Quentin Grimonprez
+copyright: Inria 2012-2014

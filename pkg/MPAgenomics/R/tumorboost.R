@@ -5,7 +5,10 @@
 # The first column contains the names of normal files and the second the names of associated tumor files.
 # @param plot if TRUE, the function will produced graphics
 #
-# @export
+#
+# This function is mainly based on the code from http://aroma-project.org/vignettes/tumorboost-highlevel from Pierre Neuvial
+#
+#
 tumorboost<-function(dataSetName,normalTumorArray,plot=TRUE)
 {
   require(aroma.cn)
@@ -134,6 +137,10 @@ tumorboost<-function(dataSetName,normalTumorArray,plot=TRUE)
 # @param sampleName id of the current file
 # @param dsC copynumber data
 # @param sampleNAMESC names of the file of copy number
+#
+#
+# This function is mainly based on the code from http://aroma-project.org/vignettes/tumorboost-highlevel from Pierre Neuvial
+#
 tumorboostPlot=function(ds,dsList,dataSetName,normalTumorArray,sampleName,dsC,sampleNAMESC)
 {
   ########## load the total copy number signal for a pair (normal,tumor) 

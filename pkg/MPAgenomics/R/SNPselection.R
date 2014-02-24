@@ -1,4 +1,3 @@
-
 #'
 #' This function selects, for each chromosome, the most relevant markers according to a response.
 #'
@@ -35,6 +34,8 @@
 #' # res=markerSelection("DataB",rnorm(27),chromosome=22,signal="CN",normalTumorArray,onlySNP=TRUE)
 #' 
 #' @seealso HDPenReg
+#'
+#' @author Quentin Grimonprez
 #'
 #' @export
 #'
@@ -161,6 +162,8 @@ markerSelection=function(dataSetName,dataResponse,chromosome=1:22,signal="CN",no
 #
 # @details This function requires to use the aroma folder architecture. In your working directory, there lust have the rawData folder and totalAndFracBData folder.
 #
+# @author Quentin Grimonprez
+#
 SNPselectionCNsignal=function(dataSetName,dataResponse,chromosome,normalTumorArray,onlySNP,nbFolds=10,loss="logistic",plot=TRUE,...)
 {
   res=list()
@@ -271,6 +274,8 @@ SNPselectionCNsignal=function(dataSetName,dataResponse,chromosome,normalTumorArr
 # }
 #
 # @details This function requires to use the aroma folder architecture. In your working directory, there lust have the rawData folder and totalAndFracBData folder.
+#
+# @author Quentin Grimonprez
 #
 SNPselectionFracBsignal=function(dataSetName,dataResponse,chromosome,normalTumorArray,nbFolds=10,loss="logistic",plot=TRUE,...)
 {
@@ -386,6 +391,7 @@ SNPselectionFracBsignal=function(dataSetName,dataResponse,chromosome,normalTumor
 #'   \item{fraction}{fraction of the l1 norm of coefficient selected by cross validation.}
 #' }
 #'
+#' @author Quentin Grimonprez
 #' 
 #' @export
 variableSelection=function(dataMatrix,dataResponse,nbFolds=min(length(dataResponse),10),loss="logistic",plot=TRUE,...)

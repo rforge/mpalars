@@ -26,6 +26,7 @@
 # @author Mark van de Wiel
 # 
 # @export
+#
 postsegnormalize <- function(segmentData,inter=c(-0.1,0.1))
 {
     #segmentData <- seg

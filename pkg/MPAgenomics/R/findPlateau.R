@@ -16,7 +16,7 @@
 #'    the second, the length of the plateau and the third, the number of values of lambda contained int the plateau.}
 #' }
 #' 
-#' @examples #####
+#' @author Quentin Grimonprez
 #' 
 #' @export
 #' 

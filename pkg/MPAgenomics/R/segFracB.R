@@ -24,6 +24,9 @@
 #' }
 #'
 #' @export
+#' 
+#' @author Quentin Grimonprez
+#' 
 segFracBSignal=function(dataSetName,normalTumorArray,chromosome=1:22,Lambda=NULL,listOfFiles=NULL,savePlot=TRUE,verbose=TRUE)
 {
   allpkg=TRUE

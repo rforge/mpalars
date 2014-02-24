@@ -1,5 +1,5 @@
 #
-# This is the ExpandCGHcall function from CGHcall package.
+# This is the ExpandCGHcall function from CGHcall package (GPL License).
 # 
 # Expands result from \link{CGHcall} function to CGHcall object.
 #
@@ -29,6 +29,7 @@
 # @details  It allows more memory efficient handling of large data objects. 
 # If R crashes because of memory problem, we advise to set memeff = TRUE and increase the value of divide. 
 # When multiple files are output (in case of memeff=TRUE) the function combine may be used to combine CGHcall objects.
+#
 #
 # @author Sjoerd Vosse & Mark van de Wiel
 # @references Mark A. van de Wiel, Kyung In Kim, Sjoerd J. Vosse, Wessel N. van Wieringen, Saskia M. Wilting and Bauke Ylstra. CGHcall: calling aberrations for array CGH tumor profiles. Bioinformatics, 23, 892-894.

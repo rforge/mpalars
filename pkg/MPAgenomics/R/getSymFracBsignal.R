@@ -27,6 +27,8 @@
 #' #fracB=getSymFracBSignal("data1",5,normalTumorArray)
 #' #fracB=getSymFracBSignal("data2",5)
 #'
+#' @author Quentin Grimonprez
+#'
 #' @export 
 getSymFracBSignal=function(dataSetName,file,chromosome,normalTumorArray,verbose=TRUE)
 {
@@ -186,8 +188,6 @@ getSymFracBSignal=function(dataSetName,file,chromosome,normalTumorArray,verbose=
   }
   else 
     throw("Unknown platform: ", platform);
-  
-  
   
 
   symFracB=list()

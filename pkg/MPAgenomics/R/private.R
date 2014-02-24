@@ -1,3 +1,6 @@
+# All the functions of this file are from CGHcall and CGHbase packages created by Sjoerd Vosse 
+# and Mark van de Wiel under License GPL
+
 ##private functions from package CGHcall
 # .MakeData
 # .countcl
@@ -18,6 +21,9 @@
 #private functions from CGHbase
 # .getCentromere
 # .convertChromosomeToArm
+# 
+
+# @author Sjoerd Vosse & Mark van de Wiel
 
 
 ####CGHcall

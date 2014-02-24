@@ -6,7 +6,9 @@
 # @param singleArray if TRUE, it is a single Array analysis, no need of normalTumorArray
 # @param plot, if TRUE, graphics will be created in the case of a singleArray study
 #
-# @export
+#
+# This function is based on the code from  http://aroma-project.org/vignettes/naive-genotyping from Pierre Neuvial
+#
 naiveGenotypeCalls<-function(dataSetName,normalTumorArray,singleArray,plot)
 {  
   require(aroma.cn)
@@ -224,6 +226,8 @@ naiveGenotypeCalls<-function(dataSetName,normalTumorArray,singleArray,plot)
 # plot function in case of single study
 #
 # @param dataFolder name of the folder containing the data
+#
+# This function is based on the code from  http://aroma-project.org/vignettes/naive-genotyping from Pierre Neuvial
 #
 SingleStudyPlot=function(dataFolder)
 { 

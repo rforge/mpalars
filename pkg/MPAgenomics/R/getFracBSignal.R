@@ -28,6 +28,8 @@
 #' #fracB=getFracBSignal("data1",5,normalTumorArray)
 #' #fracB=getFracBSignal("data2",5)
 #'
+#' @author Quentin Grimonprez
+#'
 #' @export 
 getFracBSignal=function(dataSetName,chromosome,normalTumorArray,listOfFiles=NULL,verbose=TRUE)
 {
@@ -241,6 +243,8 @@ getFracBSignal=function(dataSetName,chromosome,normalTumorArray,listOfFiles=NULL
 # 
 # @return A matrix. each column contains the allele B fraction signal for a different profile.
 # 
+# @author Quentin Grimonprez
+#
 getFracBSignalSingleStudy=function(ds,units,indexOfFiles)
 {    
   require(aroma.affymetrix)
@@ -269,6 +273,8 @@ getFracBSignalSingleStudy=function(ds,units,indexOfFiles)
 # 
 # @return A matrix. each column contains the allele B fraction signal for a different profile.
 # 
+# @author Quentin Grimonprez
+#
 getFracBSignalPairedStudy=function(ds,units,normalTumorArray,normalFiles)
 {  
   require(aroma.affymetrix)
@@ -316,20 +322,22 @@ getFracBSignalPairedStudy=function(ds,units,normalTumorArray,normalFiles)
 #' The fraction allele B signal is the ratio between the signal from the B allele and the total signal.
 #' The symmetrization of the fraction allele B signal x is : 2*abs(x-0.5).
 #'
-#'@title symmetrize an allele B fraction signal
+#' @title symmetrize an allele B fraction signal
 #'
-#'@param fracB a vector containing an allele B fraction signal.
+#' @param fracB a vector containing an allele B fraction signal.
 #'
-#'@return a vector containing the symmetrized signal.
+#' @return a vector containing the symmetrized signal.
 #'
-#'@examples
+#' @examples
 #' signalA=abs(rnorm(100))
 #' signalB=abs(rnorm(100))
 #' signalFracB=signalA/(signalA+signalB)
 #' 
 #' symFracB=symmetrizeFracB(signalFracB)
 #'
-#'@export
+#' @export
+#'
+#' @author Quentin Grimonprez
 symmetrizeFracB=function(fracB)
 {
   if(missing(fracB))

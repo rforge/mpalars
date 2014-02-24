@@ -27,6 +27,8 @@
 #' #C=getCopyNumberSignal("data1",5,normalTumorArray,TRUE)
 #' #C=getCopyNumberSignal("data2",5,onlySNP=TRUE)
 #'
+#' @author Quentin Grimonprez
+#'
 #' @export 
 getCopyNumberSignal=function(dataSetName,chromosome,normalTumorArray,onlySNP=FALSE,listOfFiles=NULL,verbose=TRUE)
 {
@@ -245,6 +247,7 @@ getCopyNumberSignal=function(dataSetName,chromosome,normalTumorArray,onlySNP=FAL
 #   \item{sampleNames}{Names of the extracted signal.}
 # }
 # 
+# @author Quentin Grimonprez
 getCopyNumberSignalSingleStudy=function(dsC,units,chromosome,indexOfFiles,ugp)
 {    
   #compute the median
@@ -299,6 +302,7 @@ getCopyNumberSignalSingleStudy=function(dsC,units,chromosome,indexOfFiles,ugp)
 #   \item{sampleNames}{Names of the extracted signal.}
 # }
 # 
+# @author Quentin Grimonprez
 getCopyNumberSignalPairedStudy=function(dsC,units,normalTumorArray,chromosome,normalFiles,ugp)
 {  
   #id of normal files
@@ -358,6 +362,7 @@ getCopyNumberSignalPairedStudy=function(dsC,units,normalTumorArray,chromosome,no
 # @param indexFileToExtract index of the files to test
 #
 # @return a vector containing the gender ("XX" or "XY") of the specified files
+# @author Quentin Grimonprez
 findGender=function(dataSetName,indexFileToExtract,ugp)
 {
   #path where find the data
@@ -391,7 +396,7 @@ findGender=function(dataSetName,indexFileToExtract,ugp)
 # @param tol tolerance
 #
 # @ return TRUE if the number is an integer, FALSE else
-#
+# @author Quentin Grimonprez
 is.wholenumber=function(x, tol = .Machine$double.eps^0.5)  
 {
   #if(!is.double(x))
@@ -409,7 +414,7 @@ is.wholenumber=function(x, tol = .Machine$double.eps^0.5)
 # The first column contains the name of normal files and the second the names of associated tumor files.
 #
 # @return a vector of the same size as listOfFiles containing the complementary files
-#
+# @author Quentin Grimonprez
 getComplementaryFile=function(listOfFiles,normalTumorArray)
 {
   sapply(listOfFiles,FUN=function(names,data)
@@ -439,7 +444,7 @@ getComplementaryFile=function(listOfFiles,normalTumorArray)
 # The first column contains the name of normal files and the second the names of associated tumor files.
 #
 # @return a vector containing the status of each files of listOfFiles
-#
+# @author Quentin Grimonprez
 getStatus=function(listOfFiles,normalTumorArray)
 {
   sapply(listOfFiles,FUN=function(names,data)
@@ -467,7 +472,7 @@ getStatus=function(listOfFiles,normalTumorArray)
 # The first column contains the name of normal files and the second the names of associated tumor files.
 #
 # @return a vector of the same size as listOfFiles containing the complementary files
-#
+# @author Quentin Grimonprez
 getId=function(listOfFiles,normalTumorArray)
 {
   sapply(listOfFiles,FUN=function(names,data)

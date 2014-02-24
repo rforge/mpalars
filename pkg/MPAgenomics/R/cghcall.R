@@ -1,5 +1,5 @@
 #
-# This is the CGHcall function from CGHcall package.
+# This is the CGHcall function from CGHcall package (GPL License).
 # 
 # Calls aberrations for array CGH data using a six state mixture model.
 #
@@ -403,10 +403,6 @@ CGHcall <- function(inputSegmented, prior="auto", nclass=5, organism="human",cel
 
 ##################################################################################################   
 
-#datatest=list(copynumber=matrix(c(rnorm(20,2,0.2),rnorm(10,1,0.2),rnorm(20,2,0.2),rnorm(10,2,0.2),rnorm(20,1,0.2),rnorm(20,2,0.2)),ncol=2),startPos=1:50,chromosome=c(rep(1,30),rep(2,20)),sampleNames=c("test1","test2"),featureNames=paste0(1:50))
-#datatest$segmented=matrix(c(rep(mean(datatest$copynumber[1:20,1]),20),rep(mean(datatest$copynumber[21:30,1]),10),rep(mean(datatest$copynumber[31:50,1]),20),rep(mean(datatest$copynumber[1:10,2]),10),rep(mean(datatest$copynumber[11:30,2]),20),rep(mean(datatest$copynumber[31:50,2]),20)),ncol=2)
-
-
 #'
 #' Launch the process of segmentation labeling. This function uses dunctions from CGHcall package developped by Sjoerd Vosse, Mark van de Wiel and Ilari Scheinin. See the CGHcall package for more details.
 #'
@@ -442,6 +438,8 @@ CGHcall <- function(inputSegmented, prior="auto", nclass=5, organism="human",cel
 #'   \item{sampleNames}{A vector of length ncol(copynumber) containing the names of each profiles.}
 #' }
 #' 
+#'
+#' @author Quentin Grimonprez
 #' @export
 #'  
 callingProcess=function(segmentData,nclass=5,cellularity=1,verbose=TRUE,...)
@@ -501,6 +499,8 @@ callingProcess=function(segmentData,nclass=5,cellularity=1,verbose=TRUE,...)
 #'
 #' @return a list in the right format for \link{PELT} function
 #'  
+#' @author Quentin Grimonprez
+#'
 #' @export
 peltObject=function(copynumber,chromosome,position,featureNames,sampleNames)
 {
@@ -561,7 +561,9 @@ peltObject=function(copynumber,chromosome,position,featureNames,sampleNames)
 #' @param sampleNames Names of the sample (not necessary).
 #'
 #' @return a list in the right format for \link{callingProcess} function
-#'  
+#' 
+#' @author Quentin Grimonprez  
+#' 
 #'@export
 callingObject=function(copynumber,segmented,chromosome,position,featureNames,sampleNames)
 {
@@ -621,17 +623,6 @@ callingObject=function(copynumber,segmented,chromosome,position,featureNames,sam
   return(list(copynumber=copynumber,segmented=segmented,chromosome=chromosome,startPos=position,featureNames=featureNames,sampleNames=sampleNames))
 }
 
-# breakpointToSegmentedSignals=function(breakpoints,values)
-# {
-#   segmented=rep(0,breakpoints[length(breakpoints)])
-#   sapply(1:,FUN=function(i)
-#     {
-#       
-#       return(NULL)
-#     })
-# }
-# 
-
 #' convert CNA object (output of the function segment from DNAcopy package) into a list for the argument segmentData of the function \link{callingProcess}.
 #'
 #' @title convert CNAobject
@@ -641,6 +632,9 @@ callingObject=function(copynumber,segmented,chromosome,position,featureNames,sam
 #' @return a list at the required format of \link{callingProcess}.
 #' 
 #' @seealso callingProcess
+#' 
+#' @author Quentin Grimonprez
+#' 
 #' @export
 CNAobjectToCGHcallObject=function(CNAobject)
 {
