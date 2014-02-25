@@ -23,7 +23,7 @@ SignalNormalization(dataFolder, chipType, normalTumorArray,
   allele B fraction signal will be saved in the figures
   folder.}
 
-  \item{tags}{appear in the different file name (cdf, ugp,
+  \item{tags}{appear in the different file names (cdf, ugp,
   ufl) of the chip. For no tag, use tags=NULL (default =
   NULL). See details for more information.}
 }

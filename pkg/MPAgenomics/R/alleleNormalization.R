@@ -8,7 +8,7 @@
 #' The first column contains the name of normal files and the second the names of associated tumor files.
 #' @param genotypeCallsMethod method used for genotypage, default is "naive".
 #' @param savePlot if TRUE, graphics of the CN signal and allele B fraction signal will be saved in the figures folder.
-#' @param tags appear in the different file name (cdf, ugp, ufl) of the chip. For no tag, use tags=NULL (default = NULL). See details for more information.
+#' @param tags appear in the different file names (cdf, ugp, ufl) of the chip. For no tag, use tags=NULL (default = NULL). See details for more information.
 #' @return NULL
 #'
 #' @details You have to respect the aroma architecture:
@@ -80,13 +80,13 @@ SignalNormalization<-function(dataFolder,chipType,normalTumorArray,genotypeCalls
   if(!(chipType%in%list.files("annotationData/chipTypes")))
     stop(paste0(chipType," not found in annotationData/chipTypes Folder.")) 
 
-  #tag
-  if(!is.character(tags))
-    stop("tags must be a string.")
   #check if ugp or ufl files with the specified tags exist
   file=list.files(paste0("annotationData/chipTypes/",chipType))
   if(!is.null(tags))
   {
+    if(!is.character(tags))
+      stop("tags must be a string.")
+    
     tagfile=file[grep(tags,file)]
     
     tagfile=tolower(tagfile)
@@ -233,7 +233,7 @@ signalPreProcess=function(dataSetName, chipType, normalTumorArray, dataSetPath, 
     setwd(path)
   }
 
-  SignalNormalization(dataSetName,chipType,normalTumorArray,"naive",savePlot)
+  SignalNormalization(dataSetName,chipType,normalTumorArray,"naive",savePlot,tags)
  
   return(invisible(NULL)) 
 }

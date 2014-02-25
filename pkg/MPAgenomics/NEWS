@@ -1,0 +1,12 @@
+Version 0.40.6 (25-02-2014)
+- BUG FIX : Tags mangement : checking NULL value before checking character 
+- rename ChangeLog into NEWS
+
+Version 0.40.5 (25-02-2014)
+- Adding tag management for chip files
+- Vignette update
+
+Version 0.40.4 (24-02-2014)
+-Adding copyrights and authors
+-Adding citation file
+-Adding changelog
