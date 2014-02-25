@@ -488,8 +488,10 @@ callingProcess=function(segmentData,nclass=5,cellularity=1,verbose=TRUE,...)
 }
 
 
-#'
+
 #' @title create the list in parameters for \link{PELT} function
+#' 
+#' @description create the list in parameters for \link{PELT} function
 #' 
 #' @param copynumber A vector containing the copy-number signal for one patient and one chromosome.
 #' @param chromosome Chromosome associated with the copy-number signal.
@@ -550,8 +552,10 @@ peltObject=function(copynumber,chromosome,position,featureNames,sampleNames)
   return(list(copynumber=copynumber,chromosome=chromosome,position=position,featureNames=featureNames,sampleNames=sampleNames))
 }
 
-#'
+
 #' @title create the list in parameters for \link{callingProcess} function
+#' 
+#' @description create the list in parameters for \link{callingProcess} function
 #' 
 #' @param copynumber A matrix containing the copy-number signal. Each column is a different patient.
 #' @param segmented A matrix containing the segmented copy-number signal. Matrix of the same size as copynumber.

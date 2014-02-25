@@ -32,9 +32,9 @@
     For both types of analyses, a pre-processing step \ref{sec:norm} is proposed as a wrapper of \texttt{aroma.*} packages \cite{aroma}\cite{affy}. 
 		This enables to keep maximum information from the original signals and improve the multi-patients analysis. In particular, this is useful to keep quantitative data for SNPs rather than usual genotype calls (AA, AB or BB) when these states are not relevant (eg in cancer studies where the number of copies differs from two copies). Note that the use of \texttt{aroma.*} packages \cite{aroma} implies that the pre-processing step is only available for Affymetrix DNA chips. The other functionalities of the package \texttt{MPAgenomics} can however be used independently and such procedures are explained in the sections which detail each step of the proposed analysis. 
     
-    Efficient segmentation is proposed by refining the parameter choice of \textsc{Pelt} segmentation \cite{pelt} originally implemented in the \texttt{changepoint} package \cite{peltpackage}.  \texttt{MPAgenomics} offers a pipeline to perform normalization, segmentation and calling at the same time.
+    Efficient segmentation is proposed by refining the parameter choice of \textsc{Pelt} segmentation \cite{pelt} originally implemented in the \texttt{changepoint} package \cite{peltR}.  \texttt{MPAgenomics} offers a pipeline to perform normalization, segmentation and calling at the same time.
     
-    Markers selection relies on the use of penalized regularization techniques implemented in \texttt{glmnet} \cite{glmnet} and wrappers are offered to relate this package with the normalisation packages. For the users who would like to go further in the use of penalized regularization techniques, we also provide some guidelines to quickly build inputs for the HDPenReg package and interpret some outputs of this latter one.
+    Markers selection relies on the use of penalized regularization techniques implemented in \texttt{glmnet} \cite{glmnet} and wrappers are offered to relate this package with the normalisation packages. For the users who would like to go further in the use of penalized regularization techniques, we also provide some guidelines to quickly build inputs for the \texttt{HDPenReg} package and interpret some outputs of this latter one.
 
 	\subsection{Note on the installation of the package and its dependencies}
 	
@@ -62,7 +62,7 @@ install.packages("aroma.core")
 @	
 	
 		
-		For users who want to perform the single analysis (segmentation and calling), we recommand to install the packages \texttt{changepoint}\cite{pelt} and \texttt{CGHcall} \cite{CGHcall}.
+		For users who want to perform the single analysis (segmentation and calling), we recommand to install the packages \texttt{changepoint}\cite{peltR} and \texttt{CGHcall} \cite{CGHcallR}.
 
 <<eval=FALSE>>=
 #for segmentation
@@ -93,8 +93,8 @@ In this example, the directory pointed by celPATH must contain the files shown i
 
 			\begin{figure}[!h]
 				\centering
-				\includegraphics[width=0.6\textwidth]{fig/dataFilesSingle2}
-				\caption{CEL files in \texttt{celPATH} (variable containing the path to the downloaded CEL  files).}%\texttt{"./Documents/datatest1"}.}
+				\includegraphics[width=0.9\textwidth]{fig/dataFilesSingle2}
+				\caption{CEL files in \texttt{celPATH} (variable containing the path to the downloaded CEL  files).}
 				\label{dfSingle2}
 			\end{figure}
 	
@@ -123,7 +123,7 @@ celPATH="./cel"
 					\url{http://www.affymetrix.com/Auth/support/downloads/library_files/genomewidesnp6_libraryfile.zip}
 			\end{small}
 		
-			Extract these files and replace the following path with the appropriate one pointing to the folder containing the extracted .cdf files (only GenomeWideSNP\_6.cdf and GenomeWideSNP\_6.Full.cdf are needed but you can leave the other files in the same folder):	
+			Extract these files and replace the following path with the appropriate one pointing to the folder containing the extracted .cdf files (only GenomeWideSNP\_6.Full.cdf is needed but you can leave the other files in the same folder):	
 		
 <<eval=FALSE>>=
 chipPATH="/home/user/Documents/workdir/CD_GenomeWideSNP_6_rev3/Full/GenomeWideSNP_6/LibFiles/"
@@ -135,8 +135,7 @@ chipPATH="/home/user/Documents/workdir/CD_GenomeWideSNP_6_rev3/Full/GenomeWideSN
 <<eval=FALSE>>=
 #unzip required files
 unzip("./genomewidesnp6_libraryfile.zip",
- files=c("CD_GenomeWideSNP_6_rev3/Full/GenomeWideSNP_6/LibFiles/GenomeWideSNP_6.cdf",
-"CD_GenomeWideSNP_6_rev3/Full/GenomeWideSNP_6/LibFiles/GenomeWideSNP_6.Full.cdf"),exdir=".")
+ files=c("CD_GenomeWideSNP_6_rev3/Full/GenomeWideSNP_6/LibFiles/GenomeWideSNP_6.Full.cdf"),exdir=".")
 #indicate the path containing .cdf files
 chipPATH="./home/user/Documents/workdir/CD_GenomeWideSNP_6_rev3/Full/GenomeWideSNP_6/LibFiles/"
 @		
@@ -207,7 +206,7 @@ setwd(workdir) #set your working directory (where you have rights to write)
 #normalize data (might take several hours)
 signalPreProcess(dataSetName="datatest1", chipType="GenomeWideSNP_6",
 dataSetPath=celPATH,chipFilesPath=chipPATH, path=".",
-createArchitecture=TRUE, savePlot=TRUE)
+createArchitecture=TRUE, savePlot=TRUE, tags="Full")
 @	
 	
 			The first pipeline offered in \texttt{MPAgenomics} consists in the segmentation of every copy-number signal of the data. Then, a calling method can be applied on all the segments to label them (e.g. "loss", "normal", "gain"). To perform segmentation and calling at the same time, type the following lines in your R console:
@@ -268,7 +267,7 @@ normalTumorArray=data.frame(normal=rep(files[1],7),tumor=files[2:8])
 
 <<eval=FALSE>>=
 signalPreProcess(dataSetName="datatest1", chipType="GenomeWideSNP_6",
-normalTumorArray=normalTumorArray, createArchitecture=FALSE, savePlot=TRUE)
+normalTumorArray=normalTumorArray, createArchitecture=FALSE, savePlot=TRUE, tags="Full")
 @		
 			\paragraph{Single-Patient Analysis of allele B fraction}
 
@@ -353,7 +352,7 @@ segfracB
 		
 		The minimal architecture contains 2 folders : \texttt{annotationData} and \texttt{rawData}. Some supplementary folders will be created during the execution of some functions.
 
-		In the \texttt{annotationData} folder, each type of chip used for the experiment has to have his own folder containing its definition files (.cdf) and other files (.ugp\footnote{See \url{http://www.aroma-project.org/node/43} for more details.}, .acs\footnote{See \url{http://www.aroma-project.org/node/100} for more details.}, .ufl\footnote{See \url{http://www.aroma-project.org/node/47} for more details.}). In this folder, every file name must begin with the type of the chip (see Fig. \ref{chipfile}).
+		In the \texttt{annotationData} folder, each type of chip used for the experiment has to have his own folder containing its definition files (.cdf) and other files (.ugp\footnote{See \url{http://www.aroma-project.org/node/43} for more details.}, .acs\footnote{See \url{http://www.aroma-project.org/node/100} for more details.}, .ufl\footnote{See \url{http://www.aroma-project.org/node/47} for more details.}). In this folder, every file name must comply with the following format <chipType>,<tags>.<extension>(see Fig. \ref{chipfile}).
 		
 		The \texttt{rawData} folder contains the different data-sets with the CEL files. Each data-set folder contains one or more folders (one per different chip type used) containing the CEL files, these files will not be modified during the process. Note that the \texttt{chipType} folder in the data-set folder must match exactly a chip type folder under annotationData.\\
 
@@ -394,7 +393,7 @@ segfracB
 		An other function is provided to create the architecture and copy the specified files in the right directory : \texttt{createArchitecture}. It also checks that the names of the chip files begin by the specified \texttt{chipType} argument.		
 		
 		\begin{verbatim}
-	createArchitecture(dataSetName,chipType,dataSetPath,chipFilesPath,path,verbose)
+	createArchitecture(dataSetName,chipType,dataSetPath,chipFilesPath,path,verbose,tags)
 		\end{verbatim}
 	
 		\begin{center}
@@ -408,6 +407,7 @@ segfracB
 				\texttt{chipFilesPath} & Path to the folder containing the chip files.\\
 				\texttt{path} & Path where create the architecture (default=".").\\
 				\texttt{verbose} & Print information during the process (default=FALSE).\\
+        \texttt{tags} & Appear in the different file names (cdf, ugp, ufl) of the chip. For no tag, use tags=NULL (default = NULL).\\
 				\hline	
 			\end{tabular}		
 		\end{center}
@@ -431,7 +431,7 @@ segfracB
 		
 		The \texttt{celPATH} and \texttt{chipPATH} variables contain the different paths to the files downloaded. Now, create the architecture with our files and call this data-set "datatest1". So, we have to run the following command :
 <<eval=FALSE>>=
-createArchitecture("datatest1","GenomeWideSNP_6",celPATH,chipPATH,".",TRUE)
+createArchitecture("datatest1","GenomeWideSNP_6",celPATH,chipPATH,".",TRUE,"Full")
 @
 		
 		
@@ -557,6 +557,7 @@ createArchitecture("datatest1","GenomeWideSNP_6",celPATH,chipPATH,".",TRUE)
 				\texttt{createArchitecture} & if TRUE, the aroma architecture will be automatically created (default=TRUE).\\
 				\texttt{savePlot} & savePlot if TRUE, graphics of the CN signal and allele B fraction signal will be\\
 				~~ & saved in the \texttt{figures/signal} folder. (default=TRUE).\\
+        \texttt{tags} & Appear in the different file names (cdf, ugp, ufl) of the chip. For no tag, use tags=NULL (default = NULL).\\
 				\hline	
 			\end{tabular}		
 		\end{center}
@@ -602,7 +603,7 @@ createArchitecture("datatest1","GenomeWideSNP_6",celPATH,chipPATH,".",TRUE)
 			\end{tabular}		
 		\end{center}
 		
-		This function returns a list of size \texttt{length(chromosome} (each element is named \texttt{chrX} with \texttt{X} the number of the chromosome) containing a data.frame with columns:
+		This function returns a list of size \texttt{length(chromosome)} (each element is named \texttt{chrX} with \texttt{X} the number of the chromosome) containing a data.frame with columns:
 		\begin{itemize}
 			\item \textbf{chromosome} Chromosome of the signal.
 			\item \textbf{position} Positions associated with the copy-number.
@@ -635,7 +636,7 @@ createArchitecture("datatest1","GenomeWideSNP_6",celPATH,chipPATH,".",TRUE)
 		\end{center}
 				
 
-		This function returns a list of size \texttt{length(chromosome} (each element is named \texttt{chrX} with \texttt{X} the number of the chromosome) containing a data.frame with columns:
+		This function returns a list of size \texttt{length(chromosome)} (each element is named \texttt{chrX} with \texttt{X} the number of the chromosome) containing a data.frame with columns:
 		\begin{itemize}
 			\item \textbf{chromosome} Chromosome of the signal.
 			\item \textbf{position} Positions associated with the allele B fraction.
@@ -664,7 +665,7 @@ createArchitecture("datatest1","GenomeWideSNP_6",celPATH,chipPATH,".",TRUE)
 			\end{tabular}		
 		\end{center}
 				
-		This function returns a list of size \texttt{length(chromosome} (each element is named \texttt{chrX} with \texttt{X} the number of the chromosome) containing a data.frame with columns:
+		This function returns a list of size \texttt{length(chromosome)} (each element is named \texttt{chrX} with \texttt{X} the number of the chromosome) containing a data.frame with columns:
 		\begin{itemize}
 			\item \textbf{chromosome} Chromosome of the signal.
 			\item \textbf{position} Positions associated with the genotype.
@@ -695,7 +696,7 @@ createArchitecture("datatest1","GenomeWideSNP_6",celPATH,chipPATH,".",TRUE)
 			\end{tabular}		
 		\end{center}
 				
-		This function returns a list of size \texttt{length(chromosome} (each element is named \texttt{chrX} with \texttt{X} the number of the chromosome) containing a data.frame with columns:
+		This function returns a list of size \texttt{length(chromosome)} (each element is named \texttt{chrX} with \texttt{X} the number of the chromosome) containing a data.frame with columns:
 		\begin{itemize}
 			\item \textbf{chromosome} Chromosome of the signal.
 			\item \textbf{position} Positions associated with the genotype.
@@ -717,14 +718,14 @@ createArchitecture("datatest1","GenomeWideSNP_6",celPATH,chipPATH,".",TRUE)
 <<eval=FALSE>>=
 signalPreProcess(dataSetName="datatest1", chipType="GenomeWideSNP_6",
 dataSetPath=celPATH,chipFilesPath=chipPATH, path="./Documents/normalization",
-createArchitecture=TRUE, savePlot=TRUE)
+createArchitecture=TRUE, savePlot=TRUE, tags="Full")
 @
 					
 		If you have already created the architecture, move your files in the appropriate folder and run the function with \texttt{createArchitecture=FALSE}
 		
 <<eval=FALSE>>=
 signalPreProcess(dataSetName="datatest1", chipType="GenomeWideSNP_6",
-createArchitecture=FALSE,savePlot=TRUE)
+createArchitecture=FALSE,savePlot=TRUE, tags="Full")
 @
 
 		
@@ -752,14 +753,14 @@ normalTumorArray=data.frame(normal=rep(files[1],7),tumor=files[2:8])
 <<eval=FALSE>>=
 signalPreProcess(dataSetName="datatest1", chipType="GenomeWideSNP_6",
 normalTumorArray=normalTumorArray,dataSetPath=celPATH,
-chipFilesPath=chipPATH,path=workdir,createArchitecture=TRUE, savePlot=TRUE)
+chipFilesPath=chipPATH,path=workdir,createArchitecture=TRUE, savePlot=TRUE, tags="Full")
 @
 					
 		If you have already created the architecture, move your files in the appropriate folder and run the function with \texttt{createArchitecture=FALSE} :
 		
 <<eval=FALSE>>=
 signalPreProcess(dataSetName="datatest1", chipType="GenomeWideSNP_6",
-normalTumorArray=normalTumorArray,createArchitecture=FALSE, savePlot=TRUE)
+normalTumorArray=normalTumorArray,createArchitecture=FALSE, savePlot=TRUE, tags="Full")
 @
 
 		\paragraph*{Get a signal}~~\\
@@ -797,7 +798,7 @@ symFracB2$chr5
 \section{Segmentation}
 	\label{sec:seg}
 	
-	In the package \texttt{MPAgenomics}, we provide a segmentation method, which uses the PELT method of the cpt.mean function from \texttt{changepoint} package \cite{pelt}.
+	In the package \texttt{MPAgenomics}, we provide a segmentation method, which uses the PELT method of the cpt.mean function from \texttt{changepoint} package \cite{peltR}.
 	
 	In the initial PELT method, the penalty is $\log(n)$ with $n$ the length of the signal. Here we will run the PELT method with a penalty $\lambda \times \log(n)$ for a range of $\lambda$. Then, we plot the evolution of the number of segments with regards to the $\lambda$ parameter (Fig \ref{plateau}). 
 	
@@ -849,7 +850,7 @@ symFracB2$chr5
 			\caption{Top left: variation of the number of segment with regards to $\lambda$. Top right: the frequency of occurrence of breakpoints in all segmentation. Bottom: Segmentation with the optimal $\lambda$ found.}
 			\label{outpelt}
 		\end{figure}
-		The graphic of the segmented signal is saved in the \texttt{figures/dataSetName/segmentation} folder. A summary of the segmented profile is saved in a BED file (Fig. \ref{outbedpelt}) in the \texttt{segmentation/dataSetName/} folder, it contains 5 columns : chrom, chromStart, chromEnd, probes and means containing the number of the chromosome, the starting position of the segment, the ending position of the segment, the number of probes in the segment and the mean of the segment.\\
+		The graphic of the segmented signal is saved in the \texttt{figures/dataSetName/segmentation} folder. A summary of the segmented profile is saved in a text file (Fig. \ref{outbedpelt}) in the \texttt{segmentation/dataSetName/} folder, it contains 5 columns : chrom, chromStart, chromEnd, probes and means containing the number of the chromosome, the starting position of the segment, the ending position of the segment, the number of probes in the segment and the mean of the segment.\\
 	
 		\begin{figure}[!h]
 			\centering
@@ -997,7 +998,7 @@ seg$segment
 	
 \section{Calling aberrations in copy-number signal}
 	\label{sec:calling}
-	Once you have a segmentation of your copy-number signal, you may want to assign a label ($loss$, $normal$ or $gain$) to each segment. This can be done with the \texttt{CGHcall} \texttt{R} package \cite{CGHcall}. A wrapper of the CGHcall calling process is available in \texttt{MPAgenomics}.
+	Once you have a segmentation of your copy-number signal, you may want to assign a label ($loss$, $normal$ or $gain$) to each segment. This can be done with the \texttt{CGHcall} method \cite{CGHcall}. A wrapper of the CGHcall calling process is available in \texttt{MPAgenomics}.
 	
 	Starting with your signal and the associated segmented signal, the method assumes that the segmented values follow a mixture of normals. The variables of the model are estimated with an EM algorithm with a specific initialization. Then, every segment is calling by the most likely label according to the model. 
 	
@@ -1026,13 +1027,13 @@ seg$segment
 			\texttt{nclass} & The number of levels to be used for calling. Either 3 (loss, normal, gain),\\
 			~ &   4 (including amplifications), 5 (including double deletions) (default=3).\\
 			\texttt{cellularity} &  Percentage of tumor cells in the sample (default=1).\\
-			\texttt{\dots} & Others parameters for CGHcall function \cite{CGHcall}.\\
+			\texttt{\dots} & Others parameters for CGHcall function \cite{CGHcallR}.\\
 			\hline
 		\end{tabular}
 
 ~~\\
 
-		This function will save every segment in a BED file in the \texttt{segmentation} folder in the working directory and return a data.frame with columns:
+		This function will save every segment in a text file in the \texttt{segmentation} folder in the working directory and return a data.frame with columns:
 			
 		\begin{itemize}
 			\item \textbf{sampleNames} Name of the file.
@@ -1055,7 +1056,7 @@ seg2=cnSegCallingProcess("datatest1",chromosome=21:22)
 			\centering
 			\includegraphics[width=0.5\textwidth]{fig/segdata1}
 			\includegraphics[width=0.5\textwidth]{fig/callsoutput}
-			\caption{Top: graphics saved in the \texttt{figures} folder. Bottom: output of the function (saved in a BED file too).}
+			\caption{Top: graphics saved in the \texttt{figures} folder. Bottom: output of the function (saved in a text file too).}
 			\label{segcalloutput}
 		\end{figure}
 	
@@ -1078,7 +1079,7 @@ seg2=cnSegCallingProcess("datatest1",chromosome=21:22)
 				~ & 4 with "amplification" and 5 with "double loss".\\
 				\texttt{cellularity} & Percentage of tumor cells in the sample.\\
 				\texttt{verbose} & If TRUE, print some information.\\
-				\texttt{\dots} & Others parameters for CGHcall function \cite{CGHcall}.\\
+				\texttt{\dots} & Others parameters for CGHcall function \cite{CGHcallR}.\\
 				\hline	
 			\end{tabular}		
 		\end{center}

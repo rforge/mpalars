@@ -8,7 +8,7 @@
 #' The first column contains the name of normal files and the second the names of associated tumor files.
 #' @param genotypeCallsMethod method used for genotypage, default is "naive".
 #' @param savePlot if TRUE, graphics of the CN signal and allele B fraction signal will be saved in the figures folder.
-#'
+#' @param tags appear in the different file name (cdf, ugp, ufl) of the chip. For no tag, use tags=NULL (default = NULL). See details for more information.
 #' @return NULL
 #'
 #' @details You have to respect the aroma architecture:
@@ -23,10 +23,14 @@
 #'           +- <chipType>/ <-- must match exactly a chip type folder under annotationData/
 #'              +- CEL files
 #' 
+#' 
+#' All the cdf chip file names must follow the following rule : <chipType>,<Tags>.cdf
+#' Multiples tags must be separated by  a comma. If there is no tags, the pattern is <chipType>.cdf
+#' 
 #' @author Quentin Grimonprez
 #' 
 #' @export
-SignalNormalization<-function(dataFolder,chipType,normalTumorArray,genotypeCallsMethod="naive",savePlot=TRUE)
+SignalNormalization<-function(dataFolder,chipType,normalTumorArray,genotypeCallsMethod="naive",savePlot=TRUE, tags=NULL)
 {
   allpkg=TRUE
   if(!suppressPackageStartupMessages(require("aroma.affymetrix", quietly=TRUE) ) )
@@ -74,9 +78,28 @@ SignalNormalization<-function(dataFolder,chipType,normalTumorArray,genotypeCalls
   if(!is.character(chipType))
     stop("chipType must be of type character.")
   if(!(chipType%in%list.files("annotationData/chipTypes")))
-    stop(paste0(chipType," not found in annotationData/chipTypes Folder."))
-  
+    stop(paste0(chipType," not found in annotationData/chipTypes Folder.")) 
 
+  #tag
+  if(!is.character(tags))
+    stop("tags must be a string.")
+  #check if ugp or ufl files with the specified tags exist
+  file=list.files(paste0("annotationData/chipTypes/",chipType))
+  if(!is.null(tags))
+  {
+    tagfile=file[grep(tags,file)]
+    
+    tagfile=tolower(tagfile)
+    cdffile=tagfile[grep(".cdf",tagfile)]
+    ugpfile=tagfile[grep(".ugp",tagfile)]
+    uflfile=tagfile[grep(".ufl",tagfile)]
+    if(length(cdffile)==0)
+      stop(paste0("No cdf files with tag ",tags))
+    if(length(ugpfile)==0)
+      stop(paste0("No ugp files with tag ",tags))
+    if(length(uflfile)==0)
+      stop(paste0("No ufl files with tag ",tags))
+  }
   
   #genotypeCallsMethod
   if(genotypeCallsMethod!="naive")
@@ -116,8 +139,7 @@ SignalNormalization<-function(dataFolder,chipType,normalTumorArray,genotypeCalls
   }
   
   ###CRMAv2 : normalization of CEL files. The same for normal-tumor and single array study
-  #ds <- doASCRMAv2(dataFolder, chipType=paste0(chipType,",Full"),verbose=-10);
-  ds <- doCRMAv2(dataFolder, chipType=paste0(chipType,",Full"),verbose=-1,combineAlleles=FALSE)  
+  ds <- doCRMAv2(dataFolder, chipType=paste0(chipType,",",tags),verbose=-1,combineAlleles=FALSE)  
   
   
   ###genotype calls: genotypage of the NORMAL data only, not the TUMOR 
@@ -128,7 +150,8 @@ SignalNormalization<-function(dataFolder,chipType,normalTumorArray,genotypeCalls
   ###tumorBoost: normalization of fraction allele B tumor signal. normal and tumor fracB are required. 
   if(!singleStudy)
     tumorboost(dataFolder,normalTumorArray,savePlot)
-  
+ 
+  return(invisible(NULL)) 
 }
 
 #'
@@ -146,6 +169,7 @@ SignalNormalization<-function(dataFolder,chipType,normalTumorArray,genotypeCalls
 #' @param createArchitecture if TRUE, the required architecture for store the results will be automatically created. 
 #' CEL files of the data and chip files will be copied (not moved).
 #' @param savePlot if TRUE, graphics of the CN signal and allele B fraction signal will be saved in the figures folder.
+#' @param tags appear in the different file name (cdf, ugp, ufl) of the chip. For no tag, use tags=NULL (default = NULL). See details for more information.
 #' 
 #' @details
 #' If you want to use the normalization process. You have to used the following architecture :
@@ -167,11 +191,13 @@ SignalNormalization<-function(dataFolder,chipType,normalTumorArray,genotypeCalls
 #' 
 #' If you have already the required architecture, you have just to add your data in the rawData folder with respect to the architecture.
 #' 
+#' All the cdf chip file names must follow the following rule : <chipType>,<Tags>.cdf
+#' Multiples tags must be separated by  a comma. If there is no tags, the pattern is <chipType>.cdf
 #' 
 #' @author Quentin Grimonprez
 #' 
 #' @export
-signalPreProcess=function(dataSetName, chipType, normalTumorArray, dataSetPath, chipFilesPath=dataSetPath, path=".", createArchitecture=TRUE, savePlot=TRUE)
+signalPreProcess=function(dataSetName, chipType, normalTumorArray, dataSetPath, chipFilesPath=dataSetPath, path=".", createArchitecture=TRUE, savePlot=TRUE, tags=NULL)
 {
 
   allpkg=TRUE
@@ -201,14 +227,15 @@ signalPreProcess=function(dataSetName, chipType, normalTumorArray, dataSetPath, 
   if(createArchitecture==TRUE)
   {
     actualPath=getwd()
-    createArchitecture(dataSetName,chipType,dataSetPath,chipFilesPath,path,TRUE)
+    createArchitecture(dataSetName,chipType,dataSetPath,chipFilesPath,path,TRUE,tags)
     
     #move to the path of the created Architecture
     setwd(path)
   }
 
   SignalNormalization(dataSetName,chipType,normalTumorArray,"naive",savePlot)
-  
+ 
+  return(invisible(NULL)) 
 }
 
 

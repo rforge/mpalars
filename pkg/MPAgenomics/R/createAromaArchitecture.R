@@ -208,6 +208,22 @@ copyChipFiles=function(pathToChipFiles,chipName,path,verbose)
     #stop(paste0("Problem with cdf files for the chip ",chipType," with tag ",tag))
   }
 
+  #check if ugp or ufl files with the specified tags exist
+  file=list.files(paste0("annotationData/chipTypes/",chipType))
+  if(!is.null(tag))
+  {
+    tagfile=file[grep(tag,file)]
+    
+    tagfile=tolower(tagfile)
+    ugpfile=tagfile[grep(".ugp",tagfile)]
+    uflfile=tagfile[grep(".ufl",tagfile)]
+    
+    if(length(ugpfile)==0)
+      stop(paste0("No ugp files with tag ",tag))
+    if(length(uflfile)==0)
+      stop(paste0("No ufl files with tag ",tag))
+  }
+    
   result <- try(gi <- getGenomeInformation(cdf),silent=TRUE)
   if(class(result)[1]=="try-error")
   {
@@ -249,8 +265,13 @@ copyChipFiles=function(pathToChipFiles,chipName,path,verbose)
 #' @param chipFilesPath Path to the folder containing the chip files
 #' @param path path where create folders
 #' @param verbose if TRUE, print details of the process
+#' @param tags appear in the different file name (cdf, ugp, ufl) of the chip. For no tag, use tags=NULL (default = NULL). See details for more information.
 #'
 #' @seealso copyChipFiles, copyDataFiles, createAromaArchitecture
+#' 
+#' @details
+#' All the cdf chip file names must follow the following rule : <chipType>,<Tags>.cdf
+#' Multiples tags must be separated by  a comma. If there is no tags, the pattern is <chipType>.cdf
 #' 
 #' @examples
 #' #createArchitecture("data1","GenomeWideSNP_6",dataSetPath="./data/",chipFilesPath="./chip/",path="./aroma",verbose=TRUE)
@@ -258,7 +279,7 @@ copyChipFiles=function(pathToChipFiles,chipName,path,verbose)
 #' @author Quentin Grimonprez
 #' 
 #' @export
-createArchitecture=function(dataSetName,chipType,dataSetPath,chipFilesPath,path=".",verbose=FALSE)
+createArchitecture=function(dataSetName,chipType,dataSetPath,chipFilesPath,path=".",verbose=FALSE, tags=NULL)
 {
   if(!suppressPackageStartupMessages(require("aroma.affymetrix", quietly=TRUE) ) )
   {
@@ -275,8 +296,7 @@ createArchitecture=function(dataSetName,chipType,dataSetPath,chipFilesPath,path=
   
    createEmptyArchitecture(dataSetName,chipType,path,verbose)
    copyChipFiles(chipFilesPath,chipType,path,verbose)
-  tag="Full"
-  .checkChipType(chipType,tag,path)
+  .checkChipType(chipType,tags,path)
    copyDataFiles(dataSetName,dataSetPath,chipType,path,verbose)
 
   

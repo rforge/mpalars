@@ -2,8 +2,7 @@
 \alias{peltObject}
 \title{create the list in parameters for \link{PELT} function}
 \usage{
-  peltObject(copynumber, chromosome, position,
-    featureNames, sampleNames)
+peltObject(copynumber, chromosome, position, featureNames, sampleNames)
 }
 \arguments{
   \item{copynumber}{A vector containing the copy-number
@@ -19,9 +18,12 @@
   \item{sampleNames}{Name of the sample (not necessary).}
 }
 \value{
-  a list in the right format for \link{PELT} function
+a list in the right format for \link{PELT} function
 }
 \description{
-  create the list in parameters for \link{PELT} function
+create the list in parameters for \link{PELT} function
+}
+\author{
+Quentin Grimonprez
 }
 

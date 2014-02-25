@@ -2,9 +2,9 @@
 \alias{signalPreProcess}
 \title{normalization process}
 \usage{
-  signalPreProcess(dataSetName, chipType, normalTumorArray,
-    dataSetPath, chipFilesPath = dataSetPath, path = ".",
-    createArchitecture = TRUE, savePlot = TRUE)
+signalPreProcess(dataSetName, chipType, normalTumorArray, dataSetPath,
+  chipFilesPath = dataSetPath, path = ".", createArchitecture = TRUE,
+  savePlot = TRUE, tags = NULL)
 }
 \arguments{
   \item{dataSetName}{name of the data set. If you use
@@ -40,30 +40,41 @@
   \item{savePlot}{if TRUE, graphics of the CN signal and
   allele B fraction signal will be saved in the figures
   folder.}
+
+  \item{tags}{appear in the different file name (cdf, ugp,
+  ufl) of the chip. For no tag, use tags=NULL (default =
+  NULL). See details for more information.}
 }
 \description{
-  normalization process for estimating raw copy-numbers and
-  allele B fraction.
+normalization process for estimating raw copy-numbers and
+allele B fraction.
 }
 \details{
-  If you want to use the normalization process. You have to
-  used the following architecture : <working directory> +-
-  annotationData/ | +- chipTypes/ | +- <chipType>/ <-- must
-  match exactly the name of the CDF file (fullname minus
-  tags) | +- CDF file(s) and other annotation (possibly
-  subdirectories) | +- rawData/ +- <nameOfDataSet>/ +-
-  <chipType>/ <-- must match exactly a chip type folder
-  under annotationData/ +- CEL files
+If you want to use the normalization process. You have to
+used the following architecture : <working directory> +-
+annotationData/ | +- chipTypes/ | +- <chipType>/ <-- must
+match exactly the name of the CDF file (fullname minus
+tags) | +- CDF file(s) and other annotation (possibly
+subdirectories) | +- rawData/ +- <nameOfDataSet>/ +-
+<chipType>/ <-- must match exactly a chip type folder under
+annotationData/ +- CEL files
 
-  If you use createArchitecture=TRUE, this function creates
-  this architecture for you and copy your files in the
-  right folders.
+If you use createArchitecture=TRUE, this function creates
+this architecture for you and copy your files in the right
+folders.
 
-  The functions will create other folders which contains
-  figures, results of normalization.
+The functions will create other folders which contains
+figures, results of normalization.
 
-  If you have already the required architecture, you have
-  just to add your data in the rawData folder with respect
-  to the architecture.
+If you have already the required architecture, you have
+just to add your data in the rawData folder with respect to
+the architecture.
+
+All the cdf chip file names must follow the following rule
+: <chipType>,<Tags>.cdf Multiples tags must be separated by
+a comma. If there is no tags, the pattern is <chipType>.cdf
+}
+\author{
+Quentin Grimonprez
 }
 

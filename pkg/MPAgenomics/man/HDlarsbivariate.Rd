@@ -2,10 +2,8 @@
 \alias{HDlarsbivariate}
 \title{lars algorithm for bivariate signal}
 \usage{
-  HDlarsbivariate(CN, fracB, y,
-    weightsCN = 1/apply(CN, 1, sd),
-    weightsFracB = 1/apply(fracB, 1, sd), meanCN = 2,
-    maxSteps, eps)
+HDlarsbivariate(CN, fracB, y, weightsCN = 1/apply(CN, 1, sd),
+  weightsFracB = 1/apply(fracB, 1, sd), meanCN = 2, maxSteps, eps)
 }
 \arguments{
   \item{CN}{matrix containing copy-number signals. Each row
@@ -32,11 +30,14 @@
   \item{eps}{tolerance}
 }
 \value{
-  a LarsPath object
+a LarsPath object
 }
 \description{
-  This function transforms the two matrices CN and fracB in
-  one matrix to use in the lars algorithm. Each signal is
-  weighted
+This function transforms the two matrices CN and fracB in
+one matrix to use in the lars algorithm. Each signal is
+weighted
+}
+\author{
+Quentin Grimonprez
 }
 

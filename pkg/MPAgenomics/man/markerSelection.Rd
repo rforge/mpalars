@@ -2,11 +2,9 @@
 \alias{markerSelection}
 \title{markers selection}
 \usage{
-  markerSelection(dataSetName, dataResponse,
-    chromosome = 1:22, signal = "CN", normalTumorArray,
-    onlySNP = FALSE,
-    nbFolds = min(length(dataResponse), 10),
-    loss = "logistic", plot = TRUE, ...)
+markerSelection(dataSetName, dataResponse, chromosome = 1:22, signal = "CN",
+  normalTumorArray, onlySNP = FALSE, nbFolds = min(length(dataResponse),
+  10), loss = "logistic", plot = TRUE, ...)
 }
 \arguments{
   \item{dataSetName}{Name of the dataset folder in rawData
@@ -42,34 +40,37 @@
   function.}
 }
 \value{
-  a list containing length(chromosme) elements. Each
-  element is a list containing \describe{
-  \item{chr}{chromosome corresponding to the signal.}
-  \item{markers.index}{A vector containing the index of all
-  selected markers.} \item{markers.position}{A vector
-  containing the position of all selected markers.}
-  \item{markers.names}{A vector containing the names of all
-  selected markers.} \item{coefficient}{A vector containing
-  the coefficients of all selected markers.}
-  \item{intercept}{Intercept of the model.} }
+a list containing length(chromosme) elements. Each element
+is a list containing \describe{ \item{chr}{chromosome
+corresponding to the signal.} \item{markers.index}{A vector
+containing the index of all selected markers.}
+\item{markers.position}{A vector containing the position of
+all selected markers.} \item{markers.names}{A vector
+containing the names of all selected markers.}
+\item{coefficient}{A vector containing the coefficients of
+all selected markers.} \item{intercept}{Intercept of the
+model.} }
 }
 \description{
-  This function selects, for each chromosome, the most
-  relevant markers according to a response.
+This function selects, for each chromosome, the most
+relevant markers according to a response.
 }
 \details{
-  This function requires to use the aroma folder
-  architecture. In your working directory, there must have
-  the rawData folder and totalAndFracBData folder. This
-  function launches the lars algorithm on the CN or fracB
-  data and uses a cross-validation to select the most
-  appropriate solution.
+This function requires to use the aroma folder
+architecture. In your working directory, there must have
+the rawData folder and totalAndFracBData folder. This
+function launches the lars algorithm on the CN or fracB
+data and uses a cross-validation to select the most
+appropriate solution.
 }
 \examples{
 #DO NOT EXECUTE
 # res=markerSelection("DataB",rnorm(27),chromosome=22,signal="CN",normalTumorArray,onlySNP=TRUE)
 }
+\author{
+Quentin Grimonprez
+}
 \seealso{
-  HDPenReg
+HDPenReg
 }
 

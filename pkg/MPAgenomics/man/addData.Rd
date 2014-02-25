@@ -2,7 +2,7 @@
 \alias{addData}
 \title{add a new data-set to the existing aroma architecture}
 \usage{
-  addData(dataSetName, dataPath, chipType)
+addData(dataSetName, dataPath, chipType)
 }
 \arguments{
   \item{dataSetName}{Name of the new data-set to add.}
@@ -12,7 +12,10 @@
   \item{chipType}{Name of the chip used for the data.}
 }
 \description{
-  Create a folder in "rawData" and copy the specified files
-  in this folder.
+Create a folder in "rawData" and copy the specified files
+in this folder.
+}
+\author{
+Quentin Grimonprez
 }
 

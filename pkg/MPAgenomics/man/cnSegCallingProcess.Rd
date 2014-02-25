@@ -2,10 +2,9 @@
 \alias{cnSegCallingProcess}
 \title{Segment a copy-number signal and call the found segments.}
 \usage{
-  cnSegCallingProcess(dataSetName, normalTumorArray,
-    chromosome = 1:22, Lambda = NULL, listOfFiles = NULL,
-    onlySNP = TRUE, savePlot = TRUE, nclass = 3,
-    cellularity = 1, ...)
+cnSegCallingProcess(dataSetName, normalTumorArray, chromosome = 1:22,
+  Lambda = NULL, listOfFiles = NULL, onlySNP = TRUE, savePlot = TRUE,
+  nclass = 3, cellularity = 1, ...)
 }
 \arguments{
   \item{dataSetName}{name of the data-set folder in the
@@ -43,27 +42,30 @@
   \item{...}{Other parameters of CGHcall function}
 }
 \value{
-  a data.frame containg columns : \describe{
-  \item{sampleNames}{Name of the file.} \item{chrom}{The
-  chromosome of the segment.} \item{chromStart}{The
-  starting position (in bp) of a segment. This position is
-  not included in the segment.} \item{chromEnd}{The ending
-  position (in bp) of a segment.This position is included
-  in the segment.} \item{probes}{Number of probes in the
-  segment.} \item{means}{Mean of the segment.}
-  \item{calls}{The calling of segment ("double loss",
-  "loss", "normal", "gain" or "amplification").} }
+a data.frame containg columns : \describe{
+\item{sampleNames}{Name of the file.} \item{chrom}{The
+chromosome of the segment.} \item{chromStart}{The starting
+position (in bp) of a segment. This position is not
+included in the segment.} \item{chromEnd}{The ending
+position (in bp) of a segment.This position is included in
+the segment.} \item{probes}{Number of probes in the
+segment.} \item{means}{Mean of the segment.}
+\item{calls}{The calling of segment ("double loss", "loss",
+"normal", "gain" or "amplification").} }
 }
 \description{
-  This function applies the PELT method for segment each
-  signal of the dataset and launches CGHcall for calling
-  segments and detect aberrations. Results will be stored
-  in a BED file in the segmentation folder of the aroma
-  architecture.
+This function applies the PELT method for segment each
+signal of the dataset and launches CGHcall for calling
+segments and detect aberrations. Results will be stored in
+a BED file in the segmentation folder of the aroma
+architecture.
 }
 \examples{
 #DO NOT EXECUTE
 # seg1=cnSegCallingProcess("data1",normalTumorArray,chromosome=20:21)
 # seg2=cnSegCallingProcess("data2",chromosome=20:21)
+}
+\author{
+Quentin Grimonprez
 }
 

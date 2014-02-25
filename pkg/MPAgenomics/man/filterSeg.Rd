@@ -2,8 +2,8 @@
 \alias{filterSeg}
 \title{Filter segments}
 \usage{
-  filterSeg(segmentList, minLength = 1, minProbes = 1,
-    keptLabel = c("loss", "gain"))
+filterSeg(segmentList, minLength = 1, minProbes = 1, keptLabel = c("loss",
+  "gain"))
 }
 \arguments{
   \item{segmentList}{A data.frame containing a description
@@ -21,13 +21,16 @@
   label will be kept.}
 }
 \value{
-  a data.frame of the same format as segmentList.
+a data.frame of the same format as segmentList.
 }
 \description{
-  This function filter the output of a segmentation and
-  label process. It allows to keep only the segment of a
-  minimal length or containing at least a minimal number of
-  probes. Using the normalFilter, you can just keep the
-  segment called non normal.
+This function filter the output of a segmentation and label
+process. It allows to keep only the segment of a minimal
+length or containing at least a minimal number of probes.
+Using the normalFilter, you can just keep the segment
+called non normal.
+}
+\author{
+Quentin Grimonprez
 }
 

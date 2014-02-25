@@ -2,7 +2,7 @@
 \alias{addChipType}
 \title{add a new chip type to the existing aroma architecture}
 \usage{
-  addChipType(chipType, chipPath)
+addChipType(chipType, chipPath)
 }
 \arguments{
   \item{chipType}{Name of the new chiptype to add.}
@@ -10,7 +10,10 @@
   \item{chipPath}{Path to the files to add.}
 }
 \description{
-  Create a folder in "annotationData/chipTypes" and copy
-  the specified files in this folder.
+Create a folder in "annotationData/chipTypes" and copy the
+specified files in this folder.
+}
+\author{
+Quentin Grimonprez
 }
 

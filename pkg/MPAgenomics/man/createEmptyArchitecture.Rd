@@ -2,8 +2,7 @@
 \alias{createEmptyArchitecture}
 \title{Create aroma architecture}
 \usage{
-  createEmptyArchitecture(dataSetName, chipType,
-    path = ".", verbose = TRUE)
+createEmptyArchitecture(dataSetName, chipType, path = ".", verbose = TRUE)
 }
 \arguments{
   \item{dataSetName}{name of the data set}
@@ -16,19 +15,21 @@
   \item{verbose}{if TRUE, print details of the process}
 }
 \description{
-  Create the architecture required by aroma packages
+Create the architecture required by aroma packages
 }
 \details{
-  This function creates the following architecture:
-  Architecture to create: <path> +- annotationData/ | +-
-  chipTypes/ | +- <chipType>/ <-- must match exactly the
-  name of the CDF file (fullname minus tags) | +- CDF
-  file(s) and other annotation (possibly subdirectories) |
-  +- rawData/ +- <dataSetName>/ +- <chipType>/ <-- must
-  match exactly a chip type folder under annotationData/ +-
-  CEL files
+This function creates the following architecture:
+Architecture to create: <path> +- annotationData/ | +-
+chipTypes/ | +- <chipType>/ <-- must match exactly the name
+of the CDF file (fullname minus tags) | +- CDF file(s) and
+other annotation (possibly subdirectories) | +- rawData/ +-
+<dataSetName>/ +- <chipType>/ <-- must match exactly a chip
+type folder under annotationData/ +- CEL files
 }
 \examples{
 createEmptyArchitecture("data1","GenomeWideSNP_6",".",TRUE)
+}
+\author{
+Quentin Grimonprez
 }
 

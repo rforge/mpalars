@@ -3,7 +3,9 @@ Type: Package
 Title: Multi-Patients Analysis of Genomic Markers
 Version: 0.40.4
 Date: 2014-02-24
-Author: Quentin Grimonprez with contributions from Guillemette Marot and Samuel Blanck.
+Author: Quentin Grimonprez with contributions from Guillemette Marot and Samuel
+    Blanck. Some functions use code created by Sjoerd Vosse, Mark van de Wiel,
+    Pierre Neuvial.
 Maintainer: Samuel Blanck <samuel.blanck@inria.fr>
 Description: This package provides functions to preprocess and analyze genomic
     data.
@@ -13,23 +15,3 @@ Depends:
     R.utils
 Suggests:
     aroma.affymetrix,aroma.cn,snowfall,changepoint(>= 1.1),HDPenReg,glmnet,CGHcall
-Collate:
-    'findPlateau.R'
-    'alleleNormalization.R'
-    'createAromaArchitecture.R'
-    'genotypeCalls.R'
-    'getCNSignal.R'
-    'getFracBSignal.R'
-    'tumorboost.R'
-    'SNPselection.R'
-    'bivariateSignal.R'
-    'cghcall.R'
-    'expandcghcall.R'
-    'preprocess.R'
-    'private.R'
-    'pelt_cghcall.R'
-    'pelt.R'
-    'aromafunctions.R'
-    'getGenotypeCalls.R'
-    'segFracB.R'
-    'getSymFracBsignal.R'

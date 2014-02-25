@@ -2,8 +2,8 @@
 \alias{getSymFracBSignal}
 \title{Extract symmetrized allele B fraction signal from aroma files}
 \usage{
-  getSymFracBSignal(dataSetName, file, chromosome,
-    normalTumorArray, verbose = TRUE)
+getSymFracBSignal(dataSetName, file, chromosome, normalTumorArray,
+  verbose = TRUE)
 }
 \arguments{
   \item{dataSetName}{Name of the dataset (it must correpond
@@ -24,29 +24,32 @@
   \item{verbose}{If TRUE, print some informations.}
 }
 \value{
-  a list of length the number of chromosome containing a
-  data.frame with columns: \describe{
-  \item{chromosome}{chromosome corresponding to the
-  signal.} \item{position}{Positions associated to the
-  allele B fraction.} \item{fracB}{One column, its name is
-  the name of the file. It contains the symmetrized allele
-  B fraction signal for the selected file.}
-  \item{featureNames}{Names of the probes.} }
+a list of length the number of chromosome containing a
+data.frame with columns: \describe{
+\item{chromosome}{chromosome corresponding to the signal.}
+\item{position}{Positions associated to the allele B
+fraction.} \item{fracB}{One column, its name is the name of
+the file. It contains the symmetrized allele B fraction
+signal for the selected file.} \item{featureNames}{Names of
+the probes.} }
 }
 \description{
-  Extract symmetrized allele B fraction signals from aroma
-  files. It requires to have executed the normalization
-  process of aroma package.
+Extract symmetrized allele B fraction signals from aroma
+files. It requires to have executed the normalization
+process of aroma package.
 }
 \details{
-  You have to respect the aroma architecture. Your working
-  directory must contain rawData folder and
-  totalAndFracBData folder. In case of single array study
-  only the fracB$tumor matrix is returned.
+You have to respect the aroma architecture. Your working
+directory must contain rawData folder and totalAndFracBData
+folder. In case of single array study only the fracB$tumor
+matrix is returned.
 }
 \examples{
 #DO NOT EXECUTE
 #fracB=getSymFracBSignal("data1",5,normalTumorArray)
 #fracB=getSymFracBSignal("data2",5)
+}
+\author{
+Quentin Grimonprez
 }
 

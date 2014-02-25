@@ -1,6 +1,8 @@
 #'
 #' @title Get the contents of a data folder
 #' 
+#' @description Get the cel files of the specified dataSetName
+#' 
 #' @param dataSetName Name of a folder in rawData folder
 #' @param chipType Name of the chip type used for the data
 #' 
