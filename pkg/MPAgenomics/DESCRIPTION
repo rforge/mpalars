@@ -1,7 +1,7 @@
 Package: MPAgenomics
 Type: Package
 Title: Multi-Patients Analysis of Genomic Markers
-Version: 0.40.7
+Version: 0.40.8
 Date: 2014-02-27
 Author: Quentin Grimonprez with contributions from Guillemette Marot and Samuel
     Blanck. Some functions use code created by Sjoerd Vosse, Mark van de Wiel,

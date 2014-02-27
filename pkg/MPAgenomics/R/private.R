@@ -112,13 +112,22 @@
     return(alphaall)
 }
 
-.totallik <- function(nreg, pm, posteriorprev, alphaprev, varprofall, allsum, allsumsq, allnc, robustsig,allcell,ncpus=1) {
+.totallik <- function(pm, nreg, posteriorprev, alphaprev, varprofall, allsum, allsumsq, allnc, robustsig,allcell,ncpus=1) {
     if(ncpus==1) {
     return(sum(sapply(1:nreg, .minusEloglikreg, pm=pm, posteriorprev=posteriorprev, alphaprev=alphaprev, varprofall=varprofall, allsum=allsum, allsumsq=allsumsq, allnc,robustsig=robustsig,allcell=allcell)))
     } else {
     sfExport("pm")
     return(sum(sfSapply(1:nreg, .minusEloglikreg, pm=pm, posteriorprev=posteriorprev, alphaprev=alphaprev, varprofall=varprofall, allsum=allsum, allsumsq=allsumsq, allnc,robustsig=robustsig,allcell=allcell)))
     } 
+}
+
+.totallik2 <- function(pm, nreg, posteriorprev, alphaprev, varprofall, allsum, allsumsq, allnc, robustsig,allcell,ncpus=1) {
+  if(ncpus==1) {
+    return(sum(sapply(1:nreg, .minusEloglikreg, pm=pm, posteriorprev=posteriorprev, alphaprev=alphaprev, varprofall=varprofall, allsum=allsum, allsumsq=allsumsq, allnc,robustsig=robustsig,allcell=allcell)))
+  } else {
+    sfExport("pm")
+    return(sum(sfSapply(1:nreg, .minusEloglikreg, pm=pm, posteriorprev=posteriorprev, alphaprev=alphaprev, varprofall=varprofall, allsum=allsum, allsumsq=allsumsq, allnc,robustsig=robustsig,allcell=allcell)))
+  } 
 }
 
 
@@ -184,7 +193,9 @@
 
 .minusEloglikreg <- function(k, posteriorprev, alphaprev, pm, varprofall, allsum, allsumsq, allnc, robustsig, allcell) {
     all3 <- sapply(c(1,2,3,4,5,6), .xgivenknotrunc, k=k, pm=pm, varprofall=varprofall, allsum=allsum, allsumsq=allsumsq, allnc, robustsig=robustsig, allcell=allcell)
-    return(-all3%*%posteriorprev[,k] - (log(alphaprev[k,])%*%posteriorprev[,k]))
+    # patch for windows bug "unable to evaluate fonction with inital parameter"
+    nonOind=which(alphaprev[k,]!=0)
+    return(-all3[nonOind]%*%posteriorprev[,k][nonOind] - (log(alphaprev[k,][nonOind])%*%posteriorprev[,k][nonOind]))
 }
 
 .reallik4 <- function(nreg, alpha, pm, varprofall, allsum, allsumsq, allnc,robustsig,allcell,betas=c(1,0)) {
