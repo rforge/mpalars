@@ -232,7 +232,7 @@ head(callfiltered)
 <<eval=FALSE>>=
 dataResponse=data.frame(files=getListOfFiles("datatest1"),
 response=c(2.105092,1.442868,1.952103,1.857819,2.047897,1.654766,2.385327,2.113406))
-res=markerSelection("datatest1",dataResponse,chromosome=21:22,signal="CN",onlySNP=TRUE)
+res=markerSelection("datatest1",dataResponse,chromosome=21:22,signal="CN",onlySNP=TRUE,loss="linear")
 @
 
 
@@ -251,12 +251,12 @@ res=markerSelection("datatest1",dataResponse,chromosome=21:22,signal="CN",onlySN
 #get the file names of our data-set
 files=getListOfFiles("datatest1")
 #create the data.frame linking normal and tumor files
-normalTumorArray=data.frame(normal=rep(files[1],7),tumor=files[2:8])
+normalTumorArray=data.frame(normal=files[1:4],tumor=files[5:8])
 @	
 	
 				\begin{figure}[!h]
 					\centering
-					\includegraphics[width=0.6\textwidth]{fig/normalTumorArrayExample}
+					\includegraphics[width=0.6\textwidth]{fig/normalTumorArrayExample2}
 					\caption{CSV file linking normal sample with tumoral sample.}
 				\end{figure}
 
