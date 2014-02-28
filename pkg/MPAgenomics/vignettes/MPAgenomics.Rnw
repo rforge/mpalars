@@ -214,7 +214,7 @@ createArchitecture=TRUE, savePlot=TRUE, tags="Full")
 <<eval=FALSE>>=
 segcall=cnSegCallingProcess("datatest1",chromosome=c(1,5))
 #summary of segmentation and calling process
-segcall$segment
+segcall
 @
 
 			In this example, chromosomes 1 and 5 for all patients are studied. Figures can be found at \texttt{./figures/datatest1/segmentation/}. 
@@ -223,7 +223,7 @@ segcall$segment
 			Results of the calling can be filtered to keep only segments of a minimal size or with a specific label. For example, if you want to only keep segments which represent losses or gains with a minimal size of $10$pb and containing at least 2 probes, run the following command:  
 	
 <<eval=FALSE>>=
-callfiltered=filterSeg(segcall$segment,minLength=10,minProbes=2,keptLabel=c("gain","loss"))
+callfiltered=filterSeg(segcall,minLength=10,minProbes=2,keptLabel=c("gain","loss"))
 head(callfiltered)
 @
 	
@@ -232,7 +232,8 @@ head(callfiltered)
 <<eval=FALSE>>=
 dataResponse=data.frame(files=getListOfFiles("datatest1"),
 response=c(2.105092,1.442868,1.952103,1.857819,2.047897,1.654766,2.385327,2.113406))
-res=markerSelection("datatest1",dataResponse,chromosome=21:22,signal="CN",onlySNP=TRUE,loss="linear")
+res=markerSelection("datatest1",dataResponse,chromosome=21:22,signal="CN",
+onlySNP=TRUE,loss="linear")
 @
 
 
@@ -245,7 +246,7 @@ res=markerSelection("datatest1",dataResponse,chromosome=21:22,signal="CN",onlySN
 
 			\paragraph{Use of control samples}
 
-				In the previous example, there was no control sample. By default, the median of all the samples is used as a reference to estimate the copy-number signal. It is generally better to provide control samples. When this is the case, it is necessary to provide a file or a data.frame giving the correspondence between each control and each sample. For this example, we assume that the control is arbitrarily the first file:
+				In the previous example, there was no control sample. By default, the median of all the samples is used as a reference to estimate the copy-number signal. It is generally better to provide control samples. When this is the case, it is necessary to provide a file or a data.frame giving the correspondence between each control and each sample. For this example, we assume that the control is arbitrarily the first four files:
 
 <<eval=FALSE>>=
 #get the file names of our data-set
@@ -256,7 +257,7 @@ normalTumorArray=data.frame(normal=files[1:4],tumor=files[5:8])
 	
 				\begin{figure}[!h]
 					\centering
-					\includegraphics[width=0.6\textwidth]{fig/normalTumorArrayExample2}
+					\includegraphics[width=0.8\textwidth]{fig/normalTumorArrayExample2}
 					\caption{CSV file linking normal sample with tumoral sample.}
 				\end{figure}
 
@@ -424,7 +425,7 @@ segfracB
 		
 		\begin{figure}[!h]
 			\centering
-			\includegraphics[width=0.6\textwidth]{fig/dataFilesSingle2}
+			\includegraphics[width=0.9\textwidth]{fig/dataFilesSingle2}
 			\caption{CEL files in \texttt{celPATH} (variable containing the path to the downloaded CEL  files).}%\texttt{"./Documents/datatest1"}.}
 			\label{datafileSingle2}
 		\end{figure}
@@ -435,7 +436,7 @@ createArchitecture("datatest1","GenomeWideSNP_6",celPATH,chipPATH,".",TRUE,"Full
 @
 		
 		
-		In your working directory, you must found the following architecture :
+		In your working directory, you must find the following architecture :
 		
 		\begin{verbatim}
 	<current working directory>
@@ -730,20 +731,20 @@ createArchitecture=FALSE,savePlot=TRUE, tags="Full")
 
 		
 		\paragraph*{Normal-tumor study}~~\\	
-		In our downloaded data-set, we have no control data. We will use the first sample of our data for control for every sample. The \texttt{normalTumorArray} files associated is in figure \ref{normalTumorArrayExample}. You can create the \texttt{normalTumorArray} with the following command
+		In our downloaded data-set, we have no control data. We will use the first four samples of our data as control and the 4 others samples as tumor samples. The \texttt{normalTumorArray} files associated is in figure \ref{normalTumorArrayExample}. You can create the \texttt{normalTumorArray} with the following command
 		
 <<eval=FALSE>>=
 #get the file names of our data-set
 files=getListOfFiles("datatest1")
 #create the data.frame linking normal and tumor files
-normalTumorArray=data.frame(normal=rep(files[1],7),tumor=files[2:8])
+normalTumorArray=data.frame(normal=files[1:4],tumor=files[5:8])
 @	
 
 		
 		\begin{figure}[!h]
 			\centering
-			\includegraphics[width=0.6\textwidth]{fig/normalTumorArrayExample}\\
-			\caption{\texttt{normalTumorArray} file with the first sample as control for every file.}
+			\includegraphics[width=0.8\textwidth]{fig/normalTumorArrayExample2}\\
+			\caption{\texttt{normalTumorArray} file with the first four samples as control for the four other files.}
 			\label{normalTumorArrayExample}
 		\end{figure}
 		
