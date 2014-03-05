@@ -475,7 +475,7 @@ getStatus=function(listOfFiles,normalTumorArray)
 # @author Quentin Grimonprez
 getId=function(listOfFiles,normalTumorArray)
 {
-  sapply(listOfFiles,FUN=function(names,data)
+  unlist(lapply(listOfFiles,FUN=function(names,data)
   {
     ind=match(names,data$normal)
     if(!is.na(ind))
@@ -490,5 +490,34 @@ getId=function(listOfFiles,normalTumorArray)
       else
         return(NA)
     }
-  },normalTumorArray);
+  },normalTumorArray));
+}
+
+# Return a matrix which match normal and tumor files
+#
+# @param listOfFiles vector containing names of iles
+# @param normalTumorArray a data.frame with 2 columns: "normal" and "tumor".
+# The first column contains the name of normal files and the second the names of associated tumor files.
+#
+# @return a matrix of size [number of tumor files, 2]
+# @author Samuel BLANCK
+getNormalTumorMatrix=function(listOfFiles,normalTumorArray)
+{
+  status = getStatus(listOfFiles,normalTumorArray)
+  
+  #id of the tumor files
+  indTumor = which(status=="tumor")
+  
+  #names of complementary normal files
+  normFiles=getComplementaryFile(listOfFiles[indTumor],normalTumorArray)
+    
+  #id of the complementary normal files
+  indNormal=sapply(normFiles,FUN=function(x,names){which(names==x)}, listOfFiles)
+  
+  #matchin matrix (1st column=normal files indices, 2nd column=tumor files indices)
+  normalTumorMatrix=matrix(ncol=2, nrow=length(indTumor))
+  normalTumorMatrix[,1]=indNormal
+  normalTumorMatrix[,2]=indTumor
+    
+  return (normalTumorMatrix)
 }

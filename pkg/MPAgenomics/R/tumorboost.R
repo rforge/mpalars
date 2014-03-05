@@ -26,15 +26,17 @@ tumorboost<-function(dataSetName,normalTumorArray,plot=TRUE)
   ds <- AromaUnitFracBCnBinarySet$byName(dataSet, chipType="*", paths=rootPath);
     
   # Identify all sample names by extracting all unique arrays name (ignoring tags)
-  sampleNAMES = getId(getNames(ds),normalTumorArray)  
-  uniqueNAMES <- sort(unique(sampleNAMES))
+  #sampleNAMES = getId(getNames(ds),normalTumorArray) 
+  normalTumorMatrix=getNormalTumorMatrix(getNames(ds),normalTumorArray)
+  #uniqueNAMES <- sort(unique(sampleNAMES))
   
   ########## import total copy number
   if(plot)
   {
     dsC <- AromaUnitTotalCnBinarySet$byName(dataSet, chipType="*", paths=rootPath);
     #print(dsC);
-    sampleNAMESC <-getId(getNames(dsC),normalTumorArray);
+    #sampleNAMESC <-getId(getNames(dsC),normalTumorArray);
+    normalTumorMatrixC=getNormalTumorMatrix(getNames(dsC),normalTumorArray)
   }
   
   ##########  genotypage
@@ -47,20 +49,25 @@ tumorboost<-function(dataSetName,normalTumorArray,plot=TRUE)
   gsN <- AromaUnitGenotypeCallSet$byName(dataSet, tags=genotypeTag, chipType="*");
   
   # Keep only normal genotype files (not needed here, but could be needed in other situations)
-  types <- getStatus(getNames(gsN),normalTumorArray)
+  #types <- getStatus(getNames(gsN),normalTumorArray)
   
-  keep <- which(is.element(types, c("normal")));
-  gsN <- extract(gsN, keep);
+  #keep <- which(is.element(types, c("normal")));
+  #gsN <- extract(gsN, normalSample);
   
   #get id of genotypae call file
-  genNAMES <-getId(getNames(gsN),normalTumorArray)
+  #genNAMES <- normalTumorMatrix[,1]
+  
   
   #loop on all pairs (normal, tumor)
-  for(sampleName in uniqueNAMES)
+  for(indSample in 1:nrow(normalTumorMatrix))
   {
+    normalSample=normalTumorMatrix[indSample,1]
+    tumorSample=normalTumorMatrix[indSample,2]
+    
     ########## frac allele B
     # Extract the two arrays with this name, which should be the tumor and the normal
-    pair <- which(sampleNAMES==sampleName)
+        
+    pair <- normalTumorMatrix[indSample,]
     stopifnot(length(pair) == 2);
       
     # Order as (tumor,normal)
@@ -83,7 +90,8 @@ tumorboost<-function(dataSetName,normalTumorArray,plot=TRUE)
 
       
     ########## genotypage
-    gcN <- extract(gsN,which(genNAMES==sampleName))
+    gcN <- extract(gsN,normalSample)
+    
       
     ######################################################
     ####################   Apply TumorBoost Normalization
@@ -108,8 +116,8 @@ tumorboost<-function(dataSetName,normalTumorArray,plot=TRUE)
     #if the user wants the different plot
     if(plot)
     {    
-      id <- getId(getNames(dsTN),normalTumorArray)
-      dsTN=extract(dsTN,which(id==sampleName))
+      #id <- getId(getNames(dsTN),normalTumorArray)
+      dsTN=extract(dsTN,which(dsTN$Names==getNames(dsC[tumorSample])))
       
       # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
       # Create a list of matched data sets
@@ -117,7 +125,7 @@ tumorboost<-function(dataSetName,normalTumorArray,plot=TRUE)
       dsList <- list(normal=dsN, tumor=dsT, tumorN=dsTN, callsN=gcN);
       rootPath <- "totalAndFracBData";
       rootPath <- Arguments$getReadablePath(rootPath);
-      tumorboostPlot(ds,dsList,dataSetName,normalTumorArray,sampleName,dsC,sampleNAMESC)   
+      tumorboostPlot(ds,dsList,dataSetName,normalTumorArray,tumorSample,dsC,normalTumorMatrixC)   
     }
 
     rm(dsN, dsT, dsTN, gcN);
@@ -141,10 +149,10 @@ tumorboost<-function(dataSetName,normalTumorArray,plot=TRUE)
 #
 # This function is mainly based on the code from http://aroma-project.org/vignettes/tumorboost-highlevel from Pierre Neuvial
 #
-tumorboostPlot=function(ds,dsList,dataSetName,normalTumorArray,sampleName,dsC,sampleNAMESC)
+tumorboostPlot=function(ds,dsList,dataSetName,normalTumorArray,sampleName,dsC,normalTumorMatrixC)
 {
   ########## load the total copy number signal for a pair (normal,tumor) 
-  pairC <- which(sampleNAMESC==sampleName)
+  pairC <- normalTumorMatrixC[normalTumorMatrixC[,2]==sampleName,]
     
   stopifnot(length(pairC) == 2);
     
@@ -189,10 +197,11 @@ tumorboostPlot=function(ds,dsList,dataSetName,normalTumorArray,sampleName,dsC,sa
   else 
     throw("Unknown platform: ", platform);
   
-  cat("Saving graphics for sample ",normalTumorArray$tumor[sampleName],"\n")
+  cat("Saving graphics for sample ",getNames(dsC[sampleName]),"\n")
   
   #find ploidy for chromosome 23 and 24
-  gender=findGender(getName(dsC),match(sampleName,sampleNAMESC),ugp)
+  #gender=findGender(getName(dsC),match(sampleName,sampleNAMESC),ugp)
+  gender=findGender(getName(dsC),sampleName,ugp)
   
   #loop on chr
   for(chromosome in 1:25)
@@ -200,7 +209,7 @@ tumorboostPlot=function(ds,dsList,dataSetName,normalTumorArray,sampleName,dsC,sa
     chrTag <- sprintf("Chr%02d", chromosome);
 
     #check for the existence of the file
-    figName <- sprintf("%s,%s", normalTumorArray$tumor[sampleName], chrTag);
+    figName <- sprintf("%s,%s", getNames(dsC[sampleName]), chrTag);
     pathname <- filePath(figPath, sprintf("%s.png", figName));
     
     testGraph=!isFile(pathname)
@@ -279,7 +288,7 @@ tumorboostPlot=function(ds,dsList,dataSetName,normalTumorArray,sampleName,dsC,sa
       axis(side=1);
       axis(side=2, at=c(0,2,4,6));
       points(x, C, pch=".");
-      label <- sprintf("%s", normalTumorArray$tumor[sampleName]);
+      label <- sprintf("%s", getNames(dsC[sampleName]));
       stext(side=3, pos=0, label);
       stext(side=3, pos=1, chrTag);
      
@@ -300,7 +309,7 @@ tumorboostPlot=function(ds,dsList,dataSetName,normalTumorArray,sampleName,dsC,sa
         axis(side=1);
         axis(side=2, at=c(0,1/2,1));
         points(x, beta[,cc], pch=".", col=cols);
-        label <- sprintf("%s (%s)", normalTumorArray$tumor[sampleName], name);
+        label <- sprintf("%s (%s)", getNames(dsC[sampleName]), name);
         stext(side=3, pos=0, label);
         stext(side=3, pos=1, chrTag); 
       }

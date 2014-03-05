@@ -252,12 +252,12 @@ onlySNP=TRUE,loss="linear")
 #get the file names of our data-set
 files=getListOfFiles("datatest1")
 #create the data.frame linking normal and tumor files
-normalTumorArray=data.frame(normal=files[1:4],tumor=files[5:8])
+normalTumorArray=data.frame(normal=rep(files[1],7),tumor=files[2:8])
 @	
 	
 				\begin{figure}[!h]
 					\centering
-					\includegraphics[width=0.8\textwidth]{fig/normalTumorArrayExample2}
+					\includegraphics[width=0.8\textwidth]{fig/normalTumorArrayExample}
 					\caption{CSV file linking normal sample with tumoral sample.}
 				\end{figure}
 
@@ -676,7 +676,7 @@ createArchitecture("datatest1","GenomeWideSNP_6",celPATH,chipPATH,".",TRUE,"Full
 		
 		
 		~~\\
-		The next getter, \texttt{getGenotypeCalls}, returns the symmetrized allele B fraction only for heterozygous positions. To symmetrize the allele B fraction the transformation $x\mapsto 2*|x-0.5|$ is applied. It corresponds to center the data in $0.5$ corresponding to heterozygous allele B fraction then symmetrize and multiply by $2$ to have a signal between $0$ and $1$
+		The next getter, \texttt{getSymFracBSignal}, returns the symmetrized allele B fraction only for heterozygous positions. To symmetrize the allele B fraction the transformation $x\mapsto 2*|x-0.5|$ is applied. It corresponds to center the data in $0.5$ corresponding to heterozygous allele B fraction then symmetrize and multiply by $2$ to have a signal between $0$ and $1$
 		
 		\begin{verbatim}	
 		getSymFracBSignal(dataSetName,chromosome,normalTumorArray,file,verbose=TRUE)
@@ -737,13 +737,13 @@ createArchitecture=FALSE,savePlot=TRUE, tags="Full")
 #get the file names of our data-set
 files=getListOfFiles("datatest1")
 #create the data.frame linking normal and tumor files
-normalTumorArray=data.frame(normal=files[1:4],tumor=files[5:8])
+normalTumorArray=data.frame(normal=rep(files[1],7),tumor=files[2:8])
 @	
 
 		
 		\begin{figure}[!h]
 			\centering
-			\includegraphics[width=0.8\textwidth]{fig/normalTumorArrayExample2}\\
+			\includegraphics[width=0.8\textwidth]{fig/normalTumorArrayExample}\\
 			\caption{\texttt{normalTumorArray} file with the first four samples as control for the four other files.}
 			\label{normalTumorArrayExample}
 		\end{figure}
@@ -752,7 +752,7 @@ normalTumorArray=data.frame(normal=files[1:4],tumor=files[5:8])
 		 your working directory (path stored in variable  \texttt{workdir}), then you have to execute :		
 		
 <<eval=FALSE>>=
-signalPreProcess(dataSetName="datatest1", chipType="GenomeWideSNP_6",
+signalPreProcess(dataSetName="datatest2", chipType="GenomeWideSNP_6",
 normalTumorArray=normalTumorArray,dataSetPath=celPATH,
 chipFilesPath=chipPATH,path=workdir,createArchitecture=TRUE, savePlot=TRUE, tags="Full")
 @
@@ -760,7 +760,7 @@ chipFilesPath=chipPATH,path=workdir,createArchitecture=TRUE, savePlot=TRUE, tags
 		If you have already created the architecture, move your files in the appropriate folder and run the function with \texttt{createArchitecture=FALSE} :
 		
 <<eval=FALSE>>=
-signalPreProcess(dataSetName="datatest1", chipType="GenomeWideSNP_6",
+signalPreProcess(dataSetName="datatest2", chipType="GenomeWideSNP_6",
 normalTumorArray=normalTumorArray,createArchitecture=FALSE, savePlot=TRUE, tags="Full")
 @
 
@@ -769,13 +769,11 @@ normalTumorArray=normalTumorArray,createArchitecture=FALSE, savePlot=TRUE, tags=
 		
 <<eval=FALSE>>=
 #normal-tumor study
-CNdata2=getCopyNumberSignal("datatest2",5,normalTumorArray=
-"./Documents/datatest2/normalTumorArray.csv",TRUE)
-fracBdata2=getFracBSignal("datatest2",5,normalTumorArray=
-"./Documents/datatest2/normalTumorArray.csv")
+CNdata2=getCopyNumberSignal("datatest2",5,normalTumorArray=normalTumorArray,TRUE)
+fracBdata2=getFracBSignal("datatest2",5,normalTumorArray=normalTumorArray)
 symFracB2=getSymFracBSignal("datatest2",5,
 file="GIGAS_g_GAINmixHapMapAffy2_GenomeWideEx_6_A01_31218",
-normalTumorArray="./Documents/datatest2/normalTumorArray.csv")
+normalTumorArray=normalTumorArray)
 
 #study without reference
 CNdata1=getCopyNumberSignal("datatest1",5,onlySNP=TRUE)	
