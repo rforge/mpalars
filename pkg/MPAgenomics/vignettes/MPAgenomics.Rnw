@@ -998,11 +998,13 @@ segfracB
 <<eval=FALSE>>=
 file="GIGAS_g_GAINmixHapMapAffy2_GenomeWideEx_6_A07_31314"
 CNdata1=getCopyNumberSignal("datatest1",20,onlySNP=TRUE,listOfFiles=file)
+copyNumber=CNdata1$chr20$GIGAS_g_GAINmixHapMapAffy2_GenomeWideEx_6_A07_31314
+position=CNdata$chr20$position
 @
 	
 		Now, run the segmentation process :
 <<eval=FALSE>>=
-seg=PELT(CNdata1$copynumber,position=CNdata1$position,plot=TRUE,verbose=TRUE)
+seg=PELT(copyNumber,position=position,plot=TRUE,verbose=TRUE)
 @
 	
 		You obtain the plots seen previously (Fig \ref{outpelt}) and the results in the right format for the calling function (see section \ref{calling}).
@@ -1150,10 +1152,11 @@ seg2=cnSegCallingProcess("datatest1",chromosome=21:22)
 <<eval=FALSE>>=
 #create the segmentData object
 callobj= callingObject(copynumber=seg$signal, segmented=seg$segmented,
- chromosome=rep(CNdata$chromosome,length(seg$signal)), position=seg$position, 
+ chromosome=rep(20,length(seg$signal)), position=seg$startPos, 
  sampleNames="sample1")
 #run the calling
 call=callingProcess(callobj,nclass=3,cellularity=1,verbose=TRUE)
+call$segment
 @
 		
 		We can see the result of the calling in figure \ref{callsoutput}.
@@ -1217,7 +1220,8 @@ call=callingProcess(callobj,nclass=3,cellularity=1,verbose=TRUE)
 			
 			You want to keep only non normal segment. So, you run the following command:
 <<eval=FALSE>>=
-segmentfilter=filterSeg(call$segment,normalFilter=TRUE)
+segmentfilter=filterSeg(call$segment,keptLabel="gain")
+segmentfilter
 @
 			
 			We obtain
@@ -1314,7 +1318,7 @@ loss,plot,...)
 <<eval=FALSE>>=
 dataResponse=data.frame(files=getListOfFiles("datatest1"),
 response=c(2.105092,1.442868,1.952103,1.857819,2.047897,1.654766,2.385327,2.113406))
-res=markerSelection("datatest1",dataResponse,chromosome=21:22,signal="CN",
+res=markerSelection(dataSetName="datatest1",dataResponse,chromosome=21:22,signal="CN",
 onlySNP=TRUE,loss="linear")
 @
 	
