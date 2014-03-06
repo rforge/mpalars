@@ -264,7 +264,7 @@ normalTumorArray=data.frame(normal=rep(files[1],7),tumor=files[2:8])
 				Note that the extension .CEL is not provided in the \texttt{normalTumorArray} dataframe.
 				In the following of the vignette, a study which provides both controls and tumoral samples will be refered as a normal-tumor study.
 				
-				You can now run the normalization taking into account information from the control sample (run with createArchitecture=FALSE because we suppose the architecture was already created during the previous example, if it is not the case you can add the missing parameters to the function and set createArchitecture=TRUE).
+				You can now run the normalization taking into account information from the control sample (run with \mbox{\texttt{createArchitecture=FALSE}} because we suppose the architecture was already created during the previous example, if it is not the case you can add the missing parameters to the function and set \mbox{\texttt{createArchitecture=TRUE)}}.
 
 <<eval=FALSE>>=
 signalPreProcess(dataSetName="datatest1", chipType="GenomeWideSNP_6",
@@ -408,7 +408,8 @@ segfracB
 				\texttt{chipFilesPath} & Path to the folder containing the chip files.\\
 				\texttt{path} & Path where create the architecture (default=".").\\
 				\texttt{verbose} & Print information during the process (default=FALSE).\\
-        \texttt{tags} & Appear in the different file names (cdf, ugp, ufl) of the chip. For no tag, use tags=NULL (default = NULL).\\
+        \texttt{tags} & Appear in the different file names (cdf, ugp, ufl) of the chip. \\
+        ~~ & For no tag, use tags=NULL (default = NULL).\\
 				\hline	
 			\end{tabular}		
 		\end{center}
@@ -558,7 +559,8 @@ createArchitecture("datatest1","GenomeWideSNP_6",celPATH,chipPATH,".",TRUE,"Full
 				\texttt{createArchitecture} & if TRUE, the aroma architecture will be automatically created (default=TRUE).\\
 				\texttt{savePlot} & savePlot if TRUE, graphics of the CN signal and allele B fraction signal will be\\
 				~~ & saved in the \texttt{figures/signal} folder. (default=TRUE).\\
-        \texttt{tags} & Appear in the different file names (cdf, ugp, ufl) of the chip. For no tag, use tags=NULL (default = NULL).\\
+        \texttt{tags} & Appear in the different file names (cdf, ugp, ufl) of the chip. \\
+        ~~ & For no tag, use tags=NULL (default = NULL).\\
 				\hline	
 			\end{tabular}		
 		\end{center}

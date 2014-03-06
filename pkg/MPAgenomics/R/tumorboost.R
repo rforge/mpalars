@@ -212,110 +212,107 @@ tumorboostPlot=function(ds,dsList,dataSetName,normalTumorArray,sampleName,dsC,no
     figName <- sprintf("%s,%s", getNames(dsC[sampleName]), chrTag);
     pathname <- filePath(figPath, sprintf("%s.png", figName));
     
-    testGraph=!isFile(pathname)
     
-    if (testGraph) 
-    { 
-      units <- getUnitsOnChromosome(ugp, chromosome=chromosome);
-      unitNames <- getUnitNames(unf,units=units);##names of the SNP and CN probes
-      posChr <- getPositions(ugp, units=units);#position of the probes on the chromosome
-      
-      ##########################################################
-      ################  FRACTION ALLELE B  #####################
-      ##########################################################
-      # Identify SNP units
-      keep <- (regexpr(snpPattern, unitNames) != -1);
-      SNPunits <- units[keep];
-      posSNP <- getPositions(ugp, units=SNPunits);#position des SNPs sur le chromosome      
-      
-      
-      # Extract Allele B fractions (defined only for SNP probes)
-      kk <- 1;
-      dfList <- lapply(dsList, FUN=getFile, kk);
-      beta <- lapply(dfList, FUN=function(df) df[SNPunits,1,drop=TRUE]);
-      beta <- as.data.frame(beta);
-      beta <- as.matrix(beta);
-      names <- colnames(beta);
-      names[names == "tumorN"] <- "normalized tumor";
-        
-      
-      ##########################################################
-      #####################  COPY NUMBER  ######################
-      ##########################################################
-      
-      #tumor CN
-      C <- extractMatrix(dsPairC, units=units);
-      
-      #the ploidy depends of the gender for the cromosome 23 and 24
-      if(chromosome==23 || chromosome==24)
+    units <- getUnitsOnChromosome(ugp, chromosome=chromosome);
+    unitNames <- getUnitNames(unf,units=units);##names of the SNP and CN probes
+    posChr <- getPositions(ugp, units=units);#position of the probes on the chromosome
+    
+    ##########################################################
+    ################  FRACTION ALLELE B  #####################
+    ##########################################################
+    # Identify SNP units
+    keep <- (regexpr(snpPattern, unitNames) != -1);
+    SNPunits <- units[keep];
+    posSNP <- getPositions(ugp, units=SNPunits);#position des SNPs sur le chromosome      
+    
+    
+    # Extract Allele B fractions (defined only for SNP probes)
+    kk <- 1;
+    dfList <- lapply(dsList, FUN=getFile, kk);
+    beta <- lapply(dfList, FUN=function(df) df[SNPunits,1,drop=TRUE]);
+    beta <- as.data.frame(beta);
+    beta <- as.matrix(beta);
+    names <- colnames(beta);
+    names[names == "tumorN"] <- "normalized tumor";
+    
+    
+    ##########################################################
+    #####################  COPY NUMBER  ######################
+    ##########################################################
+    
+    #tumor CN
+    C <- extractMatrix(dsPairC, units=units);
+    
+    #the ploidy depends of the gender for the cromosome 23 and 24
+    if(chromosome==23 || chromosome==24)
+    {
+      ploidy=NA
+      if(gender=="XY")
+        ploidy=1#male:chr23=chrX, chr24=chrY, the ploidy is 1
+      else if(gender=="XX" && chromosome == 23)
       {
-        ploidy=NA
-        if(gender=="XY")
-          ploidy=1#male:chr23=chrX, chr24=chrY, the ploidy is 1
-        else if(gender=="XX" && chromosome == 23)
-        {
-          ploidy=2#female:chr23=chrXX, the ploidy is 2
-        }
-        #female:chr24=nothing, the ploidy is NA
-        
-        #normalize by the normal sample        
-        C <- ploidy*C[,1]/C[,2]
+        ploidy=2#female:chr23=chrXX, the ploidy is 2
       }
-      else
-      {
-        #normalization of CN
-        C <- 2*C[,1]/C[,2];
-      }
+      #female:chr24=nothing, the ploidy is NA
       
-      print(head(C))
-      print(head(posSNP))
-      ####################### SORTIE GRAPHIQUE
-      
-      #dimensions
-      x <- posChr/1e6;
-      xlim <- range(x, na.rm=TRUE);
-      xlab <- "Position (Mb)";    
-      width <- 1280;
-      aspect <- 0.6*1/3;
-      ylim <- c(0,6);
-      ylab <- "Copy number";
- 
-      # Plot total CNs
-      fig <- devNew("png", pathname, label=figName, width=width, height=4*aspect*width);
-      par(mfrow=c(4,1))
-      par(mar=c(2.7,2.5,1.1,1)+0.1, tcl=-0.3, mgp=c(1.4,0.4,0), cex=2);
+      #normalize by the normal sample        
+      C <- ploidy*C[,1]/C[,2]
+    }
+    else
+    {
+      #normalization of CN
+      C <- 2*C[,1]/C[,2];
+    }
+    
+    print(head(C))
+    print(head(posSNP))
+    ####################### SORTIE GRAPHIQUE
+    
+    #dimensions
+    x <- posChr/1e6;
+    xlim <- range(x, na.rm=TRUE);
+    xlab <- "Position (Mb)";    
+    width <- 1280;
+    aspect <- 0.6*1/3;
+    ylim <- c(0,6);
+    ylab <- "Copy number";
+    
+    # Plot total CNs
+    fig <- devNew("png", pathname, label=figName, width=width, height=4*aspect*width);
+    par(mfrow=c(4,1))
+    par(mar=c(2.7,2.5,1.1,1)+0.1, tcl=-0.3, mgp=c(1.4,0.4,0), cex=2);
+    plot(NA, xlim=xlim, ylim=ylim, xlab=xlab, ylab=ylab, axes=FALSE);
+    axis(side=1);
+    axis(side=2, at=c(0,2,4,6));
+    points(x, C, pch=".");
+    label <- sprintf("%s", getNames(dsC[sampleName]));
+    stext(side=3, pos=0, label);
+    stext(side=3, pos=1, chrTag);
+    
+    
+    x <- posSNP/1e6;
+    ylim <- c(-0.05,1.05);
+    ylim <- c(-0.1,1.1);
+    ylab <- "Allele B Fraction";
+    cols <- as.integer(beta[,"callsN"] != 1) + 1L;
+    #print(head(beta))
+    
+    # Plot Allele B fractions for normal, tumor and normalized tumor
+    for (cc in 1:3)
+    {
+      tag <- colnames(beta)[cc];
+      name <- names[cc];
       plot(NA, xlim=xlim, ylim=ylim, xlab=xlab, ylab=ylab, axes=FALSE);
       axis(side=1);
-      axis(side=2, at=c(0,2,4,6));
-      points(x, C, pch=".");
-      label <- sprintf("%s", getNames(dsC[sampleName]));
+      axis(side=2, at=c(0,1/2,1));
+      points(x, beta[,cc], pch=".", col=cols);
+      label <- sprintf("%s (%s)", getNames(dsC[sampleName]), name);
       stext(side=3, pos=0, label);
-      stext(side=3, pos=1, chrTag);
-     
-      
-      x <- posSNP/1e6;
-      ylim <- c(-0.05,1.05);
-      ylim <- c(-0.1,1.1);
-      ylab <- "Allele B Fraction";
-      cols <- as.integer(beta[,"callsN"] != 1) + 1L;
-      #print(head(beta))
- 
-      # Plot Allele B fractions for normal, tumor and normalized tumor
-      for (cc in 1:3)
-      {
-        tag <- colnames(beta)[cc];
-        name <- names[cc];
-        plot(NA, xlim=xlim, ylim=ylim, xlab=xlab, ylab=ylab, axes=FALSE);
-        axis(side=1);
-        axis(side=2, at=c(0,1/2,1));
-        points(x, beta[,cc], pch=".", col=cols);
-        label <- sprintf("%s (%s)", getNames(dsC[sampleName]), name);
-        stext(side=3, pos=0, label);
-        stext(side=3, pos=1, chrTag); 
-      }
-      devDone();
-      cat("*")
-    } 
+      stext(side=3, pos=1, chrTag); 
+    }
+    devDone();
+    cat("*")
+    
     
   }##end boucle chromosome
 }
