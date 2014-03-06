@@ -9,12 +9,14 @@
 \usepackage{hyperref}
 \usepackage{ulem}
 \usepackage{url}
+\usepackage{bibentry}
 \geometry{top=3cm, bottom=3cm, left=2cm, right=2cm}
 
 % Title Page
 \title{ \texttt{MPAgenomics} : An \texttt{R} package for Multi-Patients Analysis of Genomic Markers.}
 \author{Quentin Grimonprez, Alain Celisse, Guillemette Marot}
 \date{December, 2013}
+\nobibliography*
 
 \begin{document}
 \SweaveOpts{concordance=TRUE}
@@ -25,7 +27,6 @@
 
 \section{Introduction}
 %	\setkeys{Gin}{width=0.8\textwidth}
-	\subsection{Overview}
 		This package provides functions to preprocess and analyze genomic data. Markers refer to SNPs or copy number variations which are designed on the arrays. 
     \texttt{MPAgenomics} is devoted to: $(i)$ efficient segmentation and $(ii)$ genomic marker selection from multi-patient copy number and SNP data profiles.\\
     
@@ -36,8 +37,33 @@
     
     Markers selection relies on the use of penalized regularization techniques implemented in \texttt{glmnet} \cite{glmnet} and wrappers are offered to relate this package with the normalisation packages. For the users who would like to go further in the use of penalized regularization techniques, we also provide some guidelines to quickly build inputs for the \texttt{HDPenReg} package and interpret some outputs of this latter one.
 
-	\subsection{Note on the installation of the package and its dependencies}
-	
+\section{Preliminaries}
+
+	\subsection{Citing MPAgenomics}
+  
+  \texttt{MPAgenomics} wraps and extends fonctionnalities of several packages. Please try to cite the appropriate methodological papers when you use results from the limma software in a publication, as such citations are the main means by which the authors receive professional credit for their work.\\
+    The above article describes the TumorBoost normalization method.
+    
+    If you use TumorBoost normalization in \texttt{MPAgenomics}, please cite:
+    \begin{itemize}
+      \item \bibentry{TumorBoost}
+    \end{itemize}
+    The above articles describe the PELT segmentation method.
+    
+    If you use \texttt{MPAgenomics} to segment copy number signal or allele B fraction signal, please cite:
+    \begin{itemize}
+      \item \bibentry{pelt}
+      \item \bibentry{peltR}
+    \end{itemize}
+    The above articles describe the CHGcall calling method.
+    
+    If you use \texttt{MPAgenomics} for calling, please cite:
+    \begin{itemize}
+      \item \bibentry{CGHcall}
+      \item \bibentry{CGHcallR}
+    \end{itemize}
+    
+  \subsection{Installation}
 		The package can be installed either from a GUI (selecting the R-forge repository) or with the command line (to be typed in the R console)
 <<eval=FALSE>>=
 install.packages("MPAgenomics", repos="http://R-Forge.R-project.org")
@@ -75,11 +101,11 @@ biocLite("CGHcall")
 		
 		The installation of all these packages at the very beginning of the use of \texttt{MPAgenomics} is only for convenience, not mandatory. Indeed, the user who would have forgotten to install some packages would be reminded to install them when applying the corresponding wrapper.
 	
-	\subsection{Starting example}
+\section{Starting example}
 
 		This introductory example aims at helping the user understand the main functions of the package. For more details on each step, we invite the user to read the appropriate section. 
 	
-		\subsubsection{Download a toy data-set}	
+		\subsection{Download a toy data-set}	
 	
 			The example is based on a free data-set containing 8 .CEL files (251Mo) which can be downloaded from the Broad Institute website, following this link:
 			\url{http://www.broadinstitute.org/mpg/birdsuite/downloads/birdsuite_inputs_1.5.3.tgz}
@@ -190,7 +216,7 @@ gunzip("GenomeWideSNP_6,HB20080710.acs.gz",destname="GenomeWideSNP_6,HB20080710.
 			\end{scriptsize}
 
 
-		\subsubsection{Use of the main functions of the package}	
+		\subsection{Use of the main functions of the package}	
 			\label{mainuse}
         		In the following example, we suggest to perform segmentation and calling before marker selection even if only the pre-processing step, which estimates the copy-number and the allele B fraction signal, is required for the last one.
 
@@ -239,10 +265,7 @@ onlySNP=TRUE,loss="linear")
 
 			For interpretation of all the results, we refer to section \ref{sec:select}.
 
-
-
-
-		\subsubsection{To go further\dots}
+		\subsection{To go further\dots}
 
 			\paragraph{Use of control samples}
 

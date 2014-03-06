@@ -18,7 +18,7 @@ Multi Patients Analysis of Genomic Markers
 \tabular{ll}{
 Package: \tab MPAgenomics\cr
 Type: \tab Package\cr
-Version: \tab 0.41\cr
+Version: \tab 0.41.1\cr
 Date: \tab 2014-03-06\cr
 License: \tab GPL (>=2)\cr
 }
