@@ -188,14 +188,16 @@ tumorboostPlot=function(ds,dsList,dataSetName,normalTumorArray,sampleName,dsC,no
   if (platform == "Affymetrix") 
   {
     require("aroma.affymetrix") || throw("Package not loaded: aroma.affymetrix");
-    snpPattern <- "^SNP";
+    snpPattern <- "^SNP|^S-";
   } 
   else if (platform == "Illumina") 
   {
     snpPattern <- "^rs[0-9]";
-  }
+  } 
   else 
+  { 
     throw("Unknown platform: ", platform);
+  }
   
   cat("Saving graphics for sample ",getNames(dsC[sampleName]),"\n")
   
@@ -316,3 +318,4 @@ tumorboostPlot=function(ds,dsList,dataSetName,normalTumorArray,sampleName,dsC,no
     
   }##end boucle chromosome
 }
+

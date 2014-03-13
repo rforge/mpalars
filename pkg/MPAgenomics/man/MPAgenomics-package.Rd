@@ -35,5 +35,5 @@ Maintainer: Samuel Blanck <samuel.blanck@inria.fr>
 
 \examples{
 #see the vignette for detailled examples
-#vignette("MPAgenomics")
+vignette("MPAgenomics")
 }

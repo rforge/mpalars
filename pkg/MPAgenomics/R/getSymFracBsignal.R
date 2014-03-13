@@ -180,7 +180,7 @@ getSymFracBSignal=function(dataSetName,file,chromosome,normalTumorArray,verbose=
   if (platform == "Affymetrix") 
   {
     require("aroma.affymetrix") || throw("Package not loaded: aroma.affymetrix");
-    snpPattern <- "^SNP";
+    snpPattern <- "^SNP|^S-";
   } 
   else if (platform == "Illumina") 
   {

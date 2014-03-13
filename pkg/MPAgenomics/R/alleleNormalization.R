@@ -139,7 +139,11 @@ SignalNormalization<-function(dataFolder,chipType,normalTumorArray,genotypeCalls
   }
   
   ###CRMAv2 : normalization of CEL files. The same for normal-tumor and single array study
-  ds <- doCRMAv2(dataFolder, chipType=paste0(chipType,",",tags),verbose=-1,combineAlleles=FALSE)  
+  if (is.null(tags)) {
+    ds <- doCRMAv2(dataFolder, chipType=paste0(chipType),verbose=-1,combineAlleles=FALSE)  
+  } else {
+    ds <- doCRMAv2(dataFolder, chipType=paste0(chipType,",",tags),verbose=-1,combineAlleles=FALSE)
+  }
   
   
   ###genotype calls: genotypage of the NORMAL data only, not the TUMOR 

@@ -190,7 +190,7 @@ getCopyNumberSignal=function(dataSetName,chromosome,normalTumorArray,onlySNP=FAL
   if (platform == "Affymetrix") 
   {
     require("aroma.affymetrix") || throw("Package not loaded: aroma.affymetrix");
-    snpPattern <- "^SNP";
+    snpPattern <- "^SNP|^S-";
   } 
   else if (platform == "Illumina") 
   {

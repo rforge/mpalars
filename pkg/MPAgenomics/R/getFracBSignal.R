@@ -183,14 +183,16 @@ getFracBSignal=function(dataSetName,chromosome,normalTumorArray,listOfFiles=NULL
   if (platform == "Affymetrix") 
   {
     require("aroma.affymetrix") || throw("Package not loaded: aroma.affymetrix");
-    snpPattern <- "^SNP";
+    snpPattern <- "^SNP|^S-";
   } 
   else if (platform == "Illumina") 
   {
     snpPattern <- "^rs[0-9]";
   }
   else 
+  {
     throw("Unknown platform: ", platform);
+  }
   
   allFracB=list()
   for(chr in chromosome)

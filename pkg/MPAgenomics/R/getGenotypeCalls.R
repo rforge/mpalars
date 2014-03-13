@@ -136,14 +136,15 @@ getGenotypeCalls=function(dataSetName,chromosome,listOfFiles=NULL,verbose=TRUE)
   if (platform == "Affymetrix") 
   {
     require("aroma.affymetrix") || throw("Package not loaded: aroma.affymetrix");
-    snpPattern <- "^SNP";
+    snpPattern <- "^SNP|^S-";
   } 
   else if (platform == "Illumina") 
   {
     snpPattern <- "^rs[0-9]";
   }
-  else 
+  else {
     throw("Unknown platform: ", platform);
+  }
   
   gsN=extract(gsN,pos)
   
