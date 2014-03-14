@@ -26,9 +26,6 @@ other annotation (possibly subdirectories) | +- rawData/ +-
 <dataSetName>/ +- <chipType>/ <-- must match exactly a chip
 type folder under annotationData/ +- CEL files
 }
-\examples{
-createEmptyArchitecture("data1","GenomeWideSNP_6",".",TRUE)
-}
 \author{
 Quentin Grimonprez
 }

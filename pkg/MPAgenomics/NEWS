@@ -1,3 +1,13 @@
+Version 0.41.3 (14-03-2014)
+- EVOLUTION : Modification of aroma architecture management
+    - CreateEmptyArchiteture no more exported
+    - Creation of new folders data and chip folders by addData and addChip function
+- Changes in documentation for more to be consistent with vignette
+- Changes in vignette
+    - Maths forumula of Lasso
+    - Minor changes
+
+
 Version 0.41.2 (13-03-2014)
 - BUG FIX : SNP filtering for cytoscan_HD microarray
 - Changes in vignette

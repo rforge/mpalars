@@ -7,34 +7,37 @@ markerSelection(dataSetName, dataResponse, chromosome = 1:22, signal = "CN",
   10), loss = "logistic", plot = TRUE, ...)
 }
 \arguments{
-  \item{dataSetName}{Name of the dataset folder in rawData
-  .}
+  \item{dataSetName}{The name of the data-set folder.}
 
   \item{dataResponse}{A csv files or a data.frame with 2
   columns : "files" and "response". The column "files"
   contains the filename to extract and the second column
   the response associated to the file.}
 
-  \item{chromosome}{chromosome used in the study.}
+  \item{chromosome}{A vector containing the number of the
+  chromosomes for the SNPs selection.}
 
-  \item{signal}{either \"CN\" or \"fracB\". The type of
-  signal to import.}
+  \item{signal}{either \"CN\" or \"fracB\". corresponding
+  to which signal will be analyzed (default=\”CN\”).}
 
-  \item{normalTumorArray}{only if you have normal and tumor
-  profile in your data folder. A csv file or a data.frame
-  with 2 columns: "normal" and "tumor". The first column
-  contains the name of normal files and the second the
-  names of associated tumor files.}
+  \item{normalTumorArray}{Only in the case of normal-tumor
+  study. A csv file or a data.frame containing the mapping
+  between normal and tumor files. The first column contains
+  the name of normal files and the second the names of
+  associated tumor files.}
 
   \item{onlySNP}{(only if signal=\"CN\"). If TRUE, only the
-  SNP markers will be used.}
+  SNPs probes are used (default=FALSE).}
 
-  \item{nbFolds}{number of folds in the cross validation.}
+  \item{nbFolds}{number of folds in the cross validation
+  (default=10).}
 
   \item{loss}{either \"logistic\" (binary response) or
-  \"linear\" (quantitative response).}
+  \"linear\" (quantitative response), default is
+  ”logistic”}
 
-  \item{plot}{if TRUE, plot the cross validation graphic.}
+  \item{plot}{If TRUE, cross-validation mean squared error
+  is plotted (default=TRUE).}
 
   \item{...}{Other parameters for HDlars function or glmnet
   function.}

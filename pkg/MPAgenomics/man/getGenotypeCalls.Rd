@@ -6,27 +6,28 @@ getGenotypeCalls(dataSetName, chromosome, listOfFiles = NULL,
   verbose = TRUE)
 }
 \arguments{
-  \item{dataSetName}{Name of the dataset (it must correpond
-  to a folder name in rawData folder.)}
+  \item{dataSetName}{The name of the data-set folder (it
+  must correpond to a folder name in rawData folder.)}
 
   \item{chromosome}{A vector containing the chromosomes for
-  which the genotype calls must be extract.}
+  which the genotype call will be extracted.}
 
   \item{listOfFiles}{A vector containing the names of the
-  files in dataSetNames to extract.}
+  files in dataSetName folder for which the genotype signal
+  will be extracted (default is all the files).}
 
-  \item{verbose}{If TRUE, print some informations.}
+  \item{verbose}{If TRUE print some information
+  (default=TRUE)}
 }
 \value{
 a list of length the number of chromosome containing a
 data.frame with columns: \describe{
-\item{chromosome}{chromosome corresponding to the signal.}
-\item{position}{Positions associated to the allele B
-fraction.} \item{genotype}{Many columns (the number of
-selected files), the name of each column is the name of the
-associated data file name. It contains the genotype calls
-for a different profile.} \item{featureNames}{Names of the
-probes.} }
+\item{chromosome}{Chromosome of the signal.}
+\item{position}{Positions associated with the genotype.}
+\item{genotype}{Genotype calls corresponding to selected
+files; the name of each column is the name of the
+associated data file name.} \item{featureNames}{Names of
+the probes.} }
 }
 \description{
 Extract genotype calls from aroma files. It requires to

@@ -3,16 +3,16 @@
 #'
 #' @title markers selection
 #' 
-#' @param dataSetName Name of the dataset folder in rawData .
+#' @param dataSetName The name of the data-set folder.
 #' @param dataResponse A csv files or a data.frame with 2 columns : "files" and "response". The column "files" contains the filename to extract and the second column the response associated to the file.
-#' @param chromosome chromosome used in the study.
-#' @param signal either \"CN\" or \"fracB\". The type of signal to import.
-#' @param normalTumorArray only if you have normal and tumor profile in your data folder. A csv file or a data.frame with 2 columns: "normal" and "tumor".
+#' @param chromosome A vector containing the number of the chromosomes for the SNPs selection.
+#' @param signal either \"CN\" or \"fracB\". corresponding to which signal will be analyzed (default=\”CN\”).
+#' @param normalTumorArray Only in the case of normal-tumor study. A csv file or a data.frame containing the mapping between normal and tumor files.
 #' The first column contains the name of normal files and the second the names of associated tumor files.
-#' @param onlySNP (only if signal=\"CN\"). If TRUE, only the SNP markers will be used.
-#' @param nbFolds number of folds in the cross validation.
-#' @param loss either \"logistic\" (binary response) or \"linear\" (quantitative response).
-#' @param plot if TRUE, plot the cross validation graphic.
+#' @param onlySNP (only if signal=\"CN\"). If TRUE, only the SNPs probes are used (default=FALSE).
+#' @param nbFolds number of folds in the cross validation (default=10).
+#' @param loss either \"logistic\" (binary response) or \"linear\" (quantitative response), default is ”logistic”
+#' @param plot If TRUE, cross-validation mean squared error is plotted (default=TRUE).
 #' @param ... Other parameters for HDlars function or glmnet function.
 #' 
 #' @return a list containing length(chromosme) elements. Each element is a list containing
@@ -380,16 +380,15 @@ SNPselectionFracBsignal=function(dataSetName,dataResponse,chromosome,normalTumor
 #' @param dataResponse response associated to the data.
 #' @param nbFolds number of folds in the cross validation.
 #' @param loss either \"logistic\" (binary response) or \"linear\" (quantitative response).
-#' @param plot if TRUE, plot the cross validation graphic.
-#' @param ... Other parameters for HDlars function or glmnet function.
+#' @param plot If TRUE plot cross-validation mean squared error (default=TRUE).
+#' @param ... spplementary arguments for cv.glmnet function in case of logistic loss or for HDlars function for linear loss.
 #' 
 #' @return a list containing 
 #' \describe{
 #'   \item{variable}{A vector containing the index of all selected variables.}
 #'   \item{coefficient}{A vector containing the coefficients of all selected variables.}
 #'   \item{intercept}{Intercept of the model.}
-#'   \item{fraction}{fraction of the l1 norm of coefficient selected by cross validation.}
-#' }
+#'}
 #'
 #' @author Quentin Grimonprez
 #' 

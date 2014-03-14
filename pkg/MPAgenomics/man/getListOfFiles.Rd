@@ -5,9 +5,9 @@
 getListOfFiles(dataSetName, chipType)
 }
 \arguments{
-  \item{dataSetName}{Name of a folder in rawData folder}
+  \item{dataSetName}{The name of a data-set folder}
 
-  \item{chipType}{Name of the chip type used for the data}
+  \item{chipType}{The name of the used chip}
 }
 \value{
 The filenames of all the files in

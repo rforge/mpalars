@@ -3,18 +3,18 @@
 #' package.
 #'
 #' @title Extract allele B fraction signal from aroma files
-#' @param dataSetName Name of the dataset (it must correpond to a folder name in rawData folder.)
+#' @param dataSetName The name of the data-set folder (it must correpond to a folder name in rawData folder.)
 #' @param chromosome A vector containing the chromosomes for which the allele B fraction signal must be extract. 
-#' @param normalTumorArray Only if you have normal and tumor profile in your data folder. A csv file or a data.frame with 2 columns: "normal" and "tumor".
+#' @param normalTumorArray Only in the case of normal-tumor study. A csv file or a data.frame containing the mapping between normal and tumor files
 #' The first column contains the name of normal files and the second the names of associated tumor files.
-#' @param listOfFiles A vector containing the names of the files in dataSetNames to extract.
-#' @param verbose If TRUE, print some informations.
+#' @param listOfFiles  A vector containing the names of the files in dataSetName folder for which the allele B fraction profiles will be extracted (default is all the files).
+#' @param verbose If TRUE print some information (default=TRUE).
 #' 
 #' @return a list of length the number of chromosome containing a list of two elements (normal and tumor) containing a data.frame with columns:
 #' \describe{
-#'   \item{chromosome}{chromosome corresponding to the signal.}
-#'   \item{position}{Positions associated to the allele B fraction.}
-#'   \item{fracB}{Many columns (the number of selected files), the name of each column is the name of the associated data file name. It contains the fracB signal for a different profile.}
+#'   \item{chromosome}{Chromosome of the signal.}
+#'   \item{position}{Positions associated with the allele B fraction.}
+#'   \item{fracB}{Allele B fraction profiles of selected files; the name of each column is the name of the associated data file name.}
 #'   \item{featureNames}{Names of the probes.}
 #' }
 #' 

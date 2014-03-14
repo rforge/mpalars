@@ -4,16 +4,16 @@
 #'
 #' @title Segment a copy-number signal and call the found segments.
 #'
-#' @param dataSetName name of the data-set folder in the rawData folder containing the signals to used.
-#' @param normalTumorArray only if you have normal and tumor profile in your data folder. A csv file or a data.frame with 2 columns: "normal" and "tumor".
+#' @param dataSetName name of the data-set folder in the rawData folder containing the signals to use.
+#' @param normalTumorArray Only in the case of normal-tumor study. A csv file or a data.frame containing the mapping between normal and tumor files.
 #' The first column contains the name of normal files and the second the names of associated tumor files.
 #' @param chromosome A vector containing the chromosomes to segment.
 #' @param Lambda vector containing all the penalization values to test for the segmentation. If no values are provided, default values will be used.
 #' @param listOfFiles A vector containing the names of the files from the dataSetName to use.
 #' @param onlySNP If TRUE, only the SNP probes will be used.
 #' @param savePlot If TRUE, save the segmented signal in figures folder.
-#' @param nclass The number of levels to be used for calling. Either 3 (loss, normal, gain), 4 (including amplifications), 5 (including double deletions).
-#' @param cellularity Percentage of tumored cells in the sample
+#' @param nclass The number of levels to be used for calling. Either 3 (loss, normal, gain), 4 (including amplifications), 5 (including double deletions) (default=3).
+#' @param cellularity Percentage of tumored cells in the sample (default=1).
 #' @param ... Other parameters of CGHcall function
 #'
 #' @return a data.frame containg columns :
@@ -274,7 +274,7 @@ cnSegCallingProcess=function(dataSetName,normalTumorArray,chromosome=1:22,Lambda
 #' (see the output of \link{cnSegCallingProcess} function).
 #' @param minLength The minimum length (in bp) for a segment. All the shorter segments are removed.
 #' @param minProbes The minimum number of probes for a segment. All the segments with less probes are removed.
-#' @param keptLabel Only segment with one of the specified label will be kept.
+#' @param keptLabel Vector of labels to keep. Only segment with one of the specified label will be kept.
 #'
 #' @return a data.frame of the same format as segmentList.
 #'

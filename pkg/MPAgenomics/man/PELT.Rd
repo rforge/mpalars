@@ -5,11 +5,14 @@
 PELT(signal, Lambda, position = NULL, plot = TRUE, verbose = TRUE)
 }
 \arguments{
-  \item{signal}{a vector containing the signal}
+  \item{signal}{a vector containing the signal.}
 
-  \item{Lambda}{sequence of penalty parameters to test}
+  \item{Lambda}{A vector containing all the penalization
+  values to test for the segmentation. If no values are
+  provided, default values will be used}
 
-  \item{position}{position of the elements of the signal}
+  \item{position}{A vector containing the position of all
+  elements of the signal (not necessary)}
 
   \item{plot}{if TRUE, plot the segmentation results}
 
@@ -19,10 +22,11 @@ PELT(signal, Lambda, position = NULL, plot = TRUE, verbose = TRUE)
 a list containing \describe{ \item{signal}{A vector
 containing the signal.} \item{segmented}{A vector of the
 same size as signal containing the segmented values.}
-\item{startPos}{The position of each probes.}
-\item{segment}{A data.frame, each row is a different
-segment with the start position, end position, number of
-points in the signal and the value of the segment.} }
+\item{startPos}{The position of each probe.}
+\item{segment}{A data.frame that sums up the results of the
+segmentation. Each row is a different segment with the
+start position, end position, number of points in the
+signal and the value of the segment.} }
 }
 \description{
 This function launches the segmentation PELT (from package

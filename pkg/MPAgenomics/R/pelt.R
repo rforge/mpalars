@@ -4,9 +4,9 @@
 #'
 #' @title segmentation function 
 #'
-#' @param signal a vector containing the signal
-#' @param Lambda sequence of penalty parameters to test
-#' @param position position of the elements of the signal
+#' @param signal a vector containing the signal.
+#' @param Lambda A vector containing all the penalization values to test for the segmentation. If no values are provided, default values will be used
+#' @param position A vector containing the position of all elements of the signal (not necessary)
 #' @param plot if TRUE, plot the segmentation results
 #' @param verbose if TRUE print some informations
 #' 
@@ -14,8 +14,8 @@
 #' \describe{
 #'   \item{signal}{A vector containing the signal.}
 #'   \item{segmented}{A vector of the same size as signal containing the segmented values.}
-#'   \item{startPos}{The position of each probes.}
-#'   \item{segment}{A data.frame, each row is a different segment with the start position, end position, number of points in the signal and the value of the segment.}
+#'   \item{startPos}{The position of each probe.}
+#'   \item{segment}{A data.frame that sums up the results of the segmentation. Each row is a different segment with the start position, end position, number of points in the signal and the value of the segment.}
 #' }
 #'
 #' @export
@@ -126,14 +126,14 @@ PELT=function(signal,Lambda,position=NULL,plot=TRUE,verbose=TRUE)
 #'
 #' @title segmentation function 
 #'
-#' @param dataSetName name of the dataset (it must correpond to a folder name in rawData folder.).
-#' @param chromosome the chromosome which the CN signal must be extract. 
-#' @param normalTumorArray only if you have normal and tumor profile in your data folder. A csv file or a data.frame with 2 columns: "normal" and "tumor".
+#' @param dataSetName The name of the data-set folder (it must correpond to a folder name in rawData folder.).
+#' @param normalTumorArray Only in the case of normal-tumor study. A csv file or a data.frame containing the mapping between normal and tumor files
 #' The first column contains the name of normal files and the second the names of associated tumor files.
-#' @param Lambda sequence of penalty parameters to test
-#' @param listOfFiles vector containing the names of the files in dataSetName to extract.
-#' @param onlySNP if TRUE only the copy-number at SNPs probes will be returned.
-#' @param plot if TRUE, plot the segmentation results
+#' @param chromosome A vector with the chromosomes to be segmented. 
+#' @param Lambda A vector containing all the penalization values to test for the segmentation.If no values are provided, default values will be used.
+#' @param onlySNP If TRUE, only the copy-number for SNPs positions will be returned (default=TRUE).
+#' @param listOfFiles A vector containing the names of the files in dataSetName folder for which the copy number profiles will be segmented (default is all the files).
+#' @param savePlot if TRUE, graphics of the segmented CN signal will be saved in the figures/dataSetName/segmentation/CN folder. (default=TRUE).
 #' @param verbose if TRUE print some informations
 #' 
 #' @return a list containing
@@ -144,14 +144,14 @@ PELT=function(signal,Lambda,position=NULL,plot=TRUE,verbose=TRUE)
 #'   \item{chromosome}{A vector of the same size as copynumber containing the chromosome number.}
 #'   \item{featureNames}{Names of the probes.}
 #'   \item{sampleNames}{The name of the signal.}
-#'   \item{segment}{A data.frame, each row is a different segment with the chromosome, start position, end position, number of probes in the signal and the value of the segment.}
+#'   \item{segment}{A data.frame that sums up the results of the segmentation. Each row is a different segment with the chromosome, start position, end position, number of probes in the signal and the value of the segment.}
 #' }
 #'
 #' @export
 #' 
 #' @author Quentin Grimonprez
 #' 
-PELTaroma=function(dataSetName,normalTumorArray,chromosome=1:22,Lambda=NULL,listOfFiles=NULL,onlySNP=TRUE,plot=TRUE,verbose=TRUE)
+PELTaroma=function(dataSetName,normalTumorArray,chromosome=1:22,Lambda=NULL,listOfFiles=NULL,onlySNP=TRUE,savePlot=TRUE,verbose=TRUE)
 {
   
   allpkg=TRUE
@@ -315,10 +315,10 @@ PELTaroma=function(dataSetName,normalTumorArray,chromosome=1:22,Lambda=NULL,list
       
       #segmentation
       cat(paste0("Segmentation of file ",name," chromosome ",chr,"..."))
-      seg=PELT(as.vector(CN[,3]),Lambda,CN$position,plot=plot,verbose=FALSE)
+      seg=PELT(as.vector(CN[,3]),Lambda,CN$position,plot=savePlot,verbose=FALSE)
       cat("OK\n")
       
-      if(plot)
+      if(savePlot)
       {
         figName <- sprintf("%s,%s", name, chr);
         pathname <- filePath(figPath, sprintf("%s.png", figName));

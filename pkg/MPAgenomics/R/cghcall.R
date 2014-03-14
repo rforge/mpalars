@@ -410,20 +410,20 @@ CGHcall <- function(inputSegmented, prior="auto", nclass=5, organism="human",cel
 #' 
 #' @param segmentData A list (see details).
 #' @param nclass The number of levels to be used for calling. Either 3 (loss, normal, gain), 4 (including amplifications), 5 (including double deletions).
-#' @param cellularity A vector of cellularities ranging from 0 to 1 to define the contamination of your sample with healthy cells (1 = no contamination).
+#' @param cellularity Percentage of tumor cells in the sample ranging from 0 to 1 (default=1). Define the contamination of your sample with healthy cells (1 = no contamination).
 #' @param verbose If TRUE, print some details.
 #' @param ... other options of CGHcall functions
 #'
 #' @return A list with the same element as segmentData list and
 #' \describe{
-#'   \item{calls}{A matrix, of the same size as inputSegmented$copynumber matrix, containing the label of each point.
+#'   \item{calls}{A matrix, of the same size as segmentData$copynumber matrix, containing the label of each point.
 #'   -2=double loss, -1=loss, 0=normal, 1=gain, 2=amplification.}
 #'   \item{segment}{A data.frame that sums up the different segment found.}
-#'   \item{probdloss}{(if you have ran CGHcall with nclass=5) A matrix of the same size as inputSegmented$copynumber matrix. It contains the probability for each segmented copynumber to be a double loss.}
-#'   \item{probloss}{A matrix of the same size as inputSegmented$copynumber matrix. It contains the probability for each segmented copynumber to be a loss.}
-#'   \item{probdnorm}{A matrix of the same size as inputSegmented$copynumber matrix. It contains the probability for each segmented copynumber to be normal.}
-#'   \item{probdgain}{A matrix of the same size as inputSegmented$copynumber matrix. It contains the probability for each segmented copynumber to be a gain.}
-#'   \item{probdamp}{(if you have ran CGHcall with nclass=4 or 5) A matrix of the same size as inputSegmented$copynumber matrix. It contains the probability for each segmented copynumber to be an amplification.}
+#'   \item{probdloss}{(if you ran CGHcall with nclass=5) A matrix of the same size as segmentData$copynumber matrix. It contains the probability for each segmented copynumber to be a double loss.}
+#'   \item{probloss}{A matrix of the same size as segmentData$copynumber matrix. It contains the probability for each segmented copynumber to be a loss.}
+#'   \item{probdnorm}{A matrix of the same size as segmentData$copynumber matrix. It contains the probability for each segmented copynumber to be normal.}
+#'   \item{probdgain}{A matrix of the same size as segmentData$copynumber matrix. It contains the probability for each segmented copynumber to be a gain.}
+#'   \item{probdamp}{(if you have ran CGHcall with nclass=4 or 5) A matrix of the same size as segmentData$copynumber matrix. It contains the probability for each segmented copynumber to be an amplification.}
 #' }
 #'
 #'
@@ -434,8 +434,8 @@ CGHcall <- function(inputSegmented, prior="auto", nclass=5, organism="human",cel
 #'   \item{segmented}{A matrix of the same size as copynumber. It contains the segmented signals.}
 #'   \item{chromosome}{A vector of length nrow(copynumber) containing the number of the chromosome for each position.}
 #'   \item{startPos}{A vector of length nrow(copynumber) containing the starting genomic position of each probe.}
-#'   \item{featureNames}{A vector of length nrow(copynumber) containing the names of each probes.}
-#'   \item{sampleNames}{A vector of length ncol(copynumber) containing the names of each profiles.}
+#'   \item{featureNames}{A vector of length nrow(copynumber) containing the names of each probe.}
+#'   \item{sampleNames}{A vector of length ncol(copynumber) containing the names of each profile.}
 #' }
 #' 
 #'

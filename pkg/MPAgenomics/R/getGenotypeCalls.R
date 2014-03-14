@@ -3,16 +3,16 @@
 #' package.
 #'
 #' @title Extract genotype calls from aroma files
-#' @param dataSetName Name of the dataset (it must correpond to a folder name in rawData folder.)
-#' @param chromosome A vector containing the chromosomes for which the genotype calls must be extract. 
-#' @param listOfFiles A vector containing the names of the files in dataSetNames to extract.
-#' @param verbose If TRUE, print some informations.
-#' 
+#' @param dataSetName The name of the data-set folder (it must correpond to a folder name in rawData folder.)
+#' @param chromosome A vector containing the chromosomes for which the genotype call will be extracted. 
+#' @param listOfFiles A vector containing the names of the files in dataSetName folder for which the genotype signal will be extracted (default is all the files).
+#' @param verbose If TRUE print some information (default=TRUE)
+#'
 #' @return a list of length the number of chromosome containing a data.frame with columns:
 #' \describe{
-#'   \item{chromosome}{chromosome corresponding to the signal.}
-#'   \item{position}{Positions associated to the allele B fraction.}
-#'   \item{genotype}{Many columns (the number of selected files), the name of each column is the name of the associated data file name. It contains the genotype calls for a different profile.}
+#'   \item{chromosome}{Chromosome of the signal.}
+#'   \item{position}{Positions associated with the genotype.}
+#'   \item{genotype}{Genotype calls corresponding to selected files; the name of each column is the name of the associated data file name.}
 #'   \item{featureNames}{Names of the probes.}
 #' }
 #' 

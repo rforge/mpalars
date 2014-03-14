@@ -17,8 +17,8 @@ filterSeg(segmentList, minLength = 1, minProbes = 1, keptLabel = c("loss",
   \item{minProbes}{The minimum number of probes for a
   segment. All the segments with less probes are removed.}
 
-  \item{keptLabel}{Only segment with one of the specified
-  label will be kept.}
+  \item{keptLabel}{Vector of labels to keep. Only segment
+  with one of the specified label will be kept.}
 }
 \value{
 a data.frame of the same format as segmentList.

@@ -6,24 +6,30 @@ segFracBSignal(dataSetName, normalTumorArray, chromosome = 1:22,
   Lambda = NULL, listOfFiles = NULL, savePlot = TRUE, verbose = TRUE)
 }
 \arguments{
-  \item{dataSetName}{name of the dataset (it must correpond
-  to a folder name in rawData folder.).}
+  \item{dataSetName}{The name of the data-set folder (it
+  must correpond to a folder name in rawData folder.).}
 
-  \item{normalTumorArray}{only if you have normal and tumor
-  profile in your data folder. A csv file or a data.frame
-  with 2 columns: "normal" and "tumor". The first column
-  contains the name of normal files and the second the
-  names of associated tumor files.}
+  \item{normalTumorArray}{Only in the case of normal-tumor
+  study. A csv file or a data.frame containing the mapping
+  between normal and tumor files. The first column contains
+  the name of normal files and the second the names of
+  associated tumor files.}
 
-  \item{chromosome}{A vector containing the chromosome
-  which the CN signal must be extract.}
+  \item{chromosome}{A vector with the chromosomes to be
+  segmented.}
 
-  \item{Lambda}{sequence of penalty parameters to test}
+  \item{Lambda}{A vector containing all the penalization
+  values to test for the segmentation. If no values are
+  provided, default values will be used.}
 
-  \item{listOfFiles}{vector containing the names of the
-  files in dataSetName to extract.}
+  \item{listOfFiles}{A vector containing the names of the
+  files in dataSetName folder for which the allele B
+  profile is segmented (default is all the files).}
 
-  \item{savePlot}{if TRUE, plot the segmentation results}
+  \item{savePlot}{if TRUE, graphics of the segmented allele
+  B profile will be saved in the
+  figures/dataSetName/segmentation/fracB folder.
+  (default=TRUE).}
 
   \item{verbose}{if TRUE print some informations}
 }

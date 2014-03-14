@@ -163,17 +163,17 @@ SignalNormalization<-function(dataFolder,chipType,normalTumorArray,genotypeCalls
 #' 
 #' @title normalization process
 #' @param dataSetName name of the data set. If you use architecture=FALSE, the name must correspond to a name of folder in the rawData folder.
-#' @param chipType type of the chip used for obtaining the data (e.g. "GenomeWideSNP_6"). If architecture=FALSE, the files of the chip must be contained in the annotationData folder,
+#' @param chipType The type of the used chip (e.g. "GenomeWideSNP_6"). If architecture=FALSE, the files of the chip must be contained in the annotationData folder,
 #'  if TRUE, they have to be in the "chipTypePath" folder.
-#' @param normalTumorArray only if you have normal and tumor profile in your data folder. A csv file or a data.frame with 2 columns: "normal" and "tumor".
+#' @param normalTumorArray Only in the case of normal-tumor study. A csv file or a data.frame with 2 columns: "normal" and "tumor".
 #' The first column contains the name of normal files and the second the names of associated tumor files.
-#' @param dataSetPath (only if createArchitecture=TRUE) path where to find the data files.
-#' @param path (only if createArchitecture=TRUE) path where create rawData and annotationData folders.
-#' @param chipFilesPath (only if createArchitecture=TRUE) path where to find the chip files.
-#' @param createArchitecture if TRUE, the required architecture for store the results will be automatically created. 
+#' @param dataSetPath (only if createArchitecture=TRUE) Path to the folder containing the CEL files of the data-set.
+#' @param chipFilesPath (only if createArchitecture=TRUE) Path to the folder containing all the annotations files for the specified chip type.
+#' @param path (only if createArchitecture=TRUE) Path where the architecture should be created (default=”.”).
+#' @param createArchitecture if TRUE, the aroma architecture will be automatically created (default=TRUE). 
 #' CEL files of the data and chip files will be copied (not moved).
-#' @param savePlot if TRUE, graphics of the CN signal and allele B fraction signal will be saved in the figures folder.
-#' @param tags appear in the different file name (cdf, ugp, ufl) of the chip. For no tag, use tags=NULL (default = NULL). See details for more information.
+#' @param savePlot if TRUE, graphics of the CN signal and allele B fraction signal will be saved in the figures/signal folder.
+#' @param Common tag which appears in the different file names (cdf, ugp, ufl) of the chip. For no tag, use tags=NULL (default = NULL). See details for more information.
 #' 
 #' @details
 #' If you want to use the normalization process. You have to used the following architecture :

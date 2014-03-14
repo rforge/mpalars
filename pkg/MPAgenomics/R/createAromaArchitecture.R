@@ -21,10 +21,7 @@
 #'           +- <chipType>/ <-- must match exactly a chip type folder under annotationData/
 #'              +- CEL files
 #'
-#' @examples
-#' createEmptyArchitecture("data1","GenomeWideSNP_6",".",TRUE)
 #'
-#' @export
 createEmptyArchitecture=function(dataSetName,chipType,path=".",verbose=TRUE)
 {
   #check arguments
@@ -259,22 +256,22 @@ copyChipFiles=function(pathToChipFiles,chipName,path,verbose)
 #' 
 #' @title Create aroma architecture and copy files
 #' 
-#' @param dataSetName name of the data set
-#' @param chipType type of the chip used for the data 
+#' @param dataSetName The name of the data-set folder to create
+#' @param chipType The name of the used chip 
 #' @param dataSetPath Path to the folder containing the data CEL files
 #' @param chipFilesPath Path to the folder containing the chip files
-#' @param path path where create folders
-#' @param verbose if TRUE, print details of the process
-#' @param tags appear in the different file name (cdf, ugp, ufl) of the chip. For no tag, use tags=NULL (default = NULL). See details for more information.
+#' @param path Path where the architecture should be created (default=”.”)
+#' @param verbose Print information during the process (default=FALSE)
+#' @param Common tag which appears in the different file names (cdf, ugp, ufl) of the chip. For no tag, use tags=NULL (default = NULL). See details for more information.
 #'
 #' @seealso copyChipFiles, copyDataFiles, createAromaArchitecture
 #' 
 #' @details
 #' All the cdf chip file names must follow the following rule : <chipType>,<Tags>.cdf
-#' Multiples tags must be separated by  a comma. If there is no tags, the pattern is <chipType>.cdf
+#' Multiples tags must be separated by a comma. If there is no tags, the pattern is <chipType>.cdf
 #' 
 #' @examples
-#' #createArchitecture("data1","GenomeWideSNP_6",dataSetPath="./data/",chipFilesPath="./chip/",path="./aroma",verbose=TRUE)
+#' createArchitecture("datatest1","GenomeWideSNP_6",dataSetPath="./celPATH",chipFilesPath="./chipPATH",path=".",verbose=TRUE,tags="Full")
 #' 
 #' @author Quentin Grimonprez
 #' 

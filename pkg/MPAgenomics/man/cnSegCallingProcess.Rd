@@ -8,13 +8,13 @@ cnSegCallingProcess(dataSetName, normalTumorArray, chromosome = 1:22,
 }
 \arguments{
   \item{dataSetName}{name of the data-set folder in the
-  rawData folder containing the signals to used.}
+  rawData folder containing the signals to use.}
 
-  \item{normalTumorArray}{only if you have normal and tumor
-  profile in your data folder. A csv file or a data.frame
-  with 2 columns: "normal" and "tumor". The first column
-  contains the name of normal files and the second the
-  names of associated tumor files.}
+  \item{normalTumorArray}{Only in the case of normal-tumor
+  study. A csv file or a data.frame containing the mapping
+  between normal and tumor files. The first column contains
+  the name of normal files and the second the names of
+  associated tumor files.}
 
   \item{chromosome}{A vector containing the chromosomes to
   segment.}
@@ -34,10 +34,11 @@ cnSegCallingProcess(dataSetName, normalTumorArray, chromosome = 1:22,
 
   \item{nclass}{The number of levels to be used for
   calling. Either 3 (loss, normal, gain), 4 (including
-  amplifications), 5 (including double deletions).}
+  amplifications), 5 (including double deletions)
+  (default=3).}
 
   \item{cellularity}{Percentage of tumored cells in the
-  sample}
+  sample (default=1).}
 
   \item{...}{Other parameters of CGHcall function}
 }

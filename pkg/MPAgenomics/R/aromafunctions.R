@@ -3,8 +3,8 @@
 #' 
 #' @description Get the cel files of the specified dataSetName
 #' 
-#' @param dataSetName Name of a folder in rawData folder
-#' @param chipType Name of the chip type used for the data
+#' @param dataSetName The name of a data-set folder
+#' @param chipType The name of the used chip
 #' 
 #' @return The filenames of all the files in rawData/dataSetName/chipType
 #' 
@@ -50,8 +50,18 @@ getListOfFiles=function(dataSetName,chipType)
 #' @author Quentin Grimonprez
 #' 
 #' @export
-addChipType=function(chipType,chipPath)
+addChipType=function(chipType,chipPath,verbose=TRUE)
 {
+  #check arguments
+  if(missing(chipPath))
+    stop("chipPath is missing.")
+  if(missing(chipType))
+    stop("chipType is missing.")
+  if(!is.character(chipPath))
+    stop("dataSetName must be a string.")
+  if(!is.character(chipType))
+    stop("chipType must be a string.")
+  
   if(!("annotationData"%in%list.files()))
     stop("There is no annotationData folder in the current architecture.")
     
@@ -60,6 +70,22 @@ addChipType=function(chipType,chipPath)
   if(chipType%in%existingChip)
     stop(paste0("A ",chipType," folder already exits."))
   
+  if(!file.exists(paste0("./annotationData/chipTypes/",chipType)))
+  {
+    dir.create(paste0("./annotationData/chipTypes/",chipType),recursive=TRUE)
+    
+    #test existence of the created folders
+    ok2=file.access(paste0("./annotationData/chipTypes/",chipType), mode = 0)
+    
+    if(ok2 != 0)
+      stop(paste0("Can not create \"","./annotationData/chipTypes/",chipType,"\" folder."))  
+    else
+    {
+      if(verbose)
+        cat(gsub("//","/",paste0("Folder \"","./annotationData/chipTypes/",chipType,"\" created.")),"\n")
+    }
+  }
+   
   copyChipFiles(chipPath,chipType,".",TRUE)
   
 }
@@ -70,15 +96,29 @@ addChipType=function(chipType,chipPath)
 #'
 #' @title add a new data-set to the existing aroma architecture
 #' 
-#' @param dataSetName Name of the new data-set to add.
-#' @param dataPath Path to the files to add.
-#' @param chipType Name of the chip used for the data.
+#' @param dataSetName The name of the data-set folder to create.
+#' @param dataPath Path of the folder containing the data CEL files.
+#' @param chipType The name of the used chip.
 #' 
 #' @author Quentin Grimonprez
 #' 
 #' @export
-addData=function(dataSetName,dataPath,chipType)
+addData=function(dataSetName,dataPath,chipType,verbose=TRUE)
 {
+  #check arguments
+  if(missing(dataSetName))
+    stop("dataSetName is missing.")
+  if (missing(dataPath))
+    stop("dataPath is missing")
+  if(missing(chipType))
+    stop("chipType is missing.")
+  if(!is.character(dataSetName))
+    stop("dataSetName must be a string.")
+  if(!is.character(dataPath))
+    stop("dataSetName must be a string.")
+  if(!is.character(chipType))
+    stop("chipType must be a string.")
+  
   if(!("annotationData"%in%list.files()))
     stop("There is no annotationData folder in the current architecture.")
   
@@ -88,7 +128,21 @@ addData=function(dataSetName,dataPath,chipType)
   existingChip=list.files("annotationData/chipTypes")
   
   if(!(chipType%in%existingChip))
-    stop(paste0("The ",chipType," folder does not exit."))
+    stop(paste0("The ",chipType," folder does not exist."))
+ 
+  #create rawData
+  if(!file.exists(paste0("./rawData/",dataSetName,"/",chipType)))
+  {
+    dir.create(paste0("./rawData/",dataSetName,"/",chipType),recursive=TRUE)
+    ok1=file.access(paste0("./rawData/",dataSetName,"/",chipType), mode = 0)
+    if(ok1 != 0)
+      stop(paste0("Can not create \"",".","/rawData/",dataSetName,"/",chipType,"\" folder."))
+    else
+    {
+      if(verbose)
+        cat(gsub("//","/",paste0("Folder \"",".","/rawData/",dataSetName,"/",chipType,"\" created.")),"\n")
+    }
+  }
   
   copyDataFiles(dataSetName,dataPath,chipType,".",TRUE)
   

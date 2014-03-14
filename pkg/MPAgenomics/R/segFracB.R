@@ -4,13 +4,13 @@
 #'
 #' @title segmentation function for the allele B fraction
 #'
-#' @param dataSetName name of the dataset (it must correpond to a folder name in rawData folder.).
-#' @param normalTumorArray only if you have normal and tumor profile in your data folder. A csv file or a data.frame with 2 columns: "normal" and "tumor".
+#' @param dataSetName The name of the data-set folder (it must correpond to a folder name in rawData folder.).
+#' @param normalTumorArray Only in the case of normal-tumor study. A csv file or a data.frame containing the mapping between normal and tumor files.
 #' The first column contains the name of normal files and the second the names of associated tumor files.
-#' @param chromosome A vector containing the chromosome which the CN signal must be extract. 
-#' @param Lambda sequence of penalty parameters to test
-#' @param listOfFiles vector containing the names of the files in dataSetName to extract.
-#' @param savePlot if TRUE, plot the segmentation results
+#' @param chromosome  A vector with the chromosomes to be segmented. 
+#' @param Lambda A vector containing all the penalization values to test for the segmentation. If no values are provided, default values will be used.
+#' @param listOfFiles A vector containing the names of the files in dataSetName folder for which the allele B profile is segmented (default is all the files).
+#' @param savePlot if TRUE, graphics of the segmented allele B profile will be saved in the figures/dataSetName/segmentation/fracB folder. (default=TRUE).
 #' @param verbose if TRUE print some informations
 #' 
 #' @return a data.frame where each row correspond to a different segment with columns :
