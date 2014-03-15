@@ -18,7 +18,7 @@ markerSelection(dataSetName, dataResponse, chromosome = 1:22, signal = "CN",
   chromosomes for the SNPs selection.}
 
   \item{signal}{either \"CN\" or \"fracB\". corresponding
-  to which signal will be analyzed (default=\”CN\”).}
+  to which signal will be analyzed (default=\"CN\").}
 
   \item{normalTumorArray}{Only in the case of normal-tumor
   study. A csv file or a data.frame containing the mapping

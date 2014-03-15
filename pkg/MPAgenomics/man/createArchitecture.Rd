@@ -39,7 +39,7 @@ a comma. If there is no tags, the pattern is <chipType>.cdf
 }
 \examples{
 #DO NOT EXECUTE
-#createArchitecture("datatest1","GenomeWideSNP_6",dataSetPath="./celPATH",chipFilesPath="./chipPATH",path=".",verbose=TRUE,tags="Full")
+#createArchitecture("test1","GenomeWideSNP_6","./celPATH","./chipPATH",path=".",TRUE,"Full")
 }
 \author{
 Quentin Grimonprez
