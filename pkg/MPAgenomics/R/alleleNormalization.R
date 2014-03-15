@@ -173,7 +173,7 @@ SignalNormalization<-function(dataFolder,chipType,normalTumorArray,genotypeCalls
 #' @param createArchitecture if TRUE, the aroma architecture will be automatically created (default=TRUE). 
 #' CEL files of the data and chip files will be copied (not moved).
 #' @param savePlot if TRUE, graphics of the CN signal and allele B fraction signal will be saved in the figures/signal folder.
-#' @param Common tag which appears in the different file names (cdf, ugp, ufl) of the chip. For no tag, use tags=NULL (default = NULL). See details for more information.
+#' @param tags Common tag which appears in the different file names (cdf, ugp, ufl) of the chip. For no tag, use tags=NULL (default = NULL). See details for more information.
 #' 
 #' @details
 #' If you want to use the normalization process. You have to used the following architecture :

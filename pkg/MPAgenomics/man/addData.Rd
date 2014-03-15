@@ -12,6 +12,8 @@ addData(dataSetName, dataPath, chipType, verbose = TRUE)
   CEL files.}
 
   \item{chipType}{The name of the used chip.}
+
+  \item{verbose}{Print additionnal information.}
 }
 \description{
 Create a folder in "rawData" and copy the specified files

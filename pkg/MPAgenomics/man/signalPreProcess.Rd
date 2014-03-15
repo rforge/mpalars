@@ -40,8 +40,8 @@ signalPreProcess(dataSetName, chipType, normalTumorArray, dataSetPath,
   allele B fraction signal will be saved in the
   figures/signal folder.}
 
-  \item{Common}{tag which appears in the different file
-  names (cdf, ugp, ufl) of the chip. For no tag, use
+  \item{tags}{Common tag which appears in the different
+  file names (cdf, ugp, ufl) of the chip. For no tag, use
   tags=NULL (default = NULL). See details for more
   information.}
 }

@@ -46,6 +46,7 @@ getListOfFiles=function(dataSetName,chipType)
 #' 
 #' @param chipType Name of the new chiptype to add.
 #' @param chipPath Path to the files to add.
+#' @param verbose Print additionnal information
 #' 
 #' @author Quentin Grimonprez
 #' 
@@ -99,6 +100,7 @@ addChipType=function(chipType,chipPath,verbose=TRUE)
 #' @param dataSetName The name of the data-set folder to create.
 #' @param dataPath Path of the folder containing the data CEL files.
 #' @param chipType The name of the used chip.
+#' @param verbose Print additionnal information.
 #' 
 #' @author Quentin Grimonprez
 #' 

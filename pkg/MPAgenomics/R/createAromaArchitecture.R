@@ -262,7 +262,7 @@ copyChipFiles=function(pathToChipFiles,chipName,path,verbose)
 #' @param chipFilesPath Path to the folder containing the chip files
 #' @param path Path where the architecture should be created (default=”.”)
 #' @param verbose Print information during the process (default=FALSE)
-#' @param Common tag which appears in the different file names (cdf, ugp, ufl) of the chip. For no tag, use tags=NULL (default = NULL). See details for more information.
+#' @param tags Common tag which appears in the different file names (cdf, ugp, ufl) of the chip. For no tag, use tags=NULL (default = NULL). See details for more information.
 #'
 #' @seealso copyChipFiles, copyDataFiles, createAromaArchitecture
 #' 
@@ -271,7 +271,8 @@ copyChipFiles=function(pathToChipFiles,chipName,path,verbose)
 #' Multiples tags must be separated by a comma. If there is no tags, the pattern is <chipType>.cdf
 #' 
 #' @examples
-#' createArchitecture("datatest1","GenomeWideSNP_6",dataSetPath="./celPATH",chipFilesPath="./chipPATH",path=".",verbose=TRUE,tags="Full")
+#' #DO NOT EXECUTE
+#' #createArchitecture("datatest1","GenomeWideSNP_6",dataSetPath="./celPATH",chipFilesPath="./chipPATH",path=".",verbose=TRUE,tags="Full")
 #' 
 #' @author Quentin Grimonprez
 #' 

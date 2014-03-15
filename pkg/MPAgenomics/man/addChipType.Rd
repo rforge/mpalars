@@ -8,6 +8,8 @@ addChipType(chipType, chipPath, verbose = TRUE)
   \item{chipType}{Name of the new chiptype to add.}
 
   \item{chipPath}{Path to the files to add.}
+
+  \item{verbose}{Print additionnal information}
 }
 \description{
 Create a folder in "annotationData/chipTypes" and copy the
