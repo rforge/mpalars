@@ -30,7 +30,7 @@ signalPreProcess(dataSetName, chipType, normalTumorArray, dataSetPath,
   for the specified chip type.}
 
   \item{path}{(only if createArchitecture=TRUE) Path where
-  the architecture should be created (default=”.”).}
+  the architecture should be created (default=".").}
 
   \item{createArchitecture}{if TRUE, the aroma architecture
   will be automatically created (default=TRUE). CEL files

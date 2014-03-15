@@ -169,7 +169,7 @@ SignalNormalization<-function(dataFolder,chipType,normalTumorArray,genotypeCalls
 #' The first column contains the name of normal files and the second the names of associated tumor files.
 #' @param dataSetPath (only if createArchitecture=TRUE) Path to the folder containing the CEL files of the data-set.
 #' @param chipFilesPath (only if createArchitecture=TRUE) Path to the folder containing all the annotations files for the specified chip type.
-#' @param path (only if createArchitecture=TRUE) Path where the architecture should be created (default=”.”).
+#' @param path (only if createArchitecture=TRUE) Path where the architecture should be created (default=".").
 #' @param createArchitecture if TRUE, the aroma architecture will be automatically created (default=TRUE). 
 #' CEL files of the data and chip files will be copied (not moved).
 #' @param savePlot if TRUE, graphics of the CN signal and allele B fraction signal will be saved in the figures/signal folder.

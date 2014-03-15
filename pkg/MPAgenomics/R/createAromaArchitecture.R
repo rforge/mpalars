@@ -260,7 +260,7 @@ copyChipFiles=function(pathToChipFiles,chipName,path,verbose)
 #' @param chipType The name of the used chip 
 #' @param dataSetPath Path to the folder containing the data CEL files
 #' @param chipFilesPath Path to the folder containing the chip files
-#' @param path Path where the architecture should be created (default=”.”)
+#' @param path Path where the architecture should be created (default=".")
 #' @param verbose Print information during the process (default=FALSE)
 #' @param tags Common tag which appears in the different file names (cdf, ugp, ufl) of the chip. For no tag, use tags=NULL (default = NULL). See details for more information.
 #'

@@ -18,7 +18,7 @@ createArchitecture(dataSetName, chipType, dataSetPath, chipFilesPath,
   chip files}
 
   \item{path}{Path where the architecture should be created
-  (default=”.”)}
+  (default=".")}
 
   \item{verbose}{Print information during the process
   (default=FALSE)}

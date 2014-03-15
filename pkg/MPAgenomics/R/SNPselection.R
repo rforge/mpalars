@@ -11,7 +11,7 @@
 #' The first column contains the name of normal files and the second the names of associated tumor files.
 #' @param onlySNP (only if signal=\"CN\"). If TRUE, only the SNPs probes are used (default=FALSE).
 #' @param nbFolds number of folds in the cross validation (default=10).
-#' @param loss either \"logistic\" (binary response) or \"linear\" (quantitative response), default is ”logistic”
+#' @param loss either \"logistic\" (binary response) or \"linear\" (quantitative response), default is \"logistic\"
 #' @param plot If TRUE, cross-validation mean squared error is plotted (default=TRUE).
 #' @param ... Other parameters for HDlars function or glmnet function.
 #' 

@@ -34,7 +34,7 @@ markerSelection(dataSetName, dataResponse, chromosome = 1:22, signal = "CN",
 
   \item{loss}{either \"logistic\" (binary response) or
   \"linear\" (quantitative response), default is
-  ”logistic”}
+  \"logistic\"}
 
   \item{plot}{If TRUE, cross-validation mean squared error
   is plotted (default=TRUE).}
