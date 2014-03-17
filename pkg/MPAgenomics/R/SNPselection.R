@@ -160,7 +160,8 @@ markerSelection=function(dataSetName,dataResponse,chromosome=1:22,signal="CN",no
 #   \item{coefficient}{A vector containing the coefficeints of all selected SNPs.}
 # }
 #
-# @details This function requires to use the aroma folder architecture. In your working directory, there lust have the rawData folder and totalAndFracBData folder.
+# @details This function requires to use the aroma folder architecture. In the working directory, there must be the rawData folder and 
+# totalAndFracBData folder.
 #
 # @author Quentin Grimonprez
 #
@@ -273,7 +274,7 @@ SNPselectionCNsignal=function(dataSetName,dataResponse,chromosome,normalTumorArr
 #   \item{coefficient}{A vector containing the coefficeints of all selected SNPs.}
 # }
 #
-# @details This function requires to use the aroma folder architecture. In your working directory, there lust have the rawData folder and totalAndFracBData folder.
+# @details This function requires to use the aroma folder architecture. In the working directory, there must be the rawData folder and totalAndFracBData folder.
 #
 # @author Quentin Grimonprez
 #

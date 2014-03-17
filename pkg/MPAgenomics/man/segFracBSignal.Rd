@@ -7,7 +7,7 @@ segFracBSignal(dataSetName, normalTumorArray, chromosome = 1:22,
 }
 \arguments{
   \item{dataSetName}{The name of the data-set folder (it
-  must correpond to a folder name in rawData folder.).}
+  must correspond to a folder name in rawData folder.).}
 
   \item{normalTumorArray}{Only in the case of normal-tumor
   study. A csv file or a data.frame containing the mapping
@@ -46,9 +46,9 @@ size as copynumber containing the chromosome number.}
 \description{
 This function launches the segmentation PELT (from package
 changepoint) with a penalty value of lambda * log(n) for a
-range of value for lambda. Then an optimal penalty value
-will be choose in looking for a stabilization in the number
-of segments according to the penalty values.
+range of value for lambda. Then an optimal penalty value is
+chosen by looking for a stabilization in the number of
+segments according to the penalty values.
 }
 \author{
 Quentin Grimonprez

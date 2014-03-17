@@ -1,17 +1,17 @@
 \name{addData}
 \alias{addData}
-\title{add a new data-set to the existing aroma architecture}
+\title{Add a new data-set to the existing aroma architecture}
 \usage{
 addData(dataSetName, dataPath, chipType, verbose = TRUE)
 }
 \arguments{
-  \item{dataSetName}{The name of the data-set folder to
+  \item{dataSetName}{Name of the data-set folder to
   create.}
 
   \item{dataPath}{Path of the folder containing the data
   CEL files.}
 
-  \item{chipType}{The name of the used chip.}
+  \item{chipType}{Name of the used chip.}
 
   \item{verbose}{Print additionnal information.}
 }

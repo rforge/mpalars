@@ -4,7 +4,7 @@
 #'
 #' @title Find the best choice of segmentation parameter.
 #' @param resSeg a list, each element of the list is a vector with the breakpoints for a value of Lambda.
-#' @param Lambda vector with the values of Lambda .
+#' @param Lambda vector with the values of Lambda.
 #' @param plot if TRUE, some graphics will be plotted.
 #' @param verbose if TRUE print some informations.
 #'
@@ -13,7 +13,7 @@
 #'   \item{lambda}{Optimal parameter found.}
 #'   \item{maxPlateau}{A vector with the first and the last position of the biggest plateau.}
 #'   \item{plateau}{A matrix of 3 columns, each row corresponds to a different plateau. The first colum is the starting value of a plateau,
-#'    the second, the length of the plateau and the third, the number of values of lambda contained int the plateau.}
+#'    the second, the length of the plateau and the third, the number of values of lambda contained in the plateau.}
 #' }
 #' 
 #' @author Quentin Grimonprez

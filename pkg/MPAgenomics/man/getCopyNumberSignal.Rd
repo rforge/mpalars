@@ -7,13 +7,13 @@ getCopyNumberSignal(dataSetName, chromosome, normalTumorArray,
 }
 \arguments{
   \item{dataSetName}{The name of the data-set folder (it
-  must correpond to a folder name in rawData folder.).}
+  must correspond to a folder name in rawData folder.).}
 
   \item{chromosome}{A vector containing the chromosomes for
   which the signal will be extracted.}
 
   \item{normalTumorArray}{Only in the case of normal-tumor
-  study.A csv file or a data.frame containing the mapping
+  study. A csv file or a data.frame containing the mapping
   between normal and tumor files. The first column contains
   the name of normal files and the second the names of
   associated tumor files.}
@@ -29,7 +29,7 @@ getCopyNumberSignal(dataSetName, chromosome, normalTumorArray,
   (default=TRUE).}
 }
 \value{
-a list of length the number of chromosome containing a
+a list of length the number of chromosomes containing a
 data.frame with columns: \describe{
 \item{chromosome}{Chromosome of the signal.}
 \item{position}{Positions associated with the copy-number.}
@@ -39,18 +39,19 @@ file name.} \item{featureNames}{Names of the probes.} }
 }
 \description{
 Extract copy-number signals from aroma files. It requires
-to have executed the normalization process of aroma
-package.
+to have executed the normalization process suggested by
+aroma packages, by using \link{signalPreProcess} for
+example.
 }
 \details{
-You have to respect the aroma architecture. Your working
+The aroma architecture must be respected. The working
 directory must contain rawData folder and totalAndFracBData
-folder. To access easily the names of the files available
-in your dataset, you can use the \link{getListOfFiles}
+folder. To easily access the names of the files available
+in a dataset, one can use the \link{getListOfFiles}
 function.
 }
 \examples{
-#DO NOT EXECUTE
+#DO NOT EXECUTE before reading the vignette
 #C=getCopyNumberSignal("data1",5,normalTumorArray,TRUE)
 #C=getCopyNumberSignal("data2",5,onlySNP=TRUE)
 }

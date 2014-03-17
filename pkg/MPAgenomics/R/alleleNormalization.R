@@ -1,17 +1,17 @@
-#' normalization process for estimating raw copy-numbers and allele B fraction.
+#' low-level normalization process for estimating raw copy-numbers and allele B fraction.
 #' 
 #' 
-#' @title normalization process.
-#' @param dataFolder name of the data set.
-#' @param chipType type of the chip used for the data.
-#' @param normalTumorArray only if you have normal and tumor profile in your data folder. A csv file or a data.frame with 2 columns: "normal" and "tumor".
+#' @title Normalization process
+#' @param dataFolder Name of the data set.
+#' @param chipType Type of the chip used for the data.
+#' @param normalTumorArray Only in the case of normal-tumor study. A csv file or a data.frame containing the mapping between normal and tumor files.
 #' The first column contains the name of normal files and the second the names of associated tumor files.
 #' @param genotypeCallsMethod method used for genotypage, default is "naive".
-#' @param savePlot if TRUE, graphics of the CN signal and allele B fraction signal will be saved in the figures folder.
-#' @param tags appear in the different file names (cdf, ugp, ufl) of the chip. For no tag, use tags=NULL (default = NULL). See details for more information.
+#' @param savePlot If TRUE, graphics of the CN signal and allele B fraction signal will be saved in the figures folder.
+#' @param tags Common tag which appears in the different file names (cdf, ugp, ufl) of the chip. For no tag, use tags=NULL (default = NULL). See details for more information.
 #' @return NULL
 #'
-#' @details You have to respect the aroma architecture:
+#' @details The aroma architecture must be respected:
 #'    <working directory>
 #'     +- annotationData/
 #'     |  +- chipTypes/
@@ -25,7 +25,8 @@
 #' 
 #' 
 #' All the cdf chip file names must follow the following rule : <chipType>,<Tags>.cdf
-#' Multiples tags must be separated by  a comma. If there is no tags, the pattern is <chipType>.cdf
+#' 
+#' Multiples tags must be separated by  a comma. If there is no tag, the pattern is <chipType>.cdf
 #' 
 #' @author Quentin Grimonprez
 #' 
@@ -162,11 +163,11 @@ SignalNormalization<-function(dataFolder,chipType,normalTumorArray,genotypeCalls
 #'
 #' normalization process for estimating raw copy-numbers and allele B fraction.
 #' 
-#' @title normalization process
-#' @param dataSetName name of the data set. If you use architecture=FALSE, the name must correspond to a name of folder in the rawData folder.
-#' @param chipType The type of the used chip (e.g. "GenomeWideSNP_6"). If architecture=FALSE, the files of the chip must be contained in the annotationData folder,
+#' @title Normalization process
+#' @param dataSetName Name of the data set. If you use architecture=FALSE, the name must correspond to a name of folder in the rawData folder.
+#' @param chipType Type of the used chip (e.g. "GenomeWideSNP_6"). If architecture=FALSE, the files of the chip must be contained in the annotationData folder,
 #'  if TRUE, they have to be in the "chipTypePath" folder.
-#' @param normalTumorArray Only in the case of normal-tumor study. A csv file or a data.frame with 2 columns: "normal" and "tumor".
+#' @param normalTumorArray Only in the case of normal-tumor study. A csv file or a data.frame containing the mapping between normal and tumor files.
 #' The first column contains the name of normal files and the second the names of associated tumor files.
 #' @param dataSetPath (only if createArchitecture=TRUE) Path to the folder containing the CEL files of the data-set.
 #' @param chipFilesPath (only if createArchitecture=TRUE) Path to the folder containing all the annotations files for the specified chip type.
@@ -177,7 +178,7 @@ SignalNormalization<-function(dataFolder,chipType,normalTumorArray,genotypeCalls
 #' @param tags Common tag which appears in the different file names (cdf, ugp, ufl) of the chip. For no tag, use tags=NULL (default = NULL). See details for more information.
 #' 
 #' @details
-#' If you want to use the normalization process. You have to used the following architecture :
+#' The following architecture must be used:
 #'   <working directory>
 #'     +- annotationData/
 #'     |  +- chipTypes/
@@ -192,12 +193,13 @@ SignalNormalization<-function(dataFolder,chipType,normalTumorArray,genotypeCalls
 #'
 #' If you use createArchitecture=TRUE, this function creates this architecture for you and copy your files in the right folders.
 #' 
-#' The functions will create other folders which contains figures, results of normalization.
+#' The functions will create other folders which contain figures, results of normalization.
 #' 
-#' If you have already the required architecture, you have just to add your data in the rawData folder with respect to the architecture.
+#' If you already have the required architecture, you just have to add your data in the rawData folder with respect to the architecture.
 #' 
 #' All the cdf chip file names must follow the following rule : <chipType>,<Tags>.cdf
-#' Multiples tags must be separated by  a comma. If there is no tags, the pattern is <chipType>.cdf
+#' 
+#' Multiples tags must be separated by  a comma. If there is no tag, the pattern is <chipType>.cdf
 #' 
 #' @author Quentin Grimonprez
 #' 

@@ -12,9 +12,9 @@ callingProcess(segmentData, nclass = 5, cellularity = 1, verbose = TRUE,
   calling. Either 3 (loss, normal, gain), 4 (including
   amplifications), 5 (including double deletions).}
 
-  \item{cellularity}{Percentage of tumor cells in the
-  sample ranging from 0 to 1 (default=1). Define the
-  contamination of your sample with healthy cells (1 = no
+  \item{cellularity}{Proportion of tumor cells in the
+  sample ranging from 0 to 1 (default=1). Reflects the
+  contamination of the sample with healthy cells (1 = no
   contamination).}
 
   \item{verbose}{If TRUE, print some details.}
@@ -26,28 +26,27 @@ A list with the same element as segmentData list and
 \describe{ \item{calls}{A matrix, of the same size as
 segmentData$copynumber matrix, containing the label of each
 point.  -2=double loss, -1=loss, 0=normal, 1=gain,
-2=amplification.} \item{segment}{A data.frame that sums up
-the different segment found.} \item{probdloss}{(if you ran
-CGHcall with nclass=5) A matrix of the same size as
-segmentData$copynumber matrix. It contains the probability
-for each segmented copynumber to be a double loss.}
-\item{probloss}{A matrix of the same size as
-segmentData$copynumber matrix. It contains the probability
-for each segmented copynumber to be a loss.}
+2=amplification.} \item{segment}{A data.frame that
+summarizes the different segments found.}
+\item{probdloss}{(if CGHcall was run with nclass=5) A
+matrix of the same size as segmentData$copynumber matrix.
+It contains the probability for each segmented copynumber
+to be a double loss.} \item{probloss}{A matrix of the same
+size as segmentData$copynumber matrix. It contains the
+probability for each segment to be a loss.}
 \item{probdnorm}{A matrix of the same size as
 segmentData$copynumber matrix. It contains the probability
-for each segmented copynumber to be normal.}
-\item{probdgain}{A matrix of the same size as
-segmentData$copynumber matrix. It contains the probability
-for each segmented copynumber to be a gain.}
-\item{probdamp}{(if you have ran CGHcall with nclass=4 or
-5) A matrix of the same size as segmentData$copynumber
-matrix. It contains the probability for each segmented
-copynumber to be an amplification.} }
+for each segment to be normal.} \item{probdgain}{A matrix
+of the same size as segmentData$copynumber matrix. It
+contains the probability for each segment to be a gain.}
+\item{probdamp}{(if CGHcall was run with nclass=4 or 5) A
+matrix of the same size as segmentData$copynumber matrix.
+It contains the probability for each segment to be an
+amplification.} }
 }
 \description{
 Launch the process of segmentation labeling. This function
-uses dunctions from CGHcall package developped by Sjoerd
+uses functions from CGHcall package developped by Sjoerd
 Vosse, Mark van de Wiel and Ilari Scheinin. See the CGHcall
 package for more details.
 }
@@ -58,7 +57,7 @@ of copynumber for a profile. Each row corresponds to a
 genomic position of a probe.} \item{segmented}{A matrix of
 the same size as copynumber. It contains the segmented
 signals.} \item{chromosome}{A vector of length
-nrow(copynumber) containing the number of the chromosome
+nrow(copynumber) containing the studied chromosome (number)
 for each position.} \item{startPos}{A vector of length
 nrow(copynumber) containing the starting genomic position
 of each probe.} \item{featureNames}{A vector of length

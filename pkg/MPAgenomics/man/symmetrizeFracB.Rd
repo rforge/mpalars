@@ -12,8 +12,8 @@ symmetrizeFracB(fracB)
 a vector containing the symmetrized signal.
 }
 \description{
-The fraction allele B signal is the ratio between the
-signal from the B allele and the total signal. The
+The allele B fraction signal is the ratio between the
+signal from the allele B and the total signal. The
 symmetrization of the fraction allele B signal x is :
 2*abs(x-0.5).
 }

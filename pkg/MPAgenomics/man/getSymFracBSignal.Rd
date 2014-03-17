@@ -12,11 +12,11 @@ getSymFracBSignal(dataSetName, file, chromosome, normalTumorArray,
   \item{chromosome}{A vector with the chromosomes for which
   the symetrized signal will be extracted.}
 
-  \item{normalTumorArray}{Only if you have normal and tumor
-  profile in your data folder. A csv file or a data.frame
-  with 2 columns: "normal" and "tumor". The first column
-  contains the name of normal files and the second the
-  names of associated tumor files.}
+  \item{normalTumorArray}{Only in the case of normal-tumor
+  study. A csv file or a data.frame containing the mapping
+  between normal and tumor files The first column contains
+  the name of normal files and the second the names of
+  associated tumor files.}
 
   \item{file}{The name of the file in dataSetName to
   extract.}
@@ -36,13 +36,15 @@ the probes.} }
 \description{
 Extract symmetrized allele B fraction signals from aroma
 files. It requires to have executed the normalization
-process of aroma package.
+process suggested by aroma packages, by using
+\link{signalPreProcess} for example.
 }
 \details{
-You have to respect the aroma architecture. Your working
+The aroma architecture must be respected. The working
 directory must contain rawData folder and totalAndFracBData
-folder. In case of single array study only the fracB$tumor
-matrix is returned.
+folder. To easily access the names of the files available
+in a dataset, one can use the \link{getListOfFiles}
+function.
 }
 \examples{
 #DO NOT EXECUTE

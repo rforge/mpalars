@@ -1,11 +1,11 @@
 #'
-#' Extract symmetrized allele B fraction signals from aroma files. It requires to have executed the normalization process of aroma 
-#' package.
+#' Extract symmetrized allele B fraction signals from aroma files. It requires to have executed the normalization process suggested by aroma packages, by using 
+#' \link{signalPreProcess} for example.
 #'
 #' @title Extract symmetrized allele B fraction signal from aroma files
 #' @param dataSetName The name of the data-set folder (it must correpond to a folder name in rawData folder.)
 #' @param chromosome A vector with the chromosomes for which the symetrized signal will be extracted. 
-#' @param normalTumorArray Only if you have normal and tumor profile in your data folder. A csv file or a data.frame with 2 columns: "normal" and "tumor".
+#' @param normalTumorArray Only in the case of normal-tumor study. A csv file or a data.frame containing the mapping between normal and tumor files
 #' The first column contains the name of normal files and the second the names of associated tumor files.
 #' @param file The name of the file in dataSetName to extract.
 #' @param verbose If TRUE, print some informations.
@@ -18,8 +18,8 @@
 #'   \item{featureNames}{Names of the probes.}
 #' }
 #' 
-#' @details You have to respect the aroma architecture. Your working directory must contain rawData folder and totalAndFracBData folder.
-#' In case of single array study only the fracB$tumor matrix is returned.
+#' @details The aroma architecture must be respected. The working directory must contain rawData folder and totalAndFracBData folder.
+#' To easily access the names of the files available in a dataset, one can use the \link{getListOfFiles} function.
 #' 
 #' @examples 
 #' #DO NOT EXECUTE

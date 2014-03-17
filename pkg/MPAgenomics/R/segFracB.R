@@ -1,10 +1,10 @@
 #'
 #' This function launches the segmentation PELT (from package changepoint) with a penalty value of lambda * log(n) for a range of value for lambda.
-#' Then an optimal penalty value will be choose in looking for a stabilization in the number of segments according to the penalty values.
+#' Then an optimal penalty value is chosen by looking for a stabilization in the number of segments according to the penalty values.
 #'
 #' @title segmentation function for the allele B fraction
 #'
-#' @param dataSetName The name of the data-set folder (it must correpond to a folder name in rawData folder.).
+#' @param dataSetName The name of the data-set folder (it must correspond to a folder name in rawData folder.).
 #' @param normalTumorArray Only in the case of normal-tumor study. A csv file or a data.frame containing the mapping between normal and tumor files.
 #' The first column contains the name of normal files and the second the names of associated tumor files.
 #' @param chromosome  A vector with the chromosomes to be segmented. 

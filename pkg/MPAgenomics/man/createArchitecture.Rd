@@ -34,11 +34,13 @@ copy files into created folders.
 }
 \details{
 All the cdf chip file names must follow the following rule
-: <chipType>,<Tags>.cdf Multiples tags must be separated by
-a comma. If there is no tags, the pattern is <chipType>.cdf
+: <chipType>,<Tags>.cdf
+
+Multiples tags must be separated by a comma. If there is no
+tag, the pattern is <chipType>.cdf
 }
 \examples{
-#DO NOT EXECUTE
+#DO NOT EXECUTE before reading of the vignette
 #createArchitecture("test1","GenomeWideSNP_6","./celPATH","./chipPATH",path=".",TRUE,"Full")
 }
 \author{

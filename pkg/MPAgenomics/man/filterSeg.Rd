@@ -7,7 +7,7 @@ filterSeg(segmentList, minLength = 1, minProbes = 1, keptLabel = c("loss",
 }
 \arguments{
   \item{segmentList}{A data.frame containing a description
-  of segments, it must have at least columns :
+  of segments, it must have at least columns named
   "chromStart", "chromEnd", "probes" and "calls". (see the
   output of \link{cnSegCallingProcess} function).}
 
@@ -24,11 +24,10 @@ filterSeg(segmentList, minLength = 1, minProbes = 1, keptLabel = c("loss",
 a data.frame of the same format as segmentList.
 }
 \description{
-This function filter the output of a segmentation and label
-process. It allows to keep only the segment of a minimal
-length or containing at least a minimal number of probes.
-Using the normalFilter, you can just keep the segment
-called non normal.
+This function filters the output of a segmentation and
+label process. It allows to keep only segments over a
+minimal length or containing at least a minimal number of
+probes.
 }
 \author{
 Quentin Grimonprez

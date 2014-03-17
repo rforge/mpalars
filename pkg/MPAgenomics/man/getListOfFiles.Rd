@@ -19,8 +19,8 @@ Get the cel files of the specified dataSetName
 \details{
 
 
-if chipType is not provided, the function returns the files
-for the first chip (in the alphabetic order)
+If chipType is not provided, the function returns the files
+for the first chip (in the alphabetic order).
 }
 \author{
 Quentin Grimonprez

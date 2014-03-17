@@ -1,10 +1,10 @@
 # 
 # @title genotypage calls
 # @param dataSetName name of the data set.
-# @param normalTumorArray  A data.frame with 2 columns: "normal" and "tumor".
+# @param normalTumorArray  Only in the case of normal-tumor study. A csv file or a data.frame containing the mapping between normal and tumor files.
 # The first column contains the name of normal files and the second the names of associated tumor files.
 # @param singleArray if TRUE, it is a single Array analysis, no need of normalTumorArray
-# @param plot, if TRUE, graphics will be created in the case of a singleArray study
+# @param plot, if TRUE, graphics will be created in the case of a single Array study
 #
 #
 # This function is based on the code from  http://aroma-project.org/vignettes/naive-genotyping from Pierre Neuvial

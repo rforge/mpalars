@@ -1,6 +1,6 @@
 \name{peltObject}
 \alias{peltObject}
-\title{create the list in parameters for \link{PELT} function}
+\title{Create the list of parameters for \link{PELT} function}
 \usage{
 peltObject(copynumber, chromosome, position, featureNames, sampleNames)
 }
@@ -21,7 +21,7 @@ peltObject(copynumber, chromosome, position, featureNames, sampleNames)
 a list in the right format for \link{PELT} function
 }
 \description{
-create the list in parameters for \link{PELT} function
+create the list of parameters for \link{PELT} function
 }
 \author{
 Quentin Grimonprez

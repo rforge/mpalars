@@ -23,17 +23,17 @@ a list containing \describe{ \item{signal}{A vector
 containing the signal.} \item{segmented}{A vector of the
 same size as signal containing the segmented values.}
 \item{startPos}{The position of each probe.}
-\item{segment}{A data.frame that sums up the results of the
-segmentation. Each row is a different segment with the
+\item{segment}{A data.frame that summarizes the results of
+the segmentation. Each row is a different segment with the
 start position, end position, number of points in the
 signal and the value of the segment.} }
 }
 \description{
 This function launches the segmentation PELT (from package
 changepoint) with a penalty value of lambda * log(n) for a
-range of value for lambda. Then an optimal penalty value
-will be choose in looking for a stabilization in the number
-of segments according to the penalty values.
+range of value for lambda. Then an optimal penalty value is
+chosen by looking for a stabilization in the number of
+segments according to the penalty values.
 }
 \author{
 Quentin Grimonprez

@@ -1,6 +1,6 @@
 \name{callingObject}
 \alias{callingObject}
-\title{create the list in parameters for \link{callingProcess} function}
+\title{Create the list of parameters for \link{callingProcess} function}
 \usage{
 callingObject(copynumber, segmented, chromosome, position, featureNames,
   sampleNames)
@@ -20,14 +20,14 @@ callingObject(copynumber, segmented, chromosome, position, featureNames,
 
   \item{featureNames}{Names of the probes (not necessary).}
 
-  \item{sampleNames}{Names of the sample (not necessary).}
+  \item{sampleNames}{Name of the sample (not necessary).}
 }
 \value{
 a list in the right format for \link{callingProcess}
 function
 }
 \description{
-create the list in parameters for \link{callingProcess}
+create the list of parameters for \link{callingProcess}
 function
 }
 \author{

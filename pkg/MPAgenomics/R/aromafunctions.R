@@ -8,7 +8,7 @@
 #' 
 #' @return The filenames of all the files in rawData/dataSetName/chipType
 #' 
-#' @details if chipType is not provided, the function returns the files for the first chip (in the alphabetic order)
+#' @details If chipType is not provided, the function returns the files for the first chip (in the alphabetic order).
 #' 
 #' @author Quentin Grimonprez
 #' 
@@ -42,7 +42,7 @@ getListOfFiles=function(dataSetName,chipType)
 #'
 #' Create a folder in "annotationData/chipTypes" and copy the specified files in this folder.
 #'
-#' @title add a new chip type to the existing aroma architecture
+#' @title Add a new chip type to the existing aroma architecture
 #' 
 #' @param chipType Name of the new chiptype to add.
 #' @param chipPath Path to the files to add.
@@ -95,11 +95,11 @@ addChipType=function(chipType,chipPath,verbose=TRUE)
 #'
 #' Create a folder in "rawData" and copy the specified files in this folder.
 #'
-#' @title add a new data-set to the existing aroma architecture
+#' @title Add a new data-set to the existing aroma architecture
 #' 
-#' @param dataSetName The name of the data-set folder to create.
+#' @param dataSetName Name of the data-set folder to create.
 #' @param dataPath Path of the folder containing the data CEL files.
-#' @param chipType The name of the used chip.
+#' @param chipType Name of the used chip.
 #' @param verbose Print additionnal information.
 #' 
 #' @author Quentin Grimonprez

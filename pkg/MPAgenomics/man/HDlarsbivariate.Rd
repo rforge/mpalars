@@ -15,10 +15,10 @@ HDlarsbivariate(CN, fracB, y, weightsCN = 1/apply(CN, 1, sd),
   \item{y}{vector containing the response associated to
   each signal}
 
-  \item{weightsCN}{vector of length nrow(CN). weights
+  \item{weightsCN}{vector of length nrow(CN); weights
   associated to each signal for the copy-number signal}
 
-  \item{weightsFracB}{vector of length nrow(fracB). weights
+  \item{weightsFracB}{vector of length nrow(fracB); weights
   associated to each signal for the copy-number signal}
 
   \item{meanCN}{value for centering the copy-number signal
@@ -34,8 +34,8 @@ a LarsPath object
 }
 \description{
 This function transforms the two matrices CN and fracB in
-one matrix to use in the lars algorithm. Each signal is
-weighted
+one matrix which is used in the lars algorithm. Each signal
+is weighted
 }
 \author{
 Quentin Grimonprez

@@ -1,6 +1,6 @@
 \name{CNAobjectToCGHcallObject}
 \alias{CNAobjectToCGHcallObject}
-\title{convert CNAobject}
+\title{Convert CNAobject}
 \usage{
 CNAobjectToCGHcallObject(CNAobject)
 }

@@ -1,13 +1,13 @@
 #'
-#' This function transforms the two matrices CN and fracB in one matrix to use in the lars algorithm.
+#' This function transforms the two matrices CN and fracB in one matrix which is used in the lars algorithm.
 #' Each signal is weighted 
 #'
 #' @title lars algorithm for bivariate signal
 #' @param CN matrix containing copy-number signals. Each row corresponds to a different signal.
 #' @param fracB matrix containing copy-number signals. Each row corresponds to a different signal.
 #' @param y vector containing the response associated to each signal
-#' @param weightsCN vector of length nrow(CN). weights associated to each signal for the copy-number signal
-#' @param weightsFracB vector of length nrow(fracB). weights associated to each signal for the copy-number signal
+#' @param weightsCN vector of length nrow(CN); weights associated to each signal for the copy-number signal
+#' @param weightsFracB vector of length nrow(fracB); weights associated to each signal for the copy-number signal
 #' @param meanCN value for centering the copy-number signal (default value = 2)
 #' @param maxSteps maximum number of steps for the lars algorithm
 #' @param eps tolerance

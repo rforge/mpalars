@@ -1,26 +1,26 @@
 \name{signalPreProcess}
 \alias{signalPreProcess}
-\title{normalization process}
+\title{Normalization process}
 \usage{
 signalPreProcess(dataSetName, chipType, normalTumorArray, dataSetPath,
   chipFilesPath = dataSetPath, path = ".", createArchitecture = TRUE,
   savePlot = TRUE, tags = NULL)
 }
 \arguments{
-  \item{dataSetName}{name of the data set. If you use
+  \item{dataSetName}{Name of the data set. If you use
   architecture=FALSE, the name must correspond to a name of
   folder in the rawData folder.}
 
-  \item{chipType}{The type of the used chip (e.g.
+  \item{chipType}{Type of the used chip (e.g.
   "GenomeWideSNP_6"). If architecture=FALSE, the files of
   the chip must be contained in the annotationData folder,
   if TRUE, they have to be in the "chipTypePath" folder.}
 
   \item{normalTumorArray}{Only in the case of normal-tumor
-  study. A csv file or a data.frame with 2 columns:
-  "normal" and "tumor". The first column contains the name
-  of normal files and the second the names of associated
-  tumor files.}
+  study. A csv file or a data.frame containing the mapping
+  between normal and tumor files. The first column contains
+  the name of normal files and the second the names of
+  associated tumor files.}
 
   \item{dataSetPath}{(only if createArchitecture=TRUE) Path
   to the folder containing the CEL files of the data-set.}
@@ -50,29 +50,30 @@ normalization process for estimating raw copy-numbers and
 allele B fraction.
 }
 \details{
-If you want to use the normalization process. You have to
-used the following architecture : <working directory> +-
-annotationData/ | +- chipTypes/ | +- <chipType>/ <-- must
-match exactly the name of the CDF file (fullname minus
-tags) | +- CDF file(s) and other annotation (possibly
-subdirectories) | +- rawData/ +- <nameOfDataSet>/ +-
-<chipType>/ <-- must match exactly a chip type folder under
-annotationData/ +- CEL files
+The following architecture must be used: <working
+directory> +- annotationData/ | +- chipTypes/ | +-
+<chipType>/ <-- must match exactly the name of the CDF file
+(fullname minus tags) | +- CDF file(s) and other annotation
+(possibly subdirectories) | +- rawData/ +- <nameOfDataSet>/
++- <chipType>/ <-- must match exactly a chip type folder
+under annotationData/ +- CEL files
 
 If you use createArchitecture=TRUE, this function creates
 this architecture for you and copy your files in the right
 folders.
 
-The functions will create other folders which contains
+The functions will create other folders which contain
 figures, results of normalization.
 
-If you have already the required architecture, you have
-just to add your data in the rawData folder with respect to
+If you already have the required architecture, you just
+have to add your data in the rawData folder with respect to
 the architecture.
 
 All the cdf chip file names must follow the following rule
-: <chipType>,<Tags>.cdf Multiples tags must be separated by
-a comma. If there is no tags, the pattern is <chipType>.cdf
+: <chipType>,<Tags>.cdf
+
+Multiples tags must be separated by a comma. If there is no
+tag, the pattern is <chipType>.cdf
 }
 \author{
 Quentin Grimonprez

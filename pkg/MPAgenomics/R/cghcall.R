@@ -404,13 +404,13 @@ CGHcall <- function(inputSegmented, prior="auto", nclass=5, organism="human",cel
 ##################################################################################################   
 
 #'
-#' Launch the process of segmentation labeling. This function uses dunctions from CGHcall package developped by Sjoerd Vosse, Mark van de Wiel and Ilari Scheinin. See the CGHcall package for more details.
+#' Launch the process of segmentation labeling. This function uses functions from CGHcall package developped by Sjoerd Vosse, Mark van de Wiel and Ilari Scheinin. See the CGHcall package for more details.
 #'
 #' @title Calling aberrations in segmented copy-number signal.
 #' 
 #' @param segmentData A list (see details).
 #' @param nclass The number of levels to be used for calling. Either 3 (loss, normal, gain), 4 (including amplifications), 5 (including double deletions).
-#' @param cellularity Percentage of tumor cells in the sample ranging from 0 to 1 (default=1). Define the contamination of your sample with healthy cells (1 = no contamination).
+#' @param cellularity Proportion of tumor cells in the sample ranging from 0 to 1 (default=1). Reflects the contamination of the sample with healthy cells (1 = no contamination).
 #' @param verbose If TRUE, print some details.
 #' @param ... other options of CGHcall functions
 #'
@@ -418,12 +418,12 @@ CGHcall <- function(inputSegmented, prior="auto", nclass=5, organism="human",cel
 #' \describe{
 #'   \item{calls}{A matrix, of the same size as segmentData$copynumber matrix, containing the label of each point.
 #'   -2=double loss, -1=loss, 0=normal, 1=gain, 2=amplification.}
-#'   \item{segment}{A data.frame that sums up the different segment found.}
-#'   \item{probdloss}{(if you ran CGHcall with nclass=5) A matrix of the same size as segmentData$copynumber matrix. It contains the probability for each segmented copynumber to be a double loss.}
-#'   \item{probloss}{A matrix of the same size as segmentData$copynumber matrix. It contains the probability for each segmented copynumber to be a loss.}
-#'   \item{probdnorm}{A matrix of the same size as segmentData$copynumber matrix. It contains the probability for each segmented copynumber to be normal.}
-#'   \item{probdgain}{A matrix of the same size as segmentData$copynumber matrix. It contains the probability for each segmented copynumber to be a gain.}
-#'   \item{probdamp}{(if you have ran CGHcall with nclass=4 or 5) A matrix of the same size as segmentData$copynumber matrix. It contains the probability for each segmented copynumber to be an amplification.}
+#'   \item{segment}{A data.frame that summarizes the different segments found.}
+#'   \item{probdloss}{(if CGHcall was run with nclass=5) A matrix of the same size as segmentData$copynumber matrix. It contains the probability for each segmented copynumber to be a double loss.}
+#'   \item{probloss}{A matrix of the same size as segmentData$copynumber matrix. It contains the probability for each segment to be a loss.}
+#'   \item{probdnorm}{A matrix of the same size as segmentData$copynumber matrix. It contains the probability for each segment to be normal.}
+#'   \item{probdgain}{A matrix of the same size as segmentData$copynumber matrix. It contains the probability for each segment to be a gain.}
+#'   \item{probdamp}{(if CGHcall was run with nclass=4 or 5) A matrix of the same size as segmentData$copynumber matrix. It contains the probability for each segment to be an amplification.}
 #' }
 #'
 #'
@@ -432,7 +432,7 @@ CGHcall <- function(inputSegmented, prior="auto", nclass=5, organism="human",cel
 #'  \describe{
 #'   \item{copynumber}{A matrix. Each column contains a signal of copynumber for a profile. Each row corresponds to a genomic position of a probe.}
 #'   \item{segmented}{A matrix of the same size as copynumber. It contains the segmented signals.}
-#'   \item{chromosome}{A vector of length nrow(copynumber) containing the number of the chromosome for each position.}
+#'   \item{chromosome}{A vector of length nrow(copynumber) containing the studied chromosome (number) for each position.}
 #'   \item{startPos}{A vector of length nrow(copynumber) containing the starting genomic position of each probe.}
 #'   \item{featureNames}{A vector of length nrow(copynumber) containing the names of each probe.}
 #'   \item{sampleNames}{A vector of length ncol(copynumber) containing the names of each profile.}
@@ -489,9 +489,9 @@ callingProcess=function(segmentData,nclass=5,cellularity=1,verbose=TRUE,...)
 
 
 
-#' @title create the list in parameters for \link{PELT} function
+#' @title Create the list of parameters for \link{PELT} function
 #' 
-#' @description create the list in parameters for \link{PELT} function
+#' @description create the list of parameters for \link{PELT} function
 #' 
 #' @param copynumber A vector containing the copy-number signal for one patient and one chromosome.
 #' @param chromosome Chromosome associated with the copy-number signal.
@@ -553,16 +553,16 @@ peltObject=function(copynumber,chromosome,position,featureNames,sampleNames)
 }
 
 
-#' @title create the list in parameters for \link{callingProcess} function
+#' @title Create the list of parameters for \link{callingProcess} function
 #' 
-#' @description create the list in parameters for \link{callingProcess} function
+#' @description create the list of parameters for \link{callingProcess} function
 #' 
 #' @param copynumber A matrix containing the copy-number signal. Each column is a different patient.
 #' @param segmented A matrix containing the segmented copy-number signal. Matrix of the same size as copynumber.
 #' @param chromosome Chromosome associated with the copy-number signal.
 #' @param position Position of the signal.
 #' @param featureNames Names of the probes (not necessary).
-#' @param sampleNames Names of the sample (not necessary).
+#' @param sampleNames Name of the sample (not necessary).
 #'
 #' @return a list in the right format for \link{callingProcess} function
 #' 
@@ -629,7 +629,7 @@ callingObject=function(copynumber,segmented,chromosome,position,featureNames,sam
 
 #' convert CNA object (output of the function segment from DNAcopy package) into a list for the argument segmentData of the function \link{callingProcess}.
 #'
-#' @title convert CNAobject
+#' @title Convert CNAobject
 #' 
 #' @param CNAobject Output object of segment function from DNAcopy package
 #' 

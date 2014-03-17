@@ -7,7 +7,7 @@ PELTaroma(dataSetName, normalTumorArray, chromosome = 1:22, Lambda = NULL,
 }
 \arguments{
   \item{dataSetName}{The name of the data-set folder (it
-  must correpond to a folder name in rawData folder.).}
+  must correspond to a folder name in rawData folder.).}
 
   \item{normalTumorArray}{Only in the case of normal-tumor
   study. A csv file or a data.frame containing the mapping
@@ -19,7 +19,7 @@ PELTaroma(dataSetName, normalTumorArray, chromosome = 1:22, Lambda = NULL,
   segmented.}
 
   \item{Lambda}{A vector containing all the penalization
-  values to test for the segmentation.If no values are
+  values to test for the segmentation. If no values are
   provided, default values will be used.}
 
   \item{onlySNP}{If TRUE, only the copy-number for SNPs
@@ -45,17 +45,17 @@ probes.} \item{chromosome}{A vector of the same size as
 copynumber containing the chromosome number.}
 \item{featureNames}{Names of the probes.}
 \item{sampleNames}{The name of the signal.}
-\item{segment}{A data.frame that sums up the results of the
-segmentation. Each row is a different segment with the
+\item{segment}{A data.frame that summarizes the results of
+the segmentation. Each row is a different segment with the
 chromosome, start position, end position, number of probes
 in the signal and the value of the segment.} }
 }
 \description{
 This function launches the segmentation PELT (from package
 changepoint) with a penalty value of lambda * log(n) for a
-range of value for lambda. Then an optimal penalty value
-will be choose in looking for a stabilization in the number
-of segments according to the penalty values.
+range of value for lambda. Then an optimal penalty value is
+chosen by looking for a stabilization in the number of
+segments according to the penalty values.
 }
 \author{
 Quentin Grimonprez

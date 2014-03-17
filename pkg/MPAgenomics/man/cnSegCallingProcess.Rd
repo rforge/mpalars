@@ -55,14 +55,14 @@ segment.} \item{means}{Mean of the segment.}
 "normal", "gain" or "amplification").} }
 }
 \description{
-This function applies the PELT method for segment each
+This function applies the PELT method to segment each
 signal of the dataset and launches CGHcall for calling
 segments and detect aberrations. Results will be stored in
-a BED file in the segmentation folder of the aroma
+a text file in the segmentation folder of the aroma
 architecture.
 }
 \examples{
-#DO NOT EXECUTE
+#DO NOT EXECUTE before reading the vignette
 # seg1=cnSegCallingProcess("data1",normalTumorArray,chromosome=20:21)
 # seg2=cnSegCallingProcess("data2",chromosome=20:21)
 }

@@ -1,6 +1,6 @@
 #'
-#' This function applies the PELT method for segment each signal of the dataset and launches CGHcall for calling segments and detect aberrations.
-#' Results will be stored in a BED file in the segmentation folder of the aroma architecture.
+#' This function applies the PELT method to segment each signal of the dataset and launches CGHcall for calling segments and detect aberrations.
+#' Results will be stored in a text file in the segmentation folder of the aroma architecture.
 #'
 #' @title Segment a copy-number signal and call the found segments.
 #'
@@ -28,7 +28,7 @@
 #' }
 #'
 #' @examples
-#' #DO NOT EXECUTE
+#' #DO NOT EXECUTE before reading the vignette
 #' # seg1=cnSegCallingProcess("data1",normalTumorArray,chromosome=20:21)
 #' # seg2=cnSegCallingProcess("data2",chromosome=20:21)
 #'
@@ -264,13 +264,12 @@ cnSegCallingProcess=function(dataSetName,normalTumorArray,chromosome=1:22,Lambda
 ##########################################################################################################################################
 
 #'
-#' This function filter the output of a segmentation and label process.
-#' It allows to keep only the segment of a minimal length or containing at least a minimal number of probes.
-#' Using the normalFilter, you can just keep the segment called non normal.
+#' This function filters the output of a segmentation and label process.
+#' It allows to keep only segments over a minimal length or containing at least a minimal number of probes.
 #'
 #' @title Filter segments
 #'
-#' @param segmentList A data.frame containing a description of segments, it must have at least columns : "chromStart", "chromEnd", "probes" and "calls".
+#' @param segmentList A data.frame containing a description of segments, it must have at least columns named "chromStart", "chromEnd", "probes" and "calls".
 #' (see the output of \link{cnSegCallingProcess} function).
 #' @param minLength The minimum length (in bp) for a segment. All the shorter segments are removed.
 #' @param minProbes The minimum number of probes for a segment. All the segments with less probes are removed.

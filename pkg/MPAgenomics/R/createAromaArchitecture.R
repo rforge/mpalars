@@ -3,7 +3,7 @@
 #' @title Create aroma architecture
 #' @param dataSetName name of the data set
 #' @param chipType type of the chip used for obtaining the data 
-#' @param path path where create folders
+#' @param path path where folders are created
 #' @param verbose if TRUE, print details of the process
 #'
 #' @author Quentin Grimonprez
@@ -73,10 +73,10 @@ createEmptyArchitecture=function(dataSetName,chipType,path=".",verbose=TRUE)
 }
 
 # @title Copy data files in the appropriate folder
-# @param dataSetName name of the data set
-# @param dataSetPath path where to find the data files
-# @param chipName type of the chip used for the data 
-# @param path path where to find rawData folder
+# @param dataSetName Name of the data set
+# @param dataSetPath Path where the data files can be found
+# @param chipName Type of the chip used for the data 
+# @param path Path where the rawData folder can be found
 # @param verbose if TRUE, print details of the process
 #
 # @author Quentin Grimonprez
@@ -268,10 +268,11 @@ copyChipFiles=function(pathToChipFiles,chipName,path,verbose)
 #' 
 #' @details
 #' All the cdf chip file names must follow the following rule : <chipType>,<Tags>.cdf
-#' Multiples tags must be separated by a comma. If there is no tags, the pattern is <chipType>.cdf
+#' 
+#' Multiples tags must be separated by a comma. If there is no tag, the pattern is <chipType>.cdf
 #' 
 #' @examples
-#' #DO NOT EXECUTE
+#' #DO NOT EXECUTE before reading of the vignette
 #' #createArchitecture("test1","GenomeWideSNP_6","./celPATH","./chipPATH",path=".",TRUE,"Full")
 #' 
 #' @author Quentin Grimonprez

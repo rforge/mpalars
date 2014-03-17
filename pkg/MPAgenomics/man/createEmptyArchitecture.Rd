@@ -10,7 +10,7 @@ createEmptyArchitecture(dataSetName, chipType, path = ".", verbose = TRUE)
   \item{chipType}{type of the chip used for obtaining the
   data}
 
-  \item{path}{path where create folders}
+  \item{path}{path where folders are created}
 
   \item{verbose}{if TRUE, print details of the process}
 }

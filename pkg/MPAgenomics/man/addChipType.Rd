@@ -1,6 +1,6 @@
 \name{addChipType}
 \alias{addChipType}
-\title{add a new chip type to the existing aroma architecture}
+\title{Add a new chip type to the existing aroma architecture}
 \usage{
 addChipType(chipType, chipPath, verbose = TRUE)
 }

@@ -1,3 +1,8 @@
+Version 1.0.1 (17-03-2014)
+- Minor changes in vignette and documentation.
+- First stable version to be submitted to the CRAN
+
+
 Version 0.41.3 (14-03-2014)
 - EVOLUTION : Modification of aroma architecture management
     - CreateEmptyArchiteture no more exported
