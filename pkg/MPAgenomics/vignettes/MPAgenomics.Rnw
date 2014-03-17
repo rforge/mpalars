@@ -30,12 +30,12 @@
 		This package provides functions to preprocess and analyze genomic data. Markers refer to SNPs or copy number variations which are designed on the arrays. 
     \texttt{MPAgenomics} is devoted to: $(i)$ efficient segmentation and $(ii)$ genomic marker selection from multi-patient copy number and SNP data profiles.\\
     
-    For both types of analyses, a pre-processing step \ref{sec:norm} is proposed as a wrapper of \texttt{aroma.*} packages \cite{aroma}\cite{affy}. 
+    For both types of analyses, a pre-processing step (section \ref{sec:norm}) is proposed as a wrapper of \texttt{aroma.*} packages \cite{aroma}\cite{affy}. 
 		This enables to keep maximum information from the original signals and improve the multi-patients analysis. In particular, this is useful to keep quantitative data for SNPs rather than usual genotype calls (AA, AB or BB) when these states are not relevant (eg in cancer studies where the number of copies differs from two copies). Note that the use of \texttt{aroma.*} packages \cite{aroma} implies that the pre-processing step is only available for Affymetrix DNA chips. The other functionalities of the package \texttt{MPAgenomics} can however be used independently and such procedures are explained in the sections which detail each step of the proposed analysis. 
     
     Efficient segmentation is proposed by refining the parameter choice of \textsc{Pelt} segmentation \cite{pelt} originally implemented in the \texttt{changepoint} package \cite{peltR}.  \texttt{MPAgenomics} offers a pipeline to perform normalization, segmentation and calling at the same time.
     
-    Markers selection relies on the use of penalized regularization techniques implemented in \texttt{glmnet} \cite{glmnet} and wrappers are offered to relate this package with the normalisation packages. For the users who would like to go further in the use of penalized regularization techniques, we also provide some guidelines to quickly build inputs for the \texttt{HDPenReg} package and interpret some outputs of this latter one.
+    Selection of genomic markers relies on the use of penalized regularization techniques implemented in \texttt{glmnet} \cite{glmnet} and wrappers are offered to relate this package with the normalisation packages. For the users who would like to go further in the use of penalized regularization techniques, we also provide some guidelines to quickly build inputs for the \texttt{HDPenReg} package and interpret some outputs of this latter one.
 
 \section{Preliminaries}
 
@@ -223,7 +223,7 @@ gunzip("GenomeWideSNP_6,HB20080710.acs.gz",destname="GenomeWideSNP_6,HB20080710.
 
 		\subsection{Use of the main functions of the package}	
 			\label{mainuse}
-        		In the following example, we suggest to perform segmentation and calling before marker selection even if only the pre-processing step, which estimates the copy-number and the allele B fraction signal, is required for the last one.
+        		In the following example, we suggest to perform segmentation and calling before selection of markers even if only the pre-processing step, which estimates the copy-number and the allele B fraction signal, is required for the last one.
 
         		We assume that all the required chip files are in the \texttt{chipPATH} folder and that the .CEL files are in the \texttt{celPATH} folder.
 
@@ -261,7 +261,7 @@ callfiltered=filterSeg(segcall,minLength=10,minProbes=2,keptLabel=c("gain","loss
 head(callfiltered)
 @
 	
-			To perform marker selection, a response is associated with each profile and the goal is to find the most relevant markers in the profile according to the response. You can run the following commands:
+			To perform selection of markers, a response is associated with each profile and the goal is to find the most relevant markers in the profile according to the response. You can run the following commands:
 
 <<eval=FALSE>>=
 dataResponse=data.frame(files=getListOfFiles("datatest1"),
@@ -277,7 +277,7 @@ onlySNP=TRUE,loss="linear")
 
 			\paragraph{Use of control samples}
   \label{mainusecontrol}
-				In the previous example, there was no control sample. By default, the median of all the samples is used as a reference to estimate the copy-number signal. It is generally better to provide control samples. When this is the case, it is necessary to provide a file or a data.frame giving the correspondence between each control and each sample. For this example, we assume that the control is arbitrarily the first four files:
+				In the previous example, there was no control sample. By default, the median of all the samples is used as a reference to estimate the copy-number profile. It is generally better to provide control samples. When this is the case, it is necessary to provide a file or a data.frame giving the correspondence between each control and each sample. For this example, we assume that the control is arbitrarily the first file:
 
 <<eval=FALSE>>=
 #get the file names of our data-set
@@ -295,10 +295,10 @@ normalTumorArray=data.frame(normal=rep(files[1],7),tumor=files[2:8])
 				Note that the extension .CEL is not provided in the \texttt{normalTumorArray} dataframe.
 				In the following of the vignette, a study which provides both control and tumoral samples will be refered as a normal-tumor study.
 				
-				You can now run the normalization taking into account information from the control sample (run with \mbox{\texttt{createArchitecture=FALSE}} because we suppose the architecture was already created during the previous example, if it is not the case you can add the missing parameters to the function and set \mbox{\texttt{createArchitecture=TRUE)}}. 
+				A new normalization can be run by taking into account information from the control sample. To separate analyses with or without control samples, we will store results from this normal-tumor study under the name "datatest2". As the architecture has already been created for "datatest1", it is not necessary to run \texttt{signalPreProcess} with \mbox{\texttt{createArchitecture=TRUE}}. It is faster to add the CEL files in "datatest2" while leaving the chip definition files as they are by using the function \texttt{addData} and then \texttt{signalPreProcess} with \mbox{\texttt{createArchitecture=FALSE}}.
 
 <<eval=FALSE>>=
-addData(dataSetName="dataset2",dataPath=celPATH,chipType="GenomeWideSNP_6")
+addData(dataSetName="datatest2",dataPath=celPATH,chipType="GenomeWideSNP_6")
 signalPreProcess(dataSetName="datatest2", chipType="GenomeWideSNP_6",
 normalTumorArray=normalTumorArray, createArchitecture=FALSE, savePlot=TRUE, tags="Full")
 @		
@@ -327,7 +327,7 @@ segfracB
 			\paragraph{Selecting steps to be executed to avoid a complete procedure}
 
 				Each step can be performed with or without the aroma packages if arguments of functions are given in the right format (excepted the normalization procedure described in section \ref{sec:norm}). Almost each wrapper can be used from matrices independently from the other steps and more details are given in the following of this vignette. 
-				The paper is organized as follows : the section \ref{sec:norm} presents the preprocessing step and how to access normalized copy-number and allele B fraction. If you already have these data, you can skip this section. Then, an efficient single patient analysis is introduced in the next two sections. The segmentation process is described in section \ref{sec:seg}. In section \ref{sec:calling}, we present the calling process of segmented data. The marker selection analysis is described in section \ref{sec:select}.
+				The paper is organized as follows : the section \ref{sec:norm} presents the preprocessing step and how to access normalized copy-number and allele B fraction. If you already have these data, you can skip this section. Then, an efficient single patient analysis is introduced in the next two sections. The segmentation process is described in section \ref{sec:seg}. In section \ref{sec:calling}, we present the calling process of segmented data. The selection of markers is described in section \ref{sec:select}.
 
 
 	
@@ -931,8 +931,6 @@ seg=PELT(copyNumber,position=position,plot=TRUE,verbose=TRUE)
 seg$segment
 @
 	
-		and you obtain:
-	
 		\begin{figure}[!h]
 			\includegraphics[width=0.3\textwidth]{fig/outpelt2}
 		\end{figure}
@@ -1137,13 +1135,13 @@ call$segment
         \label{callsegplot}
 			\end{figure}
 			
-			The following command executes the code to keep only non normal segments.
+			The following command executes the code to keep only segments presenting a gain.
 <<eval=FALSE>>=
 segmentfilter=filterSeg(call$segment,keptLabel="gain")
 segmentfilter
 @
 			
-			Obtained results are shown in Fig. ref{filterplot}
+			Obtained results are shown in Fig. \ref{filterplot}
 			\begin{figure}[!h]
 				\centering
 				\includegraphics[width=0.5\textwidth]{fig/segapresfiltre2}
@@ -1152,7 +1150,7 @@ segmentfilter
 			\end{figure}
 	
 			
-\section{SNPs selection}
+\section{Selection of genomic markers}
 	\label{sec:select}
 	
 	
@@ -1204,7 +1202,7 @@ loss,plot,...)
 			\end{tabular}		
 		\end{center}
 	
-		For \texttt{signal="fracB"}, the markers selection is done for the tumor allele B fraction.
+		For \texttt{signal="fracB"}, the selection of markers is done for the tumor allele B fraction.
 	 
 		The function returns a list containing as many elements as the number of chromosomes specified in parameters. The name \texttt{chrX}, where $X$ is the number of a chromosome. Each element of this list is a list containing:
 	
@@ -1250,7 +1248,7 @@ onlySNP=TRUE,loss="linear")
 
 	\subsection{For any data provided in matrix}	
 
-		A version of the markers selection without the aroma architecture is available:
+		A version of the selection of markers without the aroma architecture is available:
 		
 		\begin{verbatim}
 			variableSelection(dataMatrix,dataResponse,nbFolds,plot)
