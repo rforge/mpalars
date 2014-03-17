@@ -30,6 +30,7 @@
 #' @author Quentin Grimonprez
 #' 
 #' @export
+#' @import R.utils
 SignalNormalization<-function(dataFolder,chipType,normalTumorArray,genotypeCallsMethod="naive",savePlot=TRUE, tags=NULL)
 {
   allpkg=TRUE
