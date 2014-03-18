@@ -8,7 +8,9 @@ Author: Quentin Grimonprez with contributions from Guillemette Marot and Samuel
     Pierre Neuvial, Henrik Bengtsson.
 Maintainer: Samuel Blanck <samuel.blanck@inria.fr>
 Description: This package provides functions to preprocess and analyze genomic
-    data.
+    data. This package uses HDPenReg for SNPs selection which is available on
+    r-forge :
+    install.packages("HDPenReg",repos="http://R-Forge.R-project.org")
 License: GPL(>=2)
 Copyright: Inria 2012-2014.
 Depends:
