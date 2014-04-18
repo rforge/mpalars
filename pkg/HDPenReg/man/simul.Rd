@@ -2,8 +2,7 @@
 \alias{simul}
 \title{Simulate copy number data for a case-control study.}
 \usage{
-  simul(n, nbSNP, probCas, nbSeg, meanSegmentSize, prob,
-    alpha = 15)
+simul(n, nbSNP, probCas, nbSeg, meanSegmentSize, prob, alpha = 15)
 }
 \arguments{
   \item{n}{Number of individuals.}
@@ -35,19 +34,19 @@
   \item{alpha}{Parameter of the beta(alpha,alpha).}
 }
 \value{
-  a list containing: \item{data}{A matrix of size n*nbSeg,
-  containing values of the copy-number signal.}
-  \item{response}{A vector of size n containing the
-  cas/control status.} \item{causalSNP}{A vector of size
-  nbSeg containing the center of causal segments.}
+a list containing: \item{data}{A matrix of size n*nbSeg,
+containing values of the copy-number signal.}
+\item{response}{A vector of size n containing the
+cas/control status.} \item{causalSNP}{A vector of size
+nbSeg containing the center of causal segments.}
 }
 \description{
-  Simulate copy number data for a case-control study.
+Simulate copy number data for a case-control study.
 }
 \examples{
 simul(50,10000,0.4,10,150,matrix(c(0.1,0.8,0.001,0.001),nrow=2))
 }
 \author{
-  Quentin Grimonprez, Serge Iovleff
+Quentin Grimonprez, Serge Iovleff
 }
 

@@ -2,8 +2,8 @@
 \alias{HDfusion}
 \title{Fusion algorithm}
 \usage{
-  HDfusion(X, y, maxSteps = 3 * min(dim(X)),
-    intercept = TRUE, eps = .Machine$double.eps^0.5)
+HDfusion(X, y, maxSteps = 3 * min(dim(X)), intercept = TRUE,
+  eps = .Machine$double.eps^0.5)
 }
 \arguments{
   \item{X}{the matrix (of size n*p) of the covariates.}
@@ -19,16 +19,16 @@
   \item{eps}{Tolerance of the algorithm.}
 }
 \value{
-  An object of type LarsPath.
+An object of type LarsPath.
 }
 \description{
-  fusion algorithm
+fusion algorithm
 }
 \examples{
 dataset=simul(50,10000,0.4,10,50,matrix(c(0.1,0.8,0.02,0.02),nrow=2))
 result=HDfusion(dataset$data,dataset$response)
 }
 \author{
-  Quentin Grimonprez
+Quentin Grimonprez
 }
 

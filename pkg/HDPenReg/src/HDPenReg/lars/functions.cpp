@@ -190,7 +190,7 @@ void print(STK::Array2DVector< pair<int,Real> > const& state)
 
 bool import(std::string adressFichier,int n,int p,STK::CArrayXX &data)
 {
-  ifstream flux(adressFichier.c_str());
+  std::ifstream flux(adressFichier.c_str());
 
   Real real;
   int i(1),j(1);
@@ -215,7 +215,7 @@ bool import(std::string adressFichier,int n,int p,STK::CArrayXX &data)
 
 bool import(std::string adressFichier,int n,STK::CVectorX &data)
 {
-  ifstream flux(adressFichier.c_str());
+  std::ifstream flux(adressFichier.c_str());
 
   Real real;
   int i(1);

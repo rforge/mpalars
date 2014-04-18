@@ -63,13 +63,12 @@ setClass(
 #' 
 #'  plot the path of the lars algorithm.
 #'  
-#' \describe{
-#'   \item{x}{LarsPath object.}
-#'   \item{sep.line}{If TRUE, print vertical dashed line when a variable is added or dropped in the path.}
-#'   \item{...}{Other plot arguments.}
-#' }
+#' 
 #' 
 #' @title plot methods for LarsPath object
+#' @param x LarsPath object
+#' @param sep.line If TRUE, print vertical dashed line when a variable is added or dropped in the path
+#' @param ... Other plot arguments
 #' @docType methods
 #' @rdname plot-methods
 #' @name plot-methods 

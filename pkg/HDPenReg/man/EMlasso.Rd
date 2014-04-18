@@ -2,9 +2,9 @@
 \alias{EMlasso}
 \title{EM algorithm for lasso penalty}
 \usage{
-  EMlasso(X, y, lambda, maxSteps = 10000, intercept = TRUE,
-    model = "linear", burn = 50, threshold = 1e-10,
-    eps = 1e-05, epsCG = 1e-08)
+EMlasso(X, y, lambda, maxSteps = 10000, intercept = TRUE,
+  model = "linear", burn = 50, threshold = 1e-10, eps = 1e-05,
+  epsCG = 1e-08)
 }
 \arguments{
   \item{X}{the matrix (of size n*p) of the covariates.}
@@ -35,24 +35,24 @@
   gradient.}
 }
 \value{
-  A list containing : \describe{ \item{nbStep}{Vector
-  containing the number of steps of the algorithm for every
-  lambda.} \item{variable}{List of vector of size "step+1".
-  The i+1-th item contains the index of non-zero
-  coefficients at the i-th step.} \item{coefficient}{List
-  of vector of size "step+1". The i+1-th item contains the
-  non-zero coefficients at the i-th step.}
-  \item{lambda}{Vector of length "step+1", containing the
-  lambda at each step.} \item{mu}{Intercept.} }
+A list containing : \describe{ \item{nbStep}{Vector
+containing the number of steps of the algorithm for every
+lambda.} \item{variable}{List of vector of size "step+1".
+The i+1-th item contains the index of non-zero coefficients
+at the i-th step.} \item{coefficient}{List of vector of
+size "step+1". The i+1-th item contains the non-zero
+coefficients at the i-th step.} \item{lambda}{Vector of
+length "step+1", containing the lambda at each step.}
+\item{mu}{Intercept.} }
 }
 \description{
-  EM algorithm for lasso penalty
+EM algorithm for lasso penalty
 }
 \examples{
 dataset=simul(50,100,0.4,1,10,matrix(c(0.1,0.9,0.02,0.02),nrow=2))
 result=EMlasso(dataset$data,dataset$response)
 }
 \author{
-  Quentin Grimonprez
+Quentin Grimonprez
 }
 

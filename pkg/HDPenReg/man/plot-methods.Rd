@@ -3,13 +3,18 @@
 \alias{plot,LarsPath-method}
 \alias{plot-methods}
 \title{plot methods for LarsPath object}
-\description{
-  plot the path of the lars algorithm.
+\usage{
+\S4method{plot}{LarsPath}(x, sep.line = TRUE, ...)
 }
-\details{
-  \describe{ \item{x}{LarsPath object.} \item{sep.line}{If
-  TRUE, print vertical dashed line when a variable is added
-  or dropped in the path.} \item{...}{Other plot
-  arguments.} }
+\arguments{
+  \item{x}{LarsPath object}
+
+  \item{sep.line}{If TRUE, print vertical dashed line when
+  a variable is added or dropped in the path}
+
+  \item{...}{Other plot arguments}
+}
+\description{
+plot the path of the lars algorithm.
 }
 

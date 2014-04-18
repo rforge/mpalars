@@ -5,4 +5,5 @@ all:
 clean:
 	($(RM) lassoModels/*.o)
 	($(RM) lars/*.o)
+	($(RM) ./*.o)
 	(cd lib && $(RM) lib/*.a)

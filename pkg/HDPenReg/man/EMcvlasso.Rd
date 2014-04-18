@@ -2,10 +2,9 @@
 \alias{EMcvlasso}
 \title{cross validation for EM lasso}
 \usage{
-  EMcvlasso(X, y, nbFolds = 10, lambda = NULL,
-    maxSteps = 1000, burn = 30, intercept = TRUE,
-    model = "linear", threshold = .Machine$double.eps^0.5,
-    eps = 1e-05, epsCG = 1e-08)
+EMcvlasso(X, y, nbFolds = 10, lambda = NULL, maxSteps = 1000, burn = 30,
+  intercept = TRUE, model = "linear", threshold = .Machine$double.eps^0.5,
+  eps = 1e-05, epsCG = 1e-08)
 }
 \arguments{
   \item{X}{the matrix (of size n*p) of the covariates.}
@@ -36,21 +35,21 @@
   gradient.}
 }
 \value{
-  A list containing \describe{ \item{cv}{Mean prediction
-  error for each value of index.} \item{cvError}{Standard
-  error of cv.} \item{minCv}{Minimal cv criterion.}
-  \item{lambda}{Values of lambda at which prediction error
-  should be computed.} \item{lambda.optimal}{Value of
-  lambda for which the cv criterion is minimal.} }
+A list containing \describe{ \item{cv}{Mean prediction
+error for each value of index.} \item{cvError}{Standard
+error of cv.} \item{minCv}{Minimal cv criterion.}
+\item{lambda}{Values of lambda at which prediction error
+should be computed.} \item{lambda.optimal}{Value of lambda
+for which the cv criterion is minimal.} }
 }
 \description{
-  cross validation function for EM lasso.
+cross validation function for EM lasso.
 }
 \examples{
 dataset=simul(50,100,0.4,1,10,matrix(c(0.1,0.8,0.02,0.02),nrow=2))
 result=EMcvlasso(dataset$data,dataset$response,5,lambda=5:1,intercept=FALSE)
 }
 \author{
-  Quentin Grimonprez
+Quentin Grimonprez
 }
 

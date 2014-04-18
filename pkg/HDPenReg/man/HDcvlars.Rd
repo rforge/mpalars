@@ -2,10 +2,9 @@
 \alias{HDcvlars}
 \title{cross validation}
 \usage{
-  HDcvlars(X, y, nbFolds = 10,
-    index = seq(0, 1, by = 0.01),
-    maxSteps = 3 * min(dim(X)), partition = NULL,
-    intercept = TRUE, eps = .Machine$double.eps^0.5)
+HDcvlars(X, y, nbFolds = 10, index = seq(0, 1, by = 0.01), maxSteps = 3 *
+  min(dim(X)), partition = NULL, intercept = TRUE,
+  eps = .Machine$double.eps^0.5)
 }
 \arguments{
   \item{X}{the matrix (of size n*p) of the covariates.}
@@ -32,24 +31,24 @@
   \item{eps}{Tolerance of the algorithm.}
 }
 \value{
-  A list containing \describe{ \item{cv}{Mean prediction
-  error for each value of index.} \item{cvError}{Standard
-  error of cv.} \item{minCv}{Minimal cv criterion.}
-  \item{fraction}{Value of the l1norm fraction for which
-  the cv criterion is minimal.} \item{index}{Values at
-  which prediction error should be computed. This is the
-  fraction of the saturated |beta|. The default value is
-  seq(0,1,by=0.01).} \item{maxSteps}{Maximum number of
-  steps of the lars algorithm.} }
+A list containing \describe{ \item{cv}{Mean prediction
+error for each value of index.} \item{cvError}{Standard
+error of cv.} \item{minCv}{Minimal cv criterion.}
+\item{fraction}{Value of the l1norm fraction for which the
+cv criterion is minimal.} \item{index}{Values at which
+prediction error should be computed. This is the fraction
+of the saturated |beta|. The default value is
+seq(0,1,by=0.01).} \item{maxSteps}{Maximum number of steps
+of the lars algorithm.} }
 }
 \description{
-  cross validation function for lars algorithm
+cross validation function for lars algorithm
 }
 \examples{
 dataset=simul(50,10000,0.4,10,50,matrix(c(0.1,0.8,0.02,0.02),nrow=2))
 result=HDcvlars(dataset$data,dataset$response,5)
 }
 \author{
-  Quentin Grimonprez
+Quentin Grimonprez
 }
 

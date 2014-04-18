@@ -13,6 +13,8 @@
 #' result=HDlars(dataset$data,dataset$response)
 #' @export
 #' @useDynLib HDPenReg
+#' @import Rcpp
+#' @import methods
 #' 
 HDlars <- function(X,y,maxSteps=3*min(dim(X)),intercept=TRUE,eps=.Machine$double.eps^0.5)
 {
