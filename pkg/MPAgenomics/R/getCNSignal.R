@@ -262,10 +262,12 @@ getCopyNumberSignalSingleStudy=function(dsC,units,chromosome,indexOfFiles,ugp)
   #CN median for units
   thetaR <- extractMatrix(ceR,units=units)
   
+  sampleNames=getNames(dsC)
+  
   #the ploidy depends of the gender for the cromosome 23 and 24
   if(chromosome==23 || chromosome ==24)
   {
-    gender=findGender(getName(dsC),1:length(dsC),ugp)
+    gender=findGender(getName(dsC),indexOfFiles,ugp)
     ploidy=rep(0,length(gender))
     ploidy[gender=="XY"]=1
     if(chromosome==23)
@@ -274,6 +276,8 @@ getCopyNumberSignalSingleStudy=function(dsC,units,chromosome,indexOfFiles,ugp)
       ploidy[gender=="XX"]=NA
     
     C <- sapply(1:ncol(C),FUN=function(x){ploidy[x]*C[,x]/thetaR});
+    #BUG FIX : colnames of C are NULL after sapply. reafectation of the proper colnames
+    colnames(C)=sampleNames
   }
   else
   {
@@ -281,7 +285,7 @@ getCopyNumberSignalSingleStudy=function(dsC,units,chromosome,indexOfFiles,ugp)
     C <- apply(C,2,FUN=function(x){2*x/thetaR});
   }
 
-  sampleNames=getNames(dsC)
+  
   return(list(CN=C,sampleNames=sampleNames))
 }
 
@@ -325,7 +329,7 @@ getCopyNumberSignalPairedStudy=function(dsC,units,normalTumorArray,chromosome,no
   
   #normalCN
   Cnormal <- extractMatrix(dsPairCNormal, units=units);
-  
+  sampleNames=getNames(dsC)[tumorId]
   #the ploidy depends of the gender for the cromosome 23 and 24
   if(chromosome==23 || chromosome ==24)
   {
@@ -341,6 +345,8 @@ getCopyNumberSignalPairedStudy=function(dsC,units,normalTumorArray,chromosome,no
     C <- C/Cnormal
     #apply the ploidy
     C <- sapply(1:ncol(C),FUN=function(x){ploidy[x]*C[,x]});
+    #BUG FIX : colnames of C are NULL after sapply. reafectation of the proper colnames
+    colnames(C)=sampleNames
   }
   else
   {
@@ -383,7 +389,9 @@ findGender=function(dataSetName,indexFileToExtract,ugp)
   
     beta23=df[units23,1,drop=TRUE]
     beta24=df[units24,1,drop=TRUE]
+    
     genderTemp <- callXXorXY(beta23, beta24, adjust=1.5, from=0, to=1);
+        
   })
   
   return(unlist(gender))
@@ -514,7 +522,7 @@ getNormalTumorMatrix=function(listOfFiles,normalTumorArray)
   #id of the complementary normal files
   indNormal=sapply(normFiles,FUN=function(x,names){which(names==x)}, listOfFiles)
   
-  #matchin matrix (1st column=normal files indices, 2nd column=tumor files indices)
+  #matching matrix (1st column=normal files indices, 2nd column=tumor files indices)
   normalTumorMatrix=matrix(ncol=2, nrow=length(indTumor))
   normalTumorMatrix[,1]=indNormal
   normalTumorMatrix[,2]=indTumor

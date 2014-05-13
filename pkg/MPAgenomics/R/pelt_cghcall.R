@@ -186,42 +186,56 @@ cnSegCallingProcess=function(dataSetName,normalTumorArray,chromosome=1:22,Lambda
       
       gc()
       #segmentation
-      cat(paste0("Segmentation of file ",name," chromosome ",chr,"..."))
-      seg=PELT(as.vector(CN[,3]),Lambda,CN$position,plot=TRUE,verbose=FALSE)
-      cat("OK\n")
       
-      if(savePlot)
+      if (length(which(!is.na(as.vector(CN[,3]))))<2)
       {
-        figName <- sprintf("%s,%s", name, chr);
-        pathname <- filePath(figPath, sprintf("%s.png", figName));
-        width <- 1280;
-        aspect <- 0.6*1/3;
-        fig <- devNew("png", pathname, label=figName, width=width, height=2*aspect*width);
-        plot(NA,xlim=c(min(CN$position),max(CN$position)), ylim=c(0,6),xlab="Position", main=figName,ylab="CN", pch=".")
-        points(CN$position, CN[,3], pch=".");
-        for(i in 1:nrow(seg$segment))
-          lines(c(seg$segment$start[i],seg$segment$end[i]),rep(seg$segment$means[i],2),col="red",lwd=3)
-        devDone();
+        if (chr==24)
+        {
+          cat(paste0("Cannot segment file ",name," chromosome Y (24) : gender = XX\n"))
+        } else {
+          cat(paste0("Cannot segment file ",name," chromosome ",chr,  ": less than 2 points in the signal\n"))
+        }
+      } else {
+      
+        cat(paste0("Segmentation of file ",name," chromosome ",chr,"..."))
+        seg=PELT(as.vector(CN[,3]),Lambda,CN$position,plot=TRUE,verbose=FALSE)
+        cat("OK\n")
+        
+        if(savePlot)
+        {
+          figName <- sprintf("%s,%s", name, chr);
+          pathname <- filePath(figPath, sprintf("%s.png", figName));
+          width <- 1280;
+          aspect <- 0.6*1/3;
+          fig <- devNew("png", pathname, label=figName, width=width, height=2*aspect*width);
+          plot(NA,xlim=c(min(CN$position),max(CN$position)), ylim=c(0,6),xlab="Position", main=figName,ylab="CN", pch=".")
+          points(CN$position, CN[,3], pch=".");
+          for(i in 1:nrow(seg$segment))
+            lines(c(seg$segment$start[i],seg$segment$end[i]),rep(seg$segment$means[i],2),col="red",lwd=3)
+          devDone();
+        }
+        
+        
+        
+        #concatenate the results
+        cghArg=list(copynumber=rbind(cghArg$copynumber,seg$signal),
+                    segmented=rbind(cghArg$segmented,seg$segmented),
+                    startPos=c(cghArg$startPos,CN$position),
+                    chromosome=c(cghArg$chromosome,CN$chromosome),
+                    sampleNames=name,
+                    featureNames=c(cghArg$featureNames,CN$featureNames))
+  
+        #output for the bed file      
+        segmentList=data.frame(chrom=c(as.character(segmentList$chrom),rep(paste0("chr",CN$chromosome[1]),length(seg$segment$start))),
+                          chromStart=c(segmentList$chromStart,seg$segment$start),
+                          chromEnd=c(segmentList$chromEnd,seg$segment$end),
+                          probes=c(segmentList$probes,seg$segment$points),
+                          means=c(segmentList$means,seg$segment$means))
       }
-      
-      
-      
-      #concatenate the results
-      cghArg=list(copynumber=rbind(cghArg$copynumber,seg$signal),
-                  segmented=rbind(cghArg$segmented,seg$segmented),
-                  startPos=c(cghArg$startPos,CN$position),
-                  chromosome=c(cghArg$chromosome,CN$chromosome),
-                  sampleNames=name,
-                  featureNames=c(cghArg$featureNames,CN$featureNames))
-
-      #output for the bed file      
-      segmentList=data.frame(chrom=c(as.character(segmentList$chrom),rep(paste0("chr",CN$chromosome[1]),length(seg$segment$start))),
-                        chromStart=c(segmentList$chromStart,seg$segment$start),
-                        chromEnd=c(segmentList$chromEnd,seg$segment$end),
-                        probes=c(segmentList$probes,seg$segment$points),
-                        means=c(segmentList$means,seg$segment$means))
     }
         
+    if (length(cghArg)>0)
+    {
     #launch calling process
     cghArg=callingProcess(cghArg,nclass=nclass,cellularity=cellularity,verbose=FALSE,...)
     
@@ -256,6 +270,8 @@ cnSegCallingProcess=function(dataSetName,normalTumorArray,chromosome=1:22,Lambda
     write.table(output,file=paste0("segmentation/",dataSetName,"/CN/",name,",calls.bed"),sep="\t",row.names=FALSE)
     
     return(data.frame(sampleNames=rep(name,nrow(output)),output))
+   }
+      
   })
 
   return(do.call(rbind,output))

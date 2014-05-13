@@ -13,7 +13,7 @@
 \geometry{top=3cm, bottom=3cm, left=2cm, right=2cm}
 
 % Title Page
-\title{ \texttt{MPAgenomics} : An \texttt{R} package for Multi-Patients Analysis of Genomic Markers.}
+\title{ \texttt{MPAgenomics} : An \texttt{R} package for Multi-Patient Analysis of Genomic Markers.}
 \author{Quentin Grimonprez, Samuel Blanck, Alain Celisse, Guillemette Marot}
 \date{March, 2014}
 \nobibliography*
@@ -31,7 +31,7 @@
     \texttt{MPAgenomics} is devoted to: $(i)$ efficient segmentation and $(ii)$ genomic marker selection from multi-patient copy number and SNP data profiles.\\
     
     For both types of analyses, a pre-processing step (section \ref{sec:norm}) is proposed as a wrapper of \texttt{aroma.*} packages \cite{aroma}\cite{affy}. 
-		This enables to keep maximum information from the original signals and improve the multi-patients analysis. In particular, this is useful to keep quantitative data for SNPs rather than usual genotype calls (AA, AB or BB) when these states are not relevant (eg in cancer studies where the number of copies differs from two copies). Note that the use of \texttt{aroma.*} packages \cite{aroma} implies that the pre-processing step is only available for Affymetrix DNA chips. The other functionalities of the package \texttt{MPAgenomics} can however be used independently and such procedures are explained in the sections which detail each step of the proposed analysis. 
+		This enables to keep maximum information from the original signals and improve the multi-patient analysis. In particular, this is useful to keep quantitative data for SNPs rather than usual genotype calls (AA, AB or BB) when these states are not relevant (eg in cancer studies where the number of copies differs from two copies). Note that the use of \texttt{aroma.*} packages \cite{aroma} implies that the pre-processing step is only available for Affymetrix DNA chips. The other functionalities of the package \texttt{MPAgenomics} can however be used independently and such procedures are explained in the sections which detail each step of the proposed analysis. 
     
     Efficient segmentation is proposed by refining the parameter choice of \textsc{Pelt} segmentation \cite{pelt} originally implemented in the \texttt{changepoint} package \cite{peltR}.  \texttt{MPAgenomics} offers a pipeline to perform normalization, segmentation and calling at the same time.
     
@@ -93,7 +93,7 @@ install.packages("aroma.core")
 @	
 	
 		
-		For users who want to perform the single analysis (segmentation and calling), we recommand to install the packages \texttt{changepoint}\cite{peltR} and \texttt{CGHcall} \cite{CGHcallR}.
+		For users who want to perform the single analysis (segmentation and calling), we recommend to install the packages \texttt{changepoint}\cite{peltR} and \texttt{CGHcall} \cite{CGHcallR}.
 
 <<eval=FALSE>>=
 #for segmentation
@@ -334,7 +334,8 @@ segfracB
 \section{Data Normalization}
 	\label{sec:norm}
 
-	This preprocessing step consists in a correction of biological and technical biases due to the experiment.
+	This preprocessing step consists in a correction of biological and technical biases due to the experiment. \\
+  MPAgenomics supports Affymetrix$^{\mbox{\scriptsize{\textregistered}}}$ arrays (5.0, 6.0 and CytoScanHD) 
 	
 	Raw data from Affymetrix DNA chip are provided in different .CEL files. These data need to have some corrections and normalizations before being usable.
 
@@ -1166,7 +1167,7 @@ with $(X\beta)_{i}=\sum_p x_{i,p}\beta_p$ and $\rho>0$ controlling the number of
 %
 After minimization, non-zero coefficients $\beta_p$ correspond to influential positions to predict the response. \\
 	
-	To solve this problem, we use the LARS algorithm \cite{lars} that solves the lasso problem for all the values of $t$. In order to choose the best solution, we use a cross validation to select the best values of $t$ and return the associated solution.\\
+	To solve this problem, we use the LARS algorithm \cite{lars} that solves the lasso problem for all the values of $\rho$. In order to choose the best solution, we use a cross validation to select the best values of $\rho$ and return the associated solution.\\
 	
 	
 	\subsection{From data normalized by aroma}	

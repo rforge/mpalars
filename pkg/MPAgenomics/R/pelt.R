@@ -43,6 +43,8 @@ PELT=function(signal,Lambda,position=NULL,plot=TRUE,verbose=TRUE)
   if(!is.numeric(signal) )#|| !is.vector(signal))
     stop("signal must be a vector of real.")
   
+  signal
+  
   #position
   if(is.null(position))
     position=1:length(signal)
@@ -69,6 +71,13 @@ PELT=function(signal,Lambda,position=NULL,plot=TRUE,verbose=TRUE)
   
   #PELT doesn't tolerate NA values
   noNA=which(!is.na(signal))
+  
+  #Test if there is at least 2 valid points.
+  if (length(noNA) < 2)
+  {
+    warning("Not enough point to segment signal")
+    return(NULL)
+   }
   
   #list for store the results
   allBreakpoints=list()
@@ -314,40 +323,50 @@ PELTaroma=function(dataSetName,normalTumorArray,chromosome=1:22,Lambda=NULL,list
       gc()
       
       #segmentation
-      cat(paste0("Segmentation of file ",name," chromosome ",chr,"..."))
-      seg=PELT(as.vector(CN[,3]),Lambda,CN$position,plot=savePlot,verbose=FALSE)
-      cat("OK\n")
-      
-      if(savePlot)
+      if (length(which(!is.na(as.vector(CN[,3]))))<2)
       {
-        figName <- sprintf("%s,%s", name, chr);
-        pathname <- filePath(figPath, sprintf("%s.png", figName));
-        width <- 1280;
-        aspect <- 0.6*1/3;
-        fig <- devNew("png", pathname, label=figName, width=width, height=2*aspect*width);
-        plot(NA,xlim=c(min(CN$position),max(CN$position)), ylim=c(0,6),xlab="Position", main=figName,ylab="CN", pch=".")
-        points(CN$position, seg$signal, pch=".");
-        for(i in 1:nrow(seg$segment))
-          lines(c(seg$segment$start[i],seg$segment$end[i]),rep(seg$segment$means[i],2),col="red",lwd=3)
-        devDone();
+        if (chr==24)
+        {
+          cat(paste0("Cannot segment file ",name," chromosome Y (24) : gender = XX\n"))
+        } else {
+          cat(paste0("Cannot segment file ",name," chromosome ",chr,  ": less than 2 points in the signal\n"))
+        }
+      } else {
+      
+        cat(paste0("Segmentation of file ",name," chromosome ",chr,"..."))
+        seg=PELT(as.vector(CN[,3]),Lambda,CN$position,plot=savePlot,verbose=FALSE)
+        cat("OK\n")
+        
+        if(savePlot)
+        {
+          figName <- sprintf("%s,%s", name, chr);
+          pathname <- filePath(figPath, sprintf("%s.png", figName));
+          width <- 1280;
+          aspect <- 0.6*1/3;
+          fig <- devNew("png", pathname, label=figName, width=width, height=2*aspect*width);
+          plot(NA,xlim=c(min(CN$position),max(CN$position)), ylim=c(0,6),xlab="Position", main=figName,ylab="CN", pch=".")
+          points(CN$position, seg$signal, pch=".");
+          for(i in 1:nrow(seg$segment))
+            lines(c(seg$segment$start[i],seg$segment$end[i]),rep(seg$segment$means[i],2),col="red",lwd=3)
+          devDone();
+        }
+  
+        
+        
+        #concatenate the results
+        cghArg=list(copynumber=rbind(cghArg$copynumber,seg$signal),
+                    segmented=rbind(cghArg$segmented,seg$segmented),
+                    startPos=c(cghArg$startPos,CN$position),
+                    chromosome=c(cghArg$chromosome,CN$chromosome),
+                    sampleNames=name,
+                    featureNames=c(cghArg$featureNames,CN$featureNames),
+                    segment=data.frame(chrom=c(as.character(cghArg$segment$chrom),rep(paste0("chr",CN$chromosome[1]),length(seg$segment$start))),
+                               chromStart=c(cghArg$segment$chromStart,seg$segment$start),
+                               chromEnd=c(cghArg$segment$chromEnd,seg$segment$end),
+                               probes=c(cghArg$segment$probes,seg$segment$points),
+                               means=c(cghArg$segment$means,seg$segment$means)))
       }
-
-      
-      
-      #concatenate the results
-      cghArg=list(copynumber=rbind(cghArg$copynumber,seg$signal),
-                  segmented=rbind(cghArg$segmented,seg$segmented),
-                  startPos=c(cghArg$startPos,CN$position),
-                  chromosome=c(cghArg$chromosome,CN$chromosome),
-                  sampleNames=name,
-                  featureNames=c(cghArg$featureNames,CN$featureNames),
-                  segment=data.frame(chrom=c(as.character(cghArg$segment$chrom),rep(paste0("chr",CN$chromosome[1]),length(seg$segment$start))),
-                             chromStart=c(cghArg$segment$chromStart,seg$segment$start),
-                             chromEnd=c(cghArg$segment$chromEnd,seg$segment$end),
-                             probes=c(cghArg$segment$probes,seg$segment$points),
-                             means=c(cghArg$segment$means,seg$segment$means)))
     }
-    
 
     #write in .bed
     write.table(cghArg$segment,file=paste0("segmentation/",dataSetName,"/CN/",name,",segmentation.bed"),sep="\t",row.names=FALSE)

@@ -125,7 +125,7 @@ tumorboost<-function(dataSetName,normalTumorArray,plot=TRUE)
       dsList <- list(normal=dsN, tumor=dsT, tumorN=dsTN, callsN=gcN);
       rootPath <- "totalAndFracBData";
       rootPath <- Arguments$getReadablePath(rootPath);
-      tumorboostPlot(ds,dsList,dataSetName,normalTumorArray,tumorSample,dsC,normalTumorMatrixC)   
+      tumorboostPlot(ds,dsList,dataSetName,normalTumorArray,tumorSample,normalSample,dsC,normalTumorMatrixC)   
     }
 
     rm(dsN, dsT, dsTN, gcN);
@@ -142,17 +142,18 @@ tumorboost<-function(dataSetName,normalTumorArray,plot=TRUE)
 # @param dataSetName name of the data set
 # @param normalTumorArray  matrix containing information about about the name of files. The matrix has 3 columns.
 # The first is the file name, the second the id to used for store the result and the third is the tag associated to the file (for example, "RC" or "TUMOR" ).
-# @param sampleName id of the current file
+# @param tumorSample id of the current tumor file
+# @param normalSample id of the current normal file
 # @param dsC copynumber data
 # @param sampleNAMESC names of the file of copy number
 #
 #
 # This function is mainly based on the code from http://aroma-project.org/vignettes/tumorboost-highlevel from Pierre Neuvial
 #
-tumorboostPlot=function(ds,dsList,dataSetName,normalTumorArray,sampleName,dsC,normalTumorMatrixC)
+tumorboostPlot=function(ds,dsList,dataSetName,normalTumorArray,tumorSample,normalSample,dsC,normalTumorMatrixC)
 {
   ########## load the total copy number signal for a pair (normal,tumor) 
-  pairC <- normalTumorMatrixC[normalTumorMatrixC[,2]==sampleName,]
+  pairC <- normalTumorMatrixC[normalTumorMatrixC[,2]==tumorSample,]
     
   stopifnot(length(pairC) == 2);
     
@@ -199,11 +200,10 @@ tumorboostPlot=function(ds,dsList,dataSetName,normalTumorArray,sampleName,dsC,no
     throw("Unknown platform: ", platform);
   }
   
-  cat("Saving graphics for sample ",getNames(dsC[sampleName]),"\n")
+  cat("Saving graphics for sample ",getNames(dsC[tumorSample]),"\n")
   
   #find ploidy for chromosome 23 and 24
-  #gender=findGender(getName(dsC),match(sampleName,sampleNAMESC),ugp)
-  gender=findGender(getName(dsC),sampleName,ugp)
+  gender=findGender(getName(dsC),normalSample,ugp)
   
   #loop on chr
   for(chromosome in 1:25)
@@ -211,7 +211,7 @@ tumorboostPlot=function(ds,dsList,dataSetName,normalTumorArray,sampleName,dsC,no
     chrTag <- sprintf("Chr%02d", chromosome);
 
     #check for the existence of the file
-    figName <- sprintf("%s,%s", getNames(dsC[sampleName]), chrTag);
+    figName <- sprintf("%s,%s", getNames(dsC[tumorSample]), chrTag);
     pathname <- filePath(figPath, sprintf("%s.png", figName));
     
     
@@ -287,7 +287,7 @@ tumorboostPlot=function(ds,dsList,dataSetName,normalTumorArray,sampleName,dsC,no
     axis(side=1);
     axis(side=2, at=c(0,2,4,6));
     points(x, C, pch=".");
-    label <- sprintf("%s", getNames(dsC[sampleName]));
+    label <- sprintf("%s", getNames(dsC[tumorSample]));
     stext(side=3, pos=0, label);
     stext(side=3, pos=1, chrTag);
     
@@ -308,7 +308,7 @@ tumorboostPlot=function(ds,dsList,dataSetName,normalTumorArray,sampleName,dsC,no
       axis(side=1);
       axis(side=2, at=c(0,1/2,1));
       points(x, beta[,cc], pch=".", col=cols);
-      label <- sprintf("%s (%s)", getNames(dsC[sampleName]), name);
+      label <- sprintf("%s (%s)", getNames(dsC[tumorSample]), name);
       stext(side=3, pos=0, label);
       stext(side=3, pos=1, chrTag); 
     }
