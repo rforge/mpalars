@@ -1,7 +1,14 @@
+Version 1.0.3 (15-05-2014)
+- Add cghseg method for segmentation.
+- No more export of PELT and PELTaroma. Use segmentation and segmentationAroma instead.
+- Upgrade all documentations with roxygen2 4.0.0
+
+Version 1.0.2 (13-05-2014)
+- BUG FIX : findGender now use normal sample instead of tumor sample
+
 Version 1.0.1 (17-03-2014)
 - Minor changes in vignette and documentation.
 - First stable version to be submitted to the CRAN
-
 
 Version 0.41.3 (14-03-2014)
 - EVOLUTION : Modification of aroma architecture management
@@ -9,9 +16,8 @@ Version 0.41.3 (14-03-2014)
     - Creation of new data folders and chip folders by addData and addChip function
 - Changes in documentation to be more consistent with vignette
 - Changes in vignette
-    - Maths forumula of Lasso
+    - Maths formula of Lasso
     - Minor changes
-
 
 Version 0.41.2 (13-03-2014)
 - BUG FIX : SNP filtering for cytoscan_HD microarray
