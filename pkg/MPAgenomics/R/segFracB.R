@@ -1,6 +1,5 @@
 #'
-#' This function launches the segmentation PELT (from package changepoint) with a penalty value of lambda * log(n) for a range of value for lambda.
-#' Then an optimal penalty value is chosen by looking for a stabilization in the number of segments according to the penalty values.
+#' This function launches the segmentation of allele B fraction only for heterozygous SNPs.
 #'
 #' @title segmentation function for the allele B fraction
 #'
@@ -8,7 +7,9 @@
 #' @param normalTumorArray Only in the case of normal-tumor study. A csv file or a data.frame containing the mapping between normal and tumor files.
 #' The first column contains the name of normal files and the second the names of associated tumor files.
 #' @param chromosome  A vector with the chromosomes to be segmented. 
-#' @param Lambda A vector containing all the penalization values to test for the segmentation. If no values are provided, default values will be used.
+#' @param method method of segmentation, either "PELT" or "cghseg".
+#' @param Lambda For method="PELT", vector containing all the penalization values to test for the segmentation. If no values are provided, default values will be used.
+#' @param Kmax For method="cghseg", maximal number of segments.
 #' @param listOfFiles A vector containing the names of the files in dataSetName folder for which the allele B profile is segmented (default is all the files).
 #' @param savePlot if TRUE, graphics of the segmented allele B profile will be saved in the figures/dataSetName/segmentation/fracB folder. (default=TRUE).
 #' @param verbose if TRUE print some informations
@@ -27,8 +28,10 @@
 #' 
 #' @author Quentin Grimonprez
 #' 
-segFracBSignal=function(dataSetName,normalTumorArray,chromosome=1:22,Lambda=NULL,listOfFiles=NULL,savePlot=TRUE,verbose=TRUE)
+segFracBSignal=function(dataSetName,normalTumorArray,chromosome=1:22,method=c("cghseg","PELT"),Lambda=NULL,Kmax=10,listOfFiles=NULL,savePlot=TRUE,verbose=TRUE)
 {
+  method <- match.arg(method)
+  
   allpkg=TRUE
   if(!suppressPackageStartupMessages(require("aroma.cn", quietly=TRUE) ) )
   {
@@ -45,13 +48,13 @@ segFracBSignal=function(dataSetName,normalTumorArray,chromosome=1:22,Lambda=NULL
 #  else
 #    cat("Package aroma.cn loaded.\n")
   
-  if(!suppressPackageStartupMessages(require("changepoint",quietly=TRUE)))
-  {
-    allpkg=FALSE
-    cat("The package changepoint is missing. You can install it with the following command:\n","install.packages(\"changepoint\") \n")
-  }
+#   if(!suppressPackageStartupMessages(require("changepoint",quietly=TRUE)))
+#   {
+#     allpkg=FALSE
+#     cat("The package changepoint is missing. You can install it with the following command:\n","install.packages(\"changepoint\") \n")
+#   }
 #  else
- #   cat("Package changepoint loaded.\n")
+#   cat("Package changepoint loaded.\n")
   
   if(!allpkg)
     stop("You have to install some packages : Follow the printed informations.")
@@ -175,14 +178,14 @@ segFracBSignal=function(dataSetName,normalTumorArray,chromosome=1:22,Lambda=NULL
     {
       #get the fracB for 1 chr
       if(!singleStudy)
-        fracB=getFracBSignal(dataSetName,chromosome=chr,normalTumorArray,listOfFiles=name,verbose=FALSE)
+        fracB=getFracBSignal(dataSetName,chromosome=chr,normalTumorArray,listOfFiles=name,verbose=verbose)
       else
-        fracB=getFracBSignal(dataSetName,chromosome=chr,listOfFiles=name,verbose=FALSE)
+        fracB=getFracBSignal(dataSetName,chromosome=chr,listOfFiles=name,verbose=verbose)
 
       fracB=fracB[[paste0("chr",chr)]]$tumor
       gc()
       #get the genotype calls for 1 chr
-      geno=getGenotypeCalls(dataSetName,chromosome=chr,listOfFiles=name,verbose=FALSE)
+      geno=getGenotypeCalls(dataSetName,chromosome=chr,listOfFiles=name,verbose=verbose)
       geno=geno[[paste0("chr",chr)]]
       gc()
       
@@ -197,7 +200,9 @@ segFracBSignal=function(dataSetName,normalTumorArray,chromosome=1:22,Lambda=NULL
 
       #segmentation
       cat(paste0("Segmentation of file ",name," chromosome ",chr,"..."))
-      seg=PELT(fracB[,3],Lambda,position=fracB$position,plot=TRUE,verbose=FALSE)
+      seg=switch(method,
+        PELT=PELT(fracB[,3],Lambda,position=fracB$position,plot=TRUE,verbose=verbose),
+        cghseg=cghseg(fracB[,3],Kmax,position=fracB$position,plot=TRUE,verbose=verbose))
       cat("OK\n")
       
       if(savePlot)

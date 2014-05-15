@@ -6,12 +6,12 @@
 #' @param dataSetName The name of the data-set folder.
 #' @param dataResponse A csv files or a data.frame with 2 columns : "files" and "response". The column "files" contains the filename to extract and the second column the response associated to the file.
 #' @param chromosome A vector containing the number of the chromosomes for the SNPs selection.
-#' @param signal either \"CN\" or \"fracB\". corresponding to which signal will be analyzed (default=\"CN\").
+#' @param signal either "CN" or "fracB". corresponding to which signal will be analyzed (default="CN").
 #' @param normalTumorArray Only in the case of normal-tumor study. A csv file or a data.frame containing the mapping between normal and tumor files.
 #' The first column contains the name of normal files and the second the names of associated tumor files.
-#' @param onlySNP (only if signal=\"CN\"). If TRUE, only the SNPs probes are used (default=FALSE).
+#' @param onlySNP (only if signal="CN"). If TRUE, only the SNPs probes are used (default=FALSE).
 #' @param nbFolds number of folds in the cross validation (default=10).
-#' @param loss either \"logistic\" (binary response) or \"linear\" (quantitative response), default is \"logistic\"
+#' @param loss either "logistic" (binary response) or "linear" (quantitative response), default is "logistic"
 #' @param plot If TRUE, cross-validation mean squared error is plotted (default=TRUE).
 #' @param ... Other parameters for HDlars function or glmnet function.
 #' 
@@ -73,11 +73,11 @@ markerSelection=function(dataSetName,dataResponse,chromosome=1:22,signal="CN",no
 #   else
 #     cat("Package HDPenReg loaded.\n")
  
-  if(!suppressPackageStartupMessages(require(glmnet,quietly=TRUE) ) )
-  {
-    allpkg=FALSE
-    cat("The package glmnet is missing. You can install it with the following command:\n","install.packages(glmnet) \n")
-  }
+#   if(!suppressPackageStartupMessages(require(glmnet,quietly=TRUE) ) )
+#   {
+#     allpkg=FALSE
+#     cat("The package glmnet is missing. You can install it with the following command:\n","install.packages(glmnet) \n")
+#   }
 #   else
 #     cat("Package glmnet loaded.\n")
   
@@ -380,7 +380,7 @@ SNPselectionFracBsignal=function(dataSetName,dataResponse,chromosome,normalTumor
 #' @param dataMatrix Matrix containing the data, each row is a different sample.
 #' @param dataResponse response associated to the data.
 #' @param nbFolds number of folds in the cross validation.
-#' @param loss either \"logistic\" (binary response) or \"linear\" (quantitative response).
+#' @param loss either "logistic" (binary response) or "linear" (quantitative response).
 #' @param plot If TRUE plot cross-validation mean squared error (default=TRUE).
 #' @param ... spplementary arguments for cv.glmnet function in case of logistic loss or for HDlars function for linear loss.
 #' 

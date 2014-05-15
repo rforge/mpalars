@@ -14,7 +14,7 @@ variableSelection(dataMatrix, dataResponse,
 
 \item{nbFolds}{number of folds in the cross validation.}
 
-\item{loss}{either \"logistic\" (binary response) or \"linear\" (quantitative response).}
+\item{loss}{either "logistic" (binary response) or "linear" (quantitative response).}
 
 \item{plot}{If TRUE plot cross-validation mean squared error (default=TRUE).}
 

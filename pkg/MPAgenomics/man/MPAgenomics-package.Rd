@@ -22,7 +22,7 @@ License: \tab GPL (>=2) \cr
 }
 }
 \examples{
-see the vignette for detailed examples
+#see the vignette for detailed examples
 vignette("MPAgenomics")
 }
 \author{

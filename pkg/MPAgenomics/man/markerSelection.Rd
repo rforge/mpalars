@@ -14,16 +14,16 @@ markerSelection(dataSetName, dataResponse, chromosome = 1:22, signal = "CN",
 
 \item{chromosome}{A vector containing the number of the chromosomes for the SNPs selection.}
 
-\item{signal}{either \"CN\" or \"fracB\". corresponding to which signal will be analyzed (default=\"CN\").}
+\item{signal}{either "CN" or "fracB". corresponding to which signal will be analyzed (default="CN").}
 
 \item{normalTumorArray}{Only in the case of normal-tumor study. A csv file or a data.frame containing the mapping between normal and tumor files.
 The first column contains the name of normal files and the second the names of associated tumor files.}
 
-\item{onlySNP}{(only if signal=\"CN\"). If TRUE, only the SNPs probes are used (default=FALSE).}
+\item{onlySNP}{(only if signal="CN"). If TRUE, only the SNPs probes are used (default=FALSE).}
 
 \item{nbFolds}{number of folds in the cross validation (default=10).}
 
-\item{loss}{either \"logistic\" (binary response) or \"linear\" (quantitative response), default is \"logistic\"}
+\item{loss}{either "logistic" (binary response) or "linear" (quantitative response), default is "logistic"}
 
 \item{plot}{If TRUE, cross-validation mean squared error is plotted (default=TRUE).}
 

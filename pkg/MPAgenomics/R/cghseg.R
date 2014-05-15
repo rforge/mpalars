@@ -65,17 +65,17 @@ bestSegmentationBM <- function(res,n)
 cghseg=function(signal,Kmax=10,position=NULL,plot=TRUE,verbose=TRUE)
 {
   #package for cghseg method
-  allpkg=TRUE
-  if(!suppressPackageStartupMessages(require(cghseg,quietly=TRUE) ) )
-  {
-    allpkg=FALSE
-    cat("The package cghseg is missing. You can install it with the following command:\n","install.packages(\"cghseg\") \n")
-  }
-  #else
-  #  cat("Package changepoint loaded.\n")
+#   allpkg=TRUE
+#   if(!suppressPackageStartupMessages(require(cghseg,quietly=TRUE) ) )
+#   {
+#     allpkg=FALSE
+#     cat("The package cghseg is missing. You can install it with the following command:\n","install.packages(\"cghseg\") \n")
+#   }
+#   else
+#     cat("Package changepoint loaded.\n")
   
-  if(!allpkg)
-    stop("You have to install some packages : Follow the printed informations.")
+#   if(!allpkg)
+#     stop("You have to install some packages : Follow the printed informations.")
   
   #signal
   if(missing(signal))
@@ -203,13 +203,13 @@ CGHSEGaroma=function(dataSetName,normalTumorArray,chromosome=1:22,Kmax=10,listOf
   #else
   #  cat("Package aroma.cn loaded.\n")
   
-  if(!suppressPackageStartupMessages(require("changepoint",quietly=TRUE)))
-  {
-    allpkg=FALSE
-    cat("The package changepoint is missing. You can install it with the following command:\n","install.packages(\"changepoint\") \n")
-  }
-  #else
-  #  cat("Package changepoint loaded.\n")
+#   if(!suppressPackageStartupMessages(require("cghseg",quietly=TRUE)))
+#   {
+#     allpkg=FALSE
+#     cat("The package cghseg is missing. You can install it with the following command:\n","install.packages(\"changepoint\") \n")
+#   }
+#   else
+#     cat("Package cghseg loaded.\n")
   
   if(!allpkg)
     stop("You have to install some packages : Follow the printed informations.")

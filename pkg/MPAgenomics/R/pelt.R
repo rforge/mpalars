@@ -26,13 +26,13 @@ PELT=function(signal,Lambda,position=NULL,plot=TRUE,verbose=TRUE)
 {
   #package for PELT method
   allpkg=TRUE
-  if(!suppressPackageStartupMessages(require(changepoint,quietly=TRUE) ) )
-  {
-    allpkg=FALSE
-    cat("The package changepoint is missing. You can install it with the following command:\n","install.packages(\"changepoint\") \n")
-  }
-  #else
-  #  cat("Package changepoint loaded.\n")
+#   if(!suppressPackageStartupMessages(require(changepoint,quietly=TRUE) ) )
+#   {
+#     allpkg=FALSE
+#     cat("The package changepoint is missing. You can install it with the following command:\n","install.packages(\"changepoint\") \n")
+#   }
+#   else
+#     cat("Package changepoint loaded.\n")
   
   if(!allpkg)
     stop("You have to install some packages : Follow the printed informations.")
@@ -177,13 +177,13 @@ PELTaroma=function(dataSetName,normalTumorArray,chromosome=1:22,Lambda=NULL,list
   #else
   #  cat("Package aroma.cn loaded.\n")
   
-  if(!suppressPackageStartupMessages(require("changepoint",quietly=TRUE)))
-  {
-    allpkg=FALSE
-    cat("The package changepoint is missing. You can install it with the following command:\n","install.packages(\"changepoint\") \n")
-  }
-  #else
-  #  cat("Package changepoint loaded.\n")
+#   if(!suppressPackageStartupMessages(require("changepoint",quietly=TRUE)))
+#   {
+#     allpkg=FALSE
+#     cat("The package changepoint is missing. You can install it with the following command:\n","install.packages(\"changepoint\") \n")
+#   }
+#   else
+#     cat("Package changepoint loaded.\n")
   
   if(!allpkg)
     stop("You have to install some packages : Follow the printed informations.")

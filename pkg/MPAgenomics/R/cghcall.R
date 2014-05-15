@@ -489,9 +489,9 @@ callingProcess=function(segmentData,nclass=5,cellularity=1,verbose=TRUE,...)
 
 
 
-#' @title Create the list of parameters for \link{PELT} function
+#' @title Create the list of parameters for \link{segmentation} function
 #' 
-#' @description create the list of parameters for \link{PELT} function
+#' @description create the list of parameters for \link{segmentation} function
 #' 
 #' @param copynumber A vector containing the copy-number signal for one patient and one chromosome.
 #' @param chromosome Chromosome associated with the copy-number signal.
@@ -499,12 +499,12 @@ callingProcess=function(segmentData,nclass=5,cellularity=1,verbose=TRUE,...)
 #' @param featureNames Names of the probes (not necessary).
 #' @param sampleNames Name of the sample (not necessary).
 #'
-#' @return a list in the right format for \link{PELT} function
+#' @return a list in the right format for \link{segmentation} function
 #'  
 #' @author Quentin Grimonprez
 #'
 #' @export
-peltObject=function(copynumber,chromosome,position,featureNames,sampleNames)
+segmentationObject=function(copynumber,chromosome,position,featureNames,sampleNames)
 {
   #copynumber : vector
   if(missing(copynumber))

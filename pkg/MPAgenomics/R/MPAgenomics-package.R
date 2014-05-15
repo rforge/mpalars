@@ -1,4 +1,4 @@
-#' @import R.utils snowfall changepoint glmnet cghseg
+#' @import R.utils changepoint glmnet cghseg
 #' 
 #' @title Multi Patients Analysis of Genomic Markers
 #' @docType package
@@ -29,7 +29,7 @@
 #'  
 #' 
 #' @examples 
-#' see the vignette for detailed examples
+#' #see the vignette for detailed examples
 #' vignette("MPAgenomics")
 #'  
 #' @keywords package

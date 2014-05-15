@@ -4,7 +4,8 @@
 \title{segmentation function for the allele B fraction}
 \usage{
 segFracBSignal(dataSetName, normalTumorArray, chromosome = 1:22,
-  Lambda = NULL, listOfFiles = NULL, savePlot = TRUE, verbose = TRUE)
+  method = c("cghseg", "PELT"), Lambda = NULL, Kmax = 10,
+  listOfFiles = NULL, savePlot = TRUE, verbose = TRUE)
 }
 \arguments{
 \item{dataSetName}{The name of the data-set folder (it must correspond to a folder name in rawData folder.).}
@@ -14,7 +15,11 @@ The first column contains the name of normal files and the second the names of a
 
 \item{chromosome}{A vector with the chromosomes to be segmented.}
 
-\item{Lambda}{A vector containing all the penalization values to test for the segmentation. If no values are provided, default values will be used.}
+\item{method}{method of segmentation, either "PELT" or "cghseg".}
+
+\item{Lambda}{For method="PELT", vector containing all the penalization values to test for the segmentation. If no values are provided, default values will be used.}
+
+\item{Kmax}{For method="cghseg", maximal number of segments.}
 
 \item{listOfFiles}{A vector containing the names of the files in dataSetName folder for which the allele B profile is segmented (default is all the files).}
 
@@ -34,8 +39,7 @@ a data.frame where each row correspond to a different segment with columns :
 }
 }
 \description{
-This function launches the segmentation PELT (from package changepoint) with a penalty value of lambda * log(n) for a range of value for lambda.
-Then an optimal penalty value is chosen by looking for a stabilization in the number of segments according to the penalty values.
+This function launches the segmentation of allele B fraction only for heterozygous SNPs.
 }
 \author{
 Quentin Grimonprez
