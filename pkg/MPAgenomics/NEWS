@@ -2,6 +2,7 @@ Version 1.0.3 (15-05-2014)
 - Add cghseg method for segmentation.
 - No more export of PELT and PELTaroma. Use segmentation and segmentationAroma instead.
 - Upgrade all documentations with roxygen2 4.0.0
+- Modification of the installation instruction in the vignette and in the code
 
 Version 1.0.2 (13-05-2014)
 - BUG FIX : findGender now use normal sample instead of tumor sample

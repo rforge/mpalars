@@ -45,25 +45,28 @@ markerSelection=function(dataSetName,dataResponse,chromosome=1:22,signal="CN",no
   if(!suppressPackageStartupMessages(require("aroma.affymetrix", quietly=TRUE) ) )
   {
     cat("Package not found: aroma.affymetrix. For download it:\n")
-    cat("source(\"http://www.braju.com/R/hbLite.R\")\n")
-    cat(" hbLite(\"sfit\")\n")
+    #     cat("source(\"http://www.braju.com/R/hbLite.R\")\n")
+    #     cat(" hbLite(\"sfit\")\n")
     cat("source(\"http://bioconductor.org/biocLite.R\")\n")
     cat("biocLite(\"affxparser\")\n")
-    cat("source(\"http://aroma-project.org/hbLite.R\")\n")
-    cat("hbInstall(\"aroma.affymetrix\")\n")
+    cat("biocLite(\"DNAcopy\")\n")
+    cat("biocLite(\"aroma.light\")\n")
+    #     cat("source(\"http://aroma-project.org/hbLite.R\")\n")
+    cat("install.packages(\"aroma.affymetrix\")\n")
     allpkg=FALSE
   }
-#   else
-#     cat("Package aroma.affymetrix loaded.\n")
+  #   else
+  #     cat("Package aroma.affymetrix loaded.\n")
   
   if(!suppressPackageStartupMessages(require("aroma.cn", quietly=TRUE) ) )
   {
-    cat("source(\"http://aroma-project.org/hbLite.R\")\n")
-    cat("hbInstall(\"aroma.cn\")\n") 
+    cat("Package not found: aroma.cn. For download it:\n")
+    cat("install.packages(\"aroma.cn\")\n") 
     allpkg=FALSE
   }
-#   else
-#     cat("Package aroma.cn loaded.\n")
+  #   else
+  #     cat("Package aroma.cn loaded.\n")
+  
   
   if(!suppressPackageStartupMessages(require(HDPenReg,quietly=TRUE) ) )
   {
