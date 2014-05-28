@@ -1,6 +1,6 @@
 Package: HDPenReg
 Version: 0.89.1
-Date: 2014-04-17
+Date: 2014-05-28
 Title: Algorithms for lasso and fused-lasso problems.
 Author: Quentin Grimonprez
 Maintainer: Quentin Grimonprez <quentin.grimonprez@inria.fr>
@@ -13,3 +13,4 @@ Description: This package contains an implementation of the lars algorithm [1],
     covariate is greater than the number of individuals.
 License: GPL (>= 2)
 LinkingTo: Rcpp
+Roxygen: list(wrap = FALSE)
