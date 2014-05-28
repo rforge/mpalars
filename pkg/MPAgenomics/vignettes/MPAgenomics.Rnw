@@ -82,6 +82,8 @@ vignette("MPAgenomics")
 		Since the package provides simple wrappers of many existing packages and all users are not interested by the same wrappers, we did not force \texttt{MPAgenomics} to depend on all the packages. We however recommend the user who would like to preprocess data to install \texttt{aroma} packages \cite{aroma} with the following commands:
 		
 <<eval=FALSE>>=
+source("http://www.braju.com/R/hbLite.R")
+hbLite("sfit")
 source("http://bioconductor.org/biocLite.R")
 biocLite("affxparser")
 biocLite("DNAcopy")
@@ -90,8 +92,7 @@ install.packages("aroma.affymetrix")
 install.packages("aroma.cn")
 @	
 	
-%source("http://www.braju.com/R/hbLite.R")
-%hbLite("sfit")
+
 
 		The installation of all these packages at the very beginning of the use of \texttt{MPAgenomics} is only for convenience, not mandatory. Indeed, the user who would have forgotten to install some packages would be reminded to install them when applying the corresponding wrapper.
 	
@@ -744,10 +745,11 @@ symFracB2$chr5
 	
 	\subsection{From data normalized by aroma}	
 		
-		The procedure described above can be run by the \texttt{PELTaroma} function if the working directory respects the aroma architecture.
+		The procedure described above can be run by the \texttt{segmentationAroma} function if the working directory respects the aroma architecture.
 		 	
 		\begin{verbatim}	
-			PELTaroma(dataSetName,normalTumorArray,chromosome,Lambda,listOfFiles,onlySNP=TRUE,savePlot=TRUE)
+segmentationAroma(dataSetName,normalTumorArray,chromosome,Lambda,listOfFiles,onlySNP=TRUE,
+savePlot=TRUE,method="cghseg")
 		\end{verbatim}
 	
 		\begin{center}
@@ -766,7 +768,8 @@ symFracB2$chr5
 				~ & the copy number profiles  will be segmented (default is all the files).\\
 				\texttt{savePlot} & if TRUE, graphics of the segmented CN signal will be\\
 				~~ & saved in the \texttt{figures/dataSetName/segmentation/CN} folder. (default=TRUE).\\
-				\hline	
+				\texttt{method} & PELT or cghseg. (default=cghseg).\\
+				\hline
 			\end{tabular}		
 		\end{center}
 	
@@ -863,10 +866,10 @@ segfracB
 @					
 	
 	\subsection{For any data provided in matrix}	
-		If you have your own normalized data stored in a matrix, you can use the \texttt{PELT} function to perform the PELT segmentation with the parameter choice proposed in \texttt{MPAgenomics}.
+		If you have your own normalized data stored in a matrix, you can use the \texttt{segmentation} function to perform the segmentation with the parameter choice proposed in \texttt{MPAgenomics}.
 	
 		\begin{verbatim}	
-			PELT(signal,Lambda,position=NULL,plot=TRUE,verbose=TRUE)
+			segmentation(signal,Lambda,position=NULL,plot=TRUE,verbose=TRUE)
 		\end{verbatim}
 	
 		\begin{center}
@@ -880,6 +883,7 @@ segfracB
 				\texttt{position} & A vector containing the position of all elements of the signal (not necessary).\\
 				\texttt{plot} & If TRUE, plot some graphics (default=TRUE	).\\
 				\texttt{verbose} & If TRUE, print some information (default=TRUE).\\
+        \texttt{method} & PELT or cghseg. (default=cghseg).\\
 				\hline	
 			\end{tabular}		
 		\end{center}
@@ -911,7 +915,7 @@ position=CNdata$chr20$position
 	
 		Now, run the segmentation process :
 <<eval=FALSE>>=
-seg=PELT(copyNumber,position=position,plot=TRUE,verbose=TRUE)
+seg=segmentation(copyNumber,position=position,plot=TRUE,verbose=TRUE)
 @
 	
 		You obtain the plots seen previously (Fig \ref{outpelt}) and the results in the right format for the calling function (see section \ref{calling}).
@@ -939,7 +943,7 @@ seg$segment
 			
 		\begin{verbatim}	
 		cnSegCallingProcess(dataSetName,normalTumorArray,chromosome,Lambda,listOfFile,onlySNP,savePlot,
-		nclass,cellularity,...)
+		nclass,cellularity,method,...)
 		\end{verbatim}
 		
 		\begin{tabular}{|l|l|}
@@ -959,6 +963,7 @@ seg$segment
 			~ &   4 (including amplifications), 5 (including double deletions) (default=3).\\
 			\texttt{cellularity} &  Percentage of tumor cells in the sample (default=1).\\
 			\texttt{\dots} & Others parameters for CGHcall function \cite{CGHcallR}.\\
+      \texttt{method} & PELT or cghseg. (default=cghseg).\\
 			\hline
 		\end{tabular}
 

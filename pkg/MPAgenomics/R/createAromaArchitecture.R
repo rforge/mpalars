@@ -190,11 +190,15 @@ copyChipFiles=function(pathToChipFiles,chipName,path,verbose)
     cat(" hbLite(\"sfit\")\n")
     cat("source(\"http://bioconductor.org/biocLite.R\")\n")
     cat("biocLite(\"affxparser\")\n")
-    cat("source(\"http://aroma-project.org/hbLite.R\")\n")
-    cat("hbInstall(\"aroma.affymetrix\")\n")
+    cat("biocLite(\"DNAcopy\")\n")
+    cat("biocLite(\"aroma.light\")\n")
+    #     cat("source(\"http://aroma-project.org/hbLite.R\")\n")
+    cat("install.packages(\"aroma.affymetrix\")\n")
+    allpkg=FALSE
   }
   else
     cat("Package aroma.affymetrix loaded.\n")
+  
   actualPath=getwd()
   setwd(path)
   result <- try(cdf <- AffymetrixCdfFile$byChipType(chipType, tags=tag),silent=TRUE)
@@ -287,8 +291,11 @@ createArchitecture=function(dataSetName,chipType,dataSetPath,chipFilesPath,path=
     cat(" hbLite(\"sfit\")\n")
     cat("source(\"http://bioconductor.org/biocLite.R\")\n")
     cat("biocLite(\"affxparser\")\n")
-    cat("source(\"http://aroma-project.org/hbLite.R\")\n")
-    cat("hbInstall(\"aroma.affymetrix\")\n")
+    cat("biocLite(\"DNAcopy\")\n")
+    cat("biocLite(\"aroma.light\")\n")
+    #     cat("source(\"http://aroma-project.org/hbLite.R\")\n")
+    cat("install.packages(\"aroma.affymetrix\")\n")
+    allpkg=FALSE
   }
   else
     cat("Package aroma.affymetrix loaded.\n")

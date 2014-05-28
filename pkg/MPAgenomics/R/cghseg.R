@@ -125,7 +125,7 @@ cghseg=function(signal,Kmax=10,position=NULL,plot=TRUE,verbose=TRUE)
   if(plot)
   {    
     #plot data
-    plot(position,signal,pch=".",xlab="Position",ylab="signal")
+    plot(position,signal,pch=".",xlab="Position",ylab="signal",ylim=c(0,6))
     
     #plot segments 
     for(i in 1:length(best$m))
@@ -191,8 +191,8 @@ CGHSEGaroma=function(dataSetName,normalTumorArray,chromosome=1:22,Kmax=10,listOf
   if(!suppressPackageStartupMessages(require("aroma.affymetrix", quietly=TRUE) ) )
   {
     cat("Package not found: aroma.affymetrix. For download it:\n")
-    #     cat("source(\"http://www.braju.com/R/hbLite.R\")\n")
-    #     cat(" hbLite(\"sfit\")\n")
+    cat("source(\"http://www.braju.com/R/hbLite.R\")\n")
+    cat(" hbLite(\"sfit\")\n")
     cat("source(\"http://bioconductor.org/biocLite.R\")\n")
     cat("biocLite(\"affxparser\")\n")
     cat("biocLite(\"DNAcopy\")\n")

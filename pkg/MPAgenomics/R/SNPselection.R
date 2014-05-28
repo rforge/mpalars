@@ -45,8 +45,8 @@ markerSelection=function(dataSetName,dataResponse,chromosome=1:22,signal="CN",no
   if(!suppressPackageStartupMessages(require("aroma.affymetrix", quietly=TRUE) ) )
   {
     cat("Package not found: aroma.affymetrix. For download it:\n")
-    #     cat("source(\"http://www.braju.com/R/hbLite.R\")\n")
-    #     cat(" hbLite(\"sfit\")\n")
+    cat("source(\"http://www.braju.com/R/hbLite.R\")\n")
+    cat(" hbLite(\"sfit\")\n")
     cat("source(\"http://bioconductor.org/biocLite.R\")\n")
     cat("biocLite(\"affxparser\")\n")
     cat("biocLite(\"DNAcopy\")\n")
@@ -133,8 +133,8 @@ markerSelection=function(dataSetName,dataResponse,chromosome=1:22,signal="CN",no
   
   #launch the right function depending of the signal
   res=switch(signal,
-         "CN"=SNPselectionCNsignal(dataSetName,dataResponse,chromosome,normalTumorArray,onlySNP,nbFolds,loss),
-         "fracB"=SNPselectionFracBsignal(dataSetName,dataResponse,chromosome,normalTumorArray,nbFolds,loss),
+         "CN"=SNPselectionCNsignal(dataSetName,dataResponse,chromosome,normalTumorArray,onlySNP,nbFolds,loss,...),
+         "fracB"=SNPselectionFracBsignal(dataSetName,dataResponse,chromosome,normalTumorArray,nbFolds,loss,...),
          "both"=stop("Not yet implemented."))
   
   return(res)

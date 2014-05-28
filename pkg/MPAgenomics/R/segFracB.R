@@ -36,8 +36,8 @@ segFracBSignal=function(dataSetName,normalTumorArray,chromosome=1:22,method=c("c
   if(!suppressPackageStartupMessages(require("aroma.affymetrix", quietly=TRUE) ) )
   {
     cat("Package not found: aroma.affymetrix. For download it:\n")
-    #     cat("source(\"http://www.braju.com/R/hbLite.R\")\n")
-    #     cat(" hbLite(\"sfit\")\n")
+    cat("source(\"http://www.braju.com/R/hbLite.R\")\n")
+    cat(" hbLite(\"sfit\")\n")
     cat("source(\"http://bioconductor.org/biocLite.R\")\n")
     cat("biocLite(\"affxparser\")\n")
     cat("biocLite(\"DNAcopy\")\n")

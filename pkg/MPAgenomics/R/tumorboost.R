@@ -89,8 +89,9 @@ tumorboost<-function(dataSetName,normalTumorArray,plot=TRUE)
     #print(dsN);
 
       
-    ########## genotypage
-    gcN <- extract(gsN,normalSample)
+    ########## genotypage of normalSample
+    gcN <- extract(gsN,which(gsN$Names==getNames(dsC)[normalSample]))
+    #gcN2 <- extract(gsN,normalSample)
     
       
     ######################################################

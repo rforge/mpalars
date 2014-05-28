@@ -54,8 +54,10 @@ PELT=function(signal,Lambda,position=NULL,plot=TRUE,verbose=TRUE)
   position=position[ord]
   signal=signal[ord]
   
+  
+
   #Lambda
-  if(missing(Lambda))
+  if(missing(Lambda)||is.null(Lambda))
     Lambda=c(seq(0.1,2,by=0.1),seq(2.2,5,by=0.2),seq(5.5,10,by=0.2),seq(11,16,by=1),seq(18,36,by=2),seq(40,80,by=4))
   else
   {
@@ -165,8 +167,8 @@ PELTaroma=function(dataSetName,normalTumorArray,chromosome=1:22,Lambda=NULL,list
   if(!suppressPackageStartupMessages(require("aroma.affymetrix", quietly=TRUE) ) )
   {
     cat("Package not found: aroma.affymetrix. For download it:\n")
-    #     cat("source(\"http://www.braju.com/R/hbLite.R\")\n")
-    #     cat(" hbLite(\"sfit\")\n")
+    cat("source(\"http://www.braju.com/R/hbLite.R\")\n")
+    cat(" hbLite(\"sfit\")\n")
     cat("source(\"http://bioconductor.org/biocLite.R\")\n")
     cat("biocLite(\"affxparser\")\n")
     cat("biocLite(\"DNAcopy\")\n")

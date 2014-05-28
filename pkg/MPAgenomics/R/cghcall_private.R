@@ -137,6 +137,10 @@
     all         <- exp(all3-maxim)
     allprior    <- all*priorp[k,]
     tot         <- all%*%priorp[k,]
+    #TODO vérifier pertinence correction bug avec segment extreme d'un seul point
+    if (tot==0)
+      return (allprior)
+     
     return(allprior/tot)
 }
 
