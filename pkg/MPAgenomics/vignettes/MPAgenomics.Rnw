@@ -58,6 +58,11 @@ Moreover, \texttt{MPAgenomics} wraps and extends fonctionnalities of several pac
       \item \bibentry{TumorBoost}
     \end{itemize}
     
+    If you use \texttt{MPAgenomics} to segment copy number or allele B fraction signals with the cghseg segmentation method, please cite:
+    \begin{itemize}
+      \item \bibentry{cghseg3}
+    \end{itemize}
+    
     If you use \texttt{MPAgenomics} to segment copy number or allele B fraction signals with the PELT segmentation method, please cite:
     \begin{itemize}
       \item \bibentry{pelt}
@@ -507,19 +512,8 @@ createArchitecture("datatest1","GenomeWideSNP_6",celPATH,chipPATH,".",TRUE,"Full
 			\item \textbf{TumorBoost} \cite{TumorBoost}: Only in a case of normal-tumor study, normalization of the allele B fraction tumor signal using the control signal. 
 		\end{itemize}
 		
-		The function \texttt{signalPreProcess} executes all these steps and saves the results in different folders in the aroma architecture (\texttt{totalAndFracBData},\dots), you can also obtain some graphics (Fig \ref{plot}) in the \texttt{figures/signal} folder.
+		The function \texttt{signalPreProcess} executes all these steps and saves the results in different folders in the aroma architecture (\texttt{totalAndFracBData},\dots), you can also obtain some graphics in the \texttt{figures/signal} folder.
 		
-		\begin{figure}[!h]
-			\centering
-			\includegraphics[width=0.5\textwidth]{fig/plot1}\\
-			\includegraphics[width=0.5\textwidth]{fig/plot2}\\
-			\includegraphics[width=0.5\textwidth]{fig/plot3}\\
-			\includegraphics[width=0.5\textwidth]{fig/plot4}
-			\caption{From top to bottom : the normalized copy-number signal, the allele B fraction for the normal profile, the allele B fraction for the tumor profile, the allele B fraction for the tumor profile after Tumorboost normalization. Graphics from \texttt{http://aroma-project.org}. }
-			\label{plot}
-		\end{figure}
-
-
 		The \texttt{signalPreProcess} is defined as follows:
 		\begin{verbatim}	
 		signalPreProcess(dataSetName, chipType, normalTumorArray, dataSetPath, chipFilesPath, path,
@@ -729,9 +723,11 @@ symFracB2$chr5
 \section{Segmentation}
 	\label{sec:seg}
 	
-	In the package \texttt{MPAgenomics}, we provide a segmentation method, which uses the PELT method of the \texttt{cpt.mean} function from \texttt{changepoint} package \cite{peltR}.
-	
-	In the initial PELT method, the penalty is $\log(n)$ with $n$ the length of the signal. Here we will run the PELT method with a penalty $\lambda \times \log(n)$ for a range of $\lambda$. Then, we plot the evolution of the number of segments with regards to the $\lambda$ parameter (Fig \ref{plateau}). 
+	In the package \texttt{MPAgenomics}, we provide two segmentation methods.
+  The first one wraps the \texttt{cghseg} package which fits a Gaussian maximum-likelihood piecewise constant smoothing model \cite{cghsegb} using pruned dynamic programming \cite{cghseg}. When the user chooses this method, \texttt{MPAgenomics} selects the number of segments with the slope heuristic \cite{heurpente}. 
+  
+  The second segmentation approach uses the PELT method of the \texttt{cpt.mean} function from \texttt{changepoint} package \cite{peltR}.
+	In the initial PELT method, the penalty is $\log(n)$ with $n$ the length of the signal. When the user chooses this method, \texttt{MPAgenomics} suggests another calibration for the penalty parameter. The PELT method is run with a penalty $\lambda \times \log(n)$ for a range of $\lambda$. Then, the evolution of the number of segments is plotted with regards to the $\lambda$ parameter (Fig \ref{plateau}). 
 	
 	\begin{figure}[!h]
 		\centering
