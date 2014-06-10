@@ -5,9 +5,9 @@
 #' @param X the matrix (of size n*p) of the covariates.
 #' @param y a vector of length n with the response.
 #' @param maxSteps Maximal number of steps for lars algorithm.
-#' @param intercept If TRUE, there is an intercept in the model.
+#' @param intercept If TRUE, add an intercept to the model.
 #' @param eps Tolerance of the algorithm.
-#' @return An object of type LarsPath.
+#' @return An object of type \link{LarsPath}.
 #' @examples 
 #' dataset=simul(50,10000,0.4,10,50,matrix(c(0.1,0.8,0.02,0.02),nrow=2))
 #' result=HDlars(dataset$data,dataset$response)

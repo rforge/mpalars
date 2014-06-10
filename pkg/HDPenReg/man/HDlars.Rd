@@ -13,12 +13,12 @@ HDlars(X, y, maxSteps = 3 * min(dim(X)), intercept = TRUE,
 
 \item{maxSteps}{Maximal number of steps for lars algorithm.}
 
-\item{intercept}{If TRUE, there is an intercept in the model.}
+\item{intercept}{If TRUE, add an intercept to the model.}
 
 \item{eps}{Tolerance of the algorithm.}
 }
 \value{
-An object of type LarsPath.
+An object of type \link{LarsPath}.
 }
 \description{
 lars algorithm

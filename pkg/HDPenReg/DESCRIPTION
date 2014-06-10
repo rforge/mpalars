@@ -1,9 +1,13 @@
 Package: HDPenReg
-Version: 0.89.1
-Date: 2014-05-28
+Version: 0.89.2
+Date: 2014-06-10
 Title: Algorithms for lasso and fused-lasso problems.
+Authors@R: c(person("Quentin", "Grimonprez", role = "aut", email =
+    "quentin.grimonprez@inria.fr"), person("Serge", "Iovleff", role = "ctb"))
 Author: Quentin Grimonprez
 Maintainer: Quentin Grimonprez <quentin.grimonprez@inria.fr>
+Copyrights: inria 2013-2014 for HDPenReg. Serge Iovleff is the copyright holder
+    of the c++ library STKpp.
 Depends:
     methods
 Imports:

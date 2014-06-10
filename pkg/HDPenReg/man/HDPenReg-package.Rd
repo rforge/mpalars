@@ -14,8 +14,8 @@ covariate is greater than the number of individuals.
 \tabular{ll}{
 Package: \tab HDPenReg\cr
 Type: \tab Package\cr
-Version: \tab 0.89.1\cr
-Date: \tab 2014-05-28\cr
+Version: \tab 0.89.2\cr
+Date: \tab 2014-10-03\cr
 License: \tab GPL (>=2) \cr
 }
 
