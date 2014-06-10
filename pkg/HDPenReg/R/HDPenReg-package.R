@@ -16,7 +16,7 @@
 #' Package: \tab HDPenReg\cr
 #' Type: \tab Package\cr
 #' Version: \tab 0.89.2\cr
-#' Date: \tab 2014-10-03\cr
+#' Date: \tab 2014-06-10\cr
 #' License: \tab GPL (>=2) \cr
 #' }
 #' 
