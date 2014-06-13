@@ -52,3 +52,5 @@ $(SHLIB): pkglib
 pkglib:
 	(cd $(STKPPDIR) && $(MAKE) all)
 	(cd $(PKGDIR) && $(MAKE) all)
+	(cd $(STKPPDIR) && $(MAKE) clean_obj)
+	(cd $(PKGDIR) && $(MAKE) clean)
