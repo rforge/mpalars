@@ -164,7 +164,7 @@
 	\end{itemize}
 		
 \section{\texttt{HDPenReg} package}
-	\SweaveOpts{prefix.string = fig/vignette, eps = FALSE, pdf = TRUE}
+	\SweaveOpts{prefix.string = vignette, eps = FALSE, pdf = TRUE}
 	\setkeys{Gin}{width=0.8\textwidth}
 
 	\subsection{LarsPath class}
