@@ -1,0 +1,3 @@
+#!/bin/sh
+
+rm -f src/HDPenReg/lib/*.a src/stkpp/lib/*a
