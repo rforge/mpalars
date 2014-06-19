@@ -87,18 +87,19 @@ getSymFracBSignal=function(dataSetName,file,chromosome,normalTumorArray,verbose=
     stop("dataSetName must be the name of an existing folder in rawData.")
   
   #check if we are in a normal-tumor study or in a single array study
-  singleStudy=TRUE
+  #singleStudy=TRUE
   if(missing(normalTumorArray))
   {
     if(verbose)
-      cat("No normalTumorArray specified.\n The allele B fraction signal will be extracted for all the specified data.\n")    
+      #cat("No normalTumorArray specified.\n The allele B fraction signal will be extracted for all the specified data.\n")    
+      stop("No normalTumorArray specified.\n Youd need to specify a normalTumorArray to extract and symmetrize allele B fraction")
   }
-  else
-  {
-    if(verbose)
-      cat("The allele B fraction signal will be extracted for normal and tumor signals. The normalized tumorboost allele B fraction signal will be extracted for tumor signal.")
-    singleStudy=FALSE
-  }
+#   else
+#   {
+#     if(verbose)
+#       cat("The allele B fraction signal will be extracted for normal and tumor signals. The normalized tumorboost allele B fraction signal will be extracted for tumor signal.")
+#     singleStudy=FALSE
+#   }
   
   
   ###import dataset to check listOfiles and normalTumorArray
@@ -136,8 +137,8 @@ getSymFracBSignal=function(dataSetName,file,chromosome,normalTumorArray,verbose=
 
   
   ################### check normalTumorArray
-  if(!singleStudy)
-  {
+#   if(!singleStudy)
+#   {
     #normalTumorArray
     if(is.character(normalTumorArray))
       normalTumorArray=read.csv(normalTumorArray)
@@ -158,12 +159,12 @@ getSymFracBSignal=function(dataSetName,file,chromosome,normalTumorArray,verbose=
     
     if(!(file%in%c(as.character(normalTumorArray$normal),as.character(normalTumorArray$tumor))))
       stop("normalTumorArray doesn't contain all the filenames you specified in listOfFiles parameter.")
-  }
+#   }
   
   #if paired study, we keep the name of normal files
   normalFiles=NULL
-  if(!singleStudy)
-  {
+#   if(!singleStudy)
+#   {
     #if normal-tumor study, we need the tumor and normal files
     
     #we obtain the complementary files
@@ -177,8 +178,17 @@ getSymFracBSignal=function(dataSetName,file,chromosome,normalTumorArray,verbose=
     normalFiles=allFiles[which(status=="normal")]
     
     rm(compFiles,allFiles)
-  }   
-  
+#   }   
+
+#     normalTumorMatrix=getNormalTumorMatrix(file, normalTumorArray)
+#     #keep position of normal samples
+#     pos=normalTumorMatrix[,1]
+# 
+#     if(length(unique(normalTumorMatrix[,1]))<length(normalTumorMatrix[,2]))
+#     {
+#       stop("normalTumorArray must contain one unique normal sample per tumor sample to symmetrize allele B fraction.")
+#     }
+#   
   ########### END CHECK ARGUMENT
   
   ####################
@@ -221,27 +231,28 @@ getSymFracBSignal=function(dataSetName,file,chromosome,normalTumorArray,verbose=
     unitNames=unitNames[indSort]
     
     #get the genotype calls for 1 chr
-    geno=getGenotypeCalls(dataSetName,chromosome=chr,listOfFiles=file,verbose=FALSE)$genotype
+    geno=getGenotypeCalls(dataSetName,chromosome=chr,listOfFiles=normalFiles,verbose=FALSE)
+    geno=geno[[paste0("chr",chr)]]
     
-    ind=which(geno=="AB")
+    ind=which(geno[,3]=="AB")
     
     posChr=posChr[ind]
     units=units[ind]
     unitNames=unitNames[ind]
     
     #get the fracB signal
-    if(singleStudy)
-    {
-      fracB=getFracBSignalSingleStudy(ds,units,pos)
-      fracB$tumor=symmetrizeFracB(fracB$tumor)
-    }
-    else
-    {
+#     if(singleStudy)
+#     {
+#       fracB=getFracBSignalSingleStudy(ds,units,pos)
+#       fracB$tumor=symmetrizeFracB(fracB$tumor)
+#     }
+#     else
+#     {
       fracB=getFracBSignalPairedStudy(ds,units,normalTumorArray,normalFiles)
-      fracB$normal=symmetrizeFracB(fracB$normal) 
+      fracB$normal=symmetrizeFracB(fracB$normal)
       fracB$tumor=symmetrizeFracB(fracB$tumor)
       symFracB[[paste0("chr",chr)]]$normal=data.frame(chromosome=rep(chr,length(posChr)),position=posChr,fracB$normal,featureNames=unitNames)
-    }
+#     }
     
     symFracB[[paste0("chr",chr)]]$tumor=data.frame(chromosome=rep(chr,length(posChr)),position=posChr,fracB$tumor,featureNames=unitNames)
   }

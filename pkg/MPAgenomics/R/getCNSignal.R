@@ -61,7 +61,9 @@ getCopyNumberSignal=function(dataSetName,chromosome,normalTumorArray,onlySNP=FAL
     
   if(!allpkg)
     stop("You have to install some packages : Follow the printed informations.")
-
+  
+  #TODO verifier comportement list.files() sur une autre machine
+  list.files()
   if(!("totalAndFracBData"%in%list.files()))
     stop("There is no \"totalAndFracBData\", check if you are in the good working directory or if you have run the signalPreProcess function before.")
 

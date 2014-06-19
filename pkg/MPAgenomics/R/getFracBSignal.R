@@ -88,18 +88,19 @@ getFracBSignal=function(dataSetName,chromosome,normalTumorArray,listOfFiles=NULL
     stop("dataSetName must be the name of an existing folder in rawData.")
   
   #check if we are in a normal-tumor study or in a single array study
-  singleStudy=TRUE
+  #singleStudy=TRUE
   if(missing(normalTumorArray))
   {
     if(verbose)
-      cat("No normalTumorArray specified.\n The allele B fraction signal will be extracted for all the specified data.\n")    
+      #cat("No normalTumorArray specified.\n The allele B fraction signal will be extracted for all the specified data.\n")
+      stop("No normalTumorArray specified.\n Youd need to specify a normalTumorArray to extract allele B fraction")
   }
-  else
-  {
-    if(verbose)
-      cat("The allele B fraction signal will be extracted for normal and tumor signals. The normalized tumorboost allele B fraction signal will be extracted for tumor signal.")
-    singleStudy=FALSE
-  }
+  #else
+  #{
+  #  if(verbose)
+  #    cat("The allele B fraction signal will be extracted for normal and tumor signals. The normalized tumorboost allele B fraction signal will be extracted for tumor signal.")
+  #  singleStudy=FALSE
+  #}
   
   
   ###import dataset to check listOfiles and normalTumorArray
@@ -137,8 +138,8 @@ getFracBSignal=function(dataSetName,chromosome,normalTumorArray,listOfFiles=NULL
   } 
   
   ################### check normalTumorArray
-  if(!singleStudy)
-  {
+#   if(!singleStudy)
+#   {
     #normalTumorArray
     if(is.character(normalTumorArray))
       normalTumorArray=read.csv(normalTumorArray)
@@ -146,7 +147,7 @@ getFracBSignal=function(dataSetName,chromosome,normalTumorArray,listOfFiles=NULL
     {
       if(!is.data.frame(normalTumorArray))
         stop("normalTumorArray must be either the path to the normalTumorArray csv file or a data.frame containing the data.\n")
-    }
+#    }
     
     #check normalTumorArray
     if(!("normal"%in%colnames(normalTumorArray)) || !("tumor"%in%colnames(normalTumorArray)))
@@ -164,8 +165,8 @@ getFracBSignal=function(dataSetName,chromosome,normalTumorArray,listOfFiles=NULL
   
   #if paired study, we keep the name of normal files
   normalFiles=NULL
-  if(!singleStudy)
-  {
+#   if(!singleStudy)
+#   {
     #if normal-tumor study, we need the tumor and normal files
     
     #we obtain the complementary files
@@ -179,7 +180,16 @@ getFracBSignal=function(dataSetName,chromosome,normalTumorArray,listOfFiles=NULL
     normalFiles=allFiles[which(status=="normal")]
     
     rm(compFiles,allFiles)
-  }   
+#   }   
+
+#   normalTumorMatrix=getNormalTumorMatrix(listOfFiles, normalTumorArray)
+#   #keep position of normal samples
+#   pos=normalTumorMatrix[,1]
+# 
+#   if(length(unique(normalTumorMatrix[,1]))<length(normalTumorMatrix[,2]))
+#   {
+#     stop("normalTumorArray must contain one unique normal sample per tumor sample to extract allele B fraction.")
+#   }
   
   ########### END CHECK ARGUMENT
   
@@ -226,19 +236,19 @@ getFracBSignal=function(dataSetName,chromosome,normalTumorArray,listOfFiles=NULL
     posChr=posChr[indSort]
     
     #get the fracB signal
-    if(singleStudy)
-    {
-      fracB=getFracBSignalSingleStudy(ds,units,pos)
-      fracB$tumor=fracB$tumor
-    }
-    else
-    {
+#     if(singleStudy)
+#     {
+#       fracB=getFracBSignalSingleStudy(ds,units,pos)
+#       fracB$tumor=fracB$tumor
+#     }
+#     else
+#     {
       fracB=getFracBSignalPairedStudy(ds,units,normalTumorArray,normalFiles)
       fracB$normal=fracB$normal  
       fracB$tumor=fracB$tumor
       allFracB[[paste0("chr",chr)]]$normal=data.frame(chromosome=rep(chr,length(posChr)),position=posChr,fracB$normal,featureNames=unitNames)
       
-    }
+#     }
     
     allFracB[[paste0("chr",chr)]]$tumor=data.frame(chromosome=rep(chr,length(posChr)),position=posChr,fracB$tumor,featureNames=unitNames)
   }

@@ -87,9 +87,9 @@ segFracBSignal=function(dataSetName,normalTumorArray,chromosome=1:22,method=c("c
 
   #################### import the dataSet to have the name of all the files
   #check if we are in a normal-tumor study or in a single array study
-  singleStudy=TRUE
-  if(!missing(normalTumorArray))
-    singleStudy=FALSE
+  #singleStudy=TRUE
+  if(missing(normalTumorArray))
+    stop("No normalTumorArray specified.\n Youd need to specify a normalTumorArray to extract allele B fraction")
   
   #path where find the CN data
   rootPath <- "totalAndFracBData";
@@ -100,8 +100,8 @@ segFracBSignal=function(dataSetName,normalTumorArray,chromosome=1:22,method=c("c
   dsC <- AromaUnitTotalCnBinarySet$byName(dataSet, chipType="*", paths=rootPath);
     
   ################### check normalTumorArray
-  if(!singleStudy)
-  {
+#   if(!singleStudy)
+#   {
     #normalTumorArray
     if(is.character(normalTumorArray))
       normalTumorArray=read.csv(normalTumorArray)
@@ -118,7 +118,7 @@ segFracBSignal=function(dataSetName,normalTumorArray,chromosome=1:22,method=c("c
 #     isArrayComplete=sapply(getNames(dsC),FUN=function(name,listOfNames){name%in%listOfNames},c(as.character(normalTumorArray$normal),as.character(normalTumorArray$tumor)))
 #     if(sum(isArrayComplete)!=length(isArrayComplete))
 #       warning("normalTumorArray doesn't contain all the filenames of dataSetName.")
-  }
+#   }
   
   ###### check listOfFiles
   pos=c()
@@ -152,17 +152,28 @@ segFracBSignal=function(dataSetName,normalTumorArray,chromosome=1:22,method=c("c
 #   {  
 #     #if normal-tumor study, we need the tumor and normal files
 #     
-#     #we obtain the complementary files  
-#     compFiles=getComplementaryFile(listOfFiles,normalTumorArray)
-#     allFiles=unique(c(listOfFiles,compFiles))
-#     
-#     #index of the files
-#     pos=sapply(allFiles,FUN=function(x,dsC){which(getNames(dsC)==x)},dsC)
-#     tag=getStatus(allFiles,normalTumorArray)
-#     
-#     pos=pos[which(tag=="normal")]
+    #we obtain the complementary files  
+    compFiles=getComplementaryFile(listOfFiles,normalTumorArray)
+    allFiles=unique(c(listOfFiles,compFiles))
+    
+    #index of the files
+    pos=sapply(allFiles,FUN=function(x,dsC){which(getNames(dsC)==x)},dsC)
+    tag=getStatus(allFiles,normalTumorArray)
+    
+    pos=pos[which(tag=="normal")]
+    
 #   }
   
+#   normalTumorMatrix=getNormalTumorMatrix(listOfFiles, normalTumorArray)
+#   #keep position of normal samples
+#   pos=normalTumorMatrix[,1]
+#   
+#   if(length(unique(normalTumorMatrix[,1]))<length(normalTumorMatrix[,2]))
+#   {
+#     stop("normalTumorArray must contain one unique normal sample per tumor sample to segment allele B fraction.")
+#   }
+  
+
   #Lambda
   if(missing(Lambda) || is.null(Lambda))
     Lambda=c(seq(0.1,2,by=0.1),seq(2.2,5,by=0.2),seq(5.5,10,by=0.2),seq(11,16,by=1),seq(18,36,by=2),seq(40,80,by=4))
@@ -188,10 +199,10 @@ segFracBSignal=function(dataSetName,normalTumorArray,chromosome=1:22,method=c("c
     for(chr in chromosome)
     {
       #get the fracB for 1 chr
-      if(!singleStudy)
+     # if(!singleStudy)
         fracB=getFracBSignal(dataSetName,chromosome=chr,normalTumorArray,listOfFiles=name,verbose=verbose)
-      else
-        fracB=getFracBSignal(dataSetName,chromosome=chr,listOfFiles=name,verbose=verbose)
+      #else
+      #  fracB=getFracBSignal(dataSetName,chromosome=chr,listOfFiles=name,verbose=verbose)
 
       fracB=fracB[[paste0("chr",chr)]]$tumor
       gc()

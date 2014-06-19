@@ -299,7 +299,7 @@ normalTumorArray=normalTumorArray, createArchitecture=FALSE, savePlot=TRUE, tags
 @		
 			\paragraph{Single-Patient Analysis of allele B fraction}
 
-				The segmentation example (\ref{mainuse}) was run on the copy number signal, the allele B fraction can also be  segmented after some transformation. First, we omit the homozygous SNPs of the signal and then symmetrize around 0.5 the signal and multiply by $2$ to have values between $0$ and $1$ (a point $x$ become $2 * |x - 0.5|$)(see Figure \ref{figsymFracB}).
+				The segmentation example (\ref{mainuse}) was run on the copy number signal, the allele B fraction can also be  segmented after some transformation. First, we omit the homozygous SNPs of the signal and then symmetrize around 0.5 the signal and multiply by $2$ to have values between $0$ and $1$ (a point $x$ become $2 * |x - 0.5|$) \cite{mBAF}(see Figure \ref{figsymFracB}).
 
 
 				\begin{figure}[!h]
