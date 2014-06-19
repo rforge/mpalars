@@ -35,8 +35,8 @@ void copySTKArray2DVectorInSTDVector(STK::Array2DVector<int> const& stkvector, v
 
 RcppExport SEXP EMlasso(SEXP data, SEXP response, SEXP nbIndiv, SEXP nbVar, SEXP lambda, SEXP intercept, SEXP maxStep, SEXP burn, SEXP threshold, SEXP eps, SEXP epsCG)
 {
-  double t1,t2;
-  t1=clock();
+  //double t1,t2;
+  //t1=clock();
 
   //convert parameters
   int p(as<int>(nbVar)), n(as<int>(nbIndiv)), maxStepC(as<int>(maxStep)), burnC(as<int>(burn));
@@ -69,13 +69,11 @@ RcppExport SEXP EMlasso(SEXP data, SEXP response, SEXP nbIndiv, SEXP nbVar, SEXP
 
 
   //if lambdaC[0]=-1, we have to generate the lambda sequence with the same way as the glmnet package
-  bool genLambda = false;
   if(lambdaC[0] == -1)
   {
     STK::CVectorX Xty(p);
     Xty=x.transpose() * y;
 
-    genLambda = true;
     lambdaC.resize(100);
     int pos;
     //corrMax is the first lambda value in the lars sequence
@@ -100,22 +98,22 @@ RcppExport SEXP EMlasso(SEXP data, SEXP response, SEXP nbIndiv, SEXP nbVar, SEXP
   vector<int> indexTemp;
   vector<STK::Real> coefficientTemp;
 
-  t2=clock();
+  //t2=clock();
   //create EM
-  EM algo(p,burnC,epsC);
+  EM algo(maxStepC,burnC,epsC);
   Lasso lasso( &x, &y, lambdaC[0], thresholdC, epsCGC);
 
   //run for all lambda
   STK::CVectorX betaTemp(p);
-  for(int i=0; i<lambdaC.size(); i++)
+  for(int i = 0; i < (int) lambdaC.size(); i++)
   {
     //change the lambda
     lasso.setLambda(lambdaC[i]);
 
     //run algorithm
-    Chrono::start();
+    //Chrono::start();
     algo.run(&lasso);
-    t1=Chrono::elapsed();
+    //t1=Chrono::elapsed();
 
     //stock the new values
     copySTKVectorInSTDVector(lasso.currentBeta(), coefficientTemp);
@@ -140,7 +138,7 @@ RcppExport SEXP EMlasso(SEXP data, SEXP response, SEXP nbIndiv, SEXP nbVar, SEXP
     lasso.initializeBeta(betaTemp);
 
   }
-  t2=clock();
+  //t2=clock();
 
 
   return List::create(Named("variable")=wrap(pathSolutionIndex),Named("coefficient")=wrap(pathSolutionCoefficient),Named("lambda")=wrap(lambdaC)
@@ -151,8 +149,8 @@ RcppExport SEXP EMlasso(SEXP data, SEXP response, SEXP nbIndiv, SEXP nbVar, SEXP
 
 RcppExport SEXP EMfusedLasso(SEXP data, SEXP response, SEXP nbIndiv, SEXP nbVar, SEXP lambda1, SEXP lambda2, SEXP intercept, SEXP maxStep, SEXP burn, SEXP eps, SEXP eps0, SEXP epsCG)
 {
-  double t1,t2;
-  t1=clock();
+  //double t1,t2;
+  //t1=clock();
 
   //convert parameters
   int p(as<int>(nbVar)), n(as<int>(nbIndiv)), maxStepC(as<int>(maxStep)), burnC(as<int>(burn));
@@ -205,8 +203,8 @@ RcppExport SEXP EMfusedLasso(SEXP data, SEXP response, SEXP nbIndiv, SEXP nbVar,
 
 RcppExport SEXP EMlogisticLasso(SEXP data, SEXP response, SEXP nbIndiv, SEXP nbVar, SEXP lambda, SEXP intercept, SEXP maxStep, SEXP burn, SEXP threshold, SEXP eps, SEXP epsCG)
 {
-  double t1,t2;
-  t1=clock();
+  //double t1,t2;
+  //t1=clock();
 
   //convert parameters
   int p(as<int>(nbVar)), n(as<int>(nbIndiv)), maxStepC(as<int>(maxStep)), burnC(as<int>(burn));
@@ -270,14 +268,14 @@ RcppExport SEXP EMlogisticLasso(SEXP data, SEXP response, SEXP nbIndiv, SEXP nbV
   vector<int> indexTemp;
   vector<STK::Real> coefficientTemp;
 
-  t2=clock();
+  //t2=clock();
   //create EM
-  EM algo(p,burnC,epsC);
+  EM algo(maxStepC,burnC,epsC);
   LogisticLasso lasso( &x, &y, lambdaC[0], thresholdC, epsCGC);
 
   //run for all lambda
   STK::CVectorX betaTemp(p);
-  for(int i=0; i<lambdaC.size(); i++)
+  for(int i = 0; i < (int) lambdaC.size(); i++)
   {
     //change the lambda
     lasso.setLambda(lambdaC[i]);
@@ -285,7 +283,7 @@ RcppExport SEXP EMlogisticLasso(SEXP data, SEXP response, SEXP nbIndiv, SEXP nbV
     //run algorithm
     Chrono::start();
     algo.run(&lasso);
-    t1=Chrono::elapsed();
+    //t1=Chrono::elapsed();
 
     //stock the new values
     copySTKVectorInSTDVector(lasso.currentBeta(), coefficientTemp);
@@ -310,7 +308,7 @@ RcppExport SEXP EMlogisticLasso(SEXP data, SEXP response, SEXP nbIndiv, SEXP nbV
     lasso.initializeBeta(betaTemp);
 
   }
-  t2=clock();
+  //t2=clock();
 
 
   return List::create(Named("variable")=wrap(pathSolutionIndex),Named("coefficient")=wrap(pathSolutionCoefficient),Named("lambda")=wrap(lambdaC)
@@ -321,8 +319,8 @@ RcppExport SEXP EMlogisticLasso(SEXP data, SEXP response, SEXP nbIndiv, SEXP nbV
 
 RcppExport SEXP EMlogisticFusedLasso(SEXP data, SEXP response, SEXP nbIndiv, SEXP nbVar, SEXP lambda1, SEXP lambda2, SEXP intercept, SEXP maxStep, SEXP burn, SEXP eps, SEXP eps0, SEXP epsCG)
 {
-  double t1,t2;
-  t1=clock();
+  //double t1,t2;
+  //t1=clock();
 
   //convert parameters
   int p(as<int>(nbVar)), n(as<int>(nbIndiv)), maxStepC(as<int>(maxStep)), burnC(as<int>(burn));
@@ -375,8 +373,8 @@ RcppExport SEXP EMlogisticFusedLasso(SEXP data, SEXP response, SEXP nbIndiv, SEX
 
 RcppExport SEXP EMCVLasso(SEXP data, SEXP response, SEXP nbIndiv, SEXP nbVar, SEXP lambda, SEXP nbFolds, SEXP intercept, SEXP maxStep, SEXP burn, SEXP threshold, SEXP eps, SEXP epsCG)
 {
-  double t1,t2;
-  t1=clock();
+  //double t1,t2;
+  //t1=clock();
 
   //convert parameters from R to C
   int p(as<int>(nbVar)), n(as<int>(nbIndiv)), maxStepC(as<int>(maxStep)), burnC(as<int>(burn)), nbFoldsC(as<int>(nbFolds));
@@ -460,19 +458,19 @@ RcppExport SEXP EMCVLasso(SEXP data, SEXP response, SEXP nbIndiv, SEXP nbVar, SE
   minCV=lassocv.cv().minElt(pos);
 
 
-  t1=clock();
+  //t1=clock();
   //conversion from STK to std
   vector<double> cv(lambdaC.size()),cvError(lambdaC.size());
   STK::CVectorX stkCv(lambdaC.size()),stkCvError(lambdaC.size());
   stkCv=lassocv.cv();
   stkCvError=lassocv.cvError();
 
-  for(int i=1;i<=lambdaC.size();i++)
+  for(int i = 1; i <= (int) lambdaC.size();i++)
   {
     cv[i-1]=stkCv[i];
     cvError[i-1]=stkCvError[i];
   }
-  t2=clock();
+  //t2=clock();
 
 
   return List::create(Named("lambda")=wrap(lambdaC), Named("cv")=wrap(cv), Named("cvError")=wrap(cvError), Named("minCV")=wrap(minCV),Named("lambda.optimal")=wrap(lambdaC[pos-1]));
@@ -482,8 +480,8 @@ RcppExport SEXP EMCVLasso(SEXP data, SEXP response, SEXP nbIndiv, SEXP nbVar, SE
 
 RcppExport SEXP EMCVFusedLasso1D(SEXP data, SEXP response, SEXP nbIndiv, SEXP nbVar, SEXP lambda1, SEXP lambda2, SEXP optimL1, SEXP nbFolds, SEXP intercept, SEXP maxStep, SEXP burn, SEXP threshold, SEXP eps, SEXP epsCG)
 {
-  double t1,t2;
-  t1=clock();
+  //double t1,t2;
+  //t1=clock();
 
   //convert parameters
   int p(as<int>(nbVar)), n(as<int>(nbIndiv)), maxStepC(as<int>(maxStep)), burnC(as<int>(burn)), nbFoldsC(as<int>(nbFolds));
@@ -580,7 +578,7 @@ RcppExport SEXP EMCVFusedLasso1D(SEXP data, SEXP response, SEXP nbIndiv, SEXP nb
   int pos;
   minCV=fusedlassocv.cv().minElt(pos);
 
-  t1=clock();
+  //t1=clock();
   //conversion from STK to std vector
   int indexSize = lambdaC.size();
 
@@ -594,15 +592,15 @@ RcppExport SEXP EMCVFusedLasso1D(SEXP data, SEXP response, SEXP nbIndiv, SEXP nb
     cv[i-1]=stkCv[i];
     cvError[i-1]=stkCvError[i];
   }
-  t2=clock();
+  //t2=clock();
 
   return List::create(Named("lambda")=wrap(lambdaC), Named("cv")=wrap(cv), Named("cvError")=wrap(cvError), Named("minCV")=wrap(minCV),Named("lambda.optimal")=wrap(lambdaC[pos-1]));
 }
 
 RcppExport SEXP EMCVFusedLasso2D(SEXP data, SEXP response, SEXP nbIndiv, SEXP nbVar, SEXP lambda1, SEXP lambda2, SEXP nbFolds, SEXP intercept, SEXP maxStep, SEXP burn, SEXP threshold, SEXP eps, SEXP epsCG)
 {
-  double t1,t2;
-  t1=clock();
+  //double t1,t2;
+  //t1=clock();
 
   //convert parameters
   int p(as<int>(nbVar)), n(as<int>(nbIndiv)), maxStepC(as<int>(maxStep)), burnC(as<int>(burn)), nbFoldsC(as<int>(nbFolds));
@@ -691,7 +689,7 @@ RcppExport SEXP EMCVFusedLasso2D(SEXP data, SEXP response, SEXP nbIndiv, SEXP nb
   lambdaMin[0] = lambda1C[pos/lambda1C.size()];
   lambdaMin[1] = lambda2C[(pos%lambda2C.size())-1];
 
-  t1=clock();
+  //t1=clock();
   //conversion from stk to std
   int indexSize = lambda1C.size() * lambda2C.size();
   vector<double> cv(indexSize),cvError(indexSize);
@@ -704,7 +702,7 @@ RcppExport SEXP EMCVFusedLasso2D(SEXP data, SEXP response, SEXP nbIndiv, SEXP nb
     cv[i-1]=stkCv[i];
     cvError[i-1]=stkCvError[i];
   }
-  t2=clock();
+  //t2=clock();
 
   return List::create(Named("cv")=wrap(cv), Named("cvError")=wrap(cvError), Named("minCV")=wrap(minCV),Named("lambda.optimal")=wrap(lambdaMin));
 }
@@ -715,8 +713,8 @@ RcppExport SEXP EMCVFusedLasso2D(SEXP data, SEXP response, SEXP nbIndiv, SEXP nb
 
 RcppExport SEXP EMCVLogisticLasso(SEXP data, SEXP response, SEXP nbIndiv, SEXP nbVar, SEXP lambda, SEXP nbFolds, SEXP intercept, SEXP maxStep, SEXP burn, SEXP threshold, SEXP eps, SEXP epsCG)
 {
-  double t1,t2;
-  t1=clock();
+  //double t1,t2;
+  //t1=clock();
 
   //convert parameters from R to C
   int p(as<int>(nbVar)), n(as<int>(nbIndiv)), maxStepC(as<int>(maxStep)), burnC(as<int>(burn)), nbFoldsC(as<int>(nbFolds));
@@ -800,19 +798,19 @@ RcppExport SEXP EMCVLogisticLasso(SEXP data, SEXP response, SEXP nbIndiv, SEXP n
   minCV=lassocv.cv().minElt(pos);
 
 
-  t1=clock();
+  //t1=clock();
   //conversion from STK to std
   vector<double> cv(lambdaC.size()),cvError(lambdaC.size());
   STK::CVectorX stkCv(lambdaC.size()),stkCvError(lambdaC.size());
   stkCv=lassocv.cv();
   stkCvError=lassocv.cvError();
 
-  for(int i=1;i<=lambdaC.size();i++)
+  for(int i=1; i <= (int) lambdaC.size(); i++)
   {
     cv[i-1]=stkCv[i];
     cvError[i-1]=stkCvError[i];
   }
-  t2=clock();
+  //t2=clock();
 
 
   return List::create(Named("lambda")=wrap(lambdaC), Named("cv")=wrap(cv), Named("cvError")=wrap(cvError), Named("minCV")=wrap(minCV),Named("lambda.optimal")=wrap(lambdaC[pos-1]));
@@ -822,8 +820,8 @@ RcppExport SEXP EMCVLogisticLasso(SEXP data, SEXP response, SEXP nbIndiv, SEXP n
 
 RcppExport SEXP EMCVLogisticFusedLasso1D(SEXP data, SEXP response, SEXP nbIndiv, SEXP nbVar, SEXP lambda1, SEXP lambda2, SEXP optimL1, SEXP nbFolds, SEXP intercept, SEXP maxStep, SEXP burn, SEXP threshold, SEXP eps, SEXP epsCG)
 {
-  double t1,t2;
-  t1=clock();
+  //double t1,t2;
+  //t1=clock();
 
   //convert parameters
   int p(as<int>(nbVar)), n(as<int>(nbIndiv)), maxStepC(as<int>(maxStep)), burnC(as<int>(burn)), nbFoldsC(as<int>(nbFolds));
@@ -920,7 +918,7 @@ RcppExport SEXP EMCVLogisticFusedLasso1D(SEXP data, SEXP response, SEXP nbIndiv,
   int pos;
   minCV=fusedlassocv.cv().minElt(pos);
 
-  t1=clock();
+  //t1=clock();
   //conversion from STK to std vector
   int indexSize = lambdaC.size();
 
@@ -934,15 +932,15 @@ RcppExport SEXP EMCVLogisticFusedLasso1D(SEXP data, SEXP response, SEXP nbIndiv,
     cv[i-1]=stkCv[i];
     cvError[i-1]=stkCvError[i];
   }
-  t2=clock();
+  //t2=clock();
 
   return List::create(Named("lambda")=wrap(lambdaC), Named("cv")=wrap(cv), Named("cvError")=wrap(cvError), Named("minCV")=wrap(minCV),Named("lambda.optimal")=wrap(lambdaC[pos-1]));
 }
 
 RcppExport SEXP EMCVLogisticFusedLasso2D(SEXP data, SEXP response, SEXP nbIndiv, SEXP nbVar, SEXP lambda1, SEXP lambda2, SEXP nbFolds, SEXP intercept, SEXP maxStep, SEXP burn, SEXP threshold, SEXP eps, SEXP epsCG)
 {
-  double t1,t2;
-  t1=clock();
+  //double t1,t2;
+  //t1=clock();
 
   //convert parameters
   int p(as<int>(nbVar)), n(as<int>(nbIndiv)), maxStepC(as<int>(maxStep)), burnC(as<int>(burn)), nbFoldsC(as<int>(nbFolds));
@@ -1030,7 +1028,7 @@ RcppExport SEXP EMCVLogisticFusedLasso2D(SEXP data, SEXP response, SEXP nbIndiv,
   lambdaMin[0] = lambda1C[pos/lambda1C.size()];
   lambdaMin[1] = lambda2C[(pos%lambda2C.size())-1];
 
-  t1=clock();
+  //t1=clock();
   //conversion from stk to std
   int indexSize = lambda1C.size() * lambda2C.size();
   vector<double> cv(indexSize),cvError(indexSize);
@@ -1043,7 +1041,7 @@ RcppExport SEXP EMCVLogisticFusedLasso2D(SEXP data, SEXP response, SEXP nbIndiv,
     cv[i-1]=stkCv[i];
     cvError[i-1]=stkCvError[i];
   }
-  t2=clock();
+  //t2=clock();
 
   return List::create(Named("cv")=wrap(cv), Named("cvError")=wrap(cvError), Named("minCV")=wrap(minCV),Named("lambda.optimal")=wrap(lambdaMin));
 }
