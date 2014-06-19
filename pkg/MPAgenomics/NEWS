@@ -1,3 +1,8 @@
+Version 1.0.4 (19-06-2014)
+- Vignette bibtex correction
+- Modification of allele B fraction segmentation for single study case
+- Modification of slope heuristic method for cghseg
+
 Version 1.0.3 (15-05-2014)
 - Add cghseg method for segmentation.
 - No more export of PELT and PELTaroma. Use segmentation and segmentationAroma instead.

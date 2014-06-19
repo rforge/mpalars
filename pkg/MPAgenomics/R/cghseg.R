@@ -8,6 +8,7 @@ modelSelection <- function(ERM, n, C)
   return(DHat)
 }
 
+
 # Method from Birge Massart to find an optimal segmentation of cghseg results.
 #
 # @param res output from cghseg segmentation (segmeanCO)
@@ -36,6 +37,34 @@ bestSegmentationBM <- function(res,n)
   DhatBest <- modelSelection(ERM, n ,lambda)
   mhatBest <- res$t.est[DhatBest, 1: DhatBest] 
   return(list(D = DhatBest, m =  mhatBest, C = lambda))
+}
+
+# Second Method from Birge Massart to find an optimal segmentation of cghseg results.
+#
+# @param lambdaList vector of constants in decreasing order
+# @param resCGHSeg output from cghseg segmentation (segmeanCO)
+# @param n length of signal
+#
+# @return a list  containing
+# \describe{
+#   \item{D}{number of segments}
+#   \item{m}{breakpoints}
+#   \item{C}{penalty parameter}
+#}
+#
+# @examples
+# profil=c(rnorm(20,0,0.3),rnorm(10,-1,0.3),rnorm(40,1,0.3),rnorm(20,0,0.3))
+# Kmax=10
+# rescghseg <- cghseg:::segmeanCO(profil, Kmax=Kmax)
+# bestSegmentation(seq(10,0,length=1000),rescghseg,length(profil))
+#
+bestSegmentation <- function(lambdaList,resCGHSeg,n)
+{
+  Dhat <- sapply(lambdaList, modelSelection, ERM = resCGHSeg$J.est, n = n)
+  maxJumpInDhat <- which.max(diff(Dhat))+1
+  DhatBest <- modelSelection(resCGHSeg$J.est, n ,lambdaList[maxJumpInDhat]*2)
+  mhatBest <- resCGHSeg$t.est[DhatBest, 1:DhatBest]
+  return(list(D = DhatBest, m =  mhatBest, C = lambdaList[maxJumpInDhat]*2))
 }
 
 
@@ -117,7 +146,9 @@ cghseg=function(signal,Kmax=10,position=NULL,plot=TRUE,verbose=TRUE)
   segmentation=cghseg:::segmeanCO(signal, Kmax=Kmax)
   
   #find best segmentation
-  best=bestSegmentationBM(segmentation,length(signal))
+  #best=bestSegmentationBM(segmentation,length(signal))
+  lambdalist=seq(var(signal)*10,0,length=1000)
+  best=bestSegmentation(lambdalist,segmentation,length(signal))
   
   cpt=c(0,best$m)
   means=unlist(lapply(1:length(best$m),FUN=function(i){return(mean(signal[(cpt[i]+1):cpt[i+1]]))}))

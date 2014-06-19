@@ -6,7 +6,7 @@ author = meta$Author
 title = meta$Title
 
 citEntry(entry = "unpublished",
-         title = "MPAgenomics : An R package for multi-patients analysis of genomic markers",
+         title = "MPAgenomics : An R package for multi-patient analysis of genomic markers",
          author = personList(as.person("Quentin Grimonprez"),
                              as.person("Alain Celisse"),
                              as.person("Meyling Cheok"),
@@ -15,4 +15,4 @@ citEntry(entry = "unpublished",
          year = "2014",
          note = "Preprint",
          url = "http://hal.inria.fr/hal-00933614",
-         textVersion = paste0("Quentin Grimonprez, Alain Celisse, Meyling Cheok, Martin Figeac, Guillemette Marot"," (2014). ", "MPAgenomics : An R package for multi-patients analysis of genomic markers",". "))
+         textVersion = paste0("Quentin Grimonprez, Alain Celisse, Meyling Cheok, Martin Figeac, Guillemette Marot"," (2014). ", "MPAgenomics : An R package for multi-patient analysis of genomic markers",". "))
