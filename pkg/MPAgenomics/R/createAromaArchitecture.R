@@ -143,7 +143,7 @@ copyChipFiles=function(pathToChipFiles,chipName,path,verbose)
     
   lengthChipName=nchar(chipName)
   
-  lapply(fileNames,FUN=function(fileName)
+  successCopy=lapply(fileNames,FUN=function(fileName)
   {
     #check the extension
     if(tolower(substr(fileName,nchar(fileName)-3,nchar(fileName)))%in%validExtension)
@@ -165,16 +165,25 @@ copyChipFiles=function(pathToChipFiles,chipName,path,verbose)
         
         if(verbose)
           cat("\t DONE.\n")
+        return(TRUE)
       }
       else
       {
         if(verbose)
           cat("File name: ",fileName,"doesn't correspond with specified chip name :",chipName ,"\n")
+        return(FALSE)
       }
     }
-
+    else
+    {
+      return(FALSE)
+    }
+    
   }
   )#end lapply
+  
+  if(sum(unlist(successCopy))==0)
+    cat("No chip files copied.")
   
   return(invisible(TRUE))   
 }
@@ -196,8 +205,8 @@ copyChipFiles=function(pathToChipFiles,chipName,path,verbose)
     cat("install.packages(\"aroma.affymetrix\")\n")
     allpkg=FALSE
   }
-  else
-    cat("Package aroma.affymetrix loaded.\n")
+#   else
+#     cat("Package aroma.affymetrix loaded.\n")
   
   actualPath=getwd()
   setwd(path)
@@ -297,8 +306,8 @@ createArchitecture=function(dataSetName,chipType,dataSetPath,chipFilesPath,path=
     cat("install.packages(\"aroma.affymetrix\")\n")
     allpkg=FALSE
   }
-  else
-    cat("Package aroma.affymetrix loaded.\n")
+#   else
+#     cat("Package aroma.affymetrix loaded.\n")
   
    createEmptyArchitecture(dataSetName,chipType,path,verbose)
    copyChipFiles(chipFilesPath,chipType,path,verbose)

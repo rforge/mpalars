@@ -1276,6 +1276,6 @@ dataResponse=drop(dataMatrix%*%sample(c(rep(0,90),rep(1,10))))
 res=variableSelection(dataMatrix,dataResponse,nbFolds=5,loss="linear",plot=TRUE)
 @		
 \nocite{*}
-\bibliographystyle{abbrv}
+\bibliographystyle{apalike}
 \bibliography{MPAgenomics} 	
 \end{document}
