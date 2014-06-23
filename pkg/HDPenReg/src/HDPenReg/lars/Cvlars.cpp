@@ -231,7 +231,7 @@ namespace HD
     }
   }
 
-
+#ifdef SUPPORT_OPENMP
   void Cvlars::run2()
    {
      //search the first and last fold with the same size
@@ -315,6 +315,11 @@ namespace HD
      cvError_ = cvError_.sqrt();
 
    }
-
+#else
+  void Cvlars::run2()
+   {
+     run();
+   }
+#endif
 
 }//end namespace HD

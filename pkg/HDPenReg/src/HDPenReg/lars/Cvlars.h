@@ -38,8 +38,10 @@
 
 #include "Lars.h"
 #include "functions.h"
-#include <omp.h>
 
+#ifdef SUPPORT_OPENMP
+  #include <omp.h>
+#endif
 
 namespace HD
 {

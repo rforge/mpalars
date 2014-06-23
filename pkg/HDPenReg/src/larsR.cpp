@@ -198,7 +198,12 @@ RcppExport SEXP cvlars(SEXP data, SEXP response, SEXP nbIndiv, SEXP nbVar, SEXP 
   Cvlars cvlars(x,y,nbFoldC,indexC,maxStepC,interceptC,epsC);
   if(partitionC[0]!=-1)
     cvlars.setPartition(partitionC);
+    
+#ifdef SUPPORT_OPENMP   
+  cvlars.run2();
+#else
   cvlars.run();
+#endif
   //t2=clock();
 
   //extract and convert results

@@ -248,7 +248,7 @@ class Variable : public IVariable
       typename String::size_type maxlength = with_name ? this->name().size() : 0;
       // loop over the values
       for (int i=this->firstIdx(); i<=this->lastIdx(); i++)
-      { maxlength = std::max(maxlength, this->eltAsString<Type>(i).size() );}
+      { maxlength = std::max(maxlength, this->template eltAsString<Type>(i).size() );}
       return int(maxlength);
     }
     /** @return the number of missing values in the variable */
@@ -374,7 +374,7 @@ inline void Variable<Type>::exportAsString( Variable< String >& V) const
   V.resize(this->range());
   V.setName(this->name());
   for (int i=this->firstIdx(); i<=this->lastIdx(); i++)
-  { V[i] = this->eltAsString<Type>(i);}
+  { V[i] = this->template eltAsString<Type>(i);}
 }
 /** Operator << : overwrite the Variable by converting the strings
  *  contained in V into the String.

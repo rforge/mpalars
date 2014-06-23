@@ -1,6 +1,6 @@
 Package: HDPenReg
-Version: 0.89.4
-Date: 2014-06-19
+Version: 0.89.5
+Date: 2014-06-23
 Title: Algorithms for lasso and fused-lasso problems.
 Authors@R: c(person("Quentin", "Grimonprez", role = c("aut","cre"), email =
     "quentin.grimonprez@inria.fr"), person("Serge", "Iovleff", role = "ctb"))
@@ -16,3 +16,4 @@ Description: This package contains an implementation of the lars algorithm [1],
 License: GPL (>= 2)
 LinkingTo: Rcpp
 Roxygen: list(wrap = FALSE)
+SystemRequirements: GNU make

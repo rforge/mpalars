@@ -1,7 +1,6 @@
 ## lars makefile for R package
 
 include $(R_HOME)/etc${R_ARCH}/Makeconf
-
 all:lib
 
 #-----------------------------------------------------------------------
