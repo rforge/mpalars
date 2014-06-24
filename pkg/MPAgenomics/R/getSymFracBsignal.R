@@ -176,19 +176,12 @@ getSymFracBSignal=function(dataSetName,file,chromosome,normalTumorArray,verbose=
     
     #keep only the normal files
     normalFiles=allFiles[which(status=="normal")]
-    
+
     rm(compFiles,allFiles)
+
 #   }   
 
-#     normalTumorMatrix=getNormalTumorMatrix(file, normalTumorArray)
-#     #keep position of normal samples
-#     pos=normalTumorMatrix[,1]
-# 
-#     if(length(unique(normalTumorMatrix[,1]))<length(normalTumorMatrix[,2]))
-#     {
-#       stop("normalTumorArray must contain one unique normal sample per tumor sample to symmetrize allele B fraction.")
-#     }
-#   
+
   ########### END CHECK ARGUMENT
   
   ####################
@@ -240,20 +233,10 @@ getSymFracBSignal=function(dataSetName,file,chromosome,normalTumorArray,verbose=
     units=units[ind]
     unitNames=unitNames[ind]
     
-    #get the fracB signal
-#     if(singleStudy)
-#     {
-#       fracB=getFracBSignalSingleStudy(ds,units,pos)
-#       fracB$tumor=symmetrizeFracB(fracB$tumor)
-#     }
-#     else
-#     {
-      fracB=getFracBSignalPairedStudy(ds,units,normalTumorArray,normalFiles)
-      fracB$normal=symmetrizeFracB(fracB$normal)
-      fracB$tumor=symmetrizeFracB(fracB$tumor)
-      symFracB[[paste0("chr",chr)]]$normal=data.frame(chromosome=rep(chr,length(posChr)),position=posChr,fracB$normal,featureNames=unitNames)
-#     }
-    
+    fracB=getFracBSignalPairedStudy(ds,units,normalTumorArray,normalFiles)
+    fracB$normal=symmetrizeFracB(fracB$normal)
+    fracB$tumor=symmetrizeFracB(fracB$tumor)
+    symFracB[[paste0("chr",chr)]]$normal=data.frame(chromosome=rep(chr,length(posChr)),position=posChr,fracB$normal,featureNames=unitNames)
     symFracB[[paste0("chr",chr)]]$tumor=data.frame(chromosome=rep(chr,length(posChr)),position=posChr,fracB$tumor,featureNames=unitNames)
   }
 

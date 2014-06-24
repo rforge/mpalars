@@ -162,7 +162,7 @@ segFracBSignal=function(dataSetName,normalTumorArray,chromosome=1:22,method=c("c
     
     pos=pos[which(tag=="normal")]
 
-    if (length(pos==length([which(tag=="tumor")]))
+    if (length(pos)==length(which(tag=="tumor")))
     {
       stop("normalTumorArray must contain one unique normal sample per tumor sample to extract allele B fraction.")
     }
