@@ -44,7 +44,10 @@ LIB_STKPP_A = libSTKpp.a
 
 #-----------------------------------------------------------------------
 # specific flags for R packages
-#include $(R_HOME)/etc${R_ARCH}/Makeconf
+
+ifeq ($(WIN),64)
+  include $(R_HOME)/etc${R_ARCH}/Makeconf
+endif
 STK_FLAGS = $(CPICFLAGS) -ansi
 
 #-----------------------------------------------------------------------
