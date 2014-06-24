@@ -823,7 +823,7 @@ savePlot=TRUE,verbose=TRUE)
 				Parameters & Description\\
 				\hline
 				\texttt{dataSetName} & The name of the data-set folder.\\
-				\texttt{normalTumorArray} & Only in the case of normal-tumor study. A csv file or a data.frame\\
+				\texttt{normalTumorArray} & A csv file or a data.frame\\
 				~~ & containing the mapping between normal and tumor files(Fig. \ref{normalTumorArray}).\\
 				\texttt{chromosome} & A vector with the chromosomes to be segmented.\\
 				\texttt{Lambda} & A vector containing all the penalization values to test for the segmentation.\\
