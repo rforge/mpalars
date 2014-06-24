@@ -161,19 +161,15 @@ segFracBSignal=function(dataSetName,normalTumorArray,chromosome=1:22,method=c("c
     tag=getStatus(allFiles,normalTumorArray)
     
     pos=pos[which(tag=="normal")]
+
+    if (length(pos==length([which(tag=="tumor")]))
+    {
+      stop("normalTumorArray must contain one unique normal sample per tumor sample to extract allele B fraction.")
+    }
+
     
 #   }
-  
-#   normalTumorMatrix=getNormalTumorMatrix(listOfFiles, normalTumorArray)
-#   #keep position of normal samples
-#   pos=normalTumorMatrix[,1]
-#   
-#   if(length(unique(normalTumorMatrix[,1]))<length(normalTumorMatrix[,2]))
-#   {
-#     stop("normalTumorArray must contain one unique normal sample per tumor sample to segment allele B fraction.")
-#   }
-  
-
+ 
   #Lambda
   if(missing(Lambda) || is.null(Lambda))
     Lambda=c(seq(0.1,2,by=0.1),seq(2.2,5,by=0.2),seq(5.5,10,by=0.2),seq(11,16,by=1),seq(18,36,by=2),seq(40,80,by=4))

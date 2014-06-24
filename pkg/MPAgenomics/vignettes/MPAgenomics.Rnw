@@ -655,7 +655,9 @@ createArchitecture("datatest1","GenomeWideSNP_6",celPATH,chipPATH,".",TRUE,"Full
 		
 		
 		~~\\
-		The next getter, \texttt{getSymFracBSignal}, returns the symmetrized allele B fraction only for heterozygous positions. To symmetrize the allele B fraction the transformation $x\mapsto 2*|x-0.5|$ is applied. It centers the data in $0.5$ corresponding to heterozygous allele B fraction then symmetrize and multiply by $2$ to have a signal between $0$ and $1$
+		The next getter, \texttt{getSymFracBSignal}, returns the symmetrized allele B fraction only for heterozygous positions. To symmetrize the allele B fraction the transformation $x\mapsto 2*|x-0.5|$ is applied. It centers the data in $0.5$ corresponding to heterozygous allele B fraction then symmetrize and multiply by $2$ to have a signal between $0$ and $1$. \\
+    
+    This method can be run only in a normal-tumor case, and each tumor file must match with a unique normal file.
 		
 		\begin{verbatim}	
 		getSymFracBSignal(dataSetName,chromosome,normalTumorArray,file,verbose=TRUE)
@@ -668,7 +670,7 @@ createArchitecture("datatest1","GenomeWideSNP_6",celPATH,chipPATH,".",TRUE,"Full
 				\hline
 				\texttt{dataSetName} & The name of the data-set folder.\\
 				\texttt{chromosome} & A vector with the chromosomes for which the symetrized signal will be extracted .\\
-				\texttt{normalTumorArray} & Only in the case of normal-tumor study. A csv file or a data.frame\\
+				\texttt{normalTumorArray} & A csv file or a data.frame \\
 				~~ & containing the mapping between normal and tumor files(Fig. \ref{normalTumorArray}).\\
 				\texttt{file} & The name of the file in dataSetName folder for which\\
 				~ & the symetrized signal will be extracted .\\
@@ -697,15 +699,10 @@ createArchitecture("datatest1","GenomeWideSNP_6",celPATH,chipPATH,".",TRUE,"Full
 #normal-tumor study
 CNdata2=getCopyNumberSignal("datatest2",5,normalTumorArray=normalTumorArray,TRUE)
 fracBdata2=getFracBSignal("datatest2",5,normalTumorArray=normalTumorArray)
-symFracB2=getSymFracBSignal("datatest2",5,
-file="GIGAS_g_GAINmixHapMapAffy2_GenomeWideEx_6_A01_31218",
-normalTumorArray=normalTumorArray)
 
 #study without reference
 CNdata1=getCopyNumberSignal("datatest1",5,onlySNP=TRUE)	
 fracBdata1=getFracBSignal("datatest1",5)		
-symFracB1=getSymFracBSignal("datatest1",5,
-file="GIGAS_g_GAINmixHapMapAffy2_GenomeWideEx_6_A01_31218")
 @
 		
 		To access the copy-number or allele B fraction profiles, run:
@@ -714,8 +711,6 @@ CNdata2$chr5
 fracBdata2$chr5$tumor
 fracBdata2$chr5$normal
 fracBdata1$chr5$tumor
-symFracB1$chr5
-symFracB2$chr5
 @
 				
 
@@ -814,8 +809,8 @@ listOfFiles=file)
 		You will obtain the results shown in figures \ref{outpelt} \& \ref{outbedpelt} for one profile.
 		
 		~~\\
-	
-		You can also segment the symmetrized allele B fraction with the function \texttt{segFracBSignal}:
+	  
+		For a normal-tumor study where each tumor file must match with a unique normal file. You can also segment the symmetrized allele B fraction with the function \texttt{segFracBSignal}:
 		 	
 		\begin{verbatim}	
 segFracBSignal(dataSetName,normalTumorArray,chromosome=1:22,Lambda=NULL,listOfFiles=NULL,
@@ -852,15 +847,7 @@ savePlot=TRUE,verbose=TRUE)
 			\item \textbf{probes} Number of probes in the segment.
 			\item \textbf{means} Mean of the segment.
 		\end{itemize}
-		
-		You can run the following code to test the function
-<<eval=FALSE>>=
-#run the segmentation
-segfracB=segFracBSignal("datatest1",chromosome=c(1,5))
-#print summary of segmentation
-segfracB
-@					
-	
+			
 	\subsection{For any data provided in matrix}	
 		If you have your own normalized data stored in a matrix, you can use the \texttt{segmentation} function to perform the segmentation with the parameter choice proposed in \texttt{MPAgenomics}.
 	
