@@ -538,12 +538,11 @@ namespace HD
   void Lars::run()
   {
 #ifdef VERBOSE
-      cout<<"######################################"<<endl;
-      cout<<"########### LARS ALGORITHM ###########"<<endl;
-      cout<<"######################################"<<endl<<endl;
-#endif
-
+    cout<<"######################################"<<endl;
+    cout<<"########### LARS ALGORITHM ###########"<<endl;
+    cout<<"######################################"<<endl<<endl;
     Chrono::start();
+#endif
 
     //initialization();
 
@@ -675,12 +674,13 @@ namespace HD
         //path_.states(step_).printCoeff();
       }
     }
-    Real t1 = Chrono::elapsed();
+
 
 #ifdef VERBOSE
-      cout<<endl<<"Algorithm finished in "<<t1<<"s"<<endl;
-      cout<<"Number of steps: "<<step_<<endl;
-      cout<<"Number of active variables: "<<nbActiveVariable_<<endl;
+    Real t1 = Chrono::elapsed();
+    cout<<endl<<"Algorithm finished in "<<t1<<"s"<<endl;
+    cout<<"Number of steps: "<<step_<<endl;
+    cout<<"Number of active variables: "<<nbActiveVariable_<<endl;
 #endif
 
   }

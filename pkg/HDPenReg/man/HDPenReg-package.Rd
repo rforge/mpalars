@@ -6,16 +6,16 @@
 \alias{HDPenReg-package,}
 \title{Algorithms for lasso and fused-lasso problems.}
 \description{
-This package contains an implementation of the lars algorithm [1],
-for the lasso and fusion penalization. It works even if the number of
-covariate is greater than the number of individuals.
+This package contains algorithms for lasso and fused-lasso problems.
+It contains an implementation of the lars algorithm [1],
+for the lasso and fusion penalization and EM-based algorithms for (logistic) lasso and fused-lasso.
 }
 \details{
 \tabular{ll}{
 Package: \tab HDPenReg\cr
 Type: \tab Package\cr
 Version: \tab 0.89.5\cr
-Date: \tab 2014-06-23\cr
+Date: \tab 2014-06-24\cr
 License: \tab GPL (>=2) \cr
 }
 

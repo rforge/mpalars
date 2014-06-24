@@ -1,6 +1,6 @@
 ## lars makefile for R package
 
-include $(R_HOME)/etc${R_ARCH}/Makeconf
+#include $(R_HOME)/etc${R_ARCH}/Makeconf
 all:lib
 
 #-----------------------------------------------------------------------
@@ -34,7 +34,7 @@ OBJS= $(SRCS:./lassoModels/%.cpp=%.o)
 # rule for compiling the cpp files
 #
 %.o: ./lassoModels/%.cpp
-	$(CXX) $(CXXFLAGS) ${CPICFLAGS} $(STK_INC_DIR) $< -c -o $@
+	$(CXX) $(CXXFLAGS)  ${CPICFLAGS} $(STK_INC_DIR) $< -c -o $@
 
 #-----------------------------------------------------------------------
 # The rule lib create the library 

@@ -34,10 +34,10 @@ STKPPDIR = ./stkpp
 STKPPLIBDIR = $(STKPPDIR)/lib
 STKPPLIB = $(STKPPLIBDIR)/libSTKpp.a
 
+export
+
 ## Use the R_HOME indirection to support installations of multiple R version
 PKG_LIBS = `$(R_HOME)/bin/Rscript -e "Rcpp:::LdFlags()"` $(SHLIB_OPENMP_CXXFLAGS) $(PKGLIB) $(STKPPLIB)
-PKG_CPPFLAGS +=  $(SHLIB_OPENMP_CXXFLAGS)
-#PKG_CPPFLAGS += -I./
 
 .PHONY: all pkglib
 

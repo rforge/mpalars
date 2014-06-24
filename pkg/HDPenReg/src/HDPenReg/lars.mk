@@ -1,6 +1,6 @@
 ## lars makefile for R package
 
-include $(R_HOME)/etc${R_ARCH}/Makeconf
+#include $(R_HOME)/etc${R_ARCH}/Makeconf
 all:lib
 
 #-----------------------------------------------------------------------
@@ -31,7 +31,7 @@ OBJS= $(SRCS:./lars/%.cpp=%.o)
 # rule for compiling the cpp files
 #
 %.o: ./lars/%.cpp
-	$(CXX) $(CXXFLAGS) ${CPICFLAGS} -fopenmp ${STK_INC_DIR} $< -c -o $@
+	$(CXX) $(CXXFLAGS)  ${CPICFLAGS} -fopenmp ${STK_INC_DIR} $< -c -o $@
 
 #-----------------------------------------------------------------------
 # The rule lib create the library 
