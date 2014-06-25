@@ -34,21 +34,13 @@
 # as ./stkpp/makevars in replacement of the original makevars.
 #
 #-----------------------------------------------------------------------
-# compilers
-CC 		= gcc
-CXX		= g++
-
-#-----------------------------------------------------------------------
 # Name of the STK++ library
 LIB_STKPP_A = libSTKpp.a
 
 #-----------------------------------------------------------------------
 # specific flags for R packages
 
-ifeq ($(WIN),64)
-  include $(R_HOME)/etc${R_ARCH}/Makeconf
-endif
-STK_FLAGS = $(CPICFLAGS) -ansi
+#STK_FLAGS = $(CPICFLAGS) -ansi
 
 #-----------------------------------------------------------------------
 # Uncomment the next line if you want to have 0 based arrays 
@@ -57,7 +49,7 @@ STK_FLAGS = $(CPICFLAGS) -ansi
 #-----------------------------------------------------------------------
 # specific C flags
 # long long are available
-CFLAGS   = -Wno-long-long
+#CFLAGS   = -Wno-long-long
 
 
 

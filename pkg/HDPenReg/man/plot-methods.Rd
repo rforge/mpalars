@@ -5,7 +5,7 @@
 \alias{plot-methods}
 \title{plot methods for LarsPath object}
 \usage{
-\S4method{plot}{LarsPath}(x, sep.line = TRUE, ...)
+\S4method{plot}{LarsPath,ANY}(x, sep.line = TRUE, ...)
 }
 \arguments{
 \item{x}{LarsPath object}

@@ -14,8 +14,8 @@ for the lasso and fusion penalization and EM-based algorithms for (logistic) las
 \tabular{ll}{
 Package: \tab HDPenReg\cr
 Type: \tab Package\cr
-Version: \tab 0.89.5\cr
-Date: \tab 2014-06-24\cr
+Version: \tab 0.89.6\cr
+Date: \tab 2014-06-25\cr
 License: \tab GPL (>=2) \cr
 }
 

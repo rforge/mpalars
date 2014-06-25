@@ -1,8 +1,4 @@
 ## lars makefile for R package
-
-ifeq ($(WIN),64)
-  include $(R_HOME)/etc${R_ARCH}/Makeconf
-endif
 all:lib
 
 #-----------------------------------------------------------------------
