@@ -30,7 +30,7 @@
 		This package provides functions to preprocess and analyze genomic data. Markers refer to SNPs or copy number variations which are designed on the arrays. 
     \texttt{MPAgenomics} is devoted to: $(i)$ efficient segmentation and $(ii)$ genomic marker selection from multi-patient copy number and SNP data profiles.\\
     
-    For both types of analyses, a pre-processing step (section \ref{sec:norm}) is proposed as a wrapper of \texttt{aroma.*} packages \cite{aroma}\cite{affy}. 
+    For both types of analyses, a pre-processing step (section \ref{sec:norm}) is proposed as a wrapper of \texttt{aroma.*} packages \cite{aroma}\cite{affy}\cite{aromasite}. 
 		This enables to keep maximum information from the original signals and improve the multi-patient analysis. In particular, this is useful to keep quantitative data for SNPs rather than usual genotype calls (AA, AB or BB) when these states are not relevant (eg in cancer studies where the number of copies differs from two copies). Note that the use of \texttt{aroma.*} packages \cite{aroma} implies that the pre-processing step is only available for Affymetrix DNA chips. The other functionalities of the package \texttt{MPAgenomics} can however be used independently and such procedures are explained in the sections which detail each step of the proposed analysis. 
     
     Efficient segmentation is proposed by refining the parameter choice of \textsc{Pelt} segmentation \cite{pelt} originally implemented in the \texttt{changepoint} package \cite{peltR}.  \texttt{MPAgenomics} offers a pipeline to perform normalization, segmentation and calling at the same time.
@@ -722,17 +722,8 @@ fracBdata1$chr5$tumor
   The first one wraps the \texttt{cghseg} package which fits a Gaussian maximum-likelihood piecewise constant smoothing model \cite{cghsegb} using pruned dynamic programming \cite{cghseg}. When the user chooses this method, \texttt{MPAgenomics} selects the number of segments with the slope heuristic \cite{heurpente}. 
   
   The second segmentation approach uses the PELT method of the \texttt{cpt.mean} function from \texttt{changepoint} package \cite{peltR}.
-	In the initial PELT method, the penalty is $\log(n)$ with $n$ the length of the signal. When the user chooses this method, \texttt{MPAgenomics} suggests another calibration for the penalty parameter. The PELT method is run with a penalty $\lambda \times \log(n)$ for a range of $\lambda$. Then, the evolution of the number of segments is plotted with regards to the $\lambda$ parameter (Fig \ref{plateau}). 
-	
-	\begin{figure}[!h]
-		\centering
-		\includegraphics[width=0.4\textwidth]{fig/plateau}
-		\caption{Variation of the number of segment with regards to lambda.}
-		\label{plateau}
-	\end{figure}
-	
-	We want to adjust the $\lambda$ parameter to have a reasonable number of segments. So, we look for the greatest stabilization of the number of segments. Indeed, our intuition is that we can be confident in the found breakpoints because the penalty has to increase significantly to remove some breakpoints. 
-	
+	In the initial PELT method, the penalty is $\log(n)$ with $n$ the length of the signal. When the user chooses this method, \texttt{MPAgenomics} suggests another calibration for the penalty parameter. For more details, see Section \ref{sec:togo}.
+  
 	
 	\subsection{From data normalized by aroma}	
 		
@@ -913,6 +904,62 @@ seg$segment
 		\end{figure}
 		
 		
+    \subsection{To Go further}
+      \label{sec:togo}
+      
+        \subsubsection{Calibration of penalty in PELT}
+          \label{sec:calib}
+          The PELT method is run with a penalty $\lambda \times \log(n)$ for a range of $\lambda$. Then, the evolution of the number of segments is plotted with regards to the $\lambda$ parameter (Fig \ref{plateau}). 
+  
+	        \begin{figure}[!h]
+		        \centering
+		        \includegraphics[width=0.5\textwidth]{fig/plateau}
+		        \caption{Variation of the number of segment with regards to lambda.}
+		        \label{plateau}
+	        \end{figure}
+	
+          We want to adjust the $\lambda$ parameter to have a reasonable number of segments. So, we look for the widest range of $\lambda$ for which the number of segments remains unchanged (and larger than 1). Indeed, our intuition is that we can be confident in the found breakpoints because the penalty has to increase significantly to remove some breakpoints. The optimal data-driven $\lambda$ is the left-most value of the widest range such that the number of segments is larger than 1. Otherwise we consider there is only one segment in the profile.
+	
+  
+      \subsubsection{Choice of number of segments in cghseg}
+        cghseg method runs with a predetermined number of segments. In general, users fix a maximal number of segments $K_{\max}$ and then must choose the best segmentation according to some criteria. \texttt{MPAgenomics} implements the slope heuristic \cite{heurpente} to choose automatically the number of segments. 
+      
+        Let $k$ the number of segments, the slop heuristic criteria minimizes  
+        $$g(k,C)=\frac{1}{n}\left(R(k)+C\times k \times \left(2.5+\log(\frac{n}{k})\right)\right)$$
+      
+        where $R(k)$ is the residual between the signal and the segmented signal, and $C$ a constant to optimize.
+      
+        The first step is to find the optimal constant $C$ to use. Given a list $\mathcal{C}$ of potential constant, for each element $C\in\mathcal{C}$, find the optimal $\hat{k}$ minimizing $g(k,C)$. 
+      
+        Then, the optimal constant $\hat{C}$ is twice times the one associated to the biggest drop ($C0$) in the curve (see Fig. \ref{fig:slopeheuristic}).  
+      
+        \begin{figure}[!h]
+          \centering
+  	      \includegraphics[width=0.5\textwidth]{fig/slopeheuristic}
+		      \caption{Optimal number of segments minimizing $g(C,k)$ with regards to $C$. $C0$ is the cosntant associated to the biggest drop in the curve.}
+		      \label{fig:slopeheuristic}
+        \end{figure}
+      
+        Once the optimal constant $\hat{C}$ found, the optimal number of segments $\hat{k}$ is the one minizing $g(k,\hat{C})$.
+      
+      \subsubsection{Sample-specific versus common parameter}
+      
+        The \textit{sample-specific choice of $\lambda$} in Section~\ref{sec:calib} is compared with a \textit{common choice of  $\lambda$} depending on the signal-to-noise ratio within each group of profiles.
+
+        Profiles from the real dataset \cite{citerealdataset} are clustered into groups with homogeneous signal-to-noise ratio (SNR) by using a Gaussian mixture model. Three groups are provided by the BIC criterion. 
+
+        Figure~\ref{fig:classifplateau} displays results (chromosome~1) for each profile (patient). Following Section~\ref{sec:calib} the widest range of $\lambda$ values is plotted for each profile. 
+      Colors (light grey, grey, and black) indicate the SNR level in each group (respectively low, middle, and high).
+	
+        \begin{figure}[!h]
+	        \centering
+	        \includegraphics[width=0.4\textwidth]{fig/classifplateau3}
+          \caption{Widest ranges of $\lambda$ ($x$-axis) for 70 copy number profiles (chromosome 1) ($y$-axis). Colors indicate clusters of signal-to-noise ratios (light grey $<$ grey $<$ black).}
+          \label{fig:classifplateau}
+        \end{figure}
+
+        Whereas the lowest SNR group only contains ranges of $\lambda$ with small values, other groups correspond to ranges of both small and large values of $\lambda$. A common choice of $\lambda$ within each of these two groups leads to erroneous segmentations. The same conclusion applies to other chromosomes and criteria such as variance. 
+
 	
 \section{Calling aberrations in copy-number profiles}
 	\label{sec:calling}
