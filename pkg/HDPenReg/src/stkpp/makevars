@@ -39,8 +39,7 @@ LIB_STKPP_A = libSTKpp.a
 
 #-----------------------------------------------------------------------
 # specific flags for R packages
-
-#STK_FLAGS = $(CPICFLAGS) -ansi
+STK_FLAGS = $(CPICFLAGS) -ansi
 
 #-----------------------------------------------------------------------
 # Uncomment the next line if you want to have 0 based arrays 
@@ -49,7 +48,7 @@ LIB_STKPP_A = libSTKpp.a
 #-----------------------------------------------------------------------
 # specific C flags
 # long long are available
-#CFLAGS   = -Wno-long-long
+CFLAGS   = -Wno-long-long
 
 
 
