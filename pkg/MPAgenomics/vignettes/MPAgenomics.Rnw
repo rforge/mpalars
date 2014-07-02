@@ -730,7 +730,7 @@ fracBdata1$chr5$tumor
 		The procedure described above can be run by the \texttt{segmentationAroma} function if the working directory respects the aroma architecture.
 		 	
 		\begin{verbatim}	
-segmentationAroma(dataSetName,normalTumorArray,chromosome,Lambda,listOfFiles,onlySNP=TRUE,
+segmentationAroma(dataSetName,normalTumorArray,chromosome,Rho,listOfFiles,onlySNP=TRUE,
 savePlot=TRUE,method="cghseg")
 		\end{verbatim}
 	
@@ -743,7 +743,7 @@ savePlot=TRUE,method="cghseg")
 				\texttt{normalTumorArray} & Only in the case of normal-tumor study. A csv file or a data.frame\\
 				~~ & containing the mapping between normal and tumor files(Fig. \ref{normalTumorArray}).\\
 				\texttt{chromosome} & A vector with the chromosomes to be segmented.\\
-				\texttt{Lambda} & A vector containing all the penalization values to test for the segmentation.\\
+				\texttt{Rho} & A vector containing all the penalization values to test for the segmentation.\\
 				~ &  If no values are provided, default values will be used.\\
 				\texttt{onlySNP} & If TRUE, only the copy-number for SNPs positions will be returned (default=TRUE).\\
 				\texttt{listOfFiles} & A vector containing the names of the files in dataSetName folder for which\\
@@ -762,7 +762,7 @@ savePlot=TRUE,method="cghseg")
 			\includegraphics[width=0.45\textwidth]{fig/decdata1}
 			\includegraphics[width=0.45\textwidth]{fig/freqdata1}\\		
 			\includegraphics[width=0.5\textwidth]{fig/segdata1}
-			\caption{Top left: variation of the number of segment with regards to $\lambda$. Top right: the frequency of occurrence of breakpoints in all segmentation. Bottom: Segmentation with the optimal $\lambda$ found.}
+			\caption{Top left: variation of the number of segment with regards to $\rho$. Top right: the frequency of occurrence of breakpoints in all segmentation. Bottom: Segmentation with the optimal $\rho$ found.}
 			\label{outpelt}
 		\end{figure}
 		The graphics of the segmented signal are saved in the \texttt{figures/dataSetName/segmentation} folder. A summary of the segmented profile is saved in a text file (Fig. \ref{outbedpelt}) in the \texttt{segmentation/dataSetName/} folder, it contains 5 columns : chrom, chromStart, chromEnd, probes and means containing the number of the chromosome, the starting position of the segment, the ending position of the segment, the number of probes in the segment and the mean of the segment.\\
@@ -804,7 +804,7 @@ listOfFiles=file)
 		For a normal-tumor study where each tumor file must match with a unique normal file. You can also segment the symmetrized allele B fraction with the function \texttt{segFracBSignal}:
 		 	
 		\begin{verbatim}	
-segFracBSignal(dataSetName,normalTumorArray,chromosome=1:22,Lambda=NULL,listOfFiles=NULL,
+segFracBSignal(dataSetName,normalTumorArray,chromosome=1:22,Rho=NULL,listOfFiles=NULL,
 savePlot=TRUE,verbose=TRUE)
 		\end{verbatim}
 	
@@ -817,7 +817,7 @@ savePlot=TRUE,verbose=TRUE)
 				\texttt{normalTumorArray} & A csv file or a data.frame\\
 				~~ & containing the mapping between normal and tumor files(Fig. \ref{normalTumorArray}).\\
 				\texttt{chromosome} & A vector with the chromosomes to be segmented.\\
-				\texttt{Lambda} & A vector containing all the penalization values to test for the segmentation.\\
+				\texttt{Rho} & A vector containing all the penalization values to test for the segmentation.\\
 				~ &  If no values are provided, default values will be used.\\
 				\texttt{listOfFiles} & A vector containing the names of the files in dataSetName folder for which\\
 				~ & the allele B profile is segmented (default is all the files).\\
@@ -843,7 +843,7 @@ savePlot=TRUE,verbose=TRUE)
 		If you have your own normalized data stored in a matrix, you can use the \texttt{segmentation} function to perform the segmentation with the parameter choice proposed in \texttt{MPAgenomics}.
 	
 		\begin{verbatim}	
-			segmentation(signal,Lambda,position=NULL,plot=TRUE,verbose=TRUE)
+			segmentation(signal,Rho,position=NULL,plot=TRUE,verbose=TRUE)
 		\end{verbatim}
 	
 		\begin{center}
@@ -852,7 +852,7 @@ savePlot=TRUE,verbose=TRUE)
 				Parameters & Description\\
 				\hline
 				\texttt{signal} & A vector containing the signal.\\
-				\texttt{Lambda} & A vector containing all the penalization values to test for the segmentation.\\
+				\texttt{Rho} & A vector containing all the penalization values to test for the segmentation.\\
 				~ &  If no values are provided, default values will be used.\\
 				\texttt{position} & A vector containing the position of all elements of the signal (not necessary).\\
 				\texttt{plot} & If TRUE, plot some graphics (default=TRUE	).\\
@@ -909,16 +909,16 @@ seg$segment
       
         \subsubsection{Calibration of penalty in PELT}
           \label{sec:calib}
-          The PELT method is run with a penalty $\lambda \times \log(n)$ for a range of $\lambda$. Then, the evolution of the number of segments is plotted with regards to the $\lambda$ parameter (Fig \ref{plateau}). 
+          The PELT method is run with a penalty $\rho\times \log(n)$ for a range of $\rho$. Then, the evolution of the number of segments is plotted with regards to the $\rho$ parameter (Fig \ref{plateau}). 
   
 	        \begin{figure}[!h]
 		        \centering
 		        \includegraphics[width=0.5\textwidth]{fig/plateau}
-		        \caption{Variation of the number of segment with regards to lambda.}
+		        \caption{Variation of the number of segment with regards to rho.}
 		        \label{plateau}
 	        \end{figure}
 	
-          We want to adjust the $\lambda$ parameter to have a reasonable number of segments. So, we look for the widest range of $\lambda$ for which the number of segments remains unchanged (and larger than 1). Indeed, our intuition is that we can be confident in the found breakpoints because the penalty has to increase significantly to remove some breakpoints. The optimal data-driven $\lambda$ is the left-most value of the widest range such that the number of segments is larger than 1. Otherwise we consider there is only one segment in the profile.
+          We want to adjust the $\rho$ parameter to have a reasonable number of segments. So, we look for the widest range of $\rho$ for which the number of segments remains unchanged (and larger than 1). Indeed, our intuition is that we can be confident in the found breakpoints because the penalty has to increase significantly to remove some breakpoints. The optimal data-driven $\rho$ is the left-most value of the widest range such that the number of segments is larger than 1. Otherwise we consider there is only one segment in the profile.
 	
   
       \subsubsection{Choice of number of segments in cghseg}
@@ -944,21 +944,21 @@ seg$segment
       
       \subsubsection{Sample-specific versus common parameter}
       
-        The \textit{sample-specific choice of $\lambda$} in Section~\ref{sec:calib} is compared with a \textit{common choice of  $\lambda$} depending on the signal-to-noise ratio within each group of profiles.
+        The \textit{sample-specific choice of $\rho$} in Section~\ref{sec:calib} is compared with a \textit{common choice of  $\rho$} depending on the signal-to-noise ratio within each group of profiles.
 
         Profiles from the real dataset \cite{citerealdataset} are clustered into groups with homogeneous signal-to-noise ratio (SNR) by using a Gaussian mixture model. Three groups are provided by the BIC criterion. 
 
-        Figure~\ref{fig:classifplateau} displays results (chromosome~1) for each profile (patient). Following Section~\ref{sec:calib} the widest range of $\lambda$ values is plotted for each profile. 
+        Figure~\ref{fig:classifplateau} displays results (chromosome~1) for each profile (patient). Following Section~\ref{sec:calib} the widest range of $\rho$ values is plotted for each profile. 
       Colors (light grey, grey, and black) indicate the SNR level in each group (respectively low, middle, and high).
 	
         \begin{figure}[!h]
 	        \centering
 	        \includegraphics[width=0.4\textwidth]{fig/classifplateau3}
-          \caption{Widest ranges of $\lambda$ ($x$-axis) for 70 copy number profiles (chromosome 1) ($y$-axis). Colors indicate clusters of signal-to-noise ratios (light grey $<$ grey $<$ black).}
+          \caption{Widest ranges of $\rho$ ($x$-axis) for 70 copy number profiles (chromosome 1) ($y$-axis). Colors indicate clusters of signal-to-noise ratios (light grey $<$ grey $<$ black).}
           \label{fig:classifplateau}
         \end{figure}
 
-        Whereas the lowest SNR group only contains ranges of $\lambda$ with small values, other groups correspond to ranges of both small and large values of $\lambda$. A common choice of $\lambda$ within each of these two groups leads to erroneous segmentations. The same conclusion applies to other chromosomes and criteria such as variance. 
+        Whereas the lowest SNR group only contains ranges of $\rho$ with small values, other groups correspond to ranges of both small and large values of $\rho$. A common choice of $\rho$ within each of these two groups leads to erroneous segmentations. The same conclusion applies to other chromosomes and criteria such as variance. 
 
 	
 \section{Calling aberrations in copy-number profiles}
@@ -972,7 +972,7 @@ seg$segment
 		The \texttt{cnSegCallingProcess} function executes the segmentation (see section \ref{sec:seg}) and the calling process. The specified data will be automatically imported by the function.\\
 			
 		\begin{verbatim}	
-		cnSegCallingProcess(dataSetName,normalTumorArray,chromosome,Lambda,listOfFile,onlySNP,savePlot,
+		cnSegCallingProcess(dataSetName,normalTumorArray,chromosome,Rho,listOfFile,onlySNP,savePlot,
 		nclass,cellularity,method,...)
 		\end{verbatim}
 		
@@ -984,7 +984,7 @@ seg$segment
 			\texttt{normalTumorArray} & Only in the case of normal-tumor study. A csv file or a data.frame\\
 			~~ & containing the mapping between normal and tumor files(Fig. \ref{normalTumorArray}).\\
 			\texttt{chromosome} & A vector containing the chromosome to segment.\\
-			\texttt{Lambda} & A vector containing all the penalization values to test for the segmentation.\\
+			\texttt{Rho} & A vector containing all the penalization values to test for the segmentation.\\
 			~ &  If no values are provided, default values will be used.\\
 			\texttt{listOfFiles} & A vector containing the file names from the dataSetName to use.\\
 			\texttt{onlySNP} & If TRUE, only the SNP probes will be used.\\
@@ -1183,15 +1183,15 @@ segmentfilter
 	
 It consists in minimizing $\beta \in \mathbb{R}^P\mapsto g(\beta)$, where
     \begin{align*}
-      g_{\rho}(\beta) = \sum\limits_{i=1}^I (y_i-(X\beta)_i)^2+\rho
+      g_{\lambda}(\beta) = \sum\limits_{i=1}^I (y_i-(X\beta)_i)^2+\lambda
       \sum\limits_{p=1}^P |\beta_p|  \enspace,
     \end{align*}
       
-with $(X\beta)_{i}=\sum_p x_{i,p}\beta_p$ and $\rho>0$ controlling the number of non-zero coordinates of $\beta$.
+with $(X\beta)_{i}=\sum_p x_{i,p}\beta_p$ and $\lambda>0$ controlling the number of non-zero coordinates of $\beta$.
 %
 After minimization, non-zero coefficients $\beta_p$ correspond to influential positions to predict the response. \\
 	
-	To solve this problem, we use the LARS algorithm \cite{lars} that solves the lasso problem for all the values of $\rho$. In order to choose the best solution, we use a cross validation to select the best values of $\rho$ and return the associated solution.\\
+	To solve this problem, we use the LARS algorithm \cite{lars} that solves the lasso problem for all the values of $\lambda$. In order to choose the best solution, we use a cross validation to select the best values of $\lambda$ and return the associated solution.\\
 	
 	
 	\subsection{From data normalized by aroma}	
