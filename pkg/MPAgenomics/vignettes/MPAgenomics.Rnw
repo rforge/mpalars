@@ -906,7 +906,8 @@ seg$segment
 		
     \subsection{To Go further}
       \label{sec:togo}
-      
+        In this part, we describe the different calibration methods associated with PELT and cghseg in \texttt{MPAgenomics}. We also show that calibrate the parameter according to a measure like variance can be misleading.
+        
         \subsubsection{Calibration of penalty in PELT}
           \label{sec:calib}
           The PELT method is run with a penalty $\rho\times \log(n)$ for a range of $\rho$. Then, the evolution of the number of segments is plotted with regards to the $\rho$ parameter (Fig \ref{plateau}). 
@@ -929,14 +930,12 @@ seg$segment
       
         where $R(k)$ is the residual between the signal and the segmented signal, and $C$ a constant to optimize.
       
-        The first step is to find the optimal constant $C$ to use. Given a list $\mathcal{C}$ of potential constant, for each element $C\in\mathcal{C}$, find the optimal $\hat{k}$ minimizing $g(k,C)$. 
-      
-        Then, the optimal constant $\hat{C}$ is twice times the one associated to the biggest drop ($C0$) in the curve (see Fig. \ref{fig:slopeheuristic}).  
+        The first step is to find the optimal constant $C$ to use. Given a list $\mathcal{C}$ of potential constant, for each element $C\in\mathcal{C}$, we find the optimal $\hat{k}$ minimizing $g(k,C)$. Then, the optimal constant $\hat{C}$ is $2\times C_0$, whith $C_0$ the constant associated with the largest drop of the number of segments in Fig. \ref{fig:slopeheuristic}.  
       
         \begin{figure}[!h]
           \centering
   	      \includegraphics[width=0.5\textwidth]{fig/slopeheuristic}
-		      \caption{Optimal number of segments minimizing $g(C,k)$ with regards to $C$. $C0$ is the cosntant associated to the biggest drop in the curve.}
+		      \caption{Optimal number of segments minimizing $g(C,k)$ with regards to $C$. $C_0$ is the constant associated with the largest drop of the number of segments.}
 		      \label{fig:slopeheuristic}
         \end{figure}
       
@@ -946,7 +945,7 @@ seg$segment
       
         The \textit{sample-specific choice of $\rho$} in Section~\ref{sec:calib} is compared with a \textit{common choice of  $\rho$} depending on the signal-to-noise ratio within each group of profiles.
 
-        Profiles from the real dataset \cite{citerealdataset} are clustered into groups with homogeneous signal-to-noise ratio (SNR) by using a Gaussian mixture model. Three groups are provided by the BIC criterion. 
+        Profiles from a real dataset \cite{citerealdataset} are clustered into groups with homogeneous signal-to-noise ratio (SNR) by using a Gaussian mixture model. Three groups are provided by the BIC criterion. 
 
         Figure~\ref{fig:classifplateau} displays results (chromosome~1) for each profile (patient). Following Section~\ref{sec:calib} the widest range of $\rho$ values is plotted for each profile. 
       Colors (light grey, grey, and black) indicate the SNR level in each group (respectively low, middle, and high).
@@ -965,7 +964,7 @@ seg$segment
 	\label{sec:calling}
 	Once you have a segmentation of your copy-number profile, you may want to assign a label ($loss$, $normal$ or $gain$) to each segment. This can be done with the \texttt{CGHcall} method \cite{CGHcall}. A wrapper of the CGHcall calling process is available in \texttt{MPAgenomics}.
 	
-	Starting with your signal and the associated segmented signal, the method assumes that the segmented values follow a mixture of normals. The variables of the model are estimated with an EM algorithm with a specific initialization. Then, every segment is called by the most likely label according to the model. 
+	Starting with your signal and the associated segmented signal, the method assumes that the segmented values follow a mixture of Gaussians. The parameters of the model are estimated with an EM algorithm with a specific initialization. Then, every segment is called by the most likely label according to the model. 
 	
 	\subsection{From data normalized by aroma}	
 		\label{segcalling}
@@ -1269,7 +1268,7 @@ onlySNP=TRUE,loss="linear")
 			\label{SNPoutput}
 		\end{figure}
 
-		In this example, two markers are selected : the 1065th and 10046th markers of the signal (markers.index) at positions 20192586 pb and 47227321 pb on the chromosome 22. The coefficient associated to each selected marker are given in coefficient vector.
+		In this example, two markers are selected : the 1065th and 10046th markers of the signal (markers.index) at positions 20192586 pb and 47227321 pb on the chromosome 22. The coefficient associated with each selected marker are given in coefficient vector.
 
 	\subsection{For any data provided in matrix}	
 

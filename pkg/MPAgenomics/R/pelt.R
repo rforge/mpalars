@@ -1,11 +1,11 @@
 #
-# This function launches the segmentation PELT (from package changepoint) with a penalty value of lambda * log(n) for a range of value for lambda.
+# This function launches the segmentation PELT (from package changepoint) with a penalty value of rho * log(n) for a range of value for rho.
 # Then an optimal penalty value is chosen by looking for a stabilization in the number of segments according to the penalty values.
 #
 # @title segmentation function 
 #
 # @param signal a vector containing the signal.
-# @param Lambda A vector containing all the penalization values to test for the segmentation. If no values are provided, default values will be used
+# @param Rho A vector containing all the penalization values to test for the segmentation. If no values are provided, default values will be used
 # @param position A vector containing the position of all elements of the signal (not necessary)
 # @param plot if TRUE, plot the segmentation results
 # @param verbose if TRUE print some informations
@@ -22,7 +22,7 @@
 # 
 # @author Quentin Grimonprez
 # 
-PELT=function(signal,Lambda,position=NULL,plot=TRUE,verbose=TRUE)
+PELT=function(signal,Rho,position=NULL,plot=TRUE,verbose=TRUE)
 {
   #package for PELT method
   allpkg=TRUE
@@ -56,17 +56,17 @@ PELT=function(signal,Lambda,position=NULL,plot=TRUE,verbose=TRUE)
   
   
 
-  #Lambda
-  if(missing(Lambda)||is.null(Lambda))
-    Lambda=c(seq(0.1,2,by=0.1),seq(2.2,5,by=0.2),seq(5.5,10,by=0.2),seq(11,16,by=1),seq(18,36,by=2),seq(40,80,by=4))
+  #Rho
+  if(missing(Rho)||is.null(Rho))
+    Rho=c(seq(0.1,2,by=0.1),seq(2.2,5,by=0.2),seq(5.5,10,by=0.2),seq(11,16,by=1),seq(18,36,by=2),seq(40,80,by=4))
   else
   {
-    if(!is.numeric(Lambda) || !is.vector(Lambda))
-      stop("Lambda must be a vector of positive real.")
-    if(length(Lambda[Lambda>0])!=length(Lambda))
-      stop("Lambda must be a vector of positive real.")
-    Lambda=unique(Lambda)
-    Lambda=sort(Lambda)
+    if(!is.numeric(Rho) || !is.vector(Rho))
+      stop("Rho must be a vector of positive real.")
+    if(length(Rho[Rho>0])!=length(Rho))
+      stop("Rho must be a vector of positive real.")
+    Rho=unique(Rho)
+    Rho=sort(Rho)
   }
   
   #PELT doesn't tolerate NA values
@@ -83,19 +83,19 @@ PELT=function(signal,Lambda,position=NULL,plot=TRUE,verbose=TRUE)
   allBreakpoints=list()
   allSegmentedValue=list()
   
-  for(i in 1:length(Lambda))
+  for(i in 1:length(Rho))
   {
-    seg=cpt.mean(signal[noNA],method="PELT",penalty="Manual",pen.value=paste0(Lambda[i],"*log(n)"))
+    seg=cpt.mean(signal[noNA],method="PELT",penalty="Manual",pen.value=paste0(Rho[i],"*log(n)"))
     allBreakpoints[[i]]=seg@cpts
     allSegmentedValue[[i]]=seg@param.est$mean
     if(length(seg@cpts)==1)
       break;
   }
   
-  #find the best lambda
-  segmentation=findPlateau(allBreakpoints,Lambda,plot=plot,verbose=verbose)
+  #find the best rho
+  segmentation=findPlateau(allBreakpoints,Rho,plot=plot,verbose=verbose)
   
-  ind=which(Lambda==segmentation$lambda)#index of the best lambda
+  ind=which(Rho==segmentation$rho)#index of the best rho
   cpt=c(0,allBreakpoints[[ind]])
   
   if(plot)
@@ -130,7 +130,7 @@ PELT=function(signal,Lambda,position=NULL,plot=TRUE,verbose=TRUE)
 
 
 #
-# This function launches the segmentation PELT (from package changepoint) with a penalty value of lambda * log(n) for a range of value for lambda.
+# This function launches the segmentation PELT (from package changepoint) with a penalty value of rho * log(n) for a range of value for rho.
 # Then an optimal penalty value is chosen by looking for a stabilization in the number of segments according to the penalty values.
 #
 # @title segmentation function 
@@ -139,7 +139,7 @@ PELT=function(signal,Lambda,position=NULL,plot=TRUE,verbose=TRUE)
 # @param normalTumorArray Only in the case of normal-tumor study. A csv file or a data.frame containing the mapping between normal and tumor files
 # The first column contains the name of normal files and the second the names of associated tumor files.
 # @param chromosome A vector with the chromosomes to be segmented. 
-# @param Lambda A vector containing all the penalization values to test for the segmentation. If no values are provided, default values will be used.
+# @param Rho A vector containing all the penalization values to test for the segmentation. If no values are provided, default values will be used.
 # @param onlySNP If TRUE, only the copy-number for SNPs positions will be returned (default=TRUE).
 # @param listOfFiles A vector containing the names of the files in dataSetName folder for which the copy number profiles will be segmented (default is all the files).
 # @param savePlot if TRUE, graphics of the segmented CN signal will be saved in the figures/dataSetName/segmentation/CN folder. (default=TRUE).
@@ -160,7 +160,7 @@ PELT=function(signal,Lambda,position=NULL,plot=TRUE,verbose=TRUE)
 # 
 # @author Quentin Grimonprez
 # 
-PELTaroma=function(dataSetName,normalTumorArray,chromosome=1:22,Lambda=NULL,listOfFiles=NULL,onlySNP=TRUE,savePlot=TRUE,verbose=TRUE)
+PELTaroma=function(dataSetName,normalTumorArray,chromosome=1:22,Rho=NULL,listOfFiles=NULL,onlySNP=TRUE,savePlot=TRUE,verbose=TRUE)
 {
   
   allpkg=TRUE
@@ -295,9 +295,9 @@ PELTaroma=function(dataSetName,normalTumorArray,chromosome=1:22,Lambda=NULL,list
     pos=pos[which(tag=="tumor")]
   }
   
-  #Lambda
-  if(missing(Lambda) || is.null(Lambda))
-    Lambda=c(seq(0.1,2,by=0.1),seq(2.2,5,by=0.2),seq(5.5,10,by=0.2),seq(11,16,by=1),seq(18,36,by=2),seq(40,80,by=4))
+  #Rho
+  if(missing(Rho) || is.null(Rho))
+    Rho=c(seq(0.1,2,by=0.1),seq(2.2,5,by=0.2),seq(5.5,10,by=0.2),seq(11,16,by=1),seq(18,36,by=2),seq(40,80,by=4))
   
   ######################### END CHECK PARAMETERS
   
@@ -344,7 +344,7 @@ PELTaroma=function(dataSetName,normalTumorArray,chromosome=1:22,Lambda=NULL,list
       } else {
       
         cat(paste0("Segmentation of file ",name," chromosome ",chr,"..."))
-        seg=PELT(as.vector(CN[,3]),Lambda,CN$position,plot=savePlot,verbose=FALSE)
+        seg=PELT(as.vector(CN[,3]),Rho,CN$position,plot=savePlot,verbose=FALSE)
         cat("OK\n")
         
         if(savePlot)

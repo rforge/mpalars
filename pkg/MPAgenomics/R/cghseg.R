@@ -455,7 +455,7 @@ CGHSEGaroma=function(dataSetName,normalTumorArray,chromosome=1:22,Kmax=10,listOf
 #'
 #' @param signal a vector containing the signal.
 #' @param method method of segmentation, either "PELT" or "cghseg".
-#' @param Lambda For method="PELT", vector containing all the penalization values to test for the segmentation. If no values are provided, default values will be used.
+#' @param Rho For method="PELT", vector containing all the penalization values to test for the segmentation. If no values are provided, default values will be used.
 #' @param Kmax For method="cghseg", maximal number of segments.
 #' @param position A vector containing the position of all elements of the signal (not necessary)
 #' @param plot if TRUE, plot the segmentation results
@@ -473,11 +473,11 @@ CGHSEGaroma=function(dataSetName,normalTumorArray,chromosome=1:22,Kmax=10,listOf
 #' 
 #' @author Quentin Grimonprez
 #' 
-segmentation=function(signal,method=c("cghseg","PELT"),Lambda=NULL,Kmax=10,position=NULL,plot=TRUE,verbose=TRUE)
+segmentation=function(signal,method=c("cghseg","PELT"),Rho=NULL,Kmax=10,position=NULL,plot=TRUE,verbose=TRUE)
 {
   method <- match.arg(method)
   seg=switch(method,
-             PELT=PELT(signal,Lambda,position,plot,verbose),
+             PELT=PELT(signal,Rho,position,plot,verbose),
              cghseg=cghseg(signal,Kmax,position,plot,verbose))
   
   return(seg)
@@ -494,7 +494,7 @@ segmentation=function(signal,method=c("cghseg","PELT"),Lambda=NULL,Kmax=10,posit
 #' The first column contains the name of normal files and the second the names of associated tumor files.
 #' @param chromosome A vector with the chromosomes to be segmented.
 #' @param method method of segmentation, either "PELT" or "cghseg".
-#' @param Lambda For method="PELT", vector containing all the penalization values to test for the segmentation. If no values are provided, default values will be used.
+#' @param Rho For method="PELT", vector containing all the penalization values to test for the segmentation. If no values are provided, default values will be used.
 #' @param Kmax For method="cghseg", maximal number of segments.
 #' @param onlySNP If TRUE, only the copy-number for SNPs positions will be returned (default=TRUE).
 #' @param listOfFiles A vector containing the names of the files in dataSetName folder for which the copy number profiles will be segmented (default is all the files).
@@ -516,11 +516,11 @@ segmentation=function(signal,method=c("cghseg","PELT"),Lambda=NULL,Kmax=10,posit
 #' 
 #' @author Quentin Grimonprez
 #' 
-segmentationAroma=function(dataSetName,normalTumorArray,chromosome=1:22,method=c("cghseg","PELT"),Kmax,Lambda=NULL,listOfFiles=NULL,onlySNP=TRUE,savePlot=TRUE,verbose=TRUE)
+segmentationAroma=function(dataSetName,normalTumorArray,chromosome=1:22,method=c("cghseg","PELT"),Kmax,Rho=NULL,listOfFiles=NULL,onlySNP=TRUE,savePlot=TRUE,verbose=TRUE)
 {
   method <- match.arg(method)
   seg=switch(method,
-             PELT=PELTaroma(dataSetName,normalTumorArray,chromosome,Lambda,listOfFiles,onlySNP,savePlot,verbose),
+             PELT=PELTaroma(dataSetName,normalTumorArray,chromosome,Rho,listOfFiles,onlySNP,savePlot,verbose),
              cghseg=CGHSEGaroma(dataSetName,normalTumorArray,chromosome,Kmax,listOfFiles,onlySNP,savePlot,verbose))
   
   return(seg)

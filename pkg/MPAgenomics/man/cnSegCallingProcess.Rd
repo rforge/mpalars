@@ -4,7 +4,7 @@
 \title{Segment a copy-number signal and call the found segments.}
 \usage{
 cnSegCallingProcess(dataSetName, normalTumorArray, chromosome = 1:22,
-  method = c("cghseg", "PELT"), Lambda = NULL, Kmax = 10,
+  method = c("cghseg", "PELT"), Rho = NULL, Kmax = 10,
   listOfFiles = NULL, onlySNP = TRUE, savePlot = TRUE, nclass = 3,
   cellularity = 1, ...)
 }
@@ -18,7 +18,7 @@ The first column contains the name of normal files and the second the names of a
 
 \item{method}{method of segmentation, either "PELT" or "cghseg".}
 
-\item{Lambda}{For method="PELT", vector containing all the penalization values to test for the segmentation. If no values are provided, default values will be used.}
+\item{Rho}{For method="PELT", vector containing all the penalization values to test for the segmentation. If no values are provided, default values will be used.}
 
 \item{Kmax}{For method="cghseg", maximal number of segments.}
 

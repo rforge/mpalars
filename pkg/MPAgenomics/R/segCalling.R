@@ -9,7 +9,7 @@
 #' The first column contains the name of normal files and the second the names of associated tumor files.
 #' @param chromosome A vector containing the chromosomes to segment.
 #' @param method method of segmentation, either "PELT" or "cghseg".
-#' @param Lambda For method="PELT", vector containing all the penalization values to test for the segmentation. If no values are provided, default values will be used.
+#' @param Rho For method="PELT", vector containing all the penalization values to test for the segmentation. If no values are provided, default values will be used.
 #' @param Kmax For method="cghseg", maximal number of segments.
 #' @param listOfFiles A vector containing the names of the files from the dataSetName to use.
 #' @param onlySNP If TRUE, only the SNP probes will be used.
@@ -38,7 +38,7 @@
 #' 
 #' @author Quentin Grimonprez
 #' 
-cnSegCallingProcess=function(dataSetName,normalTumorArray,chromosome=1:22,method=c("cghseg","PELT"),Lambda=NULL,Kmax=10,listOfFiles=NULL,onlySNP=TRUE,savePlot=TRUE,nclass=3,cellularity=1,...)
+cnSegCallingProcess=function(dataSetName,normalTumorArray,chromosome=1:22,method=c("cghseg","PELT"),Rho=NULL,Kmax=10,listOfFiles=NULL,onlySNP=TRUE,savePlot=TRUE,nclass=3,cellularity=1,...)
 {
   method <- match.arg(method)
   allpkg=TRUE
@@ -173,9 +173,9 @@ cnSegCallingProcess=function(dataSetName,normalTumorArray,chromosome=1:22,method
     pos=pos[which(tag=="tumor")]
   }
   
-  #Lambda
-  if(missing(Lambda) || is.null(Lambda))
-    Lambda=c(seq(0.1,2,by=0.1),seq(2.2,5,by=0.2),seq(5.5,10,by=0.2),seq(11,16,by=1),seq(18,36,by=2),seq(40,80,by=4))
+  #Rho
+  if(missing(Rho) || is.null(Rho))
+    Rho=c(seq(0.1,2,by=0.1),seq(2.2,5,by=0.2),seq(5.5,10,by=0.2),seq(11,16,by=1),seq(18,36,by=2),seq(40,80,by=4))
 
   ######################### END CHECK PARAMETERS
   
@@ -214,7 +214,7 @@ cnSegCallingProcess=function(dataSetName,normalTumorArray,chromosome=1:22,method
         cat(paste0("Segmentation of file ",name," chromosome ",chr,"..."))
 
         seg=switch(method,
-          PELT=PELT(as.vector(CN[,3]),Lambda,CN$position,plot=TRUE,verbose=FALSE),
+          PELT=PELT(as.vector(CN[,3]),Rho,CN$position,plot=TRUE,verbose=FALSE),
           cghseg=cghseg(as.vector(CN[,3]),Kmax,CN$position,plot=TRUE,verbose=FALSE))
           
         cat("OK\n")

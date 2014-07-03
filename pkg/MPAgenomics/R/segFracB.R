@@ -8,7 +8,7 @@
 #' The first column contains the name of normal files and the second the names of associated tumor files.
 #' @param chromosome  A vector with the chromosomes to be segmented. 
 #' @param method method of segmentation, either "PELT" or "cghseg".
-#' @param Lambda For method="PELT", vector containing all the penalization values to test for the segmentation. If no values are provided, default values will be used.
+#' @param Rho For method="PELT", vector containing all the penalization values to test for the segmentation. If no values are provided, default values will be used.
 #' @param Kmax For method="cghseg", maximal number of segments.
 #' @param listOfFiles A vector containing the names of the files in dataSetName folder for which the allele B profile is segmented (default is all the files).
 #' @param savePlot if TRUE, graphics of the segmented allele B profile will be saved in the figures/dataSetName/segmentation/fracB folder. (default=TRUE).
@@ -28,7 +28,7 @@
 #' 
 #' @author Quentin Grimonprez
 #' 
-segFracBSignal=function(dataSetName,normalTumorArray,chromosome=1:22,method=c("cghseg","PELT"),Lambda=NULL,Kmax=10,listOfFiles=NULL,savePlot=TRUE,verbose=TRUE)
+segFracBSignal=function(dataSetName,normalTumorArray,chromosome=1:22,method=c("cghseg","PELT"),Rho=NULL,Kmax=10,listOfFiles=NULL,savePlot=TRUE,verbose=TRUE)
 {
   method <- match.arg(method)
   
@@ -170,9 +170,9 @@ segFracBSignal=function(dataSetName,normalTumorArray,chromosome=1:22,method=c("c
     
 #   }
  
-  #Lambda
-  if(missing(Lambda) || is.null(Lambda))
-    Lambda=c(seq(0.1,2,by=0.1),seq(2.2,5,by=0.2),seq(5.5,10,by=0.2),seq(11,16,by=1),seq(18,36,by=2),seq(40,80,by=4))
+  #Rho
+  if(missing(Rho) || is.null(Rho))
+    Rho=c(seq(0.1,2,by=0.1),seq(2.2,5,by=0.2),seq(5.5,10,by=0.2),seq(11,16,by=1),seq(18,36,by=2),seq(40,80,by=4))
   
   ######################### END CHECK PARAMETERS
   ###bed files output
@@ -219,7 +219,7 @@ segFracBSignal=function(dataSetName,normalTumorArray,chromosome=1:22,method=c("c
       #segmentation
       cat(paste0("Segmentation of file ",name," chromosome ",chr,"..."))
       seg=switch(method,
-        PELT=PELT(fracB[,3],Lambda,position=fracB$position,plot=TRUE,verbose=verbose),
+        PELT=PELT(fracB[,3],Rho,position=fracB$position,plot=TRUE,verbose=verbose),
         cghseg=cghseg(fracB[,3],Kmax,position=fracB$position,plot=TRUE,verbose=verbose))
       cat("OK\n")
       

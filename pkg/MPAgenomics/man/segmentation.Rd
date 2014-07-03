@@ -3,15 +3,15 @@
 \alias{segmentation}
 \title{segmentation function}
 \usage{
-segmentation(signal, method = c("cghseg", "PELT"), Lambda = NULL,
-  Kmax = 10, position = NULL, plot = TRUE, verbose = TRUE)
+segmentation(signal, method = c("cghseg", "PELT"), Rho = NULL, Kmax = 10,
+  position = NULL, plot = TRUE, verbose = TRUE)
 }
 \arguments{
 \item{signal}{a vector containing the signal.}
 
 \item{method}{method of segmentation, either "PELT" or "cghseg".}
 
-\item{Lambda}{For method="PELT", vector containing all the penalization values to test for the segmentation. If no values are provided, default values will be used.}
+\item{Rho}{For method="PELT", vector containing all the penalization values to test for the segmentation. If no values are provided, default values will be used.}
 
 \item{Kmax}{For method="cghseg", maximal number of segments.}
 

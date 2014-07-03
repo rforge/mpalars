@@ -4,7 +4,7 @@
 \title{segmentation function}
 \usage{
 segmentationAroma(dataSetName, normalTumorArray, chromosome = 1:22,
-  method = c("cghseg", "PELT"), Kmax, Lambda = NULL, listOfFiles = NULL,
+  method = c("cghseg", "PELT"), Kmax, Rho = NULL, listOfFiles = NULL,
   onlySNP = TRUE, savePlot = TRUE, verbose = TRUE)
 }
 \arguments{
@@ -17,7 +17,7 @@ The first column contains the name of normal files and the second the names of a
 
 \item{method}{method of segmentation, either "PELT" or "cghseg".}
 
-\item{Lambda}{For method="PELT", vector containing all the penalization values to test for the segmentation. If no values are provided, default values will be used.}
+\item{Rho}{For method="PELT", vector containing all the penalization values to test for the segmentation. If no values are provided, default values will be used.}
 
 \item{Kmax}{For method="cghseg", maximal number of segments.}
 

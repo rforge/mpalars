@@ -3,12 +3,12 @@
 \alias{findPlateau}
 \title{Find the best choice of segmentation parameter.}
 \usage{
-findPlateau(resSeg, Lambda, plot = TRUE, verbose = TRUE)
+findPlateau(resSeg, Rho, plot = TRUE, verbose = TRUE)
 }
 \arguments{
-\item{resSeg}{a list, each element of the list is a vector with the breakpoints for a value of Lambda.}
+\item{resSeg}{a list, each element of the list is a vector with the breakpoints for a value of Rho.}
 
-\item{Lambda}{vector with the values of Lambda.}
+\item{Rho}{vector with the values of Rho.}
 
 \item{plot}{if TRUE, some graphics will be plotted.}
 
@@ -17,15 +17,15 @@ findPlateau(resSeg, Lambda, plot = TRUE, verbose = TRUE)
 \value{
 a list containing:
 \describe{
-  \item{lambda}{Optimal parameter found.}
+  \item{rho}{Optimal parameter found.}
   \item{maxPlateau}{A vector with the first and the last position of the biggest plateau.}
   \item{plateau}{A matrix of 3 columns, each row corresponds to a different plateau. The first colum is the starting value of a plateau,
-   the second, the length of the plateau and the third, the number of values of lambda contained in the plateau.}
+   the second, the length of the plateau and the third, the number of values of rho contained in the plateau.}
 }
 }
 \description{
-From the results of a segmentation of a signal for different values of a segmentation parameter lambda, this function will
-search an optimal value of lambda corresponding to the biggest plateau (stabilization in the number of breakpoints).
+From the results of a segmentation of a signal for different values of a segmentation parameter rho, this function will
+search an optimal value of rho corresponding to the biggest plateau (stabilization in the number of breakpoints).
 }
 \author{
 Quentin Grimonprez
