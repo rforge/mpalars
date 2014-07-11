@@ -216,26 +216,31 @@ segFracBSignal=function(dataSetName,normalTumorArray,chromosome=1:22,method=c("c
 
       fracB[,3]=symmetrizeFracB(fracB[,3])
 
+      
       #segmentation
       cat(paste0("Segmentation of file ",name," chromosome ",chr,"..."))
-      seg=switch(method,
-        PELT=PELT(fracB[,3],Rho,position=fracB$position,plot=TRUE,verbose=verbose),
-        cghseg=cghseg(fracB[,3],Kmax,position=fracB$position,plot=TRUE,verbose=verbose))
-      cat("OK\n")
       
-      if(savePlot)
-      {
-        figName <- sprintf("%s,%s,%s", name, "fracB,chr",chr);
-        pathname <- filePath(figPath, sprintf("%s.png", figName));
-        width <- 1280;
-        aspect <- 0.6*1/3;
-        fig <- devNew("png", pathname, label=figName, width=width, height=2*aspect*width);
-        plot(NA,xlim=c(min(fracB$position),max(fracB$position)), ylim=c(0,1),xlab="Position", main=figName,ylab="Allele B fraction", pch=".")
-        points(fracB$position, fracB[,3], pch=".");
-        for(i in 1:nrow(seg$segment))
-          lines(c(seg$segment$start[i],seg$segment$end[i]),rep(seg$segment$means[i],2),col="red",lwd=3)
-        devDone();
-      }
+      if (is.null(fracB[,3]) || length(fracB[,3])<2){
+        cat("to few point to segment \n")
+      } else {
+        seg=switch(method,
+          PELT=PELT(fracB[,3],Rho,position=fracB$position,plot=TRUE,verbose=verbose),
+          cghseg=cghseg(fracB[,3],Kmax,position=fracB$position,plot=TRUE,verbose=verbose))
+        cat("OK\n")
+        
+        if(savePlot)
+        {
+          figName <- sprintf("%s,%s,%s", name, "fracB,chr",chr);
+          pathname <- filePath(figPath, sprintf("%s.png", figName));
+          width <- 1280;
+          aspect <- 0.6*1/3;
+          fig <- devNew("png", pathname, label=figName, width=width, height=2*aspect*width);
+          plot(NA,xlim=c(min(fracB$position),max(fracB$position)), ylim=c(0,1),xlab="Position", main=figName,ylab="Allele B fraction", pch=".")
+          points(fracB$position, fracB[,3], pch=".");
+          for(i in 1:nrow(seg$segment))
+            lines(c(seg$segment$start[i],seg$segment$end[i]),rep(seg$segment$means[i],2),col="red",lwd=3)
+          devDone();
+        }
       
       
       
@@ -257,6 +262,7 @@ segFracBSignal=function(dataSetName,normalTumorArray,chromosome=1:22,method=c("c
                            chromEnd=c(segment$chromEnd,seg$segment$end),
                            probes=c(segment$probes,seg$segment$points),
                            means=c(segment$means,seg$segment$means))
+      }
     }
     
     
