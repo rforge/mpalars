@@ -64,7 +64,7 @@ namespace HD
       Lasso()
       : PenalizedModels<Lasso>()
       {
-        STK::CVectorX Xty(nbVar());
+        STK::CVectorX Xty(nbVariable());
 
         // creation lasso penalty
         LassoPenalty*  p_penalty = new LassoPenalty();
@@ -101,7 +101,7 @@ namespace HD
       Lasso(STK::CArrayXX const* p_data, STK::CVectorX const* p_y, STK::Real lambda, STK::Real threshold, STK::Real epsCG)
       : PenalizedModels<Lasso>(p_data, p_y)
       {
-        STK::CVectorX Xty(nbVar());
+        STK::CVectorX Xty(nbVariable());
         Xty = p_data_->transpose() * *p_y_;
 
         STK::CVectorX beta0(Xty.sizeRows());
@@ -165,7 +165,7 @@ namespace HD
       void initializeModel()
       {
         //compte intitial beta
-        STK::CVectorX Xty(nbVar());
+        STK::CVectorX Xty(nbVariable());
         Xty = p_data_->transpose() * *p_y_;
 
         STK::CVectorX beta0(Xty.sizeRows());

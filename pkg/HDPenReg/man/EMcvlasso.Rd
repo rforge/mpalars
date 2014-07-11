@@ -44,8 +44,8 @@ A list containing
 cross validation function for EM lasso.
 }
 \examples{
-dataset=simul(50,100,0.4,1,10,matrix(c(0.1,0.8,0.02,0.02),nrow=2))
-result=EMcvlasso(dataset$data,dataset$response,5,lambda=5:1,intercept=FALSE)
+#dataset=simul(50,100,0.4,1,10,matrix(c(0.1,0.8,0.02,0.02),nrow=2))
+#result=EMcvlasso(dataset$data,dataset$response,5,lambda=5:1,intercept=FALSE)
 }
 \author{
 Quentin Grimonprez

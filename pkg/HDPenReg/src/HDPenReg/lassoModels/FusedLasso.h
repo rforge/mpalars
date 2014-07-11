@@ -100,7 +100,7 @@ namespace HD
       FusedLasso(STK::CArrayXX const* p_data, STK::CVectorX const* p_y, STK::Real lambda1, STK::Real lambda2, STK::Real threshold, STK::Real epsCG)
       : PenalizedModels<FusedLasso>(p_data, p_y)
       {
-        STK::CVectorX Xty(nbVar());
+        STK::CVectorX Xty(nbVariable());
         Xty = p_data_->transpose() * *p_y;
 
         STK::CVectorX beta0(Xty.sizeRows());
@@ -175,7 +175,7 @@ namespace HD
       void initializeModel()
       {
         //computation of the initial solution : beta0
-        STK::CVectorX Xty(nbVar());
+        STK::CVectorX Xty(nbVariable());
         Xty = p_data_->transpose() * (*p_y_);
 
         STK::CVectorX beta0(Xty.sizeRows());

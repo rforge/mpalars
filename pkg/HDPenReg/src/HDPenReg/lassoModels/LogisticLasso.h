@@ -65,7 +65,7 @@ namespace HD
       LogisticLasso()
       : PenalizedModels<LogisticLasso>()
       {
-        STK::CVectorX Xty(nbVar());
+        STK::CVectorX Xty(nbVariable());
 
         // creation lasso penalty
         LogisticLassoPenalty*  p_penalty = new LogisticLassoPenalty();
@@ -102,7 +102,7 @@ namespace HD
       LogisticLasso(STK::CArrayXX const* p_data, STK::CVectorX const* p_y, STK::Real lambda, STK::Real threshold, STK::Real epsCG)
       : PenalizedModels<LogisticLasso>(p_data, p_y)
       {
-        STK::CVectorX Xty(nbVar());
+        STK::CVectorX Xty(nbVariable());
         Xty = p_data_->transpose() * *p_y_;
 
         STK::CVectorX beta0(Xty.sizeRows());
@@ -170,7 +170,7 @@ namespace HD
       void initializeModel()
       {
         //compte intitial beta
-        STK::CVectorX Xty(nbVar());
+        STK::CVectorX Xty(nbVariable());
         Xty = p_data_->transpose() * *p_y_;
 
         STK::CVectorX beta0(Xty.sizeRows());

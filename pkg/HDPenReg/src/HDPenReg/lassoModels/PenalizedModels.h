@@ -95,7 +95,7 @@ namespace HD
       {
         p_data_ = p_data;
         setNbSample(p_data_->sizeRows());
-        setNbVar(p_data_->sizeCols());
+        setNbVariable(p_data_->sizeCols());
       }
       //getter
       /**@return a pointer to the data*/
