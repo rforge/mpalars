@@ -218,6 +218,9 @@ RcppExport SEXP EMlogisticLasso(SEXP data, SEXP response, SEXP nbIndiv, SEXP nbV
 
   vector<STK::Real> lambdaC = as<vector<STK::Real> >(lambda);
 
+  if(interceptC)
+    interceptC=true;
+
   //center the data for intercept
 //  STK::CVectorX muX(p);
 //  STK::Real mu = 0;
@@ -331,7 +334,9 @@ RcppExport SEXP EMlogisticFusedLasso(SEXP data, SEXP response, SEXP nbIndiv, SEX
   convertToArray(data,x);
   CVectorX y(n);
   convertToVector(response,nbIndiv,y);
-
+  
+  if(interceptC)
+    interceptC=true;
 
   //center the data for intercept
 //  STK::CVectorX muX(p);
@@ -727,6 +732,9 @@ RcppExport SEXP EMCVLogisticLasso(SEXP data, SEXP response, SEXP nbIndiv, SEXP n
   convertToVector(response,nbIndiv,y);
   vector<STK::Real> lambdaC = as<vector<STK::Real> >(lambda);
 
+  if(interceptC)
+    interceptC=true;
+    
   //intercept in the model?
 //  if(interceptC)
 //  {
@@ -836,6 +844,9 @@ RcppExport SEXP EMCVLogisticFusedLasso1D(SEXP data, SEXP response, SEXP nbIndiv,
   vector<STK::Real> lambda1C = as<vector<STK::Real> >(lambda1);
   vector<STK::Real> lambda2C = as<vector<STK::Real> >(lambda2);
 
+  if(interceptC)
+    interceptC=true;
+    
   //center the data
 //  if(interceptC)
 //  {
@@ -955,8 +966,11 @@ RcppExport SEXP EMCVLogisticFusedLasso2D(SEXP data, SEXP response, SEXP nbIndiv,
   vector<STK::Real> lambda1C = as<vector<STK::Real> >(lambda1);
   vector<STK::Real> lambda2C = as<vector<STK::Real> >(lambda2);
 
-  //center the data
   if(interceptC)
+    interceptC=true;
+    
+  //center the data
+/*  if(interceptC)
   {
     STK::CVectorX muX(p);
     STK::Real mu = y.sum()/n;
@@ -968,7 +982,7 @@ RcppExport SEXP EMCVLogisticFusedLasso2D(SEXP data, SEXP response, SEXP nbIndiv,
       for(int i=1; i <= n; i++)
         x(i,j) -= muX[j];
     }
-  }
+  }*/
 
   //if lambdaC[0]=-1, we have to generate the lambda sequence with the same way as the glmnet package
   if(lambda1C[0] == -1)
