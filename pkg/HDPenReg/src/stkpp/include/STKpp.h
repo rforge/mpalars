@@ -123,15 +123,15 @@
 // STatistiK project
 #include "STatistiK.h"
 // Statistical Models project
-#include "StatModels.h"
+//#include "StatModels.h"
 // Clustering project
-#include "Clustering.h"
+//#include "Clustering.h"
 // Regress project
-#include "Regress.h"
+//#include "Regress.h"
 // Reduct project
-#include "Reduct.h"
+//#include "Reduct.h"
 // Auto-Associative Models project
-#include "AAModels.h"
+//#include "AAModels.h"
 
 #endif  // STKPP_H
 
