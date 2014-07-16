@@ -925,12 +925,12 @@ seg$segment
       \subsubsection{Choice of number of segments in cghseg}
         cghseg method runs with a predetermined number of segments. In general, users fix a maximal number of segments $K_{\max}$ and then must choose the best segmentation according to some criteria. \texttt{MPAgenomics} implements the slope heuristic \cite{heurpente} to choose automatically the number of segments. 
       
-        Let $k$ the number of segments, the slop heuristic criteria minimizes  
+        Let $k$ the number of segments, the slope heuristic criteria minimizes  
         $$g(k,C)=\frac{1}{n}\left(R(k)+C\times k \times \left(2.5+\log(\frac{n}{k})\right)\right)$$
       
-        where $R(k)$ is the residual between the signal and the segmented signal, and $C$ a constant to optimize.
+        where $R(k)$ is the residuals between the signal and the segmented signal, and $C$ a constant to optimize.
       
-        The first step is to find the optimal constant $C$ to use. Given a list $\mathcal{C}$ of potential constant, for each element $C\in\mathcal{C}$, we find the optimal $\hat{k}$ minimizing $g(k,C)$. Then, the optimal constant $\hat{C}$ is $2\times C_0$, whith $C_0$ the constant associated with the largest drop of the number of segments in Fig. \ref{fig:slopeheuristic}.  
+        The first step is to find the optimal constant $\hat{C}$ to use. Given a list $\mathcal{C}$ of potential constant, for each element $C\in\mathcal{C}$, we find the optimal $\hat{k}$ minimizing $g(k,C)$. Then, the optimal constant $\hat{C}$ is $2\times C_0$, whith $C_0$ the constant associated with the largest drop of the number of segments in Fig. \ref{fig:slopeheuristic}.  
       
         \begin{figure}[!h]
           \centering
