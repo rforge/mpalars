@@ -6,7 +6,6 @@
 \usepackage[english]{babel}
 \usepackage{graphicx}
 \usepackage{geometry}
-\usepackage{ulem}
 \geometry{top=3cm, bottom=3cm, left=2cm, right=2cm}
 
 % Title Page
@@ -200,7 +199,7 @@
 		\end{itemize}
 		
 	\subsection{\texttt{simul}}
-		This function simulates copy-number signals in genomic \uline{but it's not based on any biological assumptions}.\\
+		This function simulates copy-number signals in genomic \underline{but it's not based on any biological assumptions}.\\
 		
 		This function takes in following arguments:
 
