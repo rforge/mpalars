@@ -52,6 +52,7 @@ namespace HD
                   y_(y),
                   eps_(STK::Arithmetic<Real>::epsilon()),
                   path_(maxSteps_),
+                  toIgnore_(),
                   intercept_(intercept)
   {
     maxSteps_ = 3*min(X.sizeRows(),X.sizeCols());
@@ -71,6 +72,7 @@ namespace HD
                   maxSteps_(maxSteps),
                   eps_(eps),
                   path_(maxSteps),
+                  toIgnore_(),
                   intercept_(intercept)
   {
     computeZ();

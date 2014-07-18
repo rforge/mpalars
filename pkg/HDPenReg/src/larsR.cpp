@@ -89,9 +89,12 @@ RcppExport SEXP lars(SEXP data, SEXP response, SEXP nbIndiv, SEXP nbVar, SEXP ma
   }
   vector<int> ignored;
   ignored.reserve(p);
-  for(int i = 1; i <= (int) lars.toIgnore().size(); i++)
-	if(lars.toIgnore()[i])
-		ignored.push_back(i);
+  for(int i = 0; i < (int) lars.toIgnore().size(); i++)
+  {
+    if(lars.toIgnore()[i])
+  	  ignored.push_back(i);
+  }
+
 
 
   //t2=clock();
@@ -162,9 +165,12 @@ RcppExport SEXP fusion(SEXP data, SEXP response, SEXP nbIndiv, SEXP nbVar, SEXP 
   }
   vector<int> ignored;
   ignored.reserve(p);
-  for(int i = 1; i <= (int) fusion.toIgnore().size(); i++)
-	if(fusion.toIgnore()[i])
-		ignored.push_back(i);
+  for(int i = 0; i < (int) fusion.toIgnore().size(); i++)
+  {
+    if(fusion.toIgnore()[i])
+		  ignored.push_back(i);
+  }
+
   //t2=clock();
   //cout<<"Temps extraction des données:"<<(double) (t2-t1)/CLOCKS_PER_SEC<<"s"<<endl;
 
