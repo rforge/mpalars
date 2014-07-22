@@ -32,7 +32,7 @@
     For both types of analyses, a pre-processing step (section \ref{sec:norm}) is proposed as a wrapper of \texttt{aroma.*} packages \cite{aroma}\cite{affy}\cite{aromasite}. 
 		This enables to keep maximum information from the original profiles and improve the multi-patient analysis. In particular, this is useful to keep quantitative data for SNPs rather than usual genotype calls (AA, AB or BB) when these states are not relevant (eg in cancer studies where the number of copies differs from two copies). Note that the use of \texttt{aroma.*} packages \cite{aroma} implies that the pre-processing step is only available for Affymetrix DNA chips. The other functionalities of the package \texttt{MPAgenomics} can however be used independently and such procedures are explained in the sections which detail each step of the proposed analysis. 
     
-    Efficient segmentation is proposed by the \textsc{cghseg} segmentation \cite{cghseg}\cite{cghsegb} combined with the slope heuristic \cite{heurpente} to choose automatically the number of segments. \texttt{MPAgenomics} also proposes an automatic choice of the penalty parameter for the \textsc{Pelt} segmentation \cite{pelt} originally implemented in the \texttt{changepoint} package \cite{peltR}. \texttt{MPAgenomics} offers a pipeline to perform normalization, segmentation and calling at the same time.
+    Efficient segmentation is proposed by the \textsc{cghseg} segmentation \cite{cghseg}\cite{cghsegb} combined with the slope heuristic \cite{heurpente} to choose automatically the number of segments. \texttt{MPAgenomics} also suggests an automatic choice of the penalty parameter for the \textsc{Pelt} segmentation \cite{pelt} originally implemented in the \texttt{changepoint} package \cite{peltR}. \texttt{MPAgenomics} offers a pipeline to perform normalization, segmentation and calling at the same time.
     
     Selection of genomic markers relies on the use of penalized regularization techniques implemented in \texttt{glmnet} \cite{glmnet} and wrappers are offered to relate this package with the normalisation packages. For the users who would like to go further in the use of penalized regularization techniques, we also provide some guidelines to quickly build inputs for the \texttt{HDPenReg} package and interpret some outputs of this latter one.
 
@@ -45,7 +45,7 @@
       \item \bibentry{MPAgenomicsHAL}
     \end{itemize}
     
-Moreover, \texttt{MPAgenomics} wraps and extends fonctionnalities of several packages. Please try to cite the appropriate methodological papers when you use results from the \texttt{MPAgenomics} software in a publication, as such citations are the main means by which the authors receive professional credit for their work.\\
+Moreover, \texttt{MPAgenomics} wraps and extends functionalities of several packages. Please try to cite the appropriate methodological papers when you use results from the \texttt{MPAgenomics} software in a publication, as such citations are the main means by which the authors receive professional credit for their work.\\
     
     If you use CRMAv2 normalization in \texttt{MPAgenomics}, please cite:
     \begin{itemize}
@@ -298,7 +298,7 @@ normalTumorArray=normalTumorArray, createArchitecture=FALSE, savePlot=TRUE, tags
 @		
 			\paragraph{Single-Patient Analysis of allele B fraction}
 
-				The segmentation example (\ref{mainuse}) was run on the copy-number profile, the allele B fraction can also be segmented after some transformation but only heterozygous SNPs are kept. First, a naive genotype call \cite{TumorBoost} is performed on each normal sample in order to separate heterozygous SNPs from homozygous SNPs. Naive genotyping method assumes SNPs are bi-allelic and therefore is not recommended for tumor samples. Thus allele B fraction segmentation in \texttt{MPAgenomics} requires matched normal-tumor pairs. Then, the resulting signal is symmetrized around 0.5 and multiply by $2$ to have values between $0$ and $1$ (a point $x$ become $2 * |x - 0.5|$) \cite{mBAF}(see Figure \ref{figsymFracB}), which makes it similar to the usual copy number.
+				The segmentation example (\ref{mainuse}) was run on the copy-number profile, the allele B fraction can also be segmented after some transformation but only heterozygous SNPs are kept. First, a naive genotype call \cite{TumorBoost} is performed on each normal sample in order to separate heterozygous SNPs from homozygous SNPs. Naive genotyping method assumes SNPs are bi-allelic and therefore is not recommended for tumor samples. Thus allele B fraction segmentation in \texttt{MPAgenomics} requires matched normal-tumor pairs. Then, the resulting signal is symmetrized around 0.5 (a point $x$ become $2 * |x - 0.5|$) \cite{mBAF}(see Figure \ref{figsymFracB}), which makes it similar to the usual copy number.
         
 				\begin{figure}[!h]
 					\centering
@@ -534,7 +534,7 @@ createArchitecture("datatest1","GenomeWideSNP_6",celPATH,chipPATH,".",TRUE,"Full
 				\texttt{createArchitecture} & if TRUE, the aroma architecture will be automatically created (default=TRUE).\\
 				\texttt{savePlot} & if TRUE, graphics of the CN signal and allele B fraction signal will be\\
 				~~ & saved in the \texttt{figures/signal} folder. (default=TRUE).\\
-        \texttt{tags} & Common tag which appears in the different file names (cdf, ugp, ufl) of the chip. \\
+        \texttt{tags} & Common tag which appears in the different filenames (cdf, ugp, ufl) of the chip. \\
         ~~ & For no tag, use tags=NULL (default = NULL).\\
 				\hline	
 			\end{tabular}		
@@ -717,7 +717,7 @@ fracBdata1$chr5$tumor
 	In the package \texttt{MPAgenomics}, we provide two segmentation methods.
   The first one wraps the \texttt{cghseg} package which fits a Gaussian maximum-likelihood piecewise constant smoothing model \cite{cghsegb} using pruned dynamic programming \cite{cghseg}. When the user chooses this method, \texttt{MPAgenomics} selects the number of segments with the slope heuristic \cite{heurpente}. 
   
-  The second segmentation approach uses the PELT method of the \texttt{cpt.mean} function from \texttt{changepoint} package \cite{peltR}.
+  The second segmentation approach uses the PELT method of the \texttt{cpt.mean} function from the \texttt{changepoint} package \cite{peltR}.
 	In the initial PELT method, the penalty is $K\rho\log(P)$ with a profile of length $P$, $K$ the number of segments and a $\rho>0$ a constant to optimize. When the user chooses this method, \texttt{MPAgenomics} suggests another calibration for the penalty parameter. For more details, see Section \ref{sec:togo}.
   
 	
@@ -759,7 +759,7 @@ savePlot=TRUE,method="cghseg")
 			\includegraphics[width=0.45\textwidth]{fig/decdata1}
 			\includegraphics[width=0.45\textwidth]{fig/freqdata1}\\		
 			\includegraphics[width=0.5\textwidth]{fig/segdata1}
-			\caption{Top left: variation of the number of segmentS with regards to $\rho$. Top right: the frequency of occurrence of breakpoints in all segmentation. Bottom: Segmentation with the optimal $\rho$ found.}
+			\caption{Top left: variation of the number of segments with regards to $\rho$. Top right: the frequency of occurrence of breakpoints in all segmentation. Bottom: Segmentation with the optimal $\rho$ found.}
 			\label{outpelt}
 		\end{figure}
 		The graphics of the segmented profiles are saved in the \texttt{figures/dataSetName/segmentation} folder. A summary of the segmented profile is saved in a text file (Fig. \ref{outbedpelt}) in the \texttt{segmentation/dataSetName/} folder, it contains 5 columns: chrom, chromStart, chromEnd, probes and means containing the number of the chromosome, the starting position of the segment, the ending position of the segment, the number of probes in the segment and the mean of the segment.\\
@@ -782,11 +782,11 @@ savePlot=TRUE,method="cghseg")
 			\item \textbf{segment} A data.frame that sums up the results of the segmentation. Each row is a different segment with the chromosome, start position, end position, number of probes in the segment and the value of the segment.
 		\end{itemize}
 				
-		The output for a profile is formatted to be used in input of the \texttt{callingProcess} function (see section \ref{calling}) but if you use the aroma architecture and want to label your segments, you can use directly the \texttt{cnSegCallingProcess} function (see section \ref{segcalling}). This function runs the segmentation and the calling processing.
+		The output for a profile is formatted in order to be usable in input of the \texttt{callingProcess} function (see section \ref{calling}) but if you use the aroma architecture and want to label your segments, you can directly use the \texttt{cnSegCallingProcess} function (see section \ref{segcalling}). This function runs the segmentation and the calling processing.
 		
 		~~\\
 		
-		For example, run the segmentation processing on one file of the downloaded data.
+		In the following example, the segmentation processing is run on one file of the downloaded data:
 		
 <<eval=FALSE>>=
 file="GIGAS_g_GAINmixHapMapAffy2_GenomeWideEx_6_A02_31234"
@@ -794,11 +794,11 @@ seg1=segmentationAroma("datatest1",chromosome=21:22,onlySNP=TRUE,plot=TRUE,
 listOfFiles=file,method="PELT")
 @
 		
-		You will obtain the results shown in figures \ref{outpelt} \& \ref{outbedpelt} for one profile.
+		The results obtained for one profile are shown in figures \ref{outpelt} \& \ref{outbedpelt}.
 		
 		~~\\
 	  
-		For a normal-tumor study where each tumor file must match with a unique normal file. You can also segment the symmetrized allele B fraction with the function \texttt{segFracBSignal}:
+		For a normal-tumor study where each tumor file matches with a unique normal file (and only in this case), it is possible to segment the symmetrized allele B fraction with the function \texttt{segFracBSignal}:
 		 	
 		\begin{verbatim}	
 segFracBSignal(dataSetName,normalTumorArray,chromosome=1:22,Rho=NULL,Kmax=10,listOfFiles=NULL,
@@ -837,8 +837,8 @@ savePlot=TRUE,verbose=TRUE,method="cghseg")
 			\item \textbf{means} Mean of the segment.
 		\end{itemize}
 			
-	\subsection{For any data provided in matrix}	
-		If you have your own normalized data stored in a matrix, you can use the \texttt{segmentation} function to perform the segmentation with the parameter choice proposed in \texttt{MPAgenomics}.
+	\subsection{For any data provided in matrices}	
+		Assuming that normalized data are stored in a matrix, you can use the \texttt{segmentation} function to perform segmentations with parameter choices suggested in \texttt{MPAgenomics}.
 	
 		\begin{verbatim}	
 			segmentation(signal,Rho=NULL,Kmax=10,position=NULL,plot=TRUE,verbose=TRUE,method="cghseg")
@@ -875,9 +875,7 @@ savePlot=TRUE,verbose=TRUE,method="cghseg")
 %		This output can be used directly in argument of the calling function \texttt{callingProcess} (see section \ref{calling}).
 		~~\\
 	
-		For example, assume you already have done the preprocessing of your data (see section \ref{norm}). You want to do the segmentation of the copy-number profile of one chromosome for one patient.
-	
-		First, get the signal:
+		For the following example, a matrix is built from the preprocessed files obtained in section \ref{norm}. A copy number profile from one patient chromosome is then isolated: 
 	
 <<eval=FALSE>>=
 file="GIGAS_g_GAINmixHapMapAffy2_GenomeWideEx_6_A07_31314"
@@ -886,14 +884,14 @@ copyNumber=CNdata1$chr20$GIGAS_g_GAINmixHapMapAffy2_GenomeWideEx_6_A07_31314
 position=CNdata$chr20$position
 @
 	
-		Now, run the segmentation process:
+		Then, the segmentation process can be run using:
 <<eval=FALSE>>=
 seg=segmentation(copyNumber,position=position,plot=TRUE,verbose=TRUE,method="PELT")
 @
 	
-		You obtain the plots seen previously (Fig \ref{outpelt}) and the results in the right format for the calling function (see section \ref{calling}).
+		This leads to the same plots as in Fig \ref{outpelt} and the results are saved in the right format for the calling function (see section \ref{calling}).
 	
-		You can access to the list of found segments with: 
+		The list of found segments can be accessed with: 
 <<eval=FALSE>>=
 seg$segment
 @
@@ -903,15 +901,15 @@ seg$segment
 		\end{figure}
 		
 		
-    \subsection{To Go further}
+    \subsection{To go further}
       \label{sec:togo}
-        In this part, we describe the different calibration methods associated with PELT and cghseg in \texttt{MPAgenomics}. We also show that calibrate the parameter according to a measure like variance can be misleading.
+        In this part, we describe the different calibration methods associated with cghseg and PELT in \texttt{MPAgenomics}. We also illustrate that calibrating the parameter according to a variance criterium can be misleading.
         
   
       \subsubsection{Choice of the number of segments for cghseg}
         cghseg method runs with a predetermined number of segments. In general, users fix a maximal number of segments $K_{\max}$ and then must choose the best segmentation according to some criteria. \texttt{MPAgenomics} implements the slope heuristic \cite{heurpente} to choose automatically the number of segments. 
       
-        Let $k$ the number of segments, the criteria \cite{penseg} to minimize is 
+        Let $k$ the number of segments, the criterium \cite{penseg} to minimize is 
         $$g(k,C)=\frac{1}{P}\left(R(k)+C\times k \times \left(2.5+\log(\frac{P}{k})\right)\right) $$
       
         where $R(k)$ is the residuals between the profile and the segmented profile, and $C$ a constant to optimize.
@@ -930,9 +928,9 @@ seg$segment
       
       \subsubsection{Choice of the number of segments for PELT}
         \label{sec:calib}
-        This choice was empirically compared to manual annotations on 70 profiles. It appeared to give better results than the default value included in the original PELT package.
-        
-        The PELT method is run with a penalty $\rho\times K \times\log(P)$ for a range of $\rho$ with $K$ the number of segments. Then, the evolution of the number of segments is plotted with regards to the $\rho$ parameter (Fig \ref{plateau}). 
+        The penalty of PELT looks like $\rho\times K \times\log(P)$ with $K$ the number of segments and $P$ the length of the profile. Only the parameter $\rho$ can be chosen by the user.
+        As the default value in PELT ($\rho=1$) did not provide satisfying segments compared to manually annotated segments, which we observed on 70 profiles, we suggest another method to calibrate the $\rho$ parameter.
+        To make the choice of the optimal $\rho$ in \texttt{MPAgenomics}, the PELT method is run for a range of $\rho$ provided by default or given by the user. Then, the evolution of the number of segments is plotted with regards to the $\rho$ parameter (Fig \ref{plateau}). 
   
         \begin{figure}[!h]
 		      \centering
@@ -945,11 +943,11 @@ seg$segment
           
         \paragraph*{Sample-specific versus common parameter}
       
-          The \textit{sample-specific choice of $\rho$} in Section~\ref{sec:calib} is compared with a \textit{common choice of  $\rho$} depending on the signal-to-noise ratio within each group of profiles.
+          The \textit{sample-specific choice of $\rho$} described above was empirically compared with a \textit{common choice of  $\rho$} depending on the signal-to-noise ratio within each group of given profiles.
 
-          Profiles from a real dataset \cite{citerealdataset} are clustered into groups with homogeneous signal-to-noise ratio (SNR) by using a Gaussian mixture model. Three groups are provided by the BIC criterion. 
+          Seventy profiles from a real dataset \cite{citerealdataset} were clustered into groups with homogeneous signal-to-noise ratio (SNR) by using a Gaussian mixture model. Three groups were provided by the BIC criterion. 
 
-          Figure~\ref{fig:classifplateau} displays results (chromosome~1) for each profile (patient). Following Section~\ref{sec:calib} the widest range of $\rho$ values is plotted for each profile. 
+          Figure~\ref{fig:classifplateau} displays results (chromosome~1) for each profile (patient). Following Section~\ref{sec:calib} the widest range of $\rho$ values was plotted for each profile. 
           Colors (light grey, grey, and black) indicate the SNR level in each group (respectively low, middle, and high).
 	
           \begin{figure}[!h]
@@ -959,14 +957,15 @@ seg$segment
             \label{fig:classifplateau}
           \end{figure}
 
-          Whereas the lowest SNR group only contains ranges of $\rho$ with small values, other groups correspond to ranges of both small and large values of $\rho$. A common choice of $\rho$ within each of these two groups leads to erroneous segmentations. The same conclusion applies to other chromosomes and criteria such as variance. 
+          Whereas the lowest SNR group only contains ranges of $\rho$ with small values, other groups correspond to ranges of both small and large values of $\rho$. A common choice of $\rho$ within each of these two groups would have led to erroneous segmentations. The same conclusion applied to other chromosomes and criteria such as variance. 
 
 	
 \section{Calling aberrations in copy-number profiles}
 	\label{sec:calling}
-	Once you have a segmentation of your copy-number profile, you may want to assign a label ($loss$, $normal$ or $gain$) to each segment. This can be done with the \texttt{CGHcall} method \cite{CGHcall}. A wrapper of the CGHcall calling process is available in \texttt{MPAgenomics}.
+  
+  When performing segmentations with cghseg or PELT, labels of segments ($loss$, $normal$ or $gain$) are not known. It is possible to assign these labels with the \texttt{CGHcall} method \cite{CGHcall}. A wrapper of the CGHcall calling process is available in \texttt{MPAgenomics}.
 	
-	Starting with your signal and the associated segmented signal, the method assumes that the segmented values follow a mixture of Gaussians. The parameters of the model are estimated with an EM algorithm with a specific initialization. Then, every segment is called by the most likely label according to the modeL. 
+	Starting with a signal and an associated segmented profile, the method assumes that the segmented values follow a mixture of Gaussians. The parameters of the model are estimated with an EM algorithm with a specific initialization. Then, every segment is called by the most likely label according to the modeL. 
 	
 	\subsection{From data normalized by aroma}	
 		\label{segcalling}
@@ -993,7 +992,7 @@ seg$segment
 			\texttt{nclass} & The number of levels to be used for calling. Either 3 (loss, normal, gain),\\
 			~ &   4 (including amplifications), 5 (including double deletions) (default=3).\\
 			\texttt{cellularity} &  Percentage of tumor cells in the sample (default=1).\\
-			\texttt{\dots} & Others parameters for CGHcall function \cite{CGHcallR}.\\
+			\texttt{\dots} & Other parameters for the CGHcall function \cite{CGHcallR}.\\
       \texttt{method} & PELT or cghseg. (default=cghseg).\\
 			\hline
 		\end{tabular}
@@ -1028,7 +1027,7 @@ seg2=cnSegCallingProcess("datatest1",chromosome=21:22)
 		\end{figure}
 	
 	
-	\subsection{For any data provided in matrix}\label{calling}
+	\subsection{For any data provided in matrices}\label{calling}
 	
 		The function \texttt{callingProcess} executes all the calling process and can be used without the aroma architecture. You can use this function with the segmentation method provided in the package or any other methods as long as you give the results of the segmentation in the right format (see \texttt{segmentData} argument).
 	
@@ -1270,9 +1269,9 @@ onlySNP=TRUE,loss="linear")
 			\label{SNPoutput}
 		\end{figure}
 
-		In this example, two markers are selected: the 1065th and 10046th markers of the profile (markers.index) at positions 20192586 pb and 47227321 pb on the chromosome 22. The coefficient associated with each selected marker are given in coefficient vector.
+		In this example, two markers are selected: the 1065th and 10046th markers of the profile (markers.index) at positions 20192586 pb and 47227321 pb on the chromosome 22. The coefficient associated with each selected marker are given in the coefficient vector.
 
-	\subsection{For any data provided in matrix}	
+	\subsection{For any data provided in matrices}	
 
 		A version of the selection of markers without the aroma architecture is available:
 		
