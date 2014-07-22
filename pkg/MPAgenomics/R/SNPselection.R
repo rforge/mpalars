@@ -290,6 +290,7 @@ SNPselectionFracBsignal=function(dataSetName,dataResponse,chromosome,normalTumor
     #ajouter listOfFile quand on veux ou on ne peux pas travailler sur ttes les donnees?
     
     #get the fracB signal for the chromosome chr
+    
     fracB=getFracBSignal(dataSetName,chr,normalTumorArray,listOfFiles=as.character(dataResponse$files),verbose=FALSE)
     
 
@@ -299,7 +300,8 @@ SNPselectionFracBsignal=function(dataSetName,dataResponse,chromosome,normalTumor
     #extract the response in the right order
     ind=sapply(names(fracB)[3:(ncol(fracB)-1)],FUN=function(x){match(x,dataResponse$files)})    
     if(sum(is.na(ind))!=0)
-      stop(paste0("A response is missing for the following files : ",paste(C$sampleNames[is.na(ind)],collapse=", ")))      
+      #stop(paste0("A response is missing for the following files : ",paste(C$sampleNames[is.na(ind)],collapse=", ")))   
+      stop(paste0("A response is missing for the following files : ",paste(fracB$sampleNames[is.na(ind)],collapse=", ")))
     
     response=dataResponse$response[ind]
       

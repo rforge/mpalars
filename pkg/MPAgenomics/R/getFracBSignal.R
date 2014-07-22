@@ -237,11 +237,11 @@ getFracBSignal=function(dataSetName,chromosome,normalTumorArray,listOfFiles=NULL
       fracB=getFracBSignalPairedStudy(ds,units,normalTumorArray,normalFiles)
       fracB$normal=fracB$normal  
       fracB$tumor=fracB$tumor
-      allFracB[[paste0("chr",chr)]]$normal=data.frame(chromosome=rep(chr,length(posChr)),position=posChr,fracB$normal,featureNames=unitNames)
+      allFracB[[paste0("chr",chr)]]$normal=data.frame(chromosome=rep(chr,length(posChr)),position=posChr,fracB$normal,featureNames=unitNames,check.names=FALSE)
       
      }
     
-    allFracB[[paste0("chr",chr)]]$tumor=data.frame(chromosome=rep(chr,length(posChr)),position=posChr,fracB$tumor,featureNames=unitNames)
+    allFracB[[paste0("chr",chr)]]$tumor=data.frame(chromosome=rep(chr,length(posChr)),position=posChr,fracB$tumor,featureNames=unitNames,check.names=FALSE)
   }
   
   return(allFracB)
