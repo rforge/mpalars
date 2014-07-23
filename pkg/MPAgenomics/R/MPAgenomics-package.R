@@ -16,8 +16,8 @@
 #'   \tabular{ll}{
 #' Package: \tab MPAgenomics\cr
 #' Type: \tab Package\cr
-#' Version: \tab 1.0.6\cr
-#' Date: \tab 2014-07-03\cr
+#' Version: \tab 1.1.0\cr
+#' Date: \tab 2014-07-23\cr
 #' License: \tab GPL (>=2) \cr
 #' }
 #' 

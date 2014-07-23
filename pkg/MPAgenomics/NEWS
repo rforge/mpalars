@@ -1,3 +1,7 @@
+Version 1.1.0 (23-07-2014)
+- Vignette update
+- Minor bugs correction 
+
 Version 1.0.5 (24-06-2014)
 - Vignette corrections for allele B fraction segmentations
 - Correction of getFracBsignal and segFracB 
