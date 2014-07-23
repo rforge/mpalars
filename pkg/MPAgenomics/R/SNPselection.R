@@ -68,11 +68,11 @@ markerSelection=function(dataSetName,dataResponse,chromosome=1:22,signal="CN",no
   #     cat("Package aroma.cn loaded.\n")
   
   
-  if(!suppressPackageStartupMessages(require(HDPenReg,quietly=TRUE) ) )
-  {
-    allpkg=FALSE
-    cat("The package HDPenReg is missing. You can install it with the following command:\n","install.packages(HDPenReg, repos=\"http://R-Forge.R-project.org\") \n")
-  }
+#   if(!suppressPackageStartupMessages(require(HDPenReg,quietly=TRUE) ) )
+#   {
+#     allpkg=FALSE
+#     cat("The package HDPenReg is missing. You can install it with the following command:\n","install.packages(HDPenReg, repos=\"http://R-Forge.R-project.org\") \n")
+#   }
 #   else
 #     cat("Package HDPenReg loaded.\n")
  
@@ -402,12 +402,12 @@ SNPselectionFracBsignal=function(dataSetName,dataResponse,chromosome,normalTumor
 variableSelection=function(dataMatrix,dataResponse,nbFolds=min(length(dataResponse),10),loss="logistic",plot=TRUE,...)
 {
   allpkg=TRUE
-  if(!require(HDPenReg,quietly=TRUE))
-  {
-    allpkg=FALSE
-    cat("The package changepoint is missing. You can install it with the following command:\n","install.packages(HDPenReg, repos=\"http://R-Forge.R-project.org\") \n")
-  }
-  
+#   if(!require(HDPenReg,quietly=TRUE))
+#   {
+#     allpkg=FALSE
+#     cat("The package changepoint is missing. You can install it with the following command:\n","install.packages(HDPenReg, repos=\"http://R-Forge.R-project.org\") \n")
+#   }
+#   
   if(!allpkg)
     stop("You have to install some packages : Follow the printed informations.")
   

@@ -1,4 +1,4 @@
-#' @import R.utils changepoint glmnet cghseg
+#' @import R.utils changepoint glmnet cghseg HDPenReg
 #' 
 #' @title Multi-Patient Analysis of Genomic Markers
 #' @docType package
