@@ -240,7 +240,7 @@ createArchitecture=TRUE, savePlot=TRUE, tags="Full")
 			The first pipeline offered in \texttt{MPAgenomics} consists in the segmentation of every copy-number profile of the data. Then, a calling method can be applied on all the segments to label them (e.g. "loss", "normal", "gain"). To perform segmentation and calling at the same time, type the following lines in your R console:
 
 <<eval=FALSE>>=
-segcall=cnSegCallingProcess("datatest1",chromosome=c(1,5))
+segcall=cnSegCallingProcess("datatest1",chromosome=c(1,5),method="PELT")
 #summary of segmentation and calling process
 segcall
 @
@@ -912,7 +912,7 @@ seg$segment
         Let $k$ the number of segments, the criterium \cite{penseg} to minimize is 
         $$g(k,C)=\frac{1}{P}\left(R(k)+C\times k \times \left(2.5+\log(\frac{P}{k})\right)\right) $$
       
-        where $R(k)$ is the residuals between the profile and the segmented profile, and $C$ a constant to optimize.
+        where $R(k)$ is the quadratic loss between the observed and the segmented signal, and $C$ a constant to optimize.
       
         The first step is to find the optimal constant $\hat{C}$ to use. Given a list $\mathcal{C}$ of potential constant, for each element $C\in\mathcal{C}$, we find the optimal $\hat{k}$ minimizing $g(k,C)$. Then, the optimal constant $\hat{C}$ is $2\times C_0$, whith $C_0$ the constant associated with the largest drop of the number of segments in Fig. \ref{fig:slopeheuristic}.  
       
@@ -972,7 +972,7 @@ seg$segment
 		The \texttt{cnSegCallingProcess} function executes the segmentation (see section \ref{sec:seg}) and the calling process. The specified data will be automatically imported by the function.\\
 			
 		\begin{verbatim}	
-		cnSegCallingProcess(dataSetName,normalTumorArray,chromosome,Rho,listOfFile,onlySNP,savePlot,
+		cnSegCallingProcess(dataSetName,normalTumorArray,chromosome,Rho,Kmax,listOfFile,onlySNP,savePlot,
 		nclass,cellularity,method,...)
 		\end{verbatim}
 		
@@ -982,10 +982,11 @@ seg$segment
 			\hline
 			\texttt{dataSetName} & name of the data-set folder in the rawData folder containing the signals to use.\\
 			\texttt{normalTumorArray} & Only in the case of normal-tumor study. A csv file or a data.frame\\
-			~~ & containing the mapping between normal and tumor files(Fig. \ref{normalTumorArray}).\\
+			~ & containing the mapping between normal and tumor files(Fig. \ref{normalTumorArray}).\\
 			\texttt{chromosome} & A vector containing the chromosome to segment.\\
-			\texttt{Rho} & A vector containing all the penalization values to test for the segmentation.\\
-			~ &  If no values are provided, default values will be used.\\
+  		\texttt{Rho} & Only for method="PELT", a vector containing all the penalization values to test \\
+			~ &  for the segmentation. If no values are provided, default values will be used.\\
+      \texttt{Kmax} & Only for method="cghseg", maximal number of segments.\\
 			\texttt{listOfFiles} & A vector containing the file names from the dataSetName to use.\\
 			\texttt{onlySNP} & If TRUE, only the SNP probes will be used.\\
 			\texttt{savePlot} & If TRUE, print some graphics (default=TRUE).\\
@@ -993,7 +994,7 @@ seg$segment
 			~ &   4 (including amplifications), 5 (including double deletions) (default=3).\\
 			\texttt{cellularity} &  Percentage of tumor cells in the sample (default=1).\\
 			\texttt{\dots} & Other parameters for the CGHcall function \cite{CGHcallR}.\\
-      \texttt{method} & PELT or cghseg. (default=cghseg).\\
+      \texttt{method} & "PELT" or "cghseg". (default="cghseg").\\
 			\hline
 		\end{tabular}
 
@@ -1014,7 +1015,7 @@ seg$segment
 		The graphic of the segmented profile is saved in the \texttt{figures} folder of the architecture.
 			
 <<eval=FALSE>>=
-seg2=cnSegCallingProcess("datatest1",chromosome=21:22)
+seg2=cnSegCallingProcess("datatest1",chromosome=21:22,method="PELT")
 @
 			
 		The output of the function is shown in the figure \ref{segcalloutput}.
