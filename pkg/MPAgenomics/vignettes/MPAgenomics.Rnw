@@ -944,7 +944,6 @@ seg$segment
         \paragraph*{Sample-specific versus common parameter}
       
           The \textit{sample-specific choice of $\rho$} described above was empirically compared with a \textit{common choice of  $\rho$} depending on the signal-to-noise ratio within each group of given profiles.
-
           Seventy profiles from a real dataset \cite{citerealdataset} were clustered into groups with homogeneous signal-to-noise ratio (SNR) by using a Gaussian mixture model. Three groups were provided by the BIC criterion. 
 
           Figure~\ref{fig:classifplateau} displays results (chromosome~1) for each profile (patient). Following Section~\ref{sec:calib} the widest range of $\rho$ values was plotted for each profile. 
@@ -1312,5 +1311,7 @@ res=variableSelection(dataMatrix,dataResponse,nbFolds=5,loss="linear",plot=TRUE)
 @		
 \nocite{*}
 \bibliographystyle{apalike}
+\newpage
+
 \bibliography{MPAgenomics} 	
 \end{document}
