@@ -52,8 +52,8 @@ CFLAGS   = -Wno-long-long
 #CXXFLAGS   = -ansi -pedantic -Wall -g -O0
 # STK_FLAGS = -DSTK_BOUNDS_CHECK  -DSTK_DEBUG
 
-LDFLAGS =
-LDLIBS = -lm
+#LDFLAGS =
+#LDLIBS = -lm
 
 #-----------------------------------------------------------------------
 # flags in Release mode 

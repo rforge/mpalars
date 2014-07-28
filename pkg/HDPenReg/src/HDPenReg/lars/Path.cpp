@@ -65,7 +65,8 @@ namespace HD
   {
     states_.push_back(PathState());
     states_.back().update(indexVariables,coefficients);
-    evolution_.push_back(make_pair(idxVarAdd,idxVarDrop));
+    vector<int> idxVarAddVect(1,idxVarAdd), idxVarDropVect(1,idxVarDrop);
+    evolution_.push_back(make_pair(idxVarAddVect,idxVarDropVect));
   }
 
 
