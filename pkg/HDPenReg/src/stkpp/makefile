@@ -126,26 +126,26 @@ all: lib
 lib: obj $(STK_LIB)
 
 # obj compiles the objects in all projects
-obj: stkernel sdk dmanager arrays algebra analysis statistik #statmodel clustering \
+obj: statistik #stkernel sdk dmanager arrays algebra analysis statistik statmodel clustering \
  #    aamodels regress reduct
 
 #-----------------------------------------------------------------------
 # rules for compiling each projects
-.PHONY: stkernel arrays sdk dmanager algebra analysis statistik statmodel clustering \
-        aamodels regress reduct
+.PHONY: stkernel arrays sdk dmanager algebra analysis statistik #statmodel clustering \
+#        aamodels regress reduct
 stkernel:
 	$(MAKE) -C $(SRC_STKERNEL_DIR)
-arrays:
+arrays: stkernel
 	$(MAKE) -C $(SRC_ARRAYS_DIR)
-sdk:
+sdk: stkernel
 	$(MAKE) -C $(SRC_SDK_DIR)
-dmanager:
+dmanager: sdk
 	$(MAKE) -C $(SRC_DMANAGER_DIR)
-algebra:
+algebra: dmanager arrays
 	$(MAKE) -C $(SRC_ALGEBRA_DIR)
-analysis:
+analysis: algebra
 	$(MAKE) -C $(SRC_ANALYSIS_DIR)
-statistik:
+statistik: analysis
 	$(MAKE) -C $(SRC_STATISTIK_DIR)
 statmodel:
 	$(MAKE) -C $(SRC_STATMODELS_DIR)
