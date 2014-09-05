@@ -123,7 +123,7 @@ CPP_OBJS = \
 all: lib
 
 # Create the library. Build the objects of each projects and then add them
-lib: obj $(STK_LIB)
+lib:  $(STK_LIB)
 
 # obj compiles the objects in all projects
 obj: statistik #stkernel sdk dmanager arrays algebra analysis statistik statmodel clustering \
@@ -134,7 +134,7 @@ obj: statistik #stkernel sdk dmanager arrays algebra analysis statistik statmode
 .PHONY: stkernel arrays sdk dmanager algebra analysis statistik #statmodel clustering \
 #        aamodels regress reduct
 stkernel:
-	$(MAKE) -C $(SRC_STKERNEL_DIR)
+	 $(MAKE) -C $(SRC_STKERNEL_DIR)
 arrays: stkernel
 	$(MAKE) -C $(SRC_ARRAYS_DIR)
 sdk: stkernel
@@ -160,7 +160,7 @@ reduct:
 
 #-----------------------------------------------------------------------
 # create the library adding the objects
-$(STK_LIB): $(CPP_OBJS)
+$(STK_LIB): obj 
 	$(AR) $(ARFLAGS) $@ $(CPP_OBJS)
 
 #-----------------------------------------------------------------------
