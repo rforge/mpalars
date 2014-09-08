@@ -120,6 +120,8 @@ CPP_OBJS = \
 #-----------------------------------------------------------------------
 # all compiles the objects and create the library, no tests are build
 .PHONY: all lib obj
+#.NOTPARALLEL: all lib obj
+
 all: lib
 
 # Create the library. Build the objects of each projects and then add them

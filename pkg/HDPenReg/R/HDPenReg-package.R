@@ -15,8 +15,8 @@
 #'   \tabular{ll}{
 #' Package: \tab HDPenReg\cr
 #' Type: \tab Package\cr
-#' Version: \tab 0.89.8\cr
-#' Date: \tab 2014-07-28\cr
+#' Version: \tab 0.89.9\cr
+#' Date: \tab 2014-09-08\cr
 #' License: \tab GPL (>=2) \cr
 #' }
 #' 
