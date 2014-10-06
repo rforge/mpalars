@@ -108,7 +108,7 @@ install.packages("aroma.cn")
 	
 			The example is based on a free data-set containing 8 .CEL files (251Mo) which can be downloaded from the Broad Institute website, following this link:
 			\url{http://www.broadinstitute.org/mpg/birdsuite/downloads/birdsuite_inputs_1.5.3.tgz}
-			If you are used to decompress .tgz files, extract this file and copy the following command in the R console, replacing the path to the directory where the raw data (.CEL files) are stored with the appropriate one. Note that we deliberately use "/" and not "$\backslash$ " in \texttt{celPATH}. If you copy paste paths from Windows (e.g. looking at properties of the directory), you must change "$\backslash$ " by "/" or "$\backslash\backslash$ ".
+			If you are used to decompress .tgz files, extract this file and copy the following command in the R console, replacing the path to the directory where the raw data (.CEL files) are stored with the appropriate one. Note that we deliberately use ``/'' and not ``$\backslash$'' in \texttt{celPATH}. If you copy paste paths from Windows (e.g. looking at properties of the directory), you must change ``$\backslash$'' by ``/'' or ``$\backslash\backslash$''.
 	
 <<eval=FALSE>>=
 celPATH="/home/user/Documents/workdir/CELdata/cel"
@@ -237,7 +237,7 @@ dataSetPath=celPATH,chipFilesPath=chipPATH, path=".",
 createArchitecture=TRUE, savePlot=TRUE, tags="Full")
 @	
 	
-			The first pipeline offered in \texttt{MPAgenomics} consists in the segmentation of every copy-number profile of the data. Then, a calling method can be applied on all the segments to label them (e.g. "loss", "normal", "gain"). To perform segmentation and calling at the same time, type the following lines in your R console:
+			The first pipeline offered in \texttt{MPAgenomics} consists in the segmentation of every copy-number profile of the data. Then, a calling method can be applied on all the segments to label them (e.g. ``loss'', ``normal'', ``gain''). To perform segmentation and calling at the same time, type the following lines in your R console:
 
 <<eval=FALSE>>=
 segcall=cnSegCallingProcess("datatest1",chromosome=c(1,5),method="PELT")
@@ -289,7 +289,7 @@ normalTumorArray=data.frame(normal=rep(files[1],7),tumor=files[2:8])
 				Note that the extension .CEL is not provided in the \texttt{normalTumorArray} dataframe.
 				In the following of the vignette, a study which provides both control and tumoral samples will be refered as a normal-tumor study.
 				
-				A new normalization can be run by taking into account information from the control sample. To separate analyses with or without control samples, we will store results from this normal-tumor study under the name "datatest2". As the architecture has already been created for "datatest1", it is not necessary to run \texttt{signalPreProcess} with \mbox{\texttt{createArchitecture=TRUE}}. It is faster to add the CEL files in "datatest2" while leaving the chip definition files as they are by using the function \texttt{addData} and then \texttt{signalPreProcess} with \mbox{\texttt{createArchitecture=FALSE}}.
+				A new normalization can be run by taking into account information from the control sample. To separate analyses with or without control samples, we will store results from this normal-tumor study under the name ``datatest2''. As the architecture has already been created for ``datatest1'', it is not necessary to run \texttt{signalPreProcess} with \mbox{\texttt{createArchitecture=TRUE}}. It is faster to add the CEL files in ``datatest2'' while leaving the chip definition files as they are by using the function \texttt{addData} and then \texttt{signalPreProcess} with \mbox{\texttt{createArchitecture=FALSE}}.
 
 <<eval=FALSE>>=
 addData(dataSetName="datatest2",dataPath=celPATH,chipType="GenomeWideSNP_6")
@@ -353,7 +353,7 @@ segfracB
 				\texttt{chipType} & The name of the used chip.\\
 				\texttt{dataSetPath} &  Path to the folder containing the data CEL files.\\
 				\texttt{chipFilesPath} & Path to the folder containing the chip files.\\
-				\texttt{path} & Path where the architecture should be created (default=".").\\
+				\texttt{path} & Path where the architecture should be created (default=``.'').\\
 				\texttt{verbose} & Print information during the process (default=FALSE).\\
         \texttt{tags} & Common tag which appears in the different file names (cdf, ugp, ufl) of the chip. \\
         ~~ & For no tag, use tags=NULL (default = NULL).\\
@@ -378,7 +378,7 @@ segfracB
 			\label{datafileSingle2}
 		\end{figure}
 		
-		The \texttt{celPATH} and \texttt{chipPATH} variables contain the different paths to the downloaded files. The following command enables to both create the architecture and add the previous dataset under the name "datatest1".
+		The \texttt{celPATH} and \texttt{chipPATH} variables contain the different paths to the downloaded files. The following command enables to both create the architecture and add the previous dataset under the name ``datatest1''.
 <<eval=FALSE>>=
 createArchitecture("datatest1","GenomeWideSNP_6",celPATH,chipPATH,".",TRUE,"Full")
 @
@@ -522,7 +522,7 @@ createArchitecture("datatest1","GenomeWideSNP_6",celPATH,chipPATH,".",TRUE,"Full
 				Parameters & Description\\
 				\hline
 				\texttt{dataSetName} & The name of the data-set.\\
-				\texttt{chipType} & The type of the used chip (e.g. "GenomeWideSNP\_6").\\
+				\texttt{chipType} & The type of the used chip (e.g. ``GenomeWideSNP\_6'').\\
 				\texttt{normalTumorArray} & Only in the case of normal-tumor study. A csv file or a data.frame\\
 				~~ & containing the mapping between normal and tumor files(Fig. \ref{normalTumorArray}).\\
 				\texttt{dataSetPath} & Only if \texttt{createArchitecture=TRUE}.\\
@@ -530,7 +530,7 @@ createArchitecture("datatest1","GenomeWideSNP_6",celPATH,chipPATH,".",TRUE,"Full
 				\texttt{chipFilesPath} & Only if \texttt{createArchitecture=TRUE}.\\
 				~~ & Path to the folder containing all the annotations files for the specified chip type.\\
 				\texttt{path} & Only if \texttt{createArchitecture=TRUE}.\\
-				~~ & Path where the architecture should be created (default=".").\\
+				~~ & Path where the architecture should be created (default=``.'').\\
 				\texttt{createArchitecture} & if TRUE, the aroma architecture will be automatically created (default=TRUE).\\
 				\texttt{savePlot} & if TRUE, graphics of the CN signal and allele B fraction signal will be\\
 				~~ & saved in the \texttt{figures/signal} folder. (default=TRUE).\\
@@ -739,15 +739,15 @@ savePlot=TRUE,method="cghseg")
 				\texttt{normalTumorArray} & Only in the case of normal-tumor study. A csv file or a data.frame\\
 				~~ & containing the mapping between normal and tumor files(Fig. \ref{normalTumorArray}).\\
 				\texttt{chromosome} & A vector with the chromosomes to be segmented.\\
-				\texttt{Rho} & Only for method="PELT", a vector containing all the penalization values to test \\
+				\texttt{Rho} & Only for method=``PELT'', a vector containing all the penalization values to test \\
 				~ &  for the segmentation. If no values are provided, default values will be used.\\
-        \texttt{Kmax} & Only for method="cghseg", maximal number of segments.\\
+        \texttt{Kmax} & Only for method=``cghseg'', maximal number of segments.\\
 				\texttt{onlySNP} & If TRUE, only the copy-number for SNPs positions will be returned (default=TRUE).\\
 				\texttt{listOfFiles} & A vector containing the names of the files in dataSetName folder for which\\
 				~ & the copy number profiles  will be segmented (default is all the files).\\
 				\texttt{savePlot} & if TRUE, graphics of the segmented CN signal will be\\
 				~~ & saved in the \texttt{figures/dataSetName/segmentation/CN} folder. (default=TRUE).\\
-				\texttt{method} & "PELT" or "cghseg". (default="cghseg").\\
+				\texttt{method} & ``PELT'' or ``cghseg''. (default=``cghseg'').\\
 				\hline
 			\end{tabular}		
 		\end{center}
@@ -814,9 +814,9 @@ savePlot=TRUE,verbose=TRUE,method="cghseg")
 				\texttt{normalTumorArray} & A csv file or a data.frame\\
 				~~ & containing the mapping between normal and tumor files(Fig. \ref{normalTumorArray}).\\
 				\texttt{chromosome} & A vector with the chromosomes to be segmented.\\
-  			\texttt{Rho} & Only for method="PELT", a vector containing all the penalization values to test\\
+  			\texttt{Rho} & Only for method=``PELT'', a vector containing all the penalization values to test\\
 				~ &  for the segmentation. If no values are provided, default values will be used.\\
-        \texttt{Kmax} & Only for method="cghseg", maximal number of segments.\\
+        \texttt{Kmax} & Only for method=``cghseg'', maximal number of segments.\\
 				\texttt{listOfFiles} & A vector containing the names of the files in dataSetName folder for which\\
 				~ & the allele B profile is segmented (default is all the files).\\
 				\texttt{savePlot} & if TRUE, graphics of the segmented allele B profile will be\\
@@ -850,13 +850,13 @@ savePlot=TRUE,verbose=TRUE,method="cghseg")
 				Parameters & Description\\
 				\hline
 				\texttt{signal} & A vector containing the signal.\\
-    		\texttt{Rho} & Only for method="PELT", a vector containing all the penalization values to test\\
+    		\texttt{Rho} & Only for method=``PELT'', a vector containing all the penalization values to test\\
 				~ & for the segmentation. If no values are provided, default values will be used.\\
-        \texttt{Kmax} & Only for method="cghseg", maximal number of segments.\\
+        \texttt{Kmax} & Only for method=``cghseg'', maximal number of segments.\\
 				\texttt{position} & A vector containing the position of all elements of the signal (not necessary).\\
 				\texttt{plot} & If TRUE, plot some graphics (default=TRUE	).\\
 				\texttt{verbose} & If TRUE, print some information (default=TRUE).\\
-        \texttt{method} & "PELT" or "cghseg". (default="cghseg").\\
+        \texttt{method} & ``PELT'' or ``cghseg''. (default=``cghseg'').\\
 				\hline	
 			\end{tabular}		
 		\end{center}
@@ -983,9 +983,9 @@ seg$segment
 			\texttt{normalTumorArray} & Only in the case of normal-tumor study. A csv file or a data.frame\\
 			~ & containing the mapping between normal and tumor files(Fig. \ref{normalTumorArray}).\\
 			\texttt{chromosome} & A vector containing the chromosome to segment.\\
-  		\texttt{Rho} & Only for method="PELT", a vector containing all the penalization values to test \\
+  		\texttt{Rho} & Only for method=``PELT'', a vector containing all the penalization values to test \\
 			~ &  for the segmentation. If no values are provided, default values will be used.\\
-      \texttt{Kmax} & Only for method="cghseg", maximal number of segments.\\
+      \texttt{Kmax} & Only for method=``cghseg'', maximal number of segments.\\
 			\texttt{listOfFiles} & A vector containing the file names from the dataSetName to use.\\
 			\texttt{onlySNP} & If TRUE, only the SNP probes will be used.\\
 			\texttt{savePlot} & If TRUE, print some graphics (default=TRUE).\\
@@ -993,7 +993,7 @@ seg$segment
 			~ &   4 (including amplifications), 5 (including double deletions) (default=3).\\
 			\texttt{cellularity} &  Percentage of tumor cells in the sample (default=1).\\
 			\texttt{\dots} & Other parameters for the CGHcall function \cite{CGHcallR}.\\
-      \texttt{method} & "PELT" or "cghseg". (default="cghseg").\\
+      \texttt{method} & ``PELT'' or ``cghseg''. (default=``cghseg'').\\
 			\hline
 		\end{tabular}
 
@@ -1008,7 +1008,7 @@ seg$segment
 			\item \textbf{chromEnd} The ending position (in bp) of the segment. This position is included in the segment.
 			\item \textbf{probes} Number of probes in the segment.
 			\item \textbf{means} Mean of the segment.
-			\item \textbf{calls} The calling of the segment ("double loss", "loss", "normal", "gain" or "amplification").
+			\item \textbf{calls} The calling of the segment (``double loss'', ``loss'', ``normal'', ``gain'' or ``amplification'').
 		\end{itemize}
 			
 		The graphic of the segmented profile is saved in the \texttt{figures} folder of the architecture.
@@ -1041,8 +1041,8 @@ seg2=cnSegCallingProcess("datatest1",chromosome=21:22,method="PELT")
 				Parameters & Description\\
 				\hline
 				\texttt{segmentData} & A list (see details below).\\
-				\texttt{nclass} & Number of labels. 3 corresponds to "loss", "normal" and "gain", \\
-				~ & 4 adds "amplification" and 5 adds "double loss".\\
+				\texttt{nclass} & Number of labels. 3 corresponds to ``loss'', ``normal'' and ``gain'', \\
+				~ & 4 adds ``amplification'' and 5 adds ``double loss''.\\
 				\texttt{cellularity} & Percentage of tumor cells in the sample (default=1).\\
 				\texttt{verbose} & If TRUE, print some information.\\
 				\texttt{\dots} & Others parameters for CGHcall function \cite{CGHcallR}.\\
@@ -1138,7 +1138,7 @@ call$segment
 				Arguments & Description\\
 				\hline
 				\texttt{segmentList} & A data.frame containing a description of segments, it must have at least columns:\\
-				~ & "chromStart", "chromEnd", "probes" and "calls" (see the output of\\
+				~ & ``chromStart'', ``chromEnd'', ``probes'' and ``calls'' (see the output of\\
 				~ & \texttt{cnSegLabelProcess} and \texttt{callingProcess} functions).\\
 				\texttt{minLength} & The minimum length (in bp) for a segment. All the shorter segments are removed.\\
 				\texttt{minProbes} & The minimum number of probes for a segment.\\
@@ -1210,16 +1210,16 @@ loss,plot,...)
 				Parameters & Description\\
 				\hline
 				\texttt{dataSetName} & The name of the data-set folder.\\
-				\texttt{dataResponse} & A csv files or a data.frame with 2 columns: "files" and "response".\\
-				~ & The column "files" contains the filename to extract and\\
+				\texttt{dataResponse} & A csv files or a data.frame with 2 columns: ``files'' and ``response''.\\
+				~ & The column ``files'' contains the filename to extract and\\
 				~ &   the second column the response associated with the file.\\
 				\texttt{chromosome} & A vector containing the number of the chromosomes for the SNPs selection.\\
-				\texttt{signal} & "CN" or "fracB", corresponding to which signal will be analyzed (default="CN").\\
+				\texttt{signal} & ``CN'' or ``fracB'', corresponding to which signal will be analyzed (default=``CN'').\\
 				\texttt{normalTumorArray} & Only in the case of normal-tumor study. A csv file or a data.frame\\
 			~~ & containing the mapping between normal and tumor files(Fig. \ref{normalTumorArray}).\\
 				\texttt{onlySNP} & Only if \texttt{signal="CN"}. If TRUE, only the SNPs probes are used (default=FALSE).\\
 				\texttt{nbFolds} & Number of folds for the cross-validation (default=10).\\
-				\texttt{loss}  & either "logistic" (binary response) or "linear" (quantitative response), default is "logistic".\\
+				\texttt{loss}  & either ``logistic'' (binary response) or ``linear'' (quantitative response), default is ``logistic''.\\
 				\texttt{plot} & If TRUE, cross-validation mean squared error is plotted (default=TRUE).\\
 				\texttt{...} & supplementary arguments for \texttt{cv.glmnet} function \cite{glmnet} in case of \\
 				~ & logistic loss or for \texttt{HDlars} function for linear loss.\\
@@ -1286,7 +1286,8 @@ onlySNP=TRUE,loss="linear")
 				\hline
 				\texttt{dataMatrix} & A matrix containing the data, each row is a different signal.\\
 				\texttt{dataResponse} & A vector containing the response associated with each signal.\\
-				\texttt{nbFolds} & Number of folds for the cross-validation (default=10).\\							\texttt{loss}  & either "logistic" (binary response) or "linear" (quantitative response), default is "logistic".\\
+				\texttt{nbFolds} & Number of folds for the cross-validation (default=10).\\							
+        \texttt{loss}  & either ``logistic'' (binary response) or ``linear'' (quantitative response), default is ``logistic''.\\
 				\texttt{plot} & If TRUE plot cross-validation mean squared error (default=TRUE).\\
 				\texttt{...} & supplementary arguments for \texttt{cv.glmnet} function \cite{glmnet} in case of \\
 				~ & logistic loss or for \texttt{HDlars} function for linear loss.\\
