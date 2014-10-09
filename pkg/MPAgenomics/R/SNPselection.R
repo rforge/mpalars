@@ -167,92 +167,14 @@ SNPselectionCNsignal=function(dataSetName,dataResponse,chromosome,normalTumorArr
     
     nbFolds=min(nbFolds,length(response))
     
-    if(loss=="linear")
-    {
-      if(pkg=="HDPenReg")
-      {
-        #cross validation to choose the best l1 norm ratio
-        rescv=HDcvlars(t(as.matrix(C[3:(ncol(C)-1)])), response, nbFolds,index = seq(0, 1, by = 0.01),...)
-        
-        if(plot)
-        {
-          plotCv(rescv)
-          title(paste0("chr",chr))
-        }
-        
-        #lars algorithm for obtaining all the path
-        reslars=HDlars(t(as.matrix(C[3:(ncol(C)-1)])), response,...) #ajouter critere d'arret sur la norme, le nb de variable ??
-        
-        #we compute the coefficients for the value given by the HDcvlars function
-        coeff=computeCoefficients(reslars,rescv$fraction,mode="fraction")
-        
-        
-        intercept=reslars@mu
-        if(length(coeff$variable)!=0)
-        {
-          index=order(coeff$variable)
-          var=coeff$variable[index]
-          pos=C$position[coeff$variable[index]]
-          name=as.character(C$featureNames)[coeff$variable[index]]
-          coef=coeff$coefficient[index]
-        }
-        else
-        {
-          pos=c()
-          var=c()
-          name=c()
-          coef=c()
-        }
-        rm(reslars,coeff)
-        gc()
-      }
-      else
-      {
-        if(pkg=="spikeslab")
-        {
-          ################ spikeslab
-          #rescv=cv.spikeslab(x=t(as.matrix(C[3:(ncol(C)-1)])), y=response, bigp.smalln = TRUE,K=nbFolds,... )
-          rescv=spikeslab(x=t(as.matrix(C[3:(ncol(C)-1)])), y=response, bigp.smalln = TRUE,... )
-          
-          intercept=rescv$y.center #rescv$spikeslab.obj$y.center #si cv.spikeslab
-          var=which(rescv$gnet.scale!=0)
-          pos=C$position[var]
-          name=as.character(C$featureNames)[var]
-          coef=rescv$gnet.scale[var]
-          names(var)=NULL
-          names(pos)=NULL
-          names(name)=NULL
-          names(coef)=NULL
-        }
-      }
-    }
-    else
-    {
-      if(loss=="logistic")
-      {
-        rescv=cv.glmnet(t(as.matrix(C[3:(ncol(C)-1)])), response, nfolds=nbFolds,family="binomial",...)
-        if(plot)
-        {
-          plot(rescv)
-          title(paste0("chr",chr))
-        }
-        coef=coef(rescv,s=rescv$lambda.min)
-        ind=which(coef!=0)
-
-        var=ind[-1]-1
-        pos=C$position[var]
-        name=as.character(C$featureNames)[var]
-        intercept=coef[1]
-        coef=coef[ind[-1]]
-      }
-    }
+    restemp=variableSelection(t(as.matrix(C[,3:(ncol(C)-1)])),response,nbFolds,loss,plot,pkg,...)
     
-    res[[paste0("chr",chr)]]=list(chr=chr,markers.index=var,markers.position=pos,
-                                  markers.names=name,coefficient=coef,
-                                  intercept=intercept)
+    res[[paste0("chr",chr)]]=list(chr=chr,markers.index=restemp$markers.index,markers.position=C$position[restemp$markers.index],
+                                  markers.names=as.character(C$featureNames)[restemp$markers.index],coefficient=restemp$coefficient,
+                                  intercept=restemp$intercept)
     
     #delete objects created during this loop
-    rm(C,rescv,coef,pos,intercept,name,var)
+    rm(C,restemp)    
     gc()
   }
   
@@ -311,93 +233,13 @@ SNPselectionFracBsignal=function(dataSetName,dataResponse,chromosome,normalTumor
     
     nbFolds=min(nbFolds,length(response))
     
-    if(loss=="linear")
-    {
-      if(pkg=="HDPenReg")
-      {
-        #cross validation to choose the best l1 norm ratio
-        rescv=HDcvlars(t(as.matrix(fracB[,3:(ncol(fracB)-1)])), response, nbFolds,index = seq(0, 1, by = 0.01),...)
-        
-        if(plot)
-        {
-          plotCv(rescv)
-          title(paste0("chr",chr))
-        }
-        
-        #lars algorithm for obtaining all the path
-        reslars=HDlars(t(as.matrix(fracB[,3:(ncol(fracB)-1)])), response,...) #ajouter critere d'arret sur la norme, le nb de variable ??
-        
-        #we compute the coefficients for the value given by the HDcvlars function
-        coeff=computeCoefficients(reslars,rescv$fraction,mode="fraction")      
-        
-        
-        intercept=reslars@mu
-        if(length(coeff$variable)!=0)
-        {
-          index=sort(coeff$variable,index.return=TRUE)$ix
-          var=coeff$variable[index]
-          pos=fracB$position[coeff$variable[index]]
-          name=as.character(fracB$featureNames)[coeff$variable[index]]
-          coef=coeff$coefficient[index]
-        }
-        else
-        {
-          pos=c()
-          var=c()
-          name=c()
-          coef=c()
-        }
-        
-        rm(reslars,coeff)
-        gc()
-      }
-      else
-      {
-        if(pkg=="spikeslab")
-        {
-          ################ spikeslab
-          #rescv=cv.spikeslab(x=t(as.matrix(C[3:(ncol(C)-1)])), y=response, bigp.smalln = TRUE,K=nbFolds,... )
-          rescv=spikeslab(x=t(as.matrix(fracB[3:(ncol(fracB)-1)])), y=response, bigp.smalln = TRUE,... )
-          
-          intercept=rescv$y.center #rescv$spikeslab.obj$y.center #si cv.spikeslab
-          var=which(rescv$gnet.scale!=0)
-          pos=fracB$position[var]
-          name=as.character(fracB$featureNames)[var]
-          coef=rescv$gnet.scale[var]
-          names(var)=NULL
-          names(pos)=NULL
-          names(name)=NULL
-          names(coef)=NULL
-        }
-      }
-    }
-    else
-    {
-      if(loss=="logistic")
-      {
-        rescv=cv.glmnet(t(as.matrix(fracB[,3:(ncol(fracB)-1)])), response, nfolds=nbFolds,family="binomial",...)
-        if(plot)
-        {
-          plot(rescv)
-          title(paste0("chr",chr))
-        }
-        coef=coef(rescv,s=rescv$lambda.min)
-        
-        ind=which(coef!=0)
-        
-        var=ind[-1]-1
-        pos=fracB$position[var]
-        name=as.character(fracB$featureNames)[var]
-        intercept=coef[1]
-        coef=coef[ind[-1]]
-      }
-    }
+    restemp=variableSelection(t(as.matrix(fracB[,3:(ncol(fracB)-1)])),response,nbFolds,loss,plot,pkg,...)
     
-    res[[paste0("chr",chr)]]=list(chr=chr,markers.index=var,markers.position=pos,
-                                  markers.names=name,coefficient=coef,
-                                  intercept=intercept)
+    res[[paste0("chr",chr)]]=list(chr=chr,markers.index=restemp$markers.index,markers.position=fracB$position[restemp$markers.index],
+                                  markers.names=as.character(fracB$featureNames)[restemp$markers.index],coefficient=restemp$coefficient,
+                                  intercept=restemp$intercept)
     
-    rm(fracB,rescv,coef,pos,intercept,name,var)
+    rm(fracB,restemp)
     gc()
   }
   

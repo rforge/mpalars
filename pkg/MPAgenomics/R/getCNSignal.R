@@ -46,8 +46,6 @@ getCopyNumberSignal=function(dataSetName,chromosome,normalTumorArray,onlySNP=FAL
     cat("install.packages(\"aroma.affymetrix\")\n")
     allpkg=FALSE
   }
-  #   else
-  #     cat("Package aroma.affymetrix loaded.\n")
   
   if(!suppressPackageStartupMessages(require("aroma.cn", quietly=TRUE) ) )
   {
@@ -55,8 +53,6 @@ getCopyNumberSignal=function(dataSetName,chromosome,normalTumorArray,onlySNP=FAL
     cat("install.packages(\"aroma.cn\")\n") 
     allpkg=FALSE
   }
-  #   else
-  #     cat("Package aroma.cn loaded.\n")
   
     
   if(!allpkg)

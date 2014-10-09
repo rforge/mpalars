@@ -46,9 +46,7 @@ segFracBSignal=function(dataSetName,normalTumorArray,chromosome=1:22,method=c("c
     cat("install.packages(\"aroma.affymetrix\")\n")
     allpkg=FALSE
   }
-  #   else
-  #     cat("Package aroma.affymetrix loaded.\n")
-  
+
   if(!suppressPackageStartupMessages(require("aroma.cn", quietly=TRUE) ) )
   {
     cat("Package not found: aroma.cn. For download it:\n")
