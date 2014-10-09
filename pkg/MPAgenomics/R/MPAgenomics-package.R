@@ -1,4 +1,4 @@
-#' @import R.utils changepoint glmnet cghseg HDPenReg
+#' @import R.utils changepoint glmnet cghseg HDPenReg spikeslab
 #' 
 #' @title Multi-Patient Analysis of Genomic Markers
 #' @docType package
@@ -16,8 +16,8 @@
 #'   \tabular{ll}{
 #' Package: \tab MPAgenomics\cr
 #' Type: \tab Package\cr
-#' Version: \tab 1.1.0\cr
-#' Date: \tab 2014-07-23\cr
+#' Version: \tab 1.1.1\cr
+#' Date: \tab 2014-10-09\cr
 #' License: \tab GPL (>=2) \cr
 #' }
 #' 
