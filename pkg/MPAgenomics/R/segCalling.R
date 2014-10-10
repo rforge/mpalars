@@ -64,17 +64,7 @@ cnSegCallingProcess=function(dataSetName,normalTumorArray,chromosome=1:22,method
     cat("install.packages(\"aroma.cn\")\n") 
     allpkg=FALSE
   }
-  #   else
-  #     cat("Package aroma.cn loaded.\n")
-  
-  
-#   if(!suppressPackageStartupMessages(require("changepoint",quietly=TRUE)))
-#   {
-#     allpkg=FALSE
-#     cat("The package changepoint is missing. You can install it with the following command:\n","install.packages(\"changepoint\") \n")
-#   }
-#   else
-#     cat("Package changepoint loaded.\n")
+
   
   if(!allpkg)
     stop("You have to install some packages : Follow the printed informations.")

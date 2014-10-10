@@ -26,13 +26,6 @@ PELT=function(signal,Rho,position=NULL,plot=TRUE,verbose=TRUE)
 {
   #package for PELT method
   allpkg=TRUE
-#   if(!suppressPackageStartupMessages(require(changepoint,quietly=TRUE) ) )
-#   {
-#     allpkg=FALSE
-#     cat("The package changepoint is missing. You can install it with the following command:\n","install.packages(\"changepoint\") \n")
-#   }
-#   else
-#     cat("Package changepoint loaded.\n")
   
   if(!allpkg)
     stop("You have to install some packages : Follow the printed informations.")
@@ -177,8 +170,6 @@ PELTaroma=function(dataSetName,normalTumorArray,chromosome=1:22,Rho=NULL,listOfF
     cat("install.packages(\"aroma.affymetrix\")\n")
     allpkg=FALSE
   }
-  #   else
-  #     cat("Package aroma.affymetrix loaded.\n")
   
   if(!suppressPackageStartupMessages(require("aroma.cn", quietly=TRUE) ) )
   {
@@ -186,16 +177,7 @@ PELTaroma=function(dataSetName,normalTumorArray,chromosome=1:22,Rho=NULL,listOfF
     cat("install.packages(\"aroma.cn\")\n") 
     allpkg=FALSE
   }
-  #   else
-  #     cat("Package aroma.cn loaded.\n")
-  
-#   if(!suppressPackageStartupMessages(require("changepoint",quietly=TRUE)))
-#   {
-#     allpkg=FALSE
-#     cat("The package changepoint is missing. You can install it with the following command:\n","install.packages(\"changepoint\") \n")
-#   }
-#   else
-#     cat("Package changepoint loaded.\n")
+
   
   if(!allpkg)
     stop("You have to install some packages : Follow the printed informations.")
