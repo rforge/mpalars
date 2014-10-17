@@ -1192,6 +1192,8 @@ with $(X\beta)_{i}=\sum_p x_{i,p}\beta_p$ and $\lambda>0$ controlling the number
 After minimization, non-zero coefficients $\beta_p$ correspond to influential positions to predict the response. \\
 	
 	To solve this problem, we use the LARS algorithm \cite{lars} that solves the lasso problem for all the values of $\lambda$. In order to choose the best solution, we use a cross validation to select the best values of $\lambda$ and return the associated solution.\\
+  
+  The spike and slab method \cite{spikeslab1}\cite{spikeslab2} is also used in the case of linear regression. It is a three steps procedure including a filtering step, a marker effect estimation step and a marker selection step. The filtering and marker effect estimation steps use the spike and slab algorithm whereas the marker selection rely on the elastic net (mixing a $l_1$ penalty whit a $l_2$ penalty). The spike and slab algorithm solves a generalized ridge regression problem ($l_2$ penalty). It is implemented in the R package \texttt{spikeslab} \cite{spikeslabR}. 
 	
 	
 	\subsection{From data normalized by aroma}	
@@ -1221,6 +1223,7 @@ loss,plot,...)
 				\texttt{nbFolds} & Number of folds for the cross-validation (default=10).\\
 				\texttt{loss}  & either ``logistic'' (binary response) or ``linear'' (quantitative response), default is ``logistic''.\\
 				\texttt{plot} & If TRUE, cross-validation mean squared error is plotted (default=TRUE).\\
+        \texttt{pkg} & Either ``HDPenReg'' or ``spikeslab''. Ued package in linear case.\\
 				\texttt{...} & supplementary arguments for \texttt{cv.glmnet} function \cite{glmnet} in case of \\
 				~ & logistic loss or for \texttt{HDlars} function for linear loss.\\
 				\hline	
@@ -1289,6 +1292,7 @@ onlySNP=TRUE,loss="linear")
 				\texttt{nbFolds} & Number of folds for the cross-validation (default=10).\\							
         \texttt{loss}  & either ``logistic'' (binary response) or ``linear'' (quantitative response), default is ``logistic''.\\
 				\texttt{plot} & If TRUE plot cross-validation mean squared error (default=TRUE).\\
+        \texttt{pkg} & Either ``HDPenReg'' or ``spikeslab''. Ued package in linear case.\\
 				\texttt{...} & supplementary arguments for \texttt{cv.glmnet} function \cite{glmnet} in case of \\
 				~ & logistic loss or for \texttt{HDlars} function for linear loss.\\
 				\hline	
