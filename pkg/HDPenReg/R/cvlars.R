@@ -76,7 +76,7 @@ HDcvlars <- function(X,y,nbFolds=10,index=seq(0,1,by=0.01),mode=c("fraction","la
   val=.Call( "cvlars",X,y,nrow(X),ncol(X),maxSteps,intercept,eps,nbFolds,partition,index,lambdaMode,PACKAGE = "HDPenReg" )
   
   #create the output object
-  cv=list(cv=val$cv,cvError=val$cvError,minCv=min(val$cv),minIndex=index[which.min(val$cv)],index=index,maxSteps=maxSteps)
+  cv=list(cv=val$cv,cvError=val$cvError,minCv=min(val$cv),minIndex=index[which.min(val$cv)],index=index,maxSteps=maxSteps,mode=mode)
   
   class(cv)="cvlars"
   #plotCv(cv)
@@ -148,7 +148,11 @@ plotCv=function(x)
 		stop("x is missing.")
 	if(class(x)!="cvlars")
 		stop("x must be an output of the HDcvlars function.")
-	plot(x$index, x$cv, type = "b", ylim = range(x$cv, x$cv + x$cvError, x$cv - x$cvError),xlab="Fraction L1 Norm",ylab="Cross-Validated MSE")
+  
+	lab="Fraction L1 Norm"
+  if(mode=="lambda")
+    lab="lambda"
+	plot(x$index, x$cv, type = "b", ylim = range(x$cv, x$cv + x$cvError, x$cv - x$cvError),xlab=lab,ylab="Cross-Validated MSE")
 	lines(x$index, x$cv+x$cvError,lty=2)
 	lines(x$index, x$cv-x$cvError,lty=2)
 }
