@@ -687,21 +687,26 @@ namespace HD
 
 
   /*
-   * predict the path for a ratio fraction = l1norm/l1normmax
+   * predict the path for a ratio index = l1norm/l1normmax or a specific value of lambda
    * @param X new data for predict the response
-   * @param fraction real between 0 and 1 .
-   * @return predicted response
+   * @param index index (lambda or fraction) where the response is estimated. 
+   * @param lambdaMode if TRUE, index corresponds to a value of lambda, if FALSE, index is a real between 0 and 1 
+   * corresponding to ratio between the l1 norm of estimates to calculate and l1 norm max of solution
+   * @param predicted response (be modified)
    */
-  void Lars::predict(STK::CArrayXX const& X, STK::Real fraction, STK::CVectorX &yPred)
+  void Lars::predict(STK::CArrayXX const& X, STK::Real index, bool lambdaMode, STK::CVectorX &yPred)
   {
     yPred = mu_;
-
-    //fraction = 0 : all coefficients are equal to 0
-    if(fraction == 0)
+    //std::cout<<"la "<<index<<"  "<<path_.lambda(0)<<"  a"<<((index == 0.) && !lambdaMode)<<"  b"<<((index>=path_.lambda(0)) && lambdaMode)<<"    c"<<(((index == 0.) && !lambdaMode) || ((index>=index-path_.lambda(0)) && lambdaMode))<<std::endl;
+    //index = 0 : all coefficients are equal to 0
+    //lambda >= lambda max : all coefficients equal to 0
+    if( ((index == 0.) && !lambdaMode) || ((index>=path_.lambda(0)) && lambdaMode) )
       return ;
 
-    //fraction = 1 : coefficients of the last step
-    if (fraction == 1)
+
+    //index = 1 : coefficients of the last step
+    //lambda <= lambda min : coefficients of the last step
+    if( ((index == 1.) && !lambdaMode) || ((index <= path_.lambda().back()) && lambdaMode) )
     {
       int lastStep = path_.size()-1;//stocké dans un vector index à 0
       int nbVar = path_.lastState().sizeRows();
@@ -710,23 +715,52 @@ namespace HD
       for(int i = 1; i <= yPred.sizeRowsImpl(); i++)
         for(int j = 1; j <= nbVar; j++)
           yPred[i] += (X(i, varIdx(lastStep,j)) -muX_[varIdx(lastStep,j)]) * coefficient(lastStep,j);
-
+      
       return ;
     }
 
-    //fraction >0 and <1
+    //fraction >0 and <1 or lambda <lambda max and > lambda min
     Array2DVector<STK::Real> l1norm(path_.l1norm());
+    Array2DVector<STK::Real> listIndex;
+    int ind = 1;
 
-    fraction *= l1norm.back();
+    if(lambdaMode)
+    {
+        //std::cout<<"la1b"<<std::endl;
+        int lambdasize=path_.lambda().size();
+        listIndex.resize(lambdasize);
 
-    int index = 1;
-    while(l1norm[index] < fraction)
-      index++;
+        for(int i = 0; i < lambdasize; i++)
+          listIndex[i+1] = path_.lambda(i);
+          
+        //stk_cout<<listIndex<<std::endl;
+        //stk_cout<<l1norm<<std::endl;
+        while(listIndex[ind] > index)
+          ind++;
+    }
+    else
+    {
+      listIndex = l1norm;
+      index *= listIndex.back();
+      while(listIndex[ind] < index)
+        ind++;
+    }
 
+
+
+
+    STK::Real l1normNew(0.);
+    if(!lambdaMode)
+      l1normNew = index;
+    else
+      l1normNew = l1norm[ind-1]+(index-listIndex[ind-1])/(listIndex[ind]-listIndex[ind-1])*(l1norm[ind]-l1norm[ind-1]);
+    
+    //std::cout<<"encadre : "<<listIndex[ind-1]<<"   "<<listIndex[ind]<<"   "<<l1norm[ind-1]<<"   "<<l1norm[ind]<<std::endl;
+    //std::cout<<index<<"  : "<<path_.states(ind-2).l1norm()<<"   "<<l1normNew<<"   "<<path_.states(ind-1).l1norm()<<"   "<<std::endl;
     //compute coefficient
-    STK::Array2DVector< pair<int,Real> > coeff(std::max(path_.states(index-2).size(),path_.states(index-1).size()));
-    //coeff.move(computeCoefficients(path_.states(index-2),path_.states(index-1),path_.evolution(index-2),fraction));
-    computeCoefficients(path_.states(index-2),path_.states(index-1),path_.evolution(index-2),fraction,coeff);
+    STK::Array2DVector< pair<int,Real> > coeff(std::max(path_.states(ind-2).size(),path_.states(ind-1).size()));
+    //coeff.move(computeCoefficients(path_.states(ind-2),path_.states(ind-1),path_.evolution(ind-2),fraction));
+    computeCoefficients(path_.states(ind-2),path_.states(ind-1),path_.evolution(ind-2),l1normNew,coeff);
 
     for( int i = 1; i <= yPred.sizeRowsImpl(); i++)
       for( int j = 1; j <= coeff.sizeRows(); j++)
@@ -735,5 +769,6 @@ namespace HD
     return ;
   }
 
+ 
 
 }//end namespace

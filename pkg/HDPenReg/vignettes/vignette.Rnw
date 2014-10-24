@@ -323,7 +323,7 @@ sort(reslars@variable[[16]])
 		
 		The function \texttt{HDcvlars} performs a cross-validation, here is its usage in \texttt{R}:
 << cvlarsdef, echo=TRUE,eval=FALSE >>=
-# HDcvlars(X, y, nbFolds,index, maxSteps,intercept,eps)
+# HDcvlars(X, y, nbFolds, index, mode, maxSteps, partition, intercept, eps)
 @
 			
 		\begin{tabular}{ll}
@@ -331,10 +331,13 @@ sort(reslars@variable[[16]])
 			\textbf{y}			& Vector of length $n$ with the responses.\\
 			\textbf{nbFolds}		& Number of folds for the cross-validation.\\
 			~~					& The default value is $10$.\\
-			\textbf{index}		& $l_1$ norm ratio at which the mean squared error of prediction will be computed.\\
-			~~					& The default value is $seq(0,1,by=0.01)$.\\
+			\textbf{index}		& Values at which prediction error should be computed.\\
+			~~					& When mode = "fraction", this is the fraction of the saturated |beta|. \\
+      ~~ &  When mode="lambda", this is values of lambda.\\
+      \textbf{mode} &  Either "fraction" or "lambda". Type of values containing in partition.\\
 			\textbf{maxSteps}	& Maximal number of steps for the LARS algorithm.\\
 			~~					& The default value is \texttt{3*min(n,p)}.\\
+      \textbf{partition} & partition in nbFolds folds of y. \\
 			\textbf{intercept}	& If TRUE, there is an intercept in the model.\\
 			\textbf{eps}			& Tolerance of the algorithm.\\
 			~~					& The default value is \texttt{.Machine\$double.eps$^\wedge$0.5}.\\
@@ -347,7 +350,7 @@ sort(reslars@variable[[16]])
 			\textbf{cv}			& Vector containing the mean squared error (MSE) for each index.\\
 			\textbf{cvError}		& Vector containing the standard error of the MSE for each index.\\
 			\textbf{minCv}		& Littlest mean squared error.\\
-			\textbf{fraction}	& The fraction associated to the littlest error.\\
+			\textbf{minIndex}	& Value of index for which the cv criterion is minimal.\\
 			\textbf{index}		& $l_1$ norm ratio at which the mean squared error of prediction was computed.\\
 			\textbf{maxSteps}	& Maximal number of steps for the LARS algorithm.\\
 		\end{tabular}
@@ -373,7 +376,7 @@ plotCv(rescvlars)
 		
 		We can now compute the coefficients associated to this fraction with the \texttt{computeCoefficients} function.
 << coeff, echo=TRUE>>=
-coefficients=computeCoefficients(reslars, rescvlars$fraction, mode = "fraction")
+coefficients=computeCoefficients(reslars, rescvlars$minIndex, mode = "lambda")
 @	
 		We obtain a list containing two vectors : variable and coefficient.\\
 		

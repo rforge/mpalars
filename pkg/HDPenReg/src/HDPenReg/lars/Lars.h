@@ -144,10 +144,12 @@ namespace HD
       /**
        * predict the path for a ratio fraction = l1norm/l1normmax
        * @param X new data for predict the response
-       * @param fraction real between 0 and 1 .
+       * @param index index (lambda or fraction) where the response is estimated. 
+       * @param lambdaMode if TRUE, index corresponds to a value of lambda, if FALSE, index is a real between 0 and 1 
+       * corresponding to ratio between the l1 norm of estimates to calculate and l1 norm max of solution
        * @param yPred container for the predicted response (will be modified)
        */
-      void predict(STK::CArrayXX const& X, STK::Real fraction, STK::CVectorX &yPred);
+      void predict(STK::CArrayXX const& X, STK::Real index, bool lambdaMode, STK::CVectorX &yPred);
 
    protected:
       /**

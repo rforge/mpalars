@@ -56,6 +56,8 @@ namespace HD
       //getters
       /**@return lambda_*/
       inline std::vector< STK::Real > const& lambda() const {return lambda_;}
+      /**@return lambda_[i]*/
+      inline STK::Real const lambda(int i) const {return lambda_[i];}
       /**@return states_*/
       inline std::vector< PathState > const& states() const {return states_;}
       /**@return states_[i]*/

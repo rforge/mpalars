@@ -67,12 +67,13 @@ namespace HD
        * @param X matrix of data, a row=a individual
        * @param y response
        * @param k number of folds
-       * @param index vector with real between 0 and 1 (ratio (norm coefficient)/max(norm coefficient) for which we compute the prediction error)
+       * @param index elements to test for cross validation (l1norm fraction or lambda)
+       * @param lambdaMode if true index contains lambda values, else it contains real between 0 and 1 (ratio (norm coefficient)/max(norm coefficient) for which we compute the prediction error)
        * @param maxSteps number of maximum step to do
        * @param intercept if true, there is an intercept in the model
        * @param eps epsilon (for 0)
        */
-      Cvlars(STK::CArrayXX const& X, STK::CVectorX const& y, int k, std::vector<double> const& index, int maxSteps, bool intercept = true, STK::Real eps = STK::Arithmetic<STK::Real>::epsilon());
+      Cvlars(STK::CArrayXX const& X, STK::CVectorX const& y, int k, std::vector<double> const& index, bool lambdaMode, int maxSteps, bool intercept = true, STK::Real eps = STK::Arithmetic<STK::Real>::epsilon());
 
       /**
        * run a k-fold cross validation
@@ -117,6 +118,8 @@ namespace HD
       //std::vector<STK::Range> foldRange_;
       ///vector with real between 0 and 1 (ratio (norm coefficient)/max(norm coefficient) for which we compute the prediction error)
       std::vector<double> index_;
+      ///if true, index is fraction, else it's lambda
+      bool lambdaMode_;
       ///residuals
       STK::CArrayXX residuals_;
       ///criterion

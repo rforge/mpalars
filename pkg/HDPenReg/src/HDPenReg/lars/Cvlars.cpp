@@ -51,6 +51,7 @@ namespace HD
                 , partition_(X.sizeRowsImpl())
                 , sizePartition_(k,0)
                 , index_(101)
+                , lambdaMode_(false)
                 , residuals_(101,k)
                 , cv_(101,0)
                 , cvError_(101)
@@ -78,12 +79,13 @@ namespace HD
    * @param maxSteps number of maximum step to do
    * @param eps epsilon (for 0)
    */
-  Cvlars::Cvlars(STK::CArrayXX const& X, STK::CVectorX const& y, int k, std::vector<double> const& index, int maxSteps, bool intercept, STK::Real eps)
+  Cvlars::Cvlars(STK::CArrayXX const& X, STK::CVectorX const& y, int k, std::vector<double> const& index, bool lambdaMode,int maxSteps, bool intercept, STK::Real eps)
                 : p_X_(&X)
                 , p_y_(&y)
                 , partition_(X.sizeRowsImpl())
                 , sizePartition_(k,0)
                 , index_(index)
+                , lambdaMode_(lambdaMode)
                 , residuals_(index.size(),k)
                 , cv_(index.size(),0)
                 , cvError_(index.size())
@@ -163,10 +165,6 @@ namespace HD
     cv_ = (residuals_ * one) / k_;
 
     // compute mean standard deviation of cv_ for each index
-//    for(int i = 1; i <= (int) index_.size(); i++)
-//      for(int j = 1; j <= k_; j++)
-//        residuals_(i,j) -= cv_[i];
-
     for(int i = 1; i <= (int) index_.size(); i++)
       residuals_.row(i) -= cv_[i];
 
@@ -200,17 +198,12 @@ namespace HD
         if(partition_[j-1] != i)
         {
           yControl[index] = (*p_y_)[j];
-          //for(int k = 1; k <= p_; k++)
-          //  XControl(index,k) = (*p_X_)(j,k);
           XControl.row(index)=p_X_->row(j);
-
           index++;
         }
         else
         {
           yTest[index2] = (*p_y_)[j];
-          //for(int k = 1; k <= p_; k++)
-          //  XTest(index2,k) = (*p_X_)(j,k);
           XTest.row(index2)=p_X_->row(j);
           index2++;
         }
@@ -223,7 +216,7 @@ namespace HD
       for(int s = 1 ; s <= (int) index_.size(); s++)
       {
         //we compute the prediction of the y associated to XTest
-        lars.predict(XTest,index_[s-1], yPred);
+        lars.predict(XTest,index_[s-1], lambdaMode_, yPred);
 
         //compute the residuals
         residuals_(s,i+1) = (yPred-yTest).square().sum()/sizePartition_[i];
@@ -270,16 +263,12 @@ namespace HD
            if(partition_[j-1] != i)
            {
              yControl[index] = (*p_y_)[j];
-             //for(int k = 1; k <= p_; k++)
-             //  XControl(index,k) = (*p_X_)(j,k);
              XControl.row(index)=p_X_->row(j);
              index++;
            }
            else
            {
              yTest[index2] = (*p_y_)[j];
-             //for(int k = 1; k <= p_; k++)
-               //XTest(index2,k) = (*p_X_)(j,k);
              XTest.row(index2)=p_X_->row(j);
              index2++;
            }
@@ -292,7 +281,7 @@ namespace HD
          for(int s = 1 ; s <= (int) index_.size(); s++)
          {
            //we compute the prediction of the y associated to XTest
-           lars.predict(XTest,index_[s-1], yPred);
+           lars.predict(XTest,index_[s-1], lambdaMode_, yPred);
 
            //compute the residuals
            residuals_(s,i+1) = (yPred-yTest).square().sum()/sizePartition_[i];
@@ -305,9 +294,6 @@ namespace HD
      cv_ = (residuals_ * one) / k_;
 
      // compute mean standard deviation of cv_ for each index
-//     for(int i = 1; i <= (int) index_.size(); i++)
-//       for(int j = 1; j <= k_; j++)
-//         residuals_(i,j) -= cv_[i];
      for(int i = 1; i <= (int) index_.size(); i++)
        residuals_.row(i) -= cv_[i];
      residuals_ = residuals_.square();

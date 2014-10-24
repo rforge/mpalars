@@ -5,7 +5,9 @@
 #' @param X the matrix (of size n*p) of the covariates.
 #' @param y a vector of length n with the response.
 #' @param nbFolds the number of folds for the cross-validation.
-#' @param index Values at which prediction error should be computed. This is the fraction of the saturated |beta|. The default value is seq(0,1,by=0.01).
+#' @param index Values at which prediction error should be computed. When mode = "fraction", this is the fraction of the saturated |beta|. 
+#' The default value is seq(0,1,by=0.01). When mode="lambda", this is values of lambda.
+#' @param mode Either "fraction" or "lambda". Type of values containing in partition.
 #' @param maxSteps Maximal number of steps for lars algorithm.
 #' @param partition partition in nbFolds folds of y. Must be a vector of same size than y containing the index of folds.
 #' @param intercept If TRUE, there is an intercept in the model.
@@ -15,7 +17,7 @@
 #'   \item{cv}{Mean prediction error for each value of index.}
 #'   \item{cvError}{Standard error of cv.}
 #'   \item{minCv}{Minimal cv criterion.}
-#'   \item{fraction}{Value of the l1norm fraction for which the cv criterion is minimal.}
+#'   \item{minIndex}{Value of index for which the cv criterion is minimal.}
 #'   \item{index}{Values at which prediction error should be computed. This is the fraction of the saturated |beta|. The default value is seq(0,1,by=0.01).}
 #'   \item{maxSteps}{Maximum number of steps of the lars algorithm.}
 #' }
@@ -24,62 +26,67 @@
 #' result=HDcvlars(dataset$data,dataset$response,5)
 #' @export
 #' 
-HDcvlars <- function(X,y,nbFolds=10,index=seq(0,1,by=0.01),maxSteps=3*min(dim(X)),partition=NULL,intercept=TRUE,eps=.Machine$double.eps^0.5)
+HDcvlars <- function(X,y,nbFolds=10,index=seq(0,1,by=0.01),mode=c("fraction","lambda"),maxSteps=3*min(dim(X)),partition=NULL,intercept=TRUE,eps=.Machine$double.eps^0.5)
 {
-	#check arguments
-	if(missing(X))
-		stop("X is missing.")
-	if(missing(y))
-		stop("y is missing.")
-	index=unique(index)
-	.checkcvlars(X,y,maxSteps,eps,nbFolds,index,intercept)
-
-    if(!is.null(partition))
+  #check arguments
+  mode <- match.arg(mode)
+  if(missing(X))
+    stop("X is missing.")
+  if(missing(y))
+    stop("y is missing.")
+  index=unique(index)
+  .checkcvlars(X,y,maxSteps,eps,nbFolds,index,intercept,mode)
+  
+  if(!is.null(partition))
+  {
+    if(!is.numeric(partition) || !is.vector(partition))
+      stop("partition must be a vector of integer.")
+    if(length(partition)!=length(y))
+      stop("partition and y must have the same size.")
+    
+    part=table(partition)
+    nbFolds=length(part)
+    
+    if(max(part)-min(part)>1)
+      stop("Size of different folds are not good.")
+    
+    nam=as.numeric(names(part))
+    for(i in 1:length(nam))
     {
-        if(!is.numeric(partition) || !is.vector(partition))
-            stop("partition must be a vector of integer.")
-        if(length(partition)!=length(y))
-            stop("partition and y must have the same size.")
-                        
-        part=table(partition)
-        nbFolds=length(part)
-        
-        if(max(part)-min(part)>1)
-            stop("Size of different folds are not good.")
-            
-        nam=as.numeric(names(part))
-        for(i in 1:length(nam))
-        {
-            if(!(nam[i]==i))
-                stop("check the number in the partition vector.")  
-        }
-        
-        #reorder the  partition in decreasing order of size
-        ord=order(part,decreasing=TRUE)
-        partb=partition
-        for(i in 1:nbFolds)
-            partition[partb==ord[i]]=i
-        
-        partition=partition-1
+      if(!(nam[i]==i))
+        stop("check the number in the partition vector.")  
     }
-    else
-        partition=-1
-
-	# call lars algorithm
-	val=.Call( "cvlars",X,y,nrow(X),ncol(X),maxSteps,intercept,eps,nbFolds,partition,index,PACKAGE = "HDPenReg" )
-	
-	#create the output object
-	cv=list(cv=val$cv,cvError=val$cvError,minCv=min(val$cv),fraction=index[which.min(val$cv)],index=index,maxSteps=maxSteps)
-
-	class(cv)="cvlars"
-	#plotCv(cv)
-
-	return(cv)
+    
+    #reorder the  partition in decreasing order of size
+    ord=order(part,decreasing=TRUE)
+    partb=partition
+    for(i in 1:nbFolds)
+      partition[partb==ord[i]]=i
+    
+    partition=partition-1
+  }
+  else
+    partition=-1
+  
+  lambdaMode=FALSE
+  if(mode=="lambda")
+    lambdaMode=TRUE
+  
+  # call lars algorithm
+  val=.Call( "cvlars",X,y,nrow(X),ncol(X),maxSteps,intercept,eps,nbFolds,partition,index,lambdaMode,PACKAGE = "HDPenReg" )
+  
+  #create the output object
+  cv=list(cv=val$cv,cvError=val$cvError,minCv=min(val$cv),minIndex=index[which.min(val$cv)],index=index,maxSteps=maxSteps)
+  
+  class(cv)="cvlars"
+  #plotCv(cv)
+  
+  return(cv)
 }
 
 
 # check arguments from cvlars 
-.checkcvlars=function(X,y,maxSteps,eps,nbFolds,index,intercept)
+.checkcvlars=function(X,y,maxSteps,eps,nbFolds,index,intercept,mode)
 {
 	## X: matrix of real
 	if(!is.numeric(X) || !is.matrix(X))
@@ -113,9 +120,11 @@ HDcvlars <- function(X,y,nbFolds=10,index=seq(0,1,by=0.01),maxSteps=3*min(dim(X)
 
 	## index
 	if(!is.numeric(index) || !is.vector(index))
+		stop("index must be a vector")
+	if( (mode=="fraction") && (max(index)>1 || min(index)<0))
 		stop("index must be a vector of real between 0 and 1")
-	if(max(index)>1 || min(index)<0)
-		stop("index must be a vector of real between 0 and 1")
+	if( (mode=="lambda") && (min(index)<0))
+	  stop("index must be a vector of positive real")
 		
 	##intercept
     if(!is.logical(intercept))

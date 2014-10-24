@@ -181,7 +181,7 @@ RcppExport SEXP fusion(SEXP data, SEXP response, SEXP nbIndiv, SEXP nbVar, SEXP 
 }
 
 
-RcppExport SEXP cvlars(SEXP data, SEXP response, SEXP nbIndiv, SEXP nbVar, SEXP maxStep, SEXP intercept, SEXP eps, SEXP nbFold, SEXP partition, SEXP index)
+RcppExport SEXP cvlars(SEXP data, SEXP response, SEXP nbIndiv, SEXP nbVar, SEXP maxStep, SEXP intercept, SEXP eps, SEXP nbFold, SEXP partition, SEXP index, SEXP mode)
 {
   //double t1,t2;
   //t1=clock();
@@ -190,6 +190,7 @@ RcppExport SEXP cvlars(SEXP data, SEXP response, SEXP nbIndiv, SEXP nbVar, SEXP 
   vector<double> indexC=as<vector<double> >(index);
   vector<int> partitionC=as<vector<int> >(partition);
   bool interceptC = as<bool>(intercept);
+  bool modeLambda = as<bool>(mode);
   Real epsC(as<Real>(eps));
 
   CArrayXX x(n,p);
@@ -201,7 +202,7 @@ RcppExport SEXP cvlars(SEXP data, SEXP response, SEXP nbIndiv, SEXP nbVar, SEXP 
 
   //run algorithm
   //t1=clock();
-  Cvlars cvlars(x,y,nbFoldC,indexC,maxStepC,interceptC,epsC);
+  Cvlars cvlars(x,y,nbFoldC,indexC,modeLambda,maxStepC,interceptC,epsC);
   if(partitionC[0]!=-1)
     cvlars.setPartition(partitionC);
     
