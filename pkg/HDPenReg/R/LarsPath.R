@@ -160,7 +160,7 @@ setMethod(
 #' @param xlab Name of the x axis.
 #' @param ... Other plot arguments.
 #' @examples 
-#' dataset=simul(50,10000,0.4,10,50,matrix(c(0.1,0.8,0.02,0.02),nrow=2))
+#' dataset=simul(50,1000,0.4,10,50,matrix(c(0.1,0.8,0.02,0.02),nrow=2))
 #' result=HDfusion(dataset$data,dataset$response) 
 #' plotCoefficient(result,result@@nbStep) #plot coefficients at the last step
 #' @export 
@@ -213,7 +213,7 @@ plotCoefficient=function(x,step,ylab="coefficients",xlab="variables",...)
 #' @param step The step at which you want to get the coefficients.
 #' @return a vector of size p containing the value of coefficients at the desired step.
 #' @examples 
-#' dataset=simul(50,10000,0.4,10,50,matrix(c(0.1,0.8,0.02,0.02),nrow=2))
+#' dataset=simul(50,1000,0.4,10,50,matrix(c(0.1,0.8,0.02,0.02),nrow=2))
 #' result=HDfusion(dataset$data,dataset$response)
 #' coefficient=coeff(result,result@@nbStep) #get the coefficients
 #' @export 
