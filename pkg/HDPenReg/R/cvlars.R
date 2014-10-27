@@ -149,10 +149,17 @@ plotCv=function(x)
 	if(class(x)!="cvlars")
 		stop("x must be an output of the HDcvlars function.")
   
+  index=x$index
+  minIndex=x$minIndex
 	lab="Fraction L1 Norm"
   if(x$mode=="lambda")
-    lab="lambda"
-	plot(x$index, x$cv, type = "b", ylim = range(x$cv, x$cv + x$cvError, x$cv - x$cvError),xlab=lab,ylab="Cross-Validated MSE")
-	lines(x$index, x$cv+x$cvError,lty=2)
-	lines(x$index, x$cv-x$cvError,lty=2)
+  {
+    lab="log(lambda)"
+    index=log(index)
+    minIndex=log(minIndex)
+  }
+	plot(index, x$cv, type = "b", ylim = range(x$cv, x$cv + x$cvError, x$cv - x$cvError),xlab=lab,ylab="Cross-Validated MSE")
+	lines(index, x$cv+x$cvError,lty=2)
+	lines(index, x$cv-x$cvError,lty=2)
+  abline(v=minIndex,lty="dotted",col="blue")
 }
