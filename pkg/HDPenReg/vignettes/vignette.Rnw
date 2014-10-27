@@ -372,7 +372,7 @@ plotCv(rescvlars)
 			\end{center}
 		\end{figure}	
 		
-		The $L_1$-norm fraction with the littlest MSE is \Sexpr{rescvlars$fraction}.
+		The $L_1$-norm fraction with the littlest MSE is \Sexpr{rescvlars$minIndex}.
 		
 		We can now compute the coefficients associated to this fraction with the \texttt{computeCoefficients} function.
 << coeff, echo=TRUE>>=

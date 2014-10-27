@@ -150,7 +150,7 @@ plotCv=function(x)
 		stop("x must be an output of the HDcvlars function.")
   
 	lab="Fraction L1 Norm"
-  if(mode=="lambda")
+  if(x$mode=="lambda")
     lab="lambda"
 	plot(x$index, x$cv, type = "b", ylim = range(x$cv, x$cv + x$cvError, x$cv - x$cvError),xlab=lab,ylab="Cross-Validated MSE")
 	lines(x$index, x$cv+x$cvError,lty=2)
