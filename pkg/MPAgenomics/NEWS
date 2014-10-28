@@ -1,3 +1,7 @@
+Version 1.1.2 (09-10-2014)
+- Add spikeslab in variable selection
+- Changes in variable selection for HDPenReg 0.90
+
 Version 1.1.1 (09-10-2014)
 - Add HDPenReg in Imports field
 - Add spikeslab in markerSelection function
