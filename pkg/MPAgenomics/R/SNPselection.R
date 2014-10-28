@@ -283,39 +283,31 @@ variableSelection=function(dataMatrix,dataResponse,nbFolds=min(length(dataRespon
   {
     if(pkg=="HDPenReg")
     {
-      #lars algorithm for obtaining all the path
-      reslars=HDlars(dataMatrix, dataResponse,...)
-      
-      #cross validation to choose the best lambda
-      rescv=HDcvlars(dataMatrix, dataResponse, nbFolds,index = c(reslars@lambda,0), mode="lambda",...)
+      #cross validation to choose the best l1 norm ratio
+      rescv=HDcvlars(dataMatrix, dataResponse, nbFolds,index = seq(0, 1, by = 0.01),...)
       
       if(plot)
       {
         plotCv(rescv)
       }
       
-
+      #lars algorithm for obtaining all the path
+      reslars=HDlars(dataMatrix, dataResponse,...)
       
       #we compute the coefficients for the value given by the HDcvlars function
-      #coeff=computeCoefficients(reslars,rescv$minIndex,mode="lambda")
+      coeff=computeCoefficients(reslars,rescv$fraction,mode="fraction")
       
-      var=reslars@variable[[which.min(rescv$cv)]]
-      coef=reslars@coefficient[[which.min(rescv$cv)]]
-      #var=coeff$variable
-      #coef=coeff$coefficient
+      var=coeff$variable
+      coef=coeff$coefficient
       intercept=reslars@mu
-      if(length(var)!=0)
+      if(length(coeff$variable)!=0)
       {
-        index=order(var)
-        var=var[index]
-        coef=coef[index]
-        #index=order(coeff$variable)
-        #var=coeff$variable[index]
-        #coef=coeff$coefficient[index]
+        index=order(coeff$variable)
+        var=coeff$variable[index]
+        coef=coeff$coefficient[index]
       }
       
-      rm(reslars)
-      #rm(reslars,coeff)
+      rm(reslars,coeff)
       gc()
     }
     else
