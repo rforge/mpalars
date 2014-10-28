@@ -116,8 +116,8 @@
     if(ncpus==1) {
     return(sum(sapply(1:nreg, .minusEloglikreg, pm=pm, posteriorprev=posteriorprev, alphaprev=alphaprev, varprofall=varprofall, allsum=allsum, allsumsq=allsumsq, allnc,robustsig=robustsig,allcell=allcell)))
     } else {
-    sfExport("pm")
-    return(sum(sfSapply(1:nreg, .minusEloglikreg, pm=pm, posteriorprev=posteriorprev, alphaprev=alphaprev, varprofall=varprofall, allsum=allsum, allsumsq=allsumsq, allnc,robustsig=robustsig,allcell=allcell)))
+    snowfall::sfExport("pm")
+    return(sum(snowfall::sfSapply(1:nreg, .minusEloglikreg, pm=pm, posteriorprev=posteriorprev, alphaprev=alphaprev, varprofall=varprofall, allsum=allsum, allsumsq=allsumsq, allnc,robustsig=robustsig,allcell=allcell)))
     } 
 }
 
@@ -125,8 +125,8 @@
   if(ncpus==1) {
     return(sum(sapply(1:nreg, .minusEloglikreg, pm=pm, posteriorprev=posteriorprev, alphaprev=alphaprev, varprofall=varprofall, allsum=allsum, allsumsq=allsumsq, allnc,robustsig=robustsig,allcell=allcell)))
   } else {
-    sfExport("pm")
-    return(sum(sfSapply(1:nreg, .minusEloglikreg, pm=pm, posteriorprev=posteriorprev, alphaprev=alphaprev, varprofall=varprofall, allsum=allsum, allsumsq=allsumsq, allnc,robustsig=robustsig,allcell=allcell)))
+    snowfall::sfExport("pm")
+    return(sum(snowfall::sfSapply(1:nreg, .minusEloglikreg, pm=pm, posteriorprev=posteriorprev, alphaprev=alphaprev, varprofall=varprofall, allsum=allsum, allsumsq=allsumsq, allnc,robustsig=robustsig,allcell=allcell)))
   } 
 }
 

@@ -257,9 +257,9 @@ CGHcall <- function(inputSegmented, prior="auto", nclass=5, organism="human",cel
         
 
         if(ncpus>1){
-            sfInit(cpus=ncpus,parallel=T)
-            sfLibrary("MPAgenomics")
-            sfExport("bstart","nreg", "posterior0", "alpha0","varprofall", "allsum", "allsumsq", "allnc","allcell","robustsig","ncpus")
+          snowfall::sfInit(cpus=ncpus,parallel=T)
+          snowfall::sfLibrary("MPAgenomics")
+          snowfall::sfExport("bstart","nreg", "posterior0", "alpha0","varprofall", "allsum", "allsumsq", "allnc","allcell","robustsig","ncpus")
         }
         
         pmt<-proc.time()
@@ -267,8 +267,8 @@ CGHcall <- function(inputSegmented, prior="auto", nclass=5, organism="human",cel
         toptim<-proc.time()-pmt
                
         if(ncpus>1){
-        sfRemoveAll()
-        sfStop()            
+          snowfall::sfRemoveAll()
+          snowfall::sfStop()            
         }
         
         bprev       <- bstart
