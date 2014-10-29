@@ -12,6 +12,9 @@
 naiveGenotypeCalls<-function(dataSetName,normalTumorArray,singleArray,plot)
 {  
   require(aroma.cn)
+  require(aroma.core)
+  require(R.filesets)
+  require(matrixStats)
   ##Setup
   log <- verbose <- Arguments$getVerbose(-1, timestamp=TRUE);
   rootPath <- "totalAndFracBData";
@@ -24,7 +27,7 @@ naiveGenotypeCalls<-function(dataSetName,normalTumorArray,singleArray,plot)
   # Load the raw data set 
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 
-  ds <- AromaUnitFracBCnBinarySet$byName(dataSet, chipType="*", paths=rootPath);
+  ds <- aroma.core::AromaUnitFracBCnBinarySet$byName(dataSet, chipType="*", paths=rootPath);
   dsN=ds;
   #print(dsN);
 
@@ -34,7 +37,7 @@ naiveGenotypeCalls<-function(dataSetName,normalTumorArray,singleArray,plot)
     #### Extract the normals
     
     #get the type of each file ("tumor" or "normal")
-    types <- getStatus(getNames(ds),normalTumorArray)
+    types <- getStatus(R.filesets::getNames(ds),normalTumorArray)
     
     #index of the normal file
     normals <- grep("normal", types);
@@ -45,7 +48,7 @@ naiveGenotypeCalls<-function(dataSetName,normalTumorArray,singleArray,plot)
   
   #path for the output  
   fullname <- paste(c(getFullName(dsN), "NGC"), collapse=",");
-  chipType <- getChipType(dsN, fullname=FALSE);
+  chipType <- aroma.core::getChipType(dsN, fullname=FALSE);
   outPath <- file.path("callData", fullname, chipType);
   
   #
@@ -57,10 +60,10 @@ naiveGenotypeCalls<-function(dataSetName,normalTumorArray,singleArray,plot)
   adjust <- 1.5;
   
   # Identify units on ChrX and ChrY (will require a specific treatment)
-  ugp <- getAromaUgpFile(dsN);
-  units23 <- getUnitsOnChromosome(ugp, 23);
+  ugp <- aroma.core::getAromaUgpFile(dsN);
+  units23 <- aroma.core::getUnitsOnChromosome(ugp, 23);
   is23 <- is.element(units, units23);
-  units24 <- getUnitsOnChromosome(ugp, 24);
+  units24 <- aroma.core::getUnitsOnChromosome(ugp, 24);
   is24 <- is.element(units, units24);
   
   #launch genotype call for each file in the data set
@@ -95,7 +98,7 @@ naiveGenotypeCalls<-function(dataSetName,normalTumorArray,singleArray,plot)
     betaN <- dfN[units,1,drop=TRUE];
     
     # Call gender
-    gender <- callXXorXY(betaN[is23], betaN[is24], adjust=adjust, from=0, to=1);
+    gender <- aroma.cn::callXXorXY(betaN[is23], betaN[is24], adjust=adjust, from=0, to=1);
     
     # initialization of mu (genotype) and cs (confident score)
     naValue <- as.double(NA);
@@ -145,7 +148,7 @@ naiveGenotypeCalls<-function(dataSetName,normalTumorArray,singleArray,plot)
     # Calculate confidence scores
     a <- fit[[1]]$fitValleys$x[1];
     b <- fit[[1]]$fitValleys$x[2];
-    cs[isDiploid] <- rowMins(abs(cbind(betaN[isDiploid]-a, betaN[isDiploid]-b)));
+    cs[isDiploid] <- matrixStats::rowMins(abs(cbind(betaN[isDiploid]-a, betaN[isDiploid]-b)));
     
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     # Writing genotype calls (via temporary file)
@@ -153,13 +156,13 @@ naiveGenotypeCalls<-function(dataSetName,normalTumorArray,singleArray,plot)
     pathname <- gcPathname;
     pathnameT <- sprintf("%s.tmp", pathname);
     nbrOfUnits <- nbrOfUnits(dfN);
-    gfN <- AromaUnitGenotypeCallFile$allocate(pathnameT, platform=getPlatform(dfN), chipType=getChipType(dfN), nbrOfRows=nbrOfUnits);
-    footer <- readFooter(gfN);
+    gfN <- aroma.core::AromaUnitGenotypeCallFile$allocate(pathnameT, platform=aroma.core::getPlatform(dfN), chipType=aroma.core::getChipType(dfN), nbrOfRows=nbrOfUnits);
+    footer <- aroma.core::readFooter(gfN);
     footer$method <- "NaiveGenotypeCaller";
-    writeFooter(gfN, footer);
+    aroma.core::writeFooter(gfN, footer);
     rm(footer);
 
-    updateGenotypes(gfN, units=units, calls=calls);
+    aroma.core::updateGenotypes(gfN, units=units, calls=calls);
     rm(calls);
     
     res <- file.rename(pathnameT, pathname);
@@ -173,7 +176,7 @@ naiveGenotypeCalls<-function(dataSetName,normalTumorArray,singleArray,plot)
     }
     rm(pathnameT);
     
-    gfN <- AromaUnitGenotypeCallFile(pathname);
+    gfN <- aroma.core::AromaUnitGenotypeCallFile(pathname);
     
     #print(gfN);
     
@@ -183,10 +186,10 @@ naiveGenotypeCalls<-function(dataSetName,normalTumorArray,singleArray,plot)
     pathname <- csPathname;
     pathnameT <- sprintf("%s.tmp", pathname);
     nbrOfUnits <- nbrOfUnits(dfN);
-    csfN <- AromaUnitSignalBinaryFile$allocate(pathnameT, platform=getPlatform(dfN), chipType=getChipType(dfN), nbrOfRows=nbrOfUnits, types="double", size=4, signed=TRUE);
-    footer <- readFooter(csfN);
+    csfN <- aroma.core::AromaUnitSignalBinaryFile$allocate(pathnameT, platform=aroma.core::getPlatform(dfN), chipType=aroma.core::getChipType(dfN), nbrOfRows=nbrOfUnits, types="double", size=4, signed=TRUE);
+    footer <- aroma.core::readFooter(csfN);
     footer$method <- "NaiveGenotypeConfidenceScoreEstimator";
-    writeFooter(csfN, footer);
+    aroma.core::writeFooter(csfN, footer);
     rm(footer);
     
     csfN[units, 1] <- cs
@@ -203,12 +206,12 @@ naiveGenotypeCalls<-function(dataSetName,normalTumorArray,singleArray,plot)
     }
     rm(pathnameT);
      
-    cfN <- AromaUnitSignalBinaryFile(pathname);
+    cfN <- aroma.core::AromaUnitSignalBinaryFile(pathname);
     #print(cfN);
     
     
     #load the data
-#     gcN <- AromaUnitGenotypeCallSet$byName(dataSet, tags="NGC", chipType="*");
+#     gcN <- aroma.core::AromaUnitGenotypeCallSet$byName(dataSet, tags="NGC", chipType="*");
 #     print(gcN);
 #     
 #     csN <- AromaUnitSignalBinarySet$byName(dataSet, tags="NGC", chipType="*", pattern="confidenceScores", paths="callData");
@@ -231,6 +234,9 @@ naiveGenotypeCalls<-function(dataSetName,normalTumorArray,singleArray,plot)
 #
 SingleStudyPlot=function(dataFolder)
 { 
+  require(aroma.core)
+  require(R.devices)
+  require(R.filesets)
   log <- verbose <- Arguments$getVerbose(-8, timestamp=TRUE);
   
   #path where download cn and fracB 
@@ -239,29 +245,29 @@ SingleStudyPlot=function(dataFolder)
   dataSet <- paste0(dataFolder,",ACC,ra,-XY,BPN,-XY,AVG,FLN,-XY");
   
   #load CN and fracB data
-  dsC <- AromaUnitTotalCnBinarySet$byName(dataSet, chipType="*", paths=rootPath);
-  dsFracB <- AromaUnitFracBCnBinarySet$byName(dataSet, chipType="*", paths=rootPath);
+  dsC <- aroma.core::AromaUnitTotalCnBinarySet$byName(dataSet, chipType="*", paths=rootPath);
+  dsFracB <- aroma.core::AromaUnitFracBCnBinarySet$byName(dataSet, chipType="*", paths=rootPath);
   
   # Identify available genotype calls
   rootPath <- "callData";
   rootPath <- Arguments$getReadablePath(rootPath); 
   genotypeTag <- "NGC";
-  gsN <- AromaUnitGenotypeCallSet$byName(dataSet, tags=genotypeTag, chipType="*");
+  gsN <- aroma.core::AromaUnitGenotypeCallSet$byName(dataSet, tags=genotypeTag, chipType="*");
   
   #print(gsN);
   
   #we compute the median of CN
-  ceR <- getAverageFile(dsC, verbose=verbose)
+  ceR <- aroma.core::getAverageFile(dsC, verbose=verbose)
   
   #names of the probes
-  ugp <- getAromaUgpFile(dsC);
-  unf <- getUnitNamesFile(ugp);
-  sampleNames=getNames(dsFracB)
+  ugp <- aroma.core::getAromaUgpFile(dsC);
+  unf <- aroma.core::getUnitNamesFile(ugp);
+  sampleNames=R.filesets::getNames(dsFracB)
   #human genome reference
   hg=getTags(ugp)[grep("hg",getTags(ugp))]
   
   # prefix of SNP
-  platform <- getPlatform(ugp);
+  platform <- aroma.core::getPlatform(ugp);
   if (platform == "Affymetrix") 
   {
     require("aroma.affymetrix") || throw("Package not loaded: aroma.affymetrix");
@@ -305,7 +311,7 @@ SingleStudyPlot=function(dataFolder)
       if(testGraph)
       {      
         
-        units <- getUnitsOnChromosome(ugp, chromosome=chromosome);
+        units <- aroma.core::getUnitsOnChromosome(ugp, chromosome=chromosome);
         unitNames <- getUnitNames(unf,units=units);##names of the probes
         posChr <- getPositions(ugp, units=units);#positions of the probes      
         
@@ -355,7 +361,7 @@ SingleStudyPlot=function(dataFolder)
         ylim <- c(0,6);
         ylab <- "Copy number";
         
-        fig <- devNew("png", pathname, label=figName, width=width, height=2*aspect*width);
+        fig <- R.devices::devNew("png", pathname, label=figName, width=width, height=2*aspect*width);
         par(mfrow=c(2,1))
         
         plot(NA,ylim=c(0,6),xlim=xlim, xlab=xlab, ylab=ylab, axes=FALSE,pch=".")
@@ -383,7 +389,7 @@ SingleStudyPlot=function(dataFolder)
         label <- sprintf("%s (%s)", sampleName, name);
         stext(side=3, pos=0, label);
         stext(side=3, pos=1, chrTag); 
-        devDone();
+        R.devices::devDone();
         cat("*")
       } 
     }##end loop chromosome 

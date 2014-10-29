@@ -58,6 +58,9 @@ getCopyNumberSignal=function(dataSetName,chromosome,normalTumorArray,onlySNP=FAL
   if(!allpkg)
     stop("You have to install some packages : Follow the printed informations.")
   
+  require(aroma.core)
+  require(R.filesets)
+  
   #TODO verifier comportement list.files() sur une autre machine
   list.files()
   if(!("totalAndFracBData"%in%list.files()))
@@ -112,14 +115,14 @@ getCopyNumberSignal=function(dataSetName,chromosome,normalTumorArray,onlySNP=FAL
   dataSet <- paste0(dataSetName,",ACC,ra,-XY,BPN,-XY,AVG,FLN,-XY");
   
   #load CN
-  dsC <- AromaUnitTotalCnBinarySet$byName(dataSet, chipType="*", paths=rootPath);
+  dsC <- aroma.core::AromaUnitTotalCnBinarySet$byName(dataSet, chipType="*", paths=rootPath);
   #print(dsC);
   
   ###### check listOfFiles
   pos=c()
   if(is.null(listOfFiles) || missing(listOfFiles))
   {
-    listOfFiles=getNames(dsC)
+    listOfFiles=R.filesets::getNames(dsC)
     pos=1:length(dsC)
   }
   else
@@ -130,7 +133,7 @@ getCopyNumberSignal=function(dataSetName,chromosome,normalTumorArray,onlySNP=FAL
     listOfFiles=unique(listOfFiles)
     
     #check if all the files of listOfFiles are in the folder
-    pos=sapply(listOfFiles,match,getNames(dsC))#position of the files of listOfFiles in the folder
+    pos=sapply(listOfFiles,match,R.filesets::getNames(dsC))#position of the files of listOfFiles in the folder
     if(length(which(pos>0))!=length(pos))
       stop("Wrong name of files in listOfFiles")
   } 
@@ -152,7 +155,7 @@ getCopyNumberSignal=function(dataSetName,chromosome,normalTumorArray,onlySNP=FAL
       stop("normalTumorArray doesn't contain a column \"normal\" or \"tumor\".\n")
     
     #check is the normalTumorArray file contains all the files
-#     isArrayComplete=sapply(getNames(dsC),FUN=function(name,nameOfFiles){name%in%nameOfFiles},c(as.character(normalTumorArray$normal),as.character(normalTumorArray$tumor)))
+#     isArrayComplete=sapply(R.filesets::getNames(dsC),FUN=function(name,nameOfFiles){name%in%nameOfFiles},c(as.character(normalTumorArray$normal),as.character(normalTumorArray$tumor)))
 #     if(sum(isArrayComplete)!=length(isArrayComplete))
 #       stop("normalTumorArray doesn't contain all the filenames of dataSetName.")
     
@@ -187,11 +190,11 @@ getCopyNumberSignal=function(dataSetName,chromosome,normalTumorArray,onlySNP=FAL
   
   
   #get names and position of the probes
-  ugp <- getAromaUgpFile(dsC);
-  unf <- getUnitNamesFile(ugp);
+  ugp <- aroma.core::getAromaUgpFile(dsC);
+  unf <- aroma.core::getUnitNamesFile(ugp);
   
   #get the prefix of SNP probes
-  platform <- getPlatform(ugp);
+  platform <- aroma.core::getPlatform(ugp);
   if (platform == "Affymetrix") 
   {
     require("aroma.affymetrix") || throw("Package not loaded: aroma.affymetrix");
@@ -207,7 +210,7 @@ getCopyNumberSignal=function(dataSetName,chromosome,normalTumorArray,onlySNP=FAL
   allCN=list()
   for(chr in chromosome)
   {
-    units <- getUnitsOnChromosome(ugp, chromosome=chr);
+    units <- aroma.core::getUnitsOnChromosome(ugp, chromosome=chr);
     unitNames <- getUnitNames(unf,units=units);##names of the probes
     if(onlySNP)
     {
@@ -257,8 +260,11 @@ getCopyNumberSignal=function(dataSetName,chromosome,normalTumorArray,onlySNP=FAL
 # @author Quentin Grimonprez
 getCopyNumberSignalSingleStudy=function(dsC,units,chromosome,indexOfFiles,ugp)
 {    
+  require(aroma.core)
+  require(R.filesets)
+  
   #compute the median
-  ceR <- getAverageFile(dsC, verbose=0)
+  ceR <- aroma.core::getAverageFile(dsC, verbose=0)
   
   #reduce to the files from indexOfFiles
   dsC=extract(dsC,indexOfFiles)
@@ -269,7 +275,7 @@ getCopyNumberSignalSingleStudy=function(dsC,units,chromosome,indexOfFiles,ugp)
   #CN median for units
   thetaR <- extractMatrix(ceR,units=units)
   
-  sampleNames=getNames(dsC)
+  sampleNames=R.filesets::getNames(dsC)
   
   #the ploidy depends of the gender for the cromosome 23 and 24
   if(chromosome==23 || chromosome ==24)
@@ -316,14 +322,16 @@ getCopyNumberSignalSingleStudy=function(dsC,units,chromosome,indexOfFiles,ugp)
 # @author Quentin Grimonprez
 getCopyNumberSignalPairedStudy=function(dsC,units,normalTumorArray,chromosome,normalFiles,ugp)
 {  
+  require(R.filesets)
+  
   #id of normal files
-  normalId=sapply(normalFiles,FUN=function(x,names){which(names==x)},getNames(dsC))
+  normalId=sapply(normalFiles,FUN=function(x,names){which(names==x)},R.filesets::getNames(dsC))
   
   #names of tumor files
   tumorFiles=getComplementaryFile(normalFiles,normalTumorArray)
   
   #id of tumor files
-  tumorId=sapply(tumorFiles,FUN=function(x,names){which(names==x)},getNames(dsC))
+  tumorId=sapply(tumorFiles,FUN=function(x,names){which(names==x)},R.filesets::getNames(dsC))
 
   # Extract normal
   dsPairCNormal <- extract(dsC, normalId);  
@@ -336,7 +344,7 @@ getCopyNumberSignalPairedStudy=function(dsC,units,normalTumorArray,chromosome,no
   
   #normalCN
   Cnormal <- extractMatrix(dsPairCNormal, units=units);
-  sampleNames=getNames(dsC)[tumorId]
+  sampleNames=R.filesets::getNames(dsC)[tumorId]
   #the ploidy depends of the gender for the cromosome 23 and 24
   if(chromosome==23 || chromosome ==24)
   {
@@ -361,7 +369,7 @@ getCopyNumberSignalPairedStudy=function(dsC,units,normalTumorArray,chromosome,no
     C <- 2*C/Cnormal;
   }
 
-  sampleNames=getNames(dsC)[tumorId]
+  sampleNames=R.filesets::getNames(dsC)[tumorId]
   
   return(list(CN=C,sampleNames=sampleNames))
 }
@@ -378,17 +386,20 @@ getCopyNumberSignalPairedStudy=function(dsC,units,normalTumorArray,chromosome,no
 # @author Quentin Grimonprez
 findGender=function(dataSetName,indexFileToExtract,ugp)
 {
+  require(aroma.cn)
+  require(aroma.core)
+  
   #path where find the data
   rootPath <- "totalAndFracBData";
   rootPath <- Arguments$getReadablePath(rootPath);
   dataSet <- paste0(dataSetName,",ACC,ra,-XY,BPN,-XY,AVG,FLN,-XY");
   
   #get the allele B fraction
-  dsF <- AromaUnitFracBCnBinarySet$byName(dataSet, chipType="*", paths=rootPath);
+  dsF <- aroma.core::AromaUnitFracBCnBinarySet$byName(dataSet, chipType="*", paths=rootPath);
         
   # Identify units on ChrX and ChrY 
-  units23 <- getUnitsOnChromosome(ugp, 23);
-  units24 <- getUnitsOnChromosome(ugp, 24);
+  units23 <- aroma.core::getUnitsOnChromosome(ugp, 23);
+  units24 <- aroma.core::getUnitsOnChromosome(ugp, 24);
     
   gender=lapply(indexFileToExtract,FUN=function(index)
   {
@@ -397,7 +408,7 @@ findGender=function(dataSetName,indexFileToExtract,ugp)
     beta23=df[units23,1,drop=TRUE]
     beta24=df[units24,1,drop=TRUE]
     
-    genderTemp <- callXXorXY(beta23, beta24, adjust=1.5, from=0, to=1);
+    genderTemp <- aroma.cn::callXXorXY(beta23, beta24, adjust=1.5, from=0, to=1);
         
   })
   

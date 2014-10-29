@@ -143,9 +143,9 @@ SignalNormalization<-function(dataFolder,chipType,normalTumorArray,genotypeCalls
   
   ###CRMAv2 : normalization of CEL files. The same for normal-tumor and single array study
   if (is.null(tags)) {
-    ds <- doCRMAv2(dataFolder, chipType=paste0(chipType),verbose=-1,combineAlleles=FALSE)  
+    ds <- aroma.affymetrix::doCRMAv2(dataFolder, chipType=paste0(chipType),verbose=-1,combineAlleles=FALSE)  
   } else {
-    ds <- doCRMAv2(dataFolder, chipType=paste0(chipType,",",tags),verbose=-1,combineAlleles=FALSE)
+    ds <- aroma.affymetrix::doCRMAv2(dataFolder, chipType=paste0(chipType,",",tags),verbose=-1,combineAlleles=FALSE)
   }
   
   

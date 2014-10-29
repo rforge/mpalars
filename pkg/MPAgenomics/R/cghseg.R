@@ -204,7 +204,7 @@ cghseg=function(signal,Kmax=10,position=NULL,plot=TRUE,verbose=TRUE)
 # 
 CGHSEGaroma=function(dataSetName,normalTumorArray,chromosome=1:22,Kmax=10,listOfFiles=NULL,onlySNP=TRUE,savePlot=TRUE,verbose=TRUE)
 {
-  
+  require(R.devices)
   allpkg=TRUE
   if(!suppressPackageStartupMessages(require("aroma.affymetrix", quietly=TRUE) ) )
   {
@@ -231,6 +231,8 @@ CGHSEGaroma=function(dataSetName,normalTumorArray,chromosome=1:22,Kmax=10,listOf
   if(!allpkg)
     stop("You have to install some packages : Follow the printed informations.")
   
+  require(aroma.core)
+  require(R.filesets)
   
   if(!("totalAndFracBData"%in%list.files()))
     stop("There is no \"totalAndFracBData\", check if you are in the good working directory or if you have run the signalPreProcess function before.")
@@ -267,7 +269,7 @@ CGHSEGaroma=function(dataSetName,normalTumorArray,chromosome=1:22,Kmax=10,listOf
   dataSet <- paste0(dataSetName,",ACC,ra,-XY,BPN,-XY,AVG,FLN,-XY");
   
   #load CN
-  dsC <- AromaUnitTotalCnBinarySet$byName(dataSet, chipType="*", paths=rootPath);
+  dsC <- aroma.core::AromaUnitTotalCnBinarySet$byName(dataSet, chipType="*", paths=rootPath);
   
   ################### check normalTumorArray
   if(!singleStudy)
@@ -294,7 +296,7 @@ CGHSEGaroma=function(dataSetName,normalTumorArray,chromosome=1:22,Kmax=10,listOf
   pos=c()
   if(is.null(listOfFiles) || missing(listOfFiles))
   {
-    listOfFiles=getNames(dsC)
+    listOfFiles=R.filesets::getNames(dsC)
     pos=1:length(dsC)
   }
   else
@@ -304,7 +306,7 @@ CGHSEGaroma=function(dataSetName,normalTumorArray,chromosome=1:22,Kmax=10,listOf
       stop("listOfFiles must be a vector of string.")
     listOfFiles=unique(listOfFiles)
     #check if all the files of listOfFiles are in the folder
-    pos=sapply(listOfFiles,match,getNames(dsC))#position of the files of listOfFiles in the folder
+    pos=sapply(listOfFiles,match,R.filesets::getNames(dsC))#position of the files of listOfFiles in the folder
     if(length(which(pos>0))!=length(pos))
       stop("Wrong name of files in listOfFiles")
   }  
@@ -327,7 +329,7 @@ CGHSEGaroma=function(dataSetName,normalTumorArray,chromosome=1:22,Kmax=10,listOf
     allFiles=unique(c(listOfFiles,compFiles))
     
     #index of the files
-    pos=sapply(allFiles,FUN=function(x,dsC){which(getNames(dsC)==x)},dsC)
+    pos=sapply(allFiles,FUN=function(x,dsC){which(R.filesets::getNames(dsC)==x)},dsC)
     tag=getStatus(allFiles,normalTumorArray)
     
     pos=pos[which(tag=="tumor")]
@@ -349,7 +351,7 @@ CGHSEGaroma=function(dataSetName,normalTumorArray,chromosome=1:22,Kmax=10,listOf
   figPath <- Arguments$getWritablePath(paste0("figures/",dataSetName,"/segmentation/CN/"));
   
   #names of the files to segment
-  names=getNames(dsC)[pos]
+  names=R.filesets::getNames(dsC)[pos]
   
   output=lapply(names,FUN=function(name)
   {
@@ -387,12 +389,12 @@ CGHSEGaroma=function(dataSetName,normalTumorArray,chromosome=1:22,Kmax=10,listOf
           pathname <- filePath(figPath, sprintf("%s.png", figName));
           width <- 1280;
           aspect <- 0.6*1/3;
-          fig <- devNew("png", pathname, label=figName, width=width, height=2*aspect*width);
+          fig <- R.devices::devNew("png", pathname, label=figName, width=width, height=2*aspect*width);
           plot(NA,xlim=c(min(CN$position),max(CN$position)), ylim=c(0,6),xlab="Position", main=figName,ylab="CN", pch=".")
           points(CN$position, seg$signal, pch=".");
           for(i in 1:nrow(seg$segment))
             lines(c(seg$segment$start[i],seg$segment$end[i]),rep(seg$segment$means[i],2),col="red",lwd=3)
-          devDone();
+          R.devices::devDone();
         }
         
         

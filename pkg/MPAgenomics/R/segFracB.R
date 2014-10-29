@@ -57,6 +57,9 @@ segFracBSignal=function(dataSetName,normalTumorArray,chromosome=1:22,method=c("c
   if(!allpkg)
     stop("You have to install some packages : Follow the printed informations.")
   
+  require(aroma.core)
+  require(R.devices)
+  require(R.filesets)
   
   if(!("totalAndFracBData"%in%list.files()))
     stop("There is no \"totalAndFracBData\", check if you are in the good working directory or if you have run the signalPreProcess function before.")
@@ -84,7 +87,7 @@ segFracBSignal=function(dataSetName,normalTumorArray,chromosome=1:22,method=c("c
   dataSet <- paste0(dataSetName,",ACC,ra,-XY,BPN,-XY,AVG,FLN,-XY");
   
   #load CN
-  dsC <- AromaUnitTotalCnBinarySet$byName(dataSet, chipType="*", paths=rootPath);
+  dsC <- aroma.core::AromaUnitTotalCnBinarySet$byName(dataSet, chipType="*", paths=rootPath);
     
   ################### check normalTumorArray
 #   if(!singleStudy)
@@ -102,7 +105,7 @@ segFracBSignal=function(dataSetName,normalTumorArray,chromosome=1:22,method=c("c
     if(!("normal"%in%colnames(normalTumorArray)) || !("tumor"%in%colnames(normalTumorArray)))
       stop("normalTumorArray doesn't contain a column \"normal\" or \"tumor\".\n")
     
-#     isArrayComplete=sapply(getNames(dsC),FUN=function(name,listOfNames){name%in%listOfNames},c(as.character(normalTumorArray$normal),as.character(normalTumorArray$tumor)))
+#     isArrayComplete=sapply(R.filesets::getNames(dsC),FUN=function(name,listOfNames){name%in%listOfNames},c(as.character(normalTumorArray$normal),as.character(normalTumorArray$tumor)))
 #     if(sum(isArrayComplete)!=length(isArrayComplete))
 #       warning("normalTumorArray doesn't contain all the filenames of dataSetName.")
 #   }
@@ -111,7 +114,7 @@ segFracBSignal=function(dataSetName,normalTumorArray,chromosome=1:22,method=c("c
   pos=c()
   if(is.null(listOfFiles) || missing(listOfFiles))
   {
-    listOfFiles=getNames(dsC)
+    listOfFiles=R.filesets::getNames(dsC)
     pos=1:length(dsC)
   }
   else
@@ -121,7 +124,7 @@ segFracBSignal=function(dataSetName,normalTumorArray,chromosome=1:22,method=c("c
       stop("listOfFiles must be a vector of string.")
     listOfFiles=unique(listOfFiles)
     #check if all the files of listOfFiles are in the folder
-    pos=sapply(listOfFiles,match,getNames(dsC))#position of the files of listOfFiles in the folder
+    pos=sapply(listOfFiles,match,R.filesets::getNames(dsC))#position of the files of listOfFiles in the folder
     if(length(which(pos>0))!=length(pos))
       stop("Wrong name of files in listOfFiles")
     
@@ -144,7 +147,7 @@ segFracBSignal=function(dataSetName,normalTumorArray,chromosome=1:22,method=c("c
     allFiles=unique(c(listOfFiles,compFiles))
     
     #index of the files
-    pos=sapply(allFiles,FUN=function(x,dsC){which(getNames(dsC)==x)},dsC)
+    pos=sapply(allFiles,FUN=function(x,dsC){which(R.filesets::getNames(dsC)==x)},dsC)
     tag=getStatus(allFiles,normalTumorArray)
     
     pos=pos[which(tag=="normal")]
@@ -174,7 +177,7 @@ segFracBSignal=function(dataSetName,normalTumorArray,chromosome=1:22,method=c("c
   figPath <- Arguments$getWritablePath(paste0("figures/",dataSetName,"/segmentation/fracB"));
   
   #names of the files to segment
-  names=getNames(dsC)[pos]
+  names=R.filesets::getNames(dsC)[pos]
   
   output=lapply(names,FUN=function(name)
   {
@@ -221,12 +224,12 @@ segFracBSignal=function(dataSetName,normalTumorArray,chromosome=1:22,method=c("c
           pathname <- filePath(figPath, sprintf("%s.png", figName));
           width <- 1280;
           aspect <- 0.6*1/3;
-          fig <- devNew("png", pathname, label=figName, width=width, height=2*aspect*width);
+          fig <- R.devices::devNew("png", pathname, label=figName, width=width, height=2*aspect*width);
           plot(NA,xlim=c(min(fracB$position),max(fracB$position)), ylim=c(0,1),xlab="Position", main=figName,ylab="Allele B fraction", pch=".")
           points(fracB$position, fracB[,3], pch=".");
           for(i in 1:nrow(seg$segment))
             lines(c(seg$segment$start[i],seg$segment$end[i]),rep(seg$segment$means[i],2),col="red",lwd=3)
-          devDone();
+          R.devices::devDone();
         }
       
       

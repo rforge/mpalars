@@ -182,7 +182,10 @@ PELTaroma=function(dataSetName,normalTumorArray,chromosome=1:22,Rho=NULL,listOfF
   if(!allpkg)
     stop("You have to install some packages : Follow the printed informations.")
   
-    
+  require(aroma.core)
+  require(R.filesets)
+  require(R.devices)
+  
   if(!("totalAndFracBData"%in%list.files()))
     stop("There is no \"totalAndFracBData\", check if you are in the good working directory or if you have run the signalPreProcess function before.")
   
@@ -211,7 +214,7 @@ PELTaroma=function(dataSetName,normalTumorArray,chromosome=1:22,Rho=NULL,listOfF
   dataSet <- paste0(dataSetName,",ACC,ra,-XY,BPN,-XY,AVG,FLN,-XY");
   
   #load CN
-  dsC <- AromaUnitTotalCnBinarySet$byName(dataSet, chipType="*", paths=rootPath);
+  dsC <- aroma.core::AromaUnitTotalCnBinarySet$byName(dataSet, chipType="*", paths=rootPath);
   
   ################### check normalTumorArray
   if(!singleStudy)
@@ -229,7 +232,7 @@ PELTaroma=function(dataSetName,normalTumorArray,chromosome=1:22,Rho=NULL,listOfF
     if(!("normal"%in%colnames(normalTumorArray)) || !("tumor"%in%colnames(normalTumorArray)))
       stop("normalTumorArray doesn't contain a column \"normal\" or \"tumor\".\n")
     
-#     isArrayComplete=sapply(getNames(dsC),FUN=function(name,listOfNames){name%in%listOfNames},c(as.character(normalTumorArray$normal),as.character(normalTumorArray$tumor)))
+#     isArrayComplete=sapply(R.filesets::getNames(dsC),FUN=function(name,listOfNames){name%in%listOfNames},c(as.character(normalTumorArray$normal),as.character(normalTumorArray$tumor)))
 #     if(sum(isArrayComplete)!=length(isArrayComplete))
 #       stop("normalTumorArray doesn't contain all the filenames of dataSetName.")
   }
@@ -238,7 +241,7 @@ PELTaroma=function(dataSetName,normalTumorArray,chromosome=1:22,Rho=NULL,listOfF
   pos=c()
   if(is.null(listOfFiles) || missing(listOfFiles))
   {
-    listOfFiles=getNames(dsC)
+    listOfFiles=R.filesets::getNames(dsC)
     pos=1:length(dsC)
   }
   else
@@ -248,7 +251,7 @@ PELTaroma=function(dataSetName,normalTumorArray,chromosome=1:22,Rho=NULL,listOfF
       stop("listOfFiles must be a vector of string.")
     listOfFiles=unique(listOfFiles)
     #check if all the files of listOfFiles are in the folder
-    pos=sapply(listOfFiles,match,getNames(dsC))#position of the files of listOfFiles in the folder
+    pos=sapply(listOfFiles,match,R.filesets::getNames(dsC))#position of the files of listOfFiles in the folder
     if(length(which(pos>0))!=length(pos))
       stop("Wrong name of files in listOfFiles")
   }  
@@ -271,7 +274,7 @@ PELTaroma=function(dataSetName,normalTumorArray,chromosome=1:22,Rho=NULL,listOfF
     allFiles=unique(c(listOfFiles,compFiles))
     
     #index of the files
-    pos=sapply(allFiles,FUN=function(x,dsC){which(getNames(dsC)==x)},dsC)
+    pos=sapply(allFiles,FUN=function(x,dsC){which(R.filesets::getNames(dsC)==x)},dsC)
     tag=getStatus(allFiles,normalTumorArray)
     
     pos=pos[which(tag=="tumor")]
@@ -297,7 +300,7 @@ PELTaroma=function(dataSetName,normalTumorArray,chromosome=1:22,Rho=NULL,listOfF
   figPath <- Arguments$getWritablePath(paste0("figures/",dataSetName,"/segmentation/CN/"));
   
   #names of the files to segment
-  names=getNames(dsC)[pos]
+  names=R.filesets::getNames(dsC)[pos]
   
   output=lapply(names,FUN=function(name)
   {
@@ -335,12 +338,12 @@ PELTaroma=function(dataSetName,normalTumorArray,chromosome=1:22,Rho=NULL,listOfF
           pathname <- filePath(figPath, sprintf("%s.png", figName));
           width <- 1280;
           aspect <- 0.6*1/3;
-          fig <- devNew("png", pathname, label=figName, width=width, height=2*aspect*width);
+          fig <- R.devices::devNew("png", pathname, label=figName, width=width, height=2*aspect*width);
           plot(NA,xlim=c(min(CN$position),max(CN$position)), ylim=c(0,6),xlab="Position", main=figName,ylab="CN", pch=".")
           points(CN$position, seg$signal, pch=".");
           for(i in 1:nrow(seg$segment))
             lines(c(seg$segment$start[i],seg$segment$end[i]),rep(seg$segment$means[i],2),col="red",lwd=3)
-          devDone();
+          R.devices::devDone();
         }
   
         

@@ -205,12 +205,12 @@ copyChipFiles=function(pathToChipFiles,chipName,path,verbose)
     cat("install.packages(\"aroma.affymetrix\")\n")
     allpkg=FALSE
   }
-#   else
-#     cat("Package aroma.affymetrix loaded.\n")
+  
+  require(aroma.core)
   
   actualPath=getwd()
   setwd(path)
-  result <- try(cdf <- AffymetrixCdfFile$byChipType(chipType, tags=tag),silent=TRUE)
+  result <- try(cdf <- aroma.affymetrix::AffymetrixCdfFile$byChipType(chipType, tags=tag),silent=TRUE)
   if(class(result)[1]=="try-error")
   {
     setwd(actualPath)
@@ -234,7 +234,7 @@ copyChipFiles=function(pathToChipFiles,chipName,path,verbose)
       stop(paste0("No ufl files with tag ",tag))
   }
     
-  result <- try(gi <- getGenomeInformation(cdf),silent=TRUE)
+  result <- try(gi <- aroma.affymetrix::getGenomeInformation(cdf),silent=TRUE)
   if(class(result)[1]=="try-error")
   {
     setwd(actualPath)
@@ -242,7 +242,7 @@ copyChipFiles=function(pathToChipFiles,chipName,path,verbose)
     #stop(paste0("No ugp files for the chip ",chipType," with tag ",tag))
   }
 
-  result <- try(si <- getSnpInformation(cdf),silent=TRUE)
+  result <- try(si <- aroma.affymetrix::getSnpInformation(cdf),silent=TRUE)
   if(class(result)[1]=="try-error")
   {
     setwd(actualPath)
@@ -250,7 +250,7 @@ copyChipFiles=function(pathToChipFiles,chipName,path,verbose)
     #stop(paste0("No ufl files for the chip ",chipType," with tag ",tag))
   }
 
-  result <- try(acs <- AromaCellSequenceFile$byChipType(getChipType(cdf, fullname=FALSE)),silent=TRUE)
+  result <- try(acs <- aroma.core::AromaCellSequenceFile$byChipType(aroma.core::getChipType(cdf, fullname=FALSE)),silent=TRUE)
   if(class(result)[1]=="try-error")
   {
     setwd(actualPath)

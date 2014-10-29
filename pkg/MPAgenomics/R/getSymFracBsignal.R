@@ -61,6 +61,9 @@ getSymFracBSignal=function(dataSetName,file,chromosome,normalTumorArray,verbose=
   if(!allpkg)
     stop("You have to install some packages : Follow the printed informations.")
   
+  require(aroma.core)
+  require(R.filesets)
+  
   if(!("totalAndFracBData"%in%list.files()))
     stop("There is no \"totalAndFracBData\", check if you are in the good working directory or if you have run the signalPreProcess function before.")
   
@@ -113,7 +116,7 @@ getSymFracBSignal=function(dataSetName,file,chromosome,normalTumorArray,verbose=
   dataSetTumorBoost=paste0(dataSet,",TBN,NGC")
   
   #load fracB
-  ds <- AromaUnitFracBCnBinarySet$byName(dataSet, chipType="*", paths=rootPath);
+  ds <- aroma.core::AromaUnitFracBCnBinarySet$byName(dataSet, chipType="*", paths=rootPath);
   
   
   #check listOfFiles
@@ -129,7 +132,7 @@ getSymFracBSignal=function(dataSetName,file,chromosome,normalTumorArray,verbose=
       stop("file must be a string.")
       
     #check if all the files of listOfFiles are in the folder
-    pos=match(file,getNames(ds))#position of the files of listOfFiles in the folder
+    pos=match(file,R.filesets::getNames(ds))#position of the files of listOfFiles in the folder
     if(is.na(pos))
       stop("Wrong name of file.")
 
@@ -153,7 +156,7 @@ getSymFracBSignal=function(dataSetName,file,chromosome,normalTumorArray,verbose=
       stop("normalTumorArray doesn't contain a column \"normal\" or \"tumor\".\n")
     
     #check is the file contains all the file
-    #     isArrayComplete=sapply(getNames(ds),FUN=function(name,listOfNames){name%in%listOfNames},c(as.character(normalTumorArray$normal),as.character(normalTumorArray$tumor)))
+    #     isArrayComplete=sapply(R.filesets::getNames(ds),FUN=function(name,listOfNames){name%in%listOfNames},c(as.character(normalTumorArray$normal),as.character(normalTumorArray$tumor)))
     #     if(sum(isArrayComplete)!=length(isArrayComplete))
     #       stop("normalTumorArray doesn't contain all the filenames of dataSetName.")
     
@@ -187,10 +190,10 @@ getSymFracBSignal=function(dataSetName,file,chromosome,normalTumorArray,verbose=
   ####################
   
   #get names and psoition of the probes
-  ugp <- getAromaUgpFile(ds);
-  unf <- getUnitNamesFile(ugp);
+  ugp <- aroma.core::getAromaUgpFile(ds);
+  unf <- aroma.core::getUnitNamesFile(ugp);
   #get the prefix of SNP probes
-  platform <- getPlatform(ugp);
+  platform <- aroma.core::getPlatform(ugp);
   if (platform == "Affymetrix") 
   {
     require("aroma.affymetrix") || throw("Package not loaded: aroma.affymetrix");
@@ -207,7 +210,7 @@ getSymFracBSignal=function(dataSetName,file,chromosome,normalTumorArray,verbose=
   symFracB=list()
   for(chr in chromosome)
   {
-    units <- getUnitsOnChromosome(ugp, chromosome=chr);
+    units <- aroma.core::getUnitsOnChromosome(ugp, chromosome=chr);
     unitNames <- getUnitNames(unf,units=units);##names of the probes
     
     
