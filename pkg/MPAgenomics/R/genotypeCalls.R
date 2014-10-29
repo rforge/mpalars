@@ -12,9 +12,14 @@
 naiveGenotypeCalls<-function(dataSetName,normalTumorArray,singleArray,plot)
 {  
   require(aroma.cn)
+  require(aroma.affymetrix)
   require(aroma.core)
+  require(aroma.light)
   require(R.filesets)
+  require(R.methodsS3)
+  require(R.oo)
   require(matrixStats)
+  
   ##Setup
   log <- verbose <- Arguments$getVerbose(-1, timestamp=TRUE);
   rootPath <- "totalAndFracBData";
@@ -47,12 +52,12 @@ naiveGenotypeCalls<-function(dataSetName,normalTumorArray,singleArray,plot)
   }  
   
   #path for the output  
-  fullname <- paste(c(getFullName(dsN), "NGC"), collapse=",");
+  fullname <- paste(c(R.filesets::getFullName(dsN), "NGC"), collapse=",");
   chipType <- aroma.core::getChipType(dsN, fullname=FALSE);
   outPath <- file.path("callData", fullname, chipType);
   
   #
-  df <- getFile(dsN, 1);
+  df <- R.filesets::getFile(dsN, 1);
   units <- seq(length=nbrOfUnits(df));
   rm(df);
   
@@ -70,21 +75,21 @@ naiveGenotypeCalls<-function(dataSetName,normalTumorArray,singleArray,plot)
   for(numberOfFile in 1:(length(dsN)))
   {   
     #get the data of the numberOfFile-th file
-    dfN <- getFile(dsN, numberOfFile);
+    dfN <- R.filesets::getFile(dsN, numberOfFile);
     
     #create the output filename
-    tags <- getTags(dfN);
+    tags <- R.filesets::getTags(dfN);
     tags <- setdiff(tags, "fracB");
     
     #filename for genotype call
     tags <- c(tags, "genotypes");
-    fullname <- paste(c(getName(dfN), tags), collapse=","); 
+    fullname <- paste(c(R.oo::getName(dfN), tags), collapse=","); 
     filename <- sprintf("%s.acf", fullname);
     gcPathname <- Arguments$getWritablePathname(filename, path=outPath, mustNotExist=FALSE);
     
     #filename for confidence score
     csTags <- c(tags, "confidenceScores");
-    fullname <- paste(c(getName(dfN), csTags), collapse=",");
+    fullname <- paste(c(R.oo::getName(dfN), csTags), collapse=",");
     filename <- sprintf("%s.acf", fullname);
     csPathname <- Arguments$getWritablePathname(filename, path=outPath, mustNotExist=FALSE);
     
@@ -115,14 +120,14 @@ naiveGenotypeCalls<-function(dataSetName,normalTumorArray,singleArray,plot)
       #look for diploid position
       use <- which(isDiploid);
       #launch genotype calls with copy number=2 for diploid position
-      muT <- callNaiveGenotypes(betaN[use], cn=2, adjust=adjust, from=0, to=1,verbose=less(verbose,10));
+      muT <- aroma.light::callNaiveGenotypes(betaN[use], cn=2, adjust=adjust, from=0, to=1,verbose=less(verbose,10));
       fit <- attr(muT, 'modelFit');
       mu[use] <- muT;
       
       #look for non diploid position
       use <- which(!isDiploid);
       #launch genotype calls with copy number=1 for non diploid position
-      muT <- callNaiveGenotypes(betaN[use], cn=1, adjust=adjust, from=0, to=1,verbose=less(verbose,10));
+      muT <- aroma.light::callNaiveGenotypes(betaN[use], cn=1, adjust=adjust, from=0, to=1,verbose=less(verbose,10));
       mu[use] <- muT;
     } 
     else ##female case
@@ -133,7 +138,7 @@ naiveGenotypeCalls<-function(dataSetName,normalTumorArray,singleArray,plot)
       #look for diploid position
       use <- which(isDiploid);
       #launch genotype calls with copy number=2 for diploid position
-      muT <- callNaiveGenotypes(betaN[use], cn=2, adjust=adjust, from=0, to=1,verbose=less(verbose,10));
+      muT <- aroma.light::callNaiveGenotypes(betaN[use], cn=2, adjust=adjust, from=0, to=1,verbose=less(verbose,10));
       fit <- attr(muT, 'modelFit');
       mu[use] <- muT;
     }
@@ -168,11 +173,11 @@ naiveGenotypeCalls<-function(dataSetName,normalTumorArray,singleArray,plot)
     res <- file.rename(pathnameT, pathname);
     if (!isFile(pathname))
     {
-      throw("Failed to rename temporary file: ", pathnameT, " -> ", pathname);
+      R.methodsS3::throw("Failed to rename temporary file: ", pathnameT, " -> ", pathname);
     }
     if (isFile(pathnameT)) 
     {
-      throw("Failed to rename temporary file: ", pathnameT, " -> ", pathname);
+      R.methodsS3::throw("Failed to rename temporary file: ", pathnameT, " -> ", pathname);
     }
     rm(pathnameT);
     
@@ -198,11 +203,11 @@ naiveGenotypeCalls<-function(dataSetName,normalTumorArray,singleArray,plot)
     res <- file.rename(pathnameT, pathname);
     if (!isFile(pathname)) 
     {
-      throw("Failed to rename temporary file: ", pathnameT, " -> ", pathname);
+      R.methodsS3::throw("Failed to rename temporary file: ", pathnameT, " -> ", pathname);
     }
     if (isFile(pathnameT)) 
     {
-      throw("Failed to rename temporary file: ", pathnameT, " -> ", pathname);
+      R.methodsS3::throw("Failed to rename temporary file: ", pathnameT, " -> ", pathname);
     }
     rm(pathnameT);
      
@@ -234,9 +239,12 @@ naiveGenotypeCalls<-function(dataSetName,normalTumorArray,singleArray,plot)
 #
 SingleStudyPlot=function(dataFolder)
 { 
+  require(aroma.affymetrix)
   require(aroma.core)
   require(R.devices)
   require(R.filesets)
+  require(R.methodsS3)
+  
   log <- verbose <- Arguments$getVerbose(-8, timestamp=TRUE);
   
   #path where download cn and fracB 
@@ -264,13 +272,13 @@ SingleStudyPlot=function(dataFolder)
   unf <- aroma.core::getUnitNamesFile(ugp);
   sampleNames=R.filesets::getNames(dsFracB)
   #human genome reference
-  hg=getTags(ugp)[grep("hg",getTags(ugp))]
+  hg=R.filesets::getTags(ugp)[grep("hg",R.filesets::getTags(ugp))]
   
   # prefix of SNP
   platform <- aroma.core::getPlatform(ugp);
   if (platform == "Affymetrix") 
   {
-    require("aroma.affymetrix") || throw("Package not loaded: aroma.affymetrix");
+    require("aroma.affymetrix") || R.methodsS3::throw("Package not loaded: aroma.affymetrix");
     snpPattern <- "^SNP|^S-";
   } 
   else if (platform == "Illumina") 
@@ -279,7 +287,7 @@ SingleStudyPlot=function(dataFolder)
   } 
   else  
   {
-    throw("Unknown platform: ", platform);
+    R.methodsS3::throw("Unknown platform: ", platform);
   }
   
   #loop on all the files
@@ -292,7 +300,7 @@ SingleStudyPlot=function(dataFolder)
     dsCtemp=extract(dsC,i)
     dsFracBtemp=extract(dsFracB,i)
     gsNtemp=extract(gsN,i)
-    gsNtemp=getFile(gsNtemp,1)
+    gsNtemp=R.filesets::getFile(gsNtemp,1)
         
     cat("Saving graphics for sample",sampleName,"\n")
     
@@ -312,8 +320,8 @@ SingleStudyPlot=function(dataFolder)
       {      
         
         units <- aroma.core::getUnitsOnChromosome(ugp, chromosome=chromosome);
-        unitNames <- getUnitNames(unf,units=units);##names of the probes
-        posChr <- getPositions(ugp, units=units);#positions of the probes      
+        unitNames <- aroma.core::getUnitNames(unf,units=units);##names of the probes
+        posChr <- aroma.core::getPositions(ugp, units=units);#positions of the probes      
         
         
         ##########################################################
@@ -321,10 +329,10 @@ SingleStudyPlot=function(dataFolder)
         ##########################################################
         
         # Extract total CNs
-        C <- extractMatrix(dsCtemp,units=units);##units
+        C <- R.filesets::extractMatrix(dsCtemp,units=units);##units
         
         #CN median for units
-        thetaR <- extractMatrix(ceR,units=units)
+        thetaR <- R.filesets::extractMatrix(ceR,units=units)
         
         #normalization
         C <- 2*C[,1]/thetaR;
@@ -336,11 +344,11 @@ SingleStudyPlot=function(dataFolder)
         # Identify SNP units (fracB is only defined on SNP probes)
         keep <- (regexpr(snpPattern, unitNames) != -1);
         SNPunits <- units[keep];
-        posSNP <- getPositions(ugp, units=SNPunits);#SNP position
+        posSNP <- aroma.core::getPositions(ugp, units=SNPunits);#SNP position
         
         
         # Extract Allele B fractions
-        df <- getFile(dsFracBtemp,1);
+        df <- R.filesets::getFile(dsFracBtemp,1);
         beta <- df[SNPunits,1,drop=TRUE];
         beta <- as.data.frame(beta);
         beta <- as.matrix(beta);

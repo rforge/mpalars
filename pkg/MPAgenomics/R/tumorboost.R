@@ -109,13 +109,13 @@ tumorboost<-function(dataSetName,normalTumorArray,plot=TRUE)
 
     #print(dsList);
       
-    #dummy <- lapply(dsList, FUN=function(ds) print(getFile(ds,1)));
+    #dummy <- lapply(dsList, FUN=function(ds) print(R.filesets::getFile(ds,1)));
       
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     # Normalize allele B fractions for tumors given matched normals
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     tbn <- aroma.cn::TumorBoostNormalization(dsList$tumor, dsList$normal, gcN=dsList$callsN, tags=c("*", "NGC"));
-    dsTN <- process(tbn, verbose=log);
+    dsTN <- aroma.core::process(tbn, verbose=log);
     #print(dsTN);
 
     #if the user wants the different plot
@@ -157,8 +157,11 @@ tumorboost<-function(dataSetName,normalTumorArray,plot=TRUE)
 #
 tumorboostPlot=function(ds,dsList,dataSetName,normalTumorArray,tumorSample,normalSample,dsC,normalTumorMatrixC)
 {
+  require(aroma.affymetrix)
   require(aroma.core)
   require(R.filesets)
+  require(R.methodsS3)
+  require(R.oo)
   
   ########## load the total copy number signal for a pair (normal,tumor) 
   pairC <- normalTumorMatrixC[normalTumorMatrixC[,2]==tumorSample,]
@@ -183,20 +186,20 @@ tumorboostPlot=function(ds,dsList,dataSetName,normalTumorArray,tumorSample,norma
   ##########
   #path for save the plot
   figPath <- Arguments$getWritablePath(paste0("figures/",dataSetName,"/signal/"));
-  siteTag <- getTags(ds);
+  siteTag <- R.filesets::getTags(ds);
   siteTag <- paste(siteTag[-1], collapse=","); 
   
   #
   ugp <- aroma.core::getAromaUgpFile(dsList$tumor);
   unf <- aroma.core::getUnitNamesFile(ugp);
   
-  hg=getTags(ugp)[grep("hg",getTags(ugp))] #human genome reference 
+  hg=R.filesets::getTags(ugp)[grep("hg",R.filesets::getTags(ugp))] #human genome reference 
   
   # prefix of SNP
   platform <- aroma.core::getPlatform(ugp);
   if (platform == "Affymetrix") 
   {
-    require("aroma.affymetrix") || throw("Package not loaded: aroma.affymetrix");
+    require("aroma.affymetrix") || R.methodsS3::throw("Package not loaded: aroma.affymetrix");
     snpPattern <- "^SNP|^S-";
   } 
   else if (platform == "Illumina") 
@@ -205,13 +208,13 @@ tumorboostPlot=function(ds,dsList,dataSetName,normalTumorArray,tumorSample,norma
   } 
   else 
   { 
-    throw("Unknown platform: ", platform);
+    R.methodsS3::throw("Unknown platform: ", platform);
   }
   
   cat("Saving graphics for sample ",R.filesets::getNames(dsC[tumorSample]),"\n")
   
   #find ploidy for chromosome 23 and 24
-  gender=findGender(getName(dsC),normalSample,ugp)
+  gender=findGender(R.oo::getName(dsC),normalSample,ugp)
   
   #loop on chr
   for(chromosome in 1:25)
@@ -224,8 +227,8 @@ tumorboostPlot=function(ds,dsList,dataSetName,normalTumorArray,tumorSample,norma
     
     
     units <- aroma.core::getUnitsOnChromosome(ugp, chromosome=chromosome);
-    unitNames <- getUnitNames(unf,units=units);##names of the SNP and CN probes
-    posChr <- getPositions(ugp, units=units);#position of the probes on the chromosome
+    unitNames <- aroma.core::getUnitNames(unf,units=units);##names of the SNP and CN probes
+    posChr <- aroma.core::getPositions(ugp, units=units);#position of the probes on the chromosome
     
     ##########################################################
     ################  FRACTION ALLELE B  #####################
@@ -233,12 +236,12 @@ tumorboostPlot=function(ds,dsList,dataSetName,normalTumorArray,tumorSample,norma
     # Identify SNP units
     keep <- (regexpr(snpPattern, unitNames) != -1);
     SNPunits <- units[keep];
-    posSNP <- getPositions(ugp, units=SNPunits);#position des SNPs sur le chromosome      
+    posSNP <- aroma.core::getPositions(ugp, units=SNPunits);#position des SNPs sur le chromosome      
     
     
     # Extract Allele B fractions (defined only for SNP probes)
     kk <- 1;
-    dfList <- lapply(dsList, FUN=getFile, kk);
+    dfList <- lapply(dsList, FUN=R.filesets::getFile, kk);
     beta <- lapply(dfList, FUN=function(df) df[SNPunits,1,drop=TRUE]);
     beta <- as.data.frame(beta);
     beta <- as.matrix(beta);
@@ -251,7 +254,7 @@ tumorboostPlot=function(ds,dsList,dataSetName,normalTumorArray,tumorSample,norma
     ##########################################################
     
     #tumor CN
-    C <- extractMatrix(dsPairC, units=units);
+    C <- R.filesets::extractMatrix(dsPairC, units=units);
     
     #the ploidy depends of the gender for the cromosome 23 and 24
     if(chromosome==23 || chromosome==24)

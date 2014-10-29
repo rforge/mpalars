@@ -61,6 +61,7 @@ getGenotypeCalls=function(dataSetName,chromosome,listOfFiles=NULL,verbose=TRUE)
   
   require(aroma.core)
   require(R.filesets)
+  require(R.methodsS3)
   
   if(!("callData"%in%list.files()))
     stop("There is no \"totalAndFracBData\", check if you are in the good working directory or if you have run the signalPreProcess function before.")
@@ -150,7 +151,7 @@ getGenotypeCalls=function(dataSetName,chromosome,listOfFiles=NULL,verbose=TRUE)
   
   if (platform == "Affymetrix") 
   {
-    require("aroma.affymetrix") || throw("Package not loaded: aroma.affymetrix");
+    require("aroma.affymetrix") || R.methodsS3::throw("Package not loaded: aroma.affymetrix");
     snpPattern <- "^SNP|^S-";
   } 
   else if (platform == "Illumina") 
@@ -158,7 +159,7 @@ getGenotypeCalls=function(dataSetName,chromosome,listOfFiles=NULL,verbose=TRUE)
     snpPattern <- "^rs[0-9]";
   }
   else {
-    throw("Unknown platform: ", platform);
+    R.methodsS3::throw("Unknown platform: ", platform);
   }
   
   gsN=extract(gsN,pos)
@@ -168,13 +169,13 @@ getGenotypeCalls=function(dataSetName,chromosome,listOfFiles=NULL,verbose=TRUE)
   {
     units <- aroma.core::getUnitsOnChromosome(ugp, chromosome=chr);
     #get the prefix of SNP probes
-    unitNames <- getUnitNames(unf,units=units);##names of the probes
+    unitNames <- aroma.core::getUnitNames(unf,units=units);##names of the probes
     
     
     #keep the SNP units
     units=units[grep(snpPattern,unitNames)]
     unitNames=unitNames[grep(snpPattern,unitNames)]
-    posChr <- getPositions(ugp, units=units);#positions of the probes
+    posChr <- aroma.core::getPositions(ugp, units=units);#positions of the probes
     
     #sort signal by position
     indSort=order(posChr)
@@ -187,7 +188,7 @@ getGenotypeCalls=function(dataSetName,chromosome,listOfFiles=NULL,verbose=TRUE)
 
     for(i in 1:length(listOfFiles))
     {
-      gsNtemp=getFile(gsN,i)
+      gsNtemp=R.filesets::getFile(gsN,i)
       calls[,i]=gsNtemp[units,1,drop=TRUE]
     }
     calls[calls==0]="BB"

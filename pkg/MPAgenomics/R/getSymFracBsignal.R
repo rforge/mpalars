@@ -63,6 +63,7 @@ getSymFracBSignal=function(dataSetName,file,chromosome,normalTumorArray,verbose=
   
   require(aroma.core)
   require(R.filesets)
+  require(R.methodsS3)
   
   if(!("totalAndFracBData"%in%list.files()))
     stop("There is no \"totalAndFracBData\", check if you are in the good working directory or if you have run the signalPreProcess function before.")
@@ -196,7 +197,7 @@ getSymFracBSignal=function(dataSetName,file,chromosome,normalTumorArray,verbose=
   platform <- aroma.core::getPlatform(ugp);
   if (platform == "Affymetrix") 
   {
-    require("aroma.affymetrix") || throw("Package not loaded: aroma.affymetrix");
+    require("aroma.affymetrix") || R.methodsS3::throw("Package not loaded: aroma.affymetrix");
     snpPattern <- "^SNP|^S-";
   } 
   else if (platform == "Illumina") 
@@ -204,21 +205,21 @@ getSymFracBSignal=function(dataSetName,file,chromosome,normalTumorArray,verbose=
     snpPattern <- "^rs[0-9]";
   }
   else 
-    throw("Unknown platform: ", platform);
+    R.methodsS3::throw("Unknown platform: ", platform);
   
 
   symFracB=list()
   for(chr in chromosome)
   {
     units <- aroma.core::getUnitsOnChromosome(ugp, chromosome=chr);
-    unitNames <- getUnitNames(unf,units=units);##names of the probes
+    unitNames <- aroma.core::getUnitNames(unf,units=units);##names of the probes
     
     
     #keep the SNP units
     units=units[grep(snpPattern,unitNames)]
     unitNames=unitNames[grep(snpPattern,unitNames)]
     
-    posChr <- getPositions(ugp, units=units);#positions of the probes
+    posChr <- aroma.core::getPositions(ugp, units=units);#positions of the probes
     #sort signal by position
     indSort=sort(posChr,index.return=TRUE)$ix
     
