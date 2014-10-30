@@ -253,3 +253,68 @@ coeff=function(x,step)
   
   return(beta)
 }
+
+
+#' Compute coefficients at a given level of penalty
+#'
+#' @title Compute coefficients
+#' @author Quentin Grimonprez
+#' @param object a LarsParth object
+#' @param index If mode ="norm", index represents the l1-norm of the coefficients with which we want to predict.
+#'  If mode="fraction", index represents the ratio (l1-norm of the coefficientswith which we want to predict)/(l1-norm maximal of the LarsPath object).
+#'  If mode="lambda", index represents the value of the penalty parameter. If mode="step", index represents the numer of the step at which we want coefficients.
+#' @param mode "fraction" or "norm" or "lambda" or "step".
+#' @param ... other arguments. Not used
+#' @return A vector containing the estimated coefficient for index
+#' @method coef LarsPath
+#' @examples 
+#' dataset=simul(50,10000,0.4,10,50,matrix(c(0.1,0.8,0.02,0.02),nrow=2))
+#' result=HDlars(dataset$data[1:40,],dataset$response[1:40])
+#' coeff=coef(result,0.3,"fraction")
+#' @export
+coef.LarsPath=function(object,index=NULL,mode=c("lambda","step","fraction","norm"),...)
+{
+  mode <- match.arg(mode)
+  
+  if(missing(object))
+    stop("objectx is missing.")
+  if(missing(index) || is.null(index))
+    stop("index is missing.")
+  if(class(object)!="LarsPath")
+    stop("object must be a LarsPath object")
+  
+  beta=rep(0,object@p)
+  
+  if(mode=="step")
+  {
+    if(!.is.wholenumber(index))
+      stop("index must be a positive integer smaller than object@step")
+    if( (index<0) || (index>object@nbStep) )
+      stop("index must be a positive integer smaller than object@step")
+    
+    if(object@fusion)
+    {
+      a=0
+      ind=sort(object@variable[[index+1]],index.return=TRUE)$ix
+      for(i in 1:(length(object@variable[[index+1]])-1))
+      {
+        a=a+object@coefficient[[index+1]][ind[i]]
+        beta[object@variable[[index+1]][ind[i]]:(object@variable[[index+1]][ind[i+1]]-1)]=rep(a, object@variable[[index+1]][ind[i+1]]-object@variable[[index+1]][ind[i]])
+        
+      }
+      a=a+object@coefficient[[index+1]][ind[length(ind)]]
+      beta[object@variable[[index+1]][ind[length(ind)]]:object@p]=rep(a,object@p-object@variable[[index+1]][ind[length(ind)]]+1)
+    }
+    else
+    {
+      beta[object@variable[[index+1]]]=object@coefficient[[index+1]]
+    }
+  }
+  else
+  {
+    betatemp=computeCoefficients(object,index,mode)
+    beta[betatemp$variable]=betatemp$coefficient
+  }
+
+  return(beta)
+}

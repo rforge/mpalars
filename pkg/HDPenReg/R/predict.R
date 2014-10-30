@@ -2,27 +2,27 @@
 #'
 #' @title Prediction of response
 #' @author Quentin Grimonprez
-#' @param x a LarsParth object
-#' @param Xnew a matrix (of size n*x@@p) of covariates.
+#' @param object a LarsParth object
+#' @param Xnew a matrix (of size n*object@@p) of covariates.
 #' @param lambda If mode ="norm", lambda represents the l1-norm of the coefficients with which we want to predict. If mode="fraction", lambda represents the ratio (l1-norm of the coefficientswith which we want to predict)/(l1-norm maximal of the LarsPath object).
 #' @param mode "fraction", "lambda" or "norm".
+#' @param ... other arguments. Not used.
 #' @return The predicted response
 #' @examples 
 #' dataset=simul(50,10000,0.4,10,50,matrix(c(0.1,0.8,0.02,0.02),nrow=2))
 #' result=HDlars(dataset$data[1:40,],dataset$response[1:40])
-#' y=HDpredict(result,dataset$data[41:50,],0.3,"fraction")
+#' y=predict(result,dataset$data[41:50,],0.3,"fraction")
 #' @export
 #' 
-HDpredict=function(x,Xnew, lambda, mode="fraction")
+predict=function(object,Xnew, lambda, mode=c("fraction","lambda","norm"),...)
 {
-	
-	if(missing(x))
-		stop("x is missing.")
-	if(class(x)!="LarsPath")
-		stop("x must be a LarsPath object.")
+  mode <- match.arg(mode)
+  
+	if(missing(object))
+		stop("object is missing.")
+	if(class(object)!="LarsPath")
+		stop("object must be a LarsPath object.")
 
-	if( !(mode%in%c("fraction","norm","lambda")) ) 
-		stop("mode must be \"fraction\" or \"norm\".")
 	if(!is.numeric(lambda))
 		stop("lambda must be a positive real.")
 	if(length(lambda)>1)
@@ -32,25 +32,25 @@ HDpredict=function(x,Xnew, lambda, mode="fraction")
 
 	fraction = lambda
 	if(mode == "norm")
-		fraction = lambda/x@l1norm[x@nbStep+1]
+		fraction = lambda/object@l1norm[object@nbStep+1]
   
-	yPred=rep(x@mu,nrow(Xnew))
+	yPred=rep(object@mu,nrow(Xnew))
 	
   if(mode=="lambda")
   {
     if(lambda==0)
     {
-      yPred=yPred + Xnew[,x@variable[[x@nbStep+1]]]%*%x@coefficient[[x@nbStep+1]]	- sum(x@meanX[x@variable[[x@nbStep+1]]]*x@coefficient[[x@nbStep+1]])
+      yPred=yPred + Xnew[,object@variable[[object@nbStep+1]]]%*%object@coefficient[[object@nbStep+1]]	- sum(object@meanX[object@variable[[object@nbStep+1]]]*object@coefficient[[object@nbStep+1]])
       return(yPred)
     }
     
-    if(lambda>=x@lambda[1])
+    if(lambda>=object@lambda[1])
       return(yPred)
     
     ##fraction >0 and <1
-    coeff=computeCoefficients(x,fraction,mode="lambda");
+    coeff=computeCoefficients(object,fraction,mode="lambda");
     
-    yPred=yPred + Xnew[,coeff$variable,drop=FALSE]%*%coeff$coefficient - sum(x@meanX[coeff$variable]*coeff$coefficient)
+    yPred=yPred + Xnew[,coeff$variable,drop=FALSE]%*%coeff$coefficient - sum(object@meanX[coeff$variable]*coeff$coefficient)
     
     return(yPred)
   }
@@ -63,14 +63,14 @@ HDpredict=function(x,Xnew, lambda, mode="fraction")
   ##fraction = 1 : coefficients of the last step
 	if (fraction >= 1)
   {
-		yPred=yPred + Xnew[,x@variable[[x@nbStep+1]]]%*%x@coefficient[[x@nbStep+1]]	- sum(x@meanX[x@variable[[x@nbStep+1]]]*x@coefficient[[x@nbStep+1]])
+		yPred=yPred + Xnew[,object@variable[[object@nbStep+1]]]%*%object@coefficient[[object@nbStep+1]]	- sum(object@meanX[object@variable[[object@nbStep+1]]]*object@coefficient[[object@nbStep+1]])
 		return(yPred)
   }
 
   ##fraction >0 and <1
-  coeff=computeCoefficients(x,fraction);
+  coeff=computeCoefficients(object,fraction);
 
-	yPred=yPred + Xnew[,coeff$variable,drop=FALSE]%*%coeff$coefficient - sum(x@meanX[coeff$variable]*coeff$coefficient)
+	yPred=yPred + Xnew[,coeff$variable,drop=FALSE]%*%coeff$coefficient - sum(object@meanX[coeff$variable]*coeff$coefficient)
 
 	return(yPred);
 }

@@ -78,8 +78,7 @@ HDcvlars <- function(X,y,nbFolds=10,index=seq(0,1,by=0.01),mode=c("fraction","la
   #create the output object
   cv=list(cv=val$cv,cvError=val$cvError,minCv=min(val$cv),minIndex=index[which.min(val$cv)],index=index,maxSteps=maxSteps,mode=mode)
   
-  class(cv)="cvlars"
-  #plotCv(cv)
+  class(cv)="HDcvlars"
   
   return(cv)
 }
@@ -136,30 +135,34 @@ HDcvlars <- function(X,y,nbFolds=10,index=seq(0,1,by=0.01),mode=c("fraction","la
 #' @title plot cross validation mean square error
 #' @author Quentin Grimonprez
 #' @param x Output from HDcvlars function.
+#' @param ... graphical parameters
+#' @aliases plot.HDcvlars
+#' @method plot HDcvlars
 #' @examples 
 #' dataset=simul(50,10000,0.4,10,50,matrix(c(0.1,0.8,0.02,0.02),nrow=2))
 #' result=HDcvlars(dataset$data,dataset$response,5)
-#' plotCv(result)
+#' plot(result)
 #' @export
 #' 
-plotCv=function(x)
+plot.HDcvlars=function(x,...)
 {
-	if(missing(x))
-		stop("x is missing.")
-	if(class(x)!="cvlars")
-		stop("x must be an output of the HDcvlars function.")
+  if(missing(x))
+    stop("x is missing.")
+  if(class(x)!="HDcvlars")
+    stop("x must be an output of the HDcvlars function.")
   
   index=x$index
   minIndex=x$minIndex
-	lab="Fraction L1 Norm"
+  lab="Fraction L1 Norm"
   if(x$mode=="lambda")
   {
     lab="log(lambda)"
     index=log(index)
     minIndex=log(minIndex)
   }
-	plot(index, x$cv, type = "b", ylim = range(x$cv, x$cv + x$cvError, x$cv - x$cvError),xlab=lab,ylab="Cross-Validated MSE")
-	lines(index, x$cv+x$cvError,lty=2)
-	lines(index, x$cv-x$cvError,lty=2)
+  plot(index, x$cv, type = "b", ylim = range(x$cv, x$cv + x$cvError, x$cv - x$cvError),xlab=lab,ylab="Cross-Validated MSE",...)
+  lines(index, x$cv+x$cvError,lty=2)
+  lines(index, x$cv-x$cvError,lty=2)
   abline(v=minIndex,lty="dotted",col="blue")
+  invisible()
 }

@@ -33,7 +33,7 @@ A list containing
   \item{cv}{Mean prediction error for each value of index.}
   \item{cvError}{Standard error of cv.}
   \item{minCv}{Minimal cv criterion.}
-  \item{fraction}{Value of the l1norm fraction for which the cv criterion is minimal.}
+  \item{minIndex}{Value of index for which the cv criterion is minimal.}
   \item{index}{Values at which prediction error should be computed. This is the fraction of the saturated |beta|. The default value is seq(0,1,by=0.01).}
   \item{maxSteps}{Maximum number of steps of the lars algorithm.}
 }

@@ -77,7 +77,6 @@ EMcvlasso <- function(X,y,nbFolds=10,lambda=NULL,maxSteps=1000,burn=30,intercept
   #cv=list(cv=val$cv,cvError=val$cvError,minCv=min(val$cv),lambda.optim=val$lambdaMin,fraction=index[which.min(val$cv)],lambda=val$lambda,maxSteps=maxSteps)
   
   #class(cv)="cvEM"
-  #plotCv(cv)
   
   return(val)
 }
@@ -207,7 +206,6 @@ EMcvfusedlasso <- function(X,y,lambda1,lambda2,nbFolds=10,maxSteps=1000,burn=30,
   #cv=list(cv=val$cv,cvError=val$cvError,minCv=min(val$cv),lambda.optim=val$lambdaMin,fraction=index[which.min(val$cv)],lambda=val$lambda,maxSteps=maxSteps)
   
   #class(cv)="cvEM"
-  #plotCv(cv)
   
   return(val)
 }

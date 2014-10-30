@@ -362,12 +362,12 @@ rescvlars=HDcvlars(data1$data, data1$response,5)
 
 		Then, we can plot the MSE curve
 << plotcvlars, echo=TRUE,eval=FALSE>>=
-plotCv(rescvlars)
+plot(rescvlars)
 @
 		\begin{figure}[!h]
 			\begin{center}	
 << plotcvlarsb, echo=FALSE,fig=TRUE,width=16,height=8>>=
-plotCv(rescvlars)
+plot(rescvlars)
 @
 			\end{center}
 		\end{figure}	
@@ -382,7 +382,7 @@ coefficients=computeCoefficients(reslars, rescvlars$minIndex, mode = "lambda")
 		
 		If we have a new data set without the response, we can use the \texttt{predict} function to compute the associated response.
 << pred, echo=TRUE, eval=FALSE>>=
-# yPred=HDpredict(reslars, rescvlars$fraction, mode = "fraction")
+# yPred=predict(reslars, rescvlars$fraction, mode = "fraction")
 @		
 		
 	\subsection{HDfusion}
