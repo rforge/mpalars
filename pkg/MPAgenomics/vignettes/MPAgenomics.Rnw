@@ -1191,9 +1191,9 @@ with $(X\beta)_{i}=\sum_p x_{i,p}\beta_p$ and $\lambda>0$ controlling the number
 %
 After minimization, non-zero coefficients $\beta_p$ correspond to influential positions to predict the response. \\
 	
-	To solve this problem, we use the LARS algorithm \cite{lars} that solves the lasso problem for all the values of $\lambda$. In order to choose the best solution, we use a cross validation to select the best values of $\lambda$ and return the associated solution.\\
+	To solve this problem, we use by default the LARS algorithm \cite{lars} that solves the lasso problem for all the values of $\lambda$. In order to choose the best solution, we use a cross validation to select the best values of $\lambda$ and return the associated solution.\\
   
-  The spike and slab method \cite{spikeslab1}\cite{spikeslab2} is another alternative in the case of linear regression. It is a three steps procedure including filtering, marker effect estimation and marker selection steps. The filter and marker effect estimation steps use the spike and slab algorithm whereas the marker selection step relies on the elastic net (mixing a $l_1$ penalty whit a $l_2$ penalty). The spike and slab algorithm solves a generalized ridge regression problem ($l_2$ penalty). It is implemented in the R package \texttt{spikeslab} \cite{spikeslabR}. 
+  The spike and slab method \cite{spikeslab1}\cite{spikeslab2} is another alternative in this case of linear regression. It is a three steps procedure including filtering, marker effect estimation and marker selection steps. The filter and marker effect estimation steps use the spike and slab algorithm whereas the marker selection step relies on the elastic net (mixing a $l_1$ penalty whit a $l_2$ penalty). The spike and slab algorithm solves a generalized ridge regression problem ($l_2$ penalty). It is implemented in the R package \texttt{spikeslab} \cite{spikeslabR}. 
 	
 	\subsection{From data normalized by aroma}	
 
@@ -1313,6 +1313,31 @@ dataMatrix=matrix(rnorm(5000,0,0.5),nrow=50)
 dataResponse=drop(dataMatrix%*%sample(c(rep(0,90),rep(1,10))))
 res=variableSelection(dataMatrix,dataResponse,nbFolds=5,loss="linear",plot=TRUE)
 @		
+
+  \subsection{To go further}
+    In the current implementation of the \texttt{MPAgenomics} R package, two variable selection methods are proposed: $(i)$ the Spike and Slab strategy consisting in first filtering variables to keep most reliable ones, second estimating the effect of remaining variables, and third selecting variables (using AIC), or $(ii)$ Lasso + 10-fold cross validation and elbow search \cite{coude} to choose the unknown parameter $\lambda$ (default choice).\\
+  
+    In order to compare the two approaches, we have carried out a small simulation study that is shortly described in what follows and mainly summarized by Figure \ref{fig:truefalse}. We run the two approaches with 100 samples generated according to the following design: 
+  \begin{itemize}
+		\item $I=100$ individuals and $P=1000, 2000,\dots, 10000$ variables
+		\item $\beta^* \in \mathbb{R}^p$, the true sparse estimates with only $K=10$ non-zero coefficients
+		\item $X\in \mathcal{M}_{I,P}(\mathbb{R})$, $X_1,\dots,X_I \sim \mathcal{N}(0_P,I_P)$
+		\item $\epsilon\in\mathbb{R}^P$ Gaussian noise, $\epsilon_1,\dots,\epsilon_I \sim \mathcal{N}(0,\sigma^2)$ with $\sigma^2=0.5$
+		\item $y=X\beta^*+\epsilon$
+	\end{itemize}	
+
+For each approach, the selected variables were compared to the truth (non-zero elements of $\beta^*$), the average number of true and false selected variables were plotted in Figure \ref{fig:truefalse}. We can see that the \textit{lars} procedure selects here more true variables -- especially when $P$ grows -- and less false variables than \textit{spikeslab}.\\
+
+%We can see (Fig. \ref{fig:truefalse}) that the current procedure in \texttt{MPAgenomics} (\textit{lars} + 10-fold cross validation) outperforms the \textit{spikeslab} procedure in term of variable selection. 
+
+	\begin{figure}[!h]
+		\centering
+		\includegraphics[width=0.37\textwidth]{fig/truesel}
+		\includegraphics[width=0.37\textwidth]{fig/falsesel}
+		\caption{Number of true (Left figure) and false (Right figure) variables selected by two different methods: $(i)$ Lars and 10-fold cross-validation (\textit{lars}), $(ii)$ Spike and Slab (\textit{spikeslab}).}
+		\label{fig:truefalse}
+	\end{figure}
+	
 \nocite{*}
 \bibliographystyle{apalike}
 \newpage
