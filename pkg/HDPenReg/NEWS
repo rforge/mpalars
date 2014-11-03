@@ -2,5 +2,5 @@ Version 0.90 (23-10-2014)
 - Add cross-validation on lambda values in HDcvlars
 - Change ouput parameter name "fraction" in "minIndex" in HDcvlars
 - Change plotCv in plot (to follow generic function name)
-- Chane HDpredict in predict (to follow generic function name)
+- Change HDpredict in predict (to follow generic function name)
 - Overload of coef generic function. coef combines computeCoefficients and coeff function
