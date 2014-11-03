@@ -18,7 +18,7 @@ Description: MPAgenomics provides functions to preprocess and analyze genomic
 License: GPL(>=2)
 Copyright: Inria 2012-2014.
 Imports:
-    R.utils,changepoint(>= 1.1),glmnet,cghseg,HDPenReg,spikeslab
+    R.utils,changepoint(>= 1.1),glmnet,cghseg,HDPenReg(>= 0.90),spikeslab
 Suggests:
     CGHcall,aroma.affymetrix,aroma.cn,aroma.core,aroma.light,snowfall,R.devices,R.filesets,R.methodsS3,R.oo,matrixStats
 Roxygen: list(wrap = FALSE)

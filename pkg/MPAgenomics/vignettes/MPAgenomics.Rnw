@@ -1193,8 +1193,7 @@ After minimization, non-zero coefficients $\beta_p$ correspond to influential po
 	
 	To solve this problem, we use the LARS algorithm \cite{lars} that solves the lasso problem for all the values of $\lambda$. In order to choose the best solution, we use a cross validation to select the best values of $\lambda$ and return the associated solution.\\
   
-  The spike and slab method \cite{spikeslab1}\cite{spikeslab2} is also used in the case of linear regression. It is a three steps procedure including a filtering step, a marker effect estimation step and a marker selection step. The filtering and marker effect estimation steps use the spike and slab algorithm whereas the marker selection rely on the elastic net (mixing a $l_1$ penalty whit a $l_2$ penalty). The spike and slab algorithm solves a generalized ridge regression problem ($l_2$ penalty). It is implemented in the R package \texttt{spikeslab} \cite{spikeslabR}. 
-	
+  The spike and slab method \cite{spikeslab1}\cite{spikeslab2} is another alternative in the case of linear regression. It is a three steps procedure including filtering, marker effect estimation and marker selection steps. The filter and marker effect estimation steps use the spike and slab algorithm whereas the marker selection step relies on the elastic net (mixing a $l_1$ penalty whit a $l_2$ penalty). The spike and slab algorithm solves a generalized ridge regression problem ($l_2$ penalty). It is implemented in the R package \texttt{spikeslab} \cite{spikeslabR}. 
 	
 	\subsection{From data normalized by aroma}	
 
@@ -1202,7 +1201,7 @@ After minimization, non-zero coefficients $\beta_p$ correspond to influential po
 	
 		\begin{verbatim}
 markerSelection(dataSetName,dataResponse,chromosome,signal,normalTumorArray,onlySNP,nbFolds,
-loss,plot,...)
+loss,plot,pkg,...)
 		\end{verbatim}
 	
 	
@@ -1223,7 +1222,7 @@ loss,plot,...)
 				\texttt{nbFolds} & Number of folds for the cross-validation (default=10).\\
 				\texttt{loss}  & either ``logistic'' (binary response) or ``linear'' (quantitative response), default is ``logistic''.\\
 				\texttt{plot} & If TRUE, cross-validation mean squared error is plotted (default=TRUE).\\
-        \texttt{pkg} & Either ``HDPenReg'' or ``spikeslab''. Ued package in linear case.\\
+        \texttt{pkg} & Either ``HDPenReg'' or ``spikeslab''. Used package in linear case (default=``HDPenReg'').\\
 				\texttt{...} & supplementary arguments for \texttt{cv.glmnet} function \cite{glmnet} in case of \\
 				~ & logistic loss or for \texttt{HDlars} function for linear loss.\\
 				\hline	
@@ -1279,7 +1278,7 @@ onlySNP=TRUE,loss="linear")
 		A version of the selection of markers without the aroma architecture is available:
 		
 		\begin{verbatim}
-			variableSelection(dataMatrix,dataResponse,nbFolds,plot)
+			variableSelection(dataMatrix,dataResponse,nbFolds,loss,plot,pkg)
 		\end{verbatim}
 		
 		\begin{center}
@@ -1292,7 +1291,7 @@ onlySNP=TRUE,loss="linear")
 				\texttt{nbFolds} & Number of folds for the cross-validation (default=10).\\							
         \texttt{loss}  & either ``logistic'' (binary response) or ``linear'' (quantitative response), default is ``logistic''.\\
 				\texttt{plot} & If TRUE plot cross-validation mean squared error (default=TRUE).\\
-        \texttt{pkg} & Either ``HDPenReg'' or ``spikeslab''. Ued package in linear case.\\
+        \texttt{pkg} & Either ``HDPenReg'' or ``spikeslab''. Used package in linear case (default=``HDPenReg'').\\
 				\texttt{...} & supplementary arguments for \texttt{cv.glmnet} function \cite{glmnet} in case of \\
 				~ & logistic loss or for \texttt{HDlars} function for linear loss.\\
 				\hline	

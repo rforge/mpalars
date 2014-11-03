@@ -283,31 +283,42 @@ variableSelection=function(dataMatrix,dataResponse,nbFolds=min(length(dataRespon
   {
     if(pkg=="HDPenReg")
     {
-      #cross validation to choose the best l1 norm ratio
-      rescv=HDcvlars(dataMatrix, dataResponse, nbFolds,index = seq(0, 1, by = 0.01),...)
-      
-      if(plot)
-      {
-        plotCv(rescv)
-      }
-      
       #lars algorithm for obtaining all the path
       reslars=HDlars(dataMatrix, dataResponse,...)
       
-      #we compute the coefficients for the value given by the HDcvlars function
-      coeff=computeCoefficients(reslars,rescv$fraction,mode="fraction")
+      #cross validation to choose the best lambda
+      rescv=HDcvlars(dataMatrix, dataResponse, nbFolds,index = c(reslars@lambda,0), mode="lambda",...)
       
-      var=coeff$variable
-      coef=coeff$coefficient
-      intercept=reslars@mu
-      if(length(coeff$variable)!=0)
+      if(plot)
       {
-        index=order(coeff$variable)
-        var=coeff$variable[index]
-        coef=coeff$coefficient[index]
+        plot(rescv)
       }
       
-      rm(reslars,coeff)
+      
+      
+      #we compute the coefficients for the value given by the HDcvlars function
+      #coeff=computeCoefficients(reslars,rescv$minIndex,mode="lambda")
+      
+      indKnee=Lmethod(rescv$cv)
+      #var=reslars@variable[[which.min(rescv$cv)]]
+      #coef=reslars@coefficient[[which.min(rescv$cv)]]
+      var=reslars@variable[[indKnee]]
+      coef=reslars@coefficient[[indKnee]]
+      #var=coeff$variable
+      #coef=coeff$coefficient
+      intercept=reslars@mu
+      if(length(var)!=0)
+      {
+        index=order(var)
+        var=var[index]
+        coef=coef[index]
+        #index=order(coeff$variable)
+        #var=coeff$variable[index]
+        #coef=coeff$coefficient[index]
+      }
+      
+      rm(reslars)
+      #rm(reslars,coeff)
       gc()
     }
     else
@@ -348,4 +359,43 @@ variableSelection=function(dataMatrix,dataResponse,nbFolds=min(length(dataRespon
   
   
   res=list(markers.index=var,coefficient=coef,intercept=intercept)  
+}
+
+
+#Determining the Number of Clusters/Segments in Hierarchical Clustering/Segmentation Algorithms
+#Stan Salvador and Philip Chan 
+#
+# This function searches the furthest point 
+#
+# @title Find a knee in a curve
+#
+# @param y ordiantes of the curve
+# @param x abscissas of the curve
+# @return index of the knee
+#
+knee=function(y,x=1:length(y))
+{
+  m=(y[length(y)]-y[1])/(x[length(x)]-x[1])
+  p=y[1]-m*x[1]
+  d=abs(m*x-y+p)/sqrt(2+m^2)
+  knee=which.max(d)
+  return(knee)
+}
+
+
+Lmethod=function(y,x=1:length(y))
+{
+  b=length(x)
+  lrmse=rrmse=rmse=rep(NA,b)
+  for(i in 2:(b-2))
+  {
+    l=lm(y[1:i]~x[1:i])
+    r=lm(y[(i+1):b]~x[(i+1):b])
+    lrmse[i]=sqrt(sum(l$residuals^2))
+    rrmse[i]=sqrt(sum(r$residuals^2))
+    
+    rmse[i]=(i-1)/(b-1)*lrmse[i]+(b-i)/(b-1)*rrmse[i]
+  }
+  
+  return(min(which.min(rmse)+1,b))
 }

@@ -1,3 +1,8 @@
+Version 1.1.2 (29-10-2014)
+- Changes for HDPenReg 0.90
+- Add knee to SNPselection
+- update vignette
+
 Version 1.1.1 (09-10-2014)
 - Add HDPenReg in Imports field
 - Add spikeslab in markerSelection function
