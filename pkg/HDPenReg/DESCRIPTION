@@ -10,8 +10,8 @@ Depends:
     methods
 Imports:
     Rcpp
-Description: This package contains algorithms for lasso and fused-lasso
-    problems. It contains an implementation of the lars algorithm [1], for the
+Description: Algorithms for lasso and fused-lasso
+    problems: implementation of the lars algorithm [1], for the
     lasso and fusion penalization and EM-based algorithms for (logistic) lasso
     and fused-lasso.
 License: GPL (>= 2)
