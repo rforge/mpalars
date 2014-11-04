@@ -7,8 +7,8 @@ Author: Quentin Grimonprez with contributions from Guillemette Marot and Samuel
     Blanck. Some functions use code created by Sjoerd Vosse, Mark van de Wiel,
     Pierre Neuvial, Henrik Bengtsson.
 Maintainer: Samuel Blanck <samuel.blanck@inria.fr>
-Description: MPAgenomics provides functions to preprocess and analyze genomic
-    data. It provides wrappers from commonly used packages to streamline their
+Description: Functions to preprocess and analyze genomic
+    data. MPAgenomics provides wrappers from commonly used packages to streamline their
     repeated manipulation, offering an easy-to-use pipeline.
     The segmentation of successive multiple profiles is performed with an
     automatic choice of parameters involved in the wrapped packages.
