@@ -9,7 +9,7 @@
 \geometry{top=3cm, bottom=3cm, left=2cm, right=2cm}
 
 % Title Page
-\title{ \texttt{HDPenReg} : An \texttt{R} package for LARS algorithm}
+\title{ \texttt{HDPenReg}: An \texttt{R} package for LARS algorithm}
 \author{Quentin Grimonprez}
 \date{August 30, 2013}
 
@@ -433,7 +433,7 @@ plotCoefficient(resfusion,20)
 				 
 	\nocite{*}
 	\bibliographystyle{apalike}
-	\bibliography{vignette} 	
+	\bibliography{HDPenReg} 	
 	
 	
 \end{document}
