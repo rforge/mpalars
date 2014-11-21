@@ -8,13 +8,15 @@
 #' @param mode "fraction", "lambda" or "norm".
 #' @param ... other arguments. Not used.
 #' @return The predicted response
+#' @aliases predict.LarsPath
+#' @method predict LarsPath
 #' @examples 
 #' dataset=simul(50,10000,0.4,10,50,matrix(c(0.1,0.8,0.02,0.02),nrow=2))
 #' result=HDlars(dataset$data[1:40,],dataset$response[1:40])
 #' y=predict(result,dataset$data[41:50,],0.3,"fraction")
 #' @export
 #' 
-predict=function(object,Xnew, lambda, mode=c("fraction","lambda","norm"),...)
+predict.LarsPath=function(object,Xnew, lambda, mode=c("fraction","lambda","norm"),...)
 {
   mode <- match.arg(mode)
   
