@@ -1,5 +1,6 @@
 #' @useDynLib HDPenReg
 #' @import Rcpp
+#' @import rtkpp
 #' @import methods
 #' 
 #' @title Algorithms for lasso and fused-lasso problems.
@@ -15,8 +16,8 @@
 #'   \tabular{ll}{
 #' Package: \tab HDPenReg\cr
 #' Type: \tab Package\cr
-#' Version: \tab 0.90.1\cr
-#' Date: \tab 2014-11-17\cr
+#' Version: \tab 0.91\cr
+#' Date: \tab 2014-11-25\cr
 #' License: \tab GPL (>=2) \cr
 #' }
 #' 

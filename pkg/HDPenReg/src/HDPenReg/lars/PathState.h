@@ -36,7 +36,7 @@
 #ifndef PATHSTATE_H_
 #define PATHSTATE_H_
 
-#include "../../stkpp/include/STKpp.h"
+#include "STKpp.h"
 #include <utility>
 
 namespace HD

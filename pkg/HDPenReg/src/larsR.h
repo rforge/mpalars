@@ -2,8 +2,9 @@
 #define _LARSR_H
 
 #include <Rcpp.h>
-#include "stkpp/include/STKernel.h"
-#include "stkpp/include/Arrays.h"
+#include "STKernel.h"
+#include "Arrays.h"
+
 
 /*
  * note : RcppExport is an alias to `extern "C"` defined by Rcpp.

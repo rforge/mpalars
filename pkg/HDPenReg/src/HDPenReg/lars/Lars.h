@@ -282,7 +282,7 @@ namespace HD
       ///eps for zero approximation
       STK::Real eps_;
       ///qr decomposition of Xi
-      STK::Qr qrX_;
+      STK::lapack::Qr qrX_;
       ///X reduced to covariates of active Set
       STK::Array2D<STK::Real> Xi_;
       /// vector of correlation (size p*1)

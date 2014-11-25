@@ -34,6 +34,7 @@
 
 #include "Cvlars.h"
 #include <cstdlib>
+#include <algorithm>
 
 namespace HD
 {

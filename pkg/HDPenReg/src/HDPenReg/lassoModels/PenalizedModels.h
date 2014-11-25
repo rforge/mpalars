@@ -36,8 +36,7 @@
 #ifndef PENALIZEDMODELS_H_
 #define PENALIZEDMODELS_H_
 
-#include "../../stkpp/projects/StatModels/include/STK_IModelBase.h"
-#include "../../stkpp/include/STKpp.h"
+#include "STKpp.h"
 #include "IPenalizedSolver.h"
 #include "IPenalty.h"
 
@@ -48,7 +47,7 @@ namespace HD
    *  It contains implementations of Estep and Mstep for run an EM algorithm.
    */
 
-  class PenalizedModelsBase : public STK::IModelBase
+  class PenalizedModelsBase : public STK::IStatModelBase
   {
     public:
       /**
@@ -60,34 +59,25 @@ namespace HD
        * @param p_solver pointer on the solver to use in the Mstep
        * @param threshold tolerance for thresholding the solution
        */
-      PenalizedModelsBase(STK::CArrayXX const* p_data, STK::CVectorX const* p_y, STK::CVectorX const& beta, IPenalizedSolver* p_solver = 0)
-                      : STK::IModelBase(p_data->sizeRows(),p_data->sizeCols()),
-                        p_data_(p_data),
-                        p_y_(p_y),
-                        beta_(beta)
-          {
-          }
+      PenalizedModelsBase( STK::CArrayXX const* p_data, STK::CVectorX const* p_y, STK::CVectorX const& beta, IPenalizedSolver* p_solver = 0)
+                         : STK::IStatModelBase(p_data->sizeRows(),p_data->sizeCols()),
+                          p_data_(p_data),
+                          p_y_(p_y),
+                          beta_(beta)
+      {}
 
-      PenalizedModelsBase(STK::CArrayXX const* p_data, STK::CVectorX const* p_y)
-                      : STK::IModelBase(p_data->sizeRows(),p_data->sizeCols()),
-                        p_data_(p_data),
-                        p_y_(p_y),
-                        beta_(p_y->sizeRows())
-          {
-          }
+      PenalizedModelsBase( STK::CArrayXX const* p_data, STK::CVectorX const* p_y)
+                         : STK::IStatModelBase(p_data->sizeRows(),p_data->sizeCols()),
+                         p_data_(p_data),
+                         p_y_(p_y),
+                         beta_(p_y->sizeRows())
+      {}
 
-      PenalizedModelsBase()
-                      : STK::IModelBase(),p_data_(0),p_y_(0),beta_()
-          {}
+      PenalizedModelsBase(): STK::IStatModelBase(),p_data_(0),p_y_(0),beta_()
+      {}
 
       /** destructor*/
       virtual ~PenalizedModelsBase(){};
-
-      /** copy constructor */
-      //PenalizedModels
-
-      /** clone */
-      //PenalizedModels* clone() const { return new();};
 
       //setter
       inline void setP_y(STK::CVectorX const* p_y) {p_y_ = p_y;}

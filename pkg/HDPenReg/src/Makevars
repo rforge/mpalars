@@ -2,47 +2,26 @@
 #
 # Purpose:  Makevar for the R packages using stk++
 # Author:   Serge Iovleff, S..._Dot_I..._At_stkpp_Dot_org
-#
 #-----------------------------------------------------------------------
 #
-# This file have to be copied in the src directory of your R package.
-# The following directory structure is assumed:
-#
-# >data
-# >man
-# >R
-# >src
-#      >stkpp
-#            >bin      // can be a symbolic link to the stk++ bin directory
-#            >include  // can be a symbolic link to the stk++ include directory
-#            >lib      // can be a symbolic link to the stk++ lib directory
-#            >projects // can be a symbolic link to the stk++ projects directory
-#      >PKGNAME
-#            >lib
-#
-# You can modify the paths for your PKG at your convenience, but let unmodified
-# the stk++ paths.
-#
+PKGNAME = HDPenReg
 
-PKGNAME = HDPenReg# add the name of the directory with the source of your package
-
-PKGDIR = ./$(PKGNAME)
+PKGDIR    = ./$(PKGNAME)
 PKGLIBDIR = $(PKGDIR)/lib
-PKGLIB = $(PKGLIBDIR)/lib$(PKGNAME).a
+PKGLIB    = $(PKGLIBDIR)/lib$(PKGNAME).a
 
-STKPPDIR = ./stkpp
-STKPPLIBDIR = $(STKPPDIR)/lib
-STKPPLIB = $(STKPPLIBDIR)/libSTKpp.a
+## Use the R_HOME indirection to support installations of multiple R version
+PKG_CXXFLAGS = -DSTKBASEARRAYS=1 `${R_HOME}/bin/Rscript -e "Rcpp:::CxxFlags()"` `${R_HOME}/bin/Rscript -e "rtkpp:::CxxFlags()"`
+PKG_CPPFLAGS = -DSTKBASEARRAYS=1 `${R_HOME}/bin/Rscript -e "Rcpp:::CxxFlags()"` `${R_HOME}/bin/Rscript -e "rtkpp:::CxxFlags()"`  $(SHLIB_OPENMP_CXXFLAGS)
+
+PKG_LIBS = $(PKGLIB)  `$(R_HOME)/bin/Rscript -e "rtkpp:::LdFlags()"`  $(SHLIB_OPENMP_CFLAGS) $(LAPACK_LIBS) $(BLAS_LIBS) $(FLIBS)
+
 
 export
 
-## Use the R_HOME indirection to support installations of multiple R version
-PKG_LIBS = `$(R_HOME)/bin/Rscript -e "Rcpp:::LdFlags()"` $(SHLIB_OPENMP_CXXFLAGS) $(PKGLIB) $(STKPPLIB)
-PKG_CPPFLAGS += -I./stkpp/projects/ -DSTKBASEARRAYS=1
-
 .PHONY: all pkglib
 
-## $(SHLIB) is the usual default target that is built automatically from all source 
+## $(SHLIB) is the usual default target that is built automatically from all source
 ## files in this directory. pkglib is an additional target for the libraries
 ## that will be installed in $(STKPPDIR) and $(PKGLIB) and which users can link against.
 
@@ -51,7 +30,5 @@ all: $(SHLIB)
 $(SHLIB): pkglib
 
 pkglib:
-	(cd $(STKPPDIR) && $(MAKE) -j -l2 all)
-	(cd $(PKGDIR) && $(MAKE) -j -l2 all)
-	(cd $(STKPPDIR) && $(MAKE) clean_obj)
+	(cd $(PKGDIR) && $(MAKE) -j all)
 	(cd $(PKGDIR) && $(MAKE) clean)

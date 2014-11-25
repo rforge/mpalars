@@ -3,9 +3,8 @@
 
 #include <Rcpp.h>
 #include <vector>
-#include "stkpp/projects/STKernel/include/STK_Real.h"
-#include "stkpp/include/STKernel.h"
-#include "stkpp/include/Arrays.h"
+#include "STKernel.h"
+#include "Arrays.h"
 
 /*
  * note : RcppExport is an alias to `extern "C"` defined by Rcpp.

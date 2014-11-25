@@ -64,7 +64,7 @@ namespace HD
             , step_(0)
             , mu_()
             , eps_(STK::Arithmetic<Real>::epsilon())
-            , qrX_()
+            , qrX_(CArrayXX())
             , Xi_(n_,1)
             , c_()
             , intercept_(intercept)
@@ -94,7 +94,7 @@ namespace HD
             , step_(0)
             , mu_()
             , eps_(eps)
-            , qrX_()
+            , qrX_(CArrayXX())
             , Xi_(n_,1)
             , c_()
             , intercept_(intercept)
@@ -497,7 +497,8 @@ namespace HD
   {
     //create Xi_ and qrXi_
     Xi_.col(Xi_.lastIdxCols()) = X_.col(idxVar);
-    qrX_ = Qr(Xi_);//creation of the first QR decomposition
+    qrX_.setData(Xi_);
+    qrX_.run();
 
 #ifdef VERBOSE
       cout<<"Step 1 : Variable "<< idxVar<<" added"<<endl;

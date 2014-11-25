@@ -1,4 +1,3 @@
-#include "stkpp/projects/STKernel/include/STK_Real.h"
 #include "emR.h"
 #include "larsR.h"
 #include "HDPenReg/lassoModels/Lasso.h"
@@ -21,7 +20,7 @@ using namespace HD;
 
 void copySTKVectorInSTDVector(STK::CVectorX const& stkvector, vector<STK::Real> &stdvector)
 {
-	stdvector.resize(stkvector.sizeRows());
+  stdvector.resize(stkvector.sizeRows());
 	for(int i = 1; i <= stkvector.sizeRows(); i++)
 		stdvector[i-1]=stkvector[i];	
 }

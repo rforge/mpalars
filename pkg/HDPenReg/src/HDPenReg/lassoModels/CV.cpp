@@ -35,6 +35,7 @@
 
 #include "CV.h"
 #include <cstdlib>
+#include <algorithm>
 
 namespace HD
 {

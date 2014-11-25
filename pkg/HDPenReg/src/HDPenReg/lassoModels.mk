@@ -5,16 +5,13 @@ all:lib
 
 #-----------------------------------------------------------------------
 # Variables
-# 
+#
 LIB = ./lib/libHDPenReg.a
-
-STK_INC_DIR = -I./  -I../ -I../stkpp/projects/ -I../../stkpp/projects/
 
 #-----------------------------------------------------------------------
 # Sources files
-#
 SRCS =  ./lassoModels/LassoPenalty.cpp \
-	./lassoModels/LassoSolver.cpp \
+  ./lassoModels/LassoSolver.cpp \
 	./lassoModels/FusedLassoPenalty.cpp \
 	./lassoModels/FusedLassoSolver.cpp \
 	./lassoModels/LogisticLassoPenalty.cpp \
@@ -27,23 +24,21 @@ SRCS =  ./lassoModels/LassoPenalty.cpp \
 
 #-------------------------------------------------------------------------
 # generate the variable OBJS containing the names of the object files
-#
 OBJS= $(SRCS:./lassoModels/%.cpp=%.o)
 
 #-------------------------------------------------------------------------
 # rule for compiling the cpp files
-#
 %.o: ./lassoModels/%.cpp
-	$(CXX) $(CXXFLAGS) ${CPICFLAGS} -DSTKBASEARRAYS=1 $(STK_INC_DIR) $< -c -o $@
+	$(CXX) $(CXXFLAGS) ${CPICFLAGS} $(SHLIB_OPENMP_CXXFLAGS) -DSTKBASEARRAYS=1 ${PKG_CXXFLAGS} $< -c -o $@
 
 #-----------------------------------------------------------------------
-# The rule lib create the library 
+# The rule lib create the library
 #
 lib: $(LIB)
 
 $(LIB): $(OBJS)
 	$(AR) -r $@ $?
-  
+
 mostlyclean: clean
 
 clean:

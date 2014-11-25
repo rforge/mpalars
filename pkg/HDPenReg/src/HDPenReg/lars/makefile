@@ -1,41 +1,29 @@
 #------------ LARS MAKEFILE
 
-
-include ../../makevars
-
 #-----------------------------------------------------------------------
-# Paths
-#
-BIN_DIR = ../../bin/
-
-#-----------------------------------------------------------------------
-# header files
-#
-CXX_INCS	= $(wildcard *.h)
+# Macro definitions. Overwrite or add flags
+ifneq ($(wildcard makevars.local),)
+  include makevars.local
+endif
 
 #-----------------------------------------------------------------------
 # source files
-#
-CPP_SRCS = $(wildcard *.cpp)
+CXX_SRCS = $(wildcard *.cpp)
 
 #-----------------------------------------------------------------------
 # binary files
-#
-CPP_OBJS = $(CPP_SRCS:%.cpp=$(BIN_DIR)%.o)
+CPP_OBJS = $(CXX_SRCS:%.cpp=$(BIN_DIR)%.o)
 
 #-----------------------------------------------------------------------
 # Compilation rules
-#
 $(BIN_DIR)%.o: %.h makefile
 $(BIN_DIR)%.o: %.cpp
-	$(CXX) $(CFLAGS) $(CXXFLAGS) $(STK_INC_DIR)  $< -c -o $@
-
-#-----------------------------------------------------------------------
-# creating objects files
-#
-obj: $(CPP_OBJS)
+	$(CXX) $(CXXFLAGS) $(CXXPICFLAGS) $(HD_CXXFLAGS) $< -c -o $@
 
 #-----------------------------------------------------------------------
 # Targets
-#
 all: obj
+
+#-----------------------------------------------------------------------
+# creating objects files
+obj: $(CPP_OBJS)

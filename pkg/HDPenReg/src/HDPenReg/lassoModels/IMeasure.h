@@ -36,7 +36,7 @@
 #ifndef IMEASURE_H_
 #define IMEASURE_H_
 
-#include "../../stkpp/include/STKpp.h"
+#include "STKpp.h"
 
 class IMeasure
 {

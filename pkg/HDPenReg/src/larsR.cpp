@@ -1,4 +1,3 @@
-#include "stkpp/projects/STKernel/include/STK_Real.h"
 #include "larsR.h"
 #include "HDPenReg/lars/Lars.h"
 #include "HDPenReg/lars/Cvlars.h"
