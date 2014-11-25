@@ -1,5 +1,4 @@
 #' @useDynLib HDPenReg
-#' @import Rcpp
 #' @import rtkpp
 #' @import methods
 #' 
