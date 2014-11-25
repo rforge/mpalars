@@ -34,7 +34,6 @@
 
 
 #include "LogisticLassoPenalty.h"
-#include "../../stkpp/projects/STatistiK/include/STK_Law_Normal.h"
 
 namespace HD
 {
