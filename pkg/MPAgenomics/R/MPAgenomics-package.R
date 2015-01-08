@@ -16,8 +16,8 @@
 #'   \tabular{ll}{
 #' Package: \tab MPAgenomics\cr
 #' Type: \tab Package\cr
-#' Version: \tab 1.1.2\cr
-#' Date: \tab 2014-10-29\cr
+#' Version: \tab 1.1.3\cr
+#' Date: \tab 2015-01-08\cr
 #' License: \tab GPL (>=2) \cr
 #' }
 #' 
@@ -28,9 +28,9 @@
 #' Maintainer: Samuel Blanck <samuel.blanck@@inria.fr>
 #'  
 #' 
-#' @examples 
+#'@examples \donttest{
 #' #see the vignette for detailed examples
 #' vignette("MPAgenomics")
-#'  
+#'  }
 #' @keywords package
 NULL

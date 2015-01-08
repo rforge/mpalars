@@ -1,3 +1,6 @@
+Version 1.1.3 (08-01-2015)
+-Add \donttest in MPAgenmics-package.R to prevent automatic opening of a pdf viewer during a R CMD check.
+
 Version 1.1.2 (29-10-2014)
 - Changes for HDPenReg 0.90
 - Add knee to SNPselection
