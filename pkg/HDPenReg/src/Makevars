@@ -11,8 +11,8 @@ PKGLIBDIR = $(PKGDIR)/lib
 PKGLIB    = $(PKGLIBDIR)/lib$(PKGNAME).a
 
 ## Use the R_HOME indirection to support installations of multiple R version
-PKG_CXXFLAGS = -DSTKBASEARRAYS=1 `${R_HOME}/bin/Rscript -e "Rcpp:::CxxFlags()"` `${R_HOME}/bin/Rscript -e "rtkpp:::CxxFlags()"`
-PKG_CPPFLAGS = -DSTKBASEARRAYS=1 `${R_HOME}/bin/Rscript -e "Rcpp:::CxxFlags()"` `${R_HOME}/bin/Rscript -e "rtkpp:::CxxFlags()"`  $(SHLIB_OPENMP_CXXFLAGS)
+PKG_CXXFLAGS = -DSTKBASEARRAYS=1  `${R_HOME}/bin/Rscript -e "rtkpp:::CxxFlags()"`
+PKG_CPPFLAGS = -DSTKBASEARRAYS=1  `${R_HOME}/bin/Rscript -e "rtkpp:::CxxFlags()"`  $(SHLIB_OPENMP_CXXFLAGS)
 
 PKG_LIBS = $(PKGLIB)  `$(R_HOME)/bin/Rscript -e "rtkpp:::LdFlags()"`  $(SHLIB_OPENMP_CFLAGS) $(LAPACK_LIBS) $(BLAS_LIBS) $(FLIBS)
 
@@ -30,5 +30,5 @@ all: $(SHLIB)
 $(SHLIB): pkglib
 
 pkglib:
-	(cd $(PKGDIR) && $(MAKE)  all)
+	(cd $(PKGDIR) && $(MAKE) all)
 	(cd $(PKGDIR) && $(MAKE) clean)

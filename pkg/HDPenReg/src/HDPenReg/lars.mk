@@ -29,7 +29,7 @@ OBJS= $(SRCS:./lars/%.cpp=%.o)
 # rule for compiling the cpp files
 #
 %.o: ./lars/%.cpp
-	$(CXX) $(CXXFLAGS) ${CPICFLAGS} $(SHLIB_OPENMP_CXXFLAGS) -DSTKBASEARRAYS=1 ${PKG_CXXFLAGS} $< -c -o $@
+	$(CXX) $(CXXFLAGS) ${CPICFLAGS} $(SHLIB_OPENMP_CXXFLAGS) ${PKG_CXXFLAGS} $< -c -o $@
 
 #-----------------------------------------------------------------------
 # The rule lib create the library 

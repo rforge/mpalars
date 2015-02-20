@@ -1,6 +1,6 @@
 Package: HDPenReg
-Version: 0.91
-Date: 2014-11-25
+Version: 0.91.1
+Date: 2015-02-20
 Title: High-Dimensional Penalized Regression
 Authors@R: c(person("Quentin", "Grimonprez", role = c("aut","cre"), email =
     "quentin.grimonprez@inria.fr"), person("Serge", "Iovleff", role = "ctb"))
@@ -15,6 +15,6 @@ Description: Algorithms for lasso and fused-lasso
     lasso and fusion penalization and EM-based algorithms for (logistic) lasso
     and fused-lasso.
 License: GPL (>= 2)
-LinkingTo: rtkpp
+LinkingTo: rtkpp, Rcpp
 Roxygen: list(wrap = FALSE)
 SystemRequirements: GNU make
