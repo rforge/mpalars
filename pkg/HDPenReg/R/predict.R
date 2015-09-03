@@ -20,24 +20,24 @@ predict.LarsPath=function(object,Xnew, lambda, mode=c("fraction","lambda","norm"
 {
   mode <- match.arg(mode)
   
-	if(missing(object))
-		stop("object is missing.")
-	if(class(object)!="LarsPath")
-		stop("object must be a LarsPath object.")
-
-	if(!is.numeric(lambda))
-		stop("lambda must be a positive real.")
-	if(length(lambda)>1)
-		stop("lambda must be a positive real.")
-	if(lambda < 0)
-		stop("lambda must be a positive real.")
-
-	fraction = lambda
-	if(mode == "norm")
-		fraction = lambda/object@l1norm[object@nbStep+1]
+  if(missing(object))
+    stop("object is missing.")
+  if(class(object)!="LarsPath")
+    stop("object must be a LarsPath object.")
   
-	yPred=rep(object@mu,nrow(Xnew))
-	
+  if(!is.numeric(lambda))
+    stop("lambda must be a positive real.")
+  if(length(lambda)>1)
+    stop("lambda must be a positive real.")
+  if(lambda < 0)
+    stop("lambda must be a positive real.")
+  
+  fraction = lambda
+  if(mode == "norm")
+    fraction = lambda/object@l1norm[object@nbStep+1]
+  
+  yPred=rep(object@mu,nrow(Xnew))
+  
   if(mode=="lambda")
   {
     if(lambda==0)
@@ -56,25 +56,25 @@ predict.LarsPath=function(object,Xnew, lambda, mode=c("fraction","lambda","norm"
     
     return(yPred)
   }
- 
-
+  
+  
   ##fraction = 0 : all coefficients are equal to 0
   if(fraction == 0)
     return(yPred)
-
+  
   ##fraction = 1 : coefficients of the last step
-	if (fraction >= 1)
+  if (fraction >= 1)
   {
-		yPred=yPred + Xnew[,object@variable[[object@nbStep+1]]]%*%object@coefficient[[object@nbStep+1]]	- sum(object@meanX[object@variable[[object@nbStep+1]]]*object@coefficient[[object@nbStep+1]])
-		return(yPred)
+    yPred=yPred + Xnew[,object@variable[[object@nbStep+1]]]%*%object@coefficient[[object@nbStep+1]]	- sum(object@meanX[object@variable[[object@nbStep+1]]]*object@coefficient[[object@nbStep+1]])
+    return(yPred)
   }
-
+  
   ##fraction >0 and <1
   coeff=computeCoefficients(object,fraction);
-
-	yPred=yPred + Xnew[,coeff$variable,drop=FALSE]%*%coeff$coefficient - sum(object@meanX[coeff$variable]*coeff$coefficient)
-
-	return(yPred);
+  
+  yPred=yPred + Xnew[,coeff$variable,drop=FALSE]%*%coeff$coefficient - sum(object@meanX[coeff$variable]*coeff$coefficient)
+  
+  return(yPred);
 }
 
 
@@ -133,7 +133,7 @@ computeCoefficients = function(x,lambda,mode="fraction")
     if(lambda == 0)
       return(list(variable=c(),coefficient=c()))
   }
-
+  
   index = 1;
   if(mode=="lambda")
   {
@@ -145,39 +145,39 @@ computeCoefficients = function(x,lambda,mode="fraction")
     while( abscissa[index] < lambda )
       index=index+1;
   }
-
-	index=index-1
-
-    addId=c()
-    if(length(x@addIndex[[index]])!=0)
+  
+  index=index-1
+  
+  addId=c()
+  if(length(x@addIndex[[index]])!=0)
+  {
+    for(i in 1:length(x@addIndex[[index]]) )
     {
-        for(i in 1:length(x@addIndex[[index]]) )
-        {
-            addId=c(addId,which(x@variable[[index+1]]==x@addIndex[[index]][i]))
-        }
+      addId=c(addId,which(x@variable[[index+1]]==x@addIndex[[index]][i]))
     }
-	
-	dropId=c()
-    if(length(x@dropIndex[[index]])!=0)
+  }
+  
+  dropId=c()
+  if(length(x@dropIndex[[index]])!=0)
+  {
+    for(i in 1:length(x@dropIndex[[index]]) )
     {
-        for(i in 1:length(x@dropIndex[[index]]) )
-        {
-            dropId=c(dropId,which(x@variable[[index]]==x@dropIndex[[index]][i]))
-        }
+      dropId=c(dropId,which(x@variable[[index]]==x@dropIndex[[index]][i]))
     }
-    
-    normalId=c()
-    if(length(x@variable[[index]])>0)
+  }
+  
+  normalId=c()
+  if(length(x@variable[[index]])>0)
+  {
+    for(i in 1:length(x@variable[[index]]))
     {
-        for(i in 1:length(x@variable[[index]]))
-        {
-            if(!(x@variable[[index]][i]%in%x@dropIndex[[index]]))
-            {
-                normalId=c(normalId,i)
-            }
-        }
+      if(!(x@variable[[index]][i]%in%x@dropIndex[[index]]))
+      {
+        normalId=c(normalId,i)
+      }
     }
-    
+  }
+  
   coeff=c()
   if(length(addId)!=0)
   {
@@ -194,10 +194,10 @@ computeCoefficients = function(x,lambda,mode="fraction")
       .computeOrdinate(abscissa[index], abscissa[index+1], lambda, x@coefficient[[index]][dropId], rep(0,length(dropId)))
     )
   } 
-    
-    variable=c(x@variable[[index]][normalId],x@variable[[index]][dropId],x@variable[[index+1]][addId])
-    
-    return(list(variable=variable,coefficient=coeff))
+  
+  variable=c(x@variable[[index]][normalId],x@variable[[index]][dropId],x@variable[[index+1]][addId])
+  
+  return(list(variable=variable,coefficient=coeff))
 }
 
 .computeOrdinate=function(x1,x2,x3,y1,y2)
