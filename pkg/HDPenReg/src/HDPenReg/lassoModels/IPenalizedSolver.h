@@ -36,7 +36,6 @@
 #ifndef IPENALIZEDSOLVER_H_
 #define IPENALIZEDSOLVER_H_
 
-#include "STKpp.h"
 #include "IPenalty.h"
 
 

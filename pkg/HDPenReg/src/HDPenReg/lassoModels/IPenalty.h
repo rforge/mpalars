@@ -36,7 +36,7 @@
 #ifndef PENALTY_H_
 #define PENALTY_H_
 
-#include "STKpp.h"
+#include "RTKpp.h"
 
 namespace HD
 {

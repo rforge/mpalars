@@ -52,7 +52,7 @@ namespace HD
        */
       STK::CVectorX operator()(STK::CVectorX &x) const
       {
-        STK::CVectorX a(x.sizeRowsImpl());
+        STK::CVectorX a(x.sizeRows());
 
         //a = sigI*x+invD*tX*X*invD*x
         a = (*p_sigma2_ * x) + ((*p_sqrtInvPenalty_ * p_data_->transpose()) * (((*p_data_) * (*p_sqrtInvPenalty_ * x))));

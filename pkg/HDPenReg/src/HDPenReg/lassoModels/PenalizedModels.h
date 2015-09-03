@@ -36,9 +36,8 @@
 #ifndef PENALIZEDMODELS_H_
 #define PENALIZEDMODELS_H_
 
-#include "STKpp.h"
-#include "IPenalizedSolver.h"
 #include "IPenalty.h"
+#include "IPenalizedSolver.h"
 
 namespace HD
 {

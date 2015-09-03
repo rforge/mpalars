@@ -82,13 +82,13 @@ setMethod(
   {
     miny=0
     maxy=0
-    miny=min(sapply(x@coefficient,min))
-    maxy=max(sapply(x@coefficient,min))
-    #     for(i in 2:length(x@coefficient))
-    #     {
-    #       miny=min(miny,x@coefficient[[i]])
-    #       maxy=max(maxy,x@coefficient[[i]])
-    #     }
+#     miny=min(sapply(x@coefficient,min))
+#     maxy=max(sapply(x@coefficient,max))
+    for(i in 2:length(x@coefficient))
+    {
+      miny=min(miny,x@coefficient[[i]])
+      maxy=max(maxy,x@coefficient[[i]])
+    }
     var=unique(unlist(x@variable))
     
     

@@ -29,7 +29,7 @@ OBJS= $(SRCS:./lassoModels/%.cpp=%.o)
 #-------------------------------------------------------------------------
 # rule for compiling the cpp files
 %.o: ./lassoModels/%.cpp
-	$(CXX) $(CXXFLAGS) ${CPICFLAGS} $(SHLIB_OPENMP_CXXFLAGS) ${PKG_CXXFLAGS} $< -c -o $@
+	$(CXX) $(HD_CPPFLAGS1) $(HD_CXXFLAGS) $< -c -o $@
 
 #-----------------------------------------------------------------------
 # The rule lib create the library

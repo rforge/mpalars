@@ -1,13 +1,13 @@
 Package: HDPenReg
-Version: 0.91.1
-Date: 2015-02-20
+Version: 0.92
+Date: 2015-09-03
 Title: High-Dimensional Penalized Regression
 Authors@R: c(person("Quentin", "Grimonprez", role = c("aut","cre"), email =
     "quentin.grimonprez@inria.fr"), person("Serge", "Iovleff", role = "ctb"))
 Copyright: inria 2013-2015
 Depends:
     R (>= 3.0.2),
-    rtkpp
+    rtkpp (>= 0.9.2)
 Imports:
     methods
 Description: Algorithms for lasso and fused-lasso

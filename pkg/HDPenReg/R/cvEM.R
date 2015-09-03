@@ -55,7 +55,7 @@ EMcvlasso <- function(X,y,nbFolds=10,lambda=NULL,maxSteps=1000,burn=30,intercept
     if(epsCG<=0)
         stop("epsCG must be a positive real") 
         
-  .checkcvlars(X,y,maxSteps,eps,nbFolds,c(0,1),intercept)
+  .checkcvlars(X,y,maxSteps,eps,nbFolds,c(0,1),intercept,"lambda")
   ## maxSteps
   if(!.is.wholenumber(burn))
     stop("burn must be a positive integer.")
@@ -136,7 +136,7 @@ EMcvfusedlasso <- function(X,y,lambda1,lambda2,nbFolds=10,maxSteps=1000,burn=30,
     if(epsCG<=0)
         stop("epsCG must be a positive real") 
         
-  .checkcvlars(X,y,maxSteps,eps,nbFolds,c(0,1),intercept)
+  .checkcvlars(X,y,maxSteps,eps,nbFolds,c(0,1),intercept,"lambda")
   
   ## maxSteps
   if(!.is.wholenumber(burn))

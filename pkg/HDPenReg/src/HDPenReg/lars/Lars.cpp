@@ -713,7 +713,7 @@ namespace HD
       int nbVar = path_.lastState().sizeRows();
 
 
-      for(int i = 1; i <= yPred.sizeRowsImpl(); i++)
+      for(int i = 1; i <= yPred.sizeRows(); i++)
         for(int j = 1; j <= nbVar; j++)
           yPred[i] += (X(i, varIdx(lastStep,j)) -muX_[varIdx(lastStep,j)]) * coefficient(lastStep,j);
       
@@ -763,7 +763,7 @@ namespace HD
     //coeff.move(computeCoefficients(path_.states(ind-2),path_.states(ind-1),path_.evolution(ind-2),fraction));
     computeCoefficients(path_.states(ind-2),path_.states(ind-1),path_.evolution(ind-2),l1normNew,coeff);
 
-    for( int i = 1; i <= yPred.sizeRowsImpl(); i++)
+    for( int i = 1; i <= yPred.sizeRows(); i++)
       for( int j = 1; j <= coeff.sizeRows(); j++)
         yPred[i] += (X(i, coeff[j].first) - muX_[coeff[j].first] ) * coeff[j].second ;
 
