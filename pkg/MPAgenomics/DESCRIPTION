@@ -1,8 +1,8 @@
 Package: MPAgenomics
 Type: Package
 Title: Multi-Patient Analysis of Genomic Markers
-Version: 1.1.3
-Date: 2015-01-08
+Version: 1.1.4
+Date: 2015-09-09
 Author: Quentin Grimonprez with contributions from Guillemette Marot and Samuel
     Blanck. Some functions use code created by Sjoerd Vosse, Mark van de Wiel,
     Pierre Neuvial, Henrik Bengtsson.
@@ -15,7 +15,7 @@ Description: Preprocess and analysis of genomic data. MPAgenomics
     in the same time, MPAgenomics wraps efficient penalized regression methods
     to select relevant markers associated with a given outcome.
 License: GPL(>=2)
-Copyright: Inria 2012-2014.
+Copyright: Inria 2012-2015.
 Imports:
     R.utils,changepoint(>= 1.1),glmnet,cghseg,HDPenReg(>= 0.90),spikeslab
 Suggests:

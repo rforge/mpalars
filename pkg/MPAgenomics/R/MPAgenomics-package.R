@@ -1,4 +1,7 @@
 #' @import R.utils changepoint glmnet cghseg HDPenReg spikeslab
+#' @importFrom graphics axis lines par points
+#' @importFrom stats lm mad median optim sd var
+#' @importFrom utils head read.csv write.table
 #' 
 #' @title Multi-Patient Analysis of Genomic Markers
 #' @docType package
@@ -16,8 +19,8 @@
 #'   \tabular{ll}{
 #' Package: \tab MPAgenomics\cr
 #' Type: \tab Package\cr
-#' Version: \tab 1.1.3\cr
-#' Date: \tab 2015-01-08\cr
+#' Version: \tab 1.1.4\cr
+#' Date: \tab 2015-09-09\cr
 #' License: \tab GPL (>=2) \cr
 #' }
 #' 
