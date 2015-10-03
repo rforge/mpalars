@@ -1,7 +1,7 @@
 #' EM algorithm for lasso penalty
 #'
 #' @title EM algorithm for lasso penalty
-#' @author Quentin Grimonprez
+#' @author Quentin Grimonprez, Serge Iovleff
 #' @param X the matrix (of size n*p) of the covariates.
 #' @param y a vector of length n with the response.
 #' @param lambda a sequence of l1 penalty regularization term. If no sequence is provided, the function computes his own sequence.
@@ -9,10 +9,10 @@
 #' @param intercept If TRUE, there is an intercept in the model.
 #' @param model "linear" or "logistic"
 #' @param burn Number of steps before thresholding some variables to zero.
-#' @param threshold Zero tolerance.
+#' @param threshold Zero tolerance. Coefficients under this value are set to zero.
 #' @param eps Epsilon for the convergence of the EM algorithm.
 #' @param epsCG Epsilon for the convergence of the conjugate gradient.
-#' @return A list containing : 
+#' @return A list containing :
 #' \describe{
 #'   \item{nbStep}{Vector containing the number of steps of the algorithm for every lambda.}
 #'   \item{variable}{List of vector of size "step+1". The i+1-th item contains the index of non-zero coefficients at the i-th step.}
@@ -21,32 +21,28 @@
 #'   \item{mu}{Intercept.}
 #' }
 #'
-#' @examples 
-#' #dataset=simul(50,100,0.4,1,10,matrix(c(0.1,0.9,0.02,0.02),nrow=2))
-#' #result=EMlasso(dataset$data,dataset$response)
+#' @examples
+#' dataset=simul(50,1000,0.4,1,10,matrix(c(0.1,0.9,0.02,0.02),nrow=2))
+#' result=EMlasso(dataset$data,dataset$response)
 #' @export
-#' 
-EMlasso <- function(X,y,lambda,maxSteps=10000,intercept=TRUE,model="linear",burn=50,threshold=1e-10,eps=1e-5,epsCG=1e-8)
+#'
+EMlasso <- function( X, y, lambda
+                   , maxSteps=1000, intercept=TRUE, model="linear"
+                   , burn=50, threshold=1e-8, eps=1e-5, epsCG=1e-8)
 {
 	#check arguments
-	if(missing(X))
-		stop("X is missing.")
-	if(missing(y))
-		stop("y is missing.")
+	if(missing(X)) stop("X is missing.")
+	if(missing(y)) stop("y is missing.")
 	.check(X,y,maxSteps,eps,intercept)
 
-    ## threshold
-    if(!is.double(threshold))
-        stop("threshold must be a positive real") 
-    if(threshold<=0)
-        stop("threshold must be a positive real") 
-  
-    ## epsCG
-    if(!is.double(epsCG))
-        stop("epsCG must be a positive real") 
-    if(epsCG<=0)
-        stop("epsCG must be a positive real") 
-              
+  ## threshold
+  if(!is.double(threshold)) stop("threshold must be a positive real")
+  if(threshold<=0) stop("threshold must be a positive real")
+
+  ## epsCG
+  if(!is.double(epsCG)) stop("epsCG must be a positive real")
+  if(epsCG<=0) stop("epsCG must be a positive real")
+
 	if(missing(lambda))
 		lambda=-1#lambda will be generated in C code
 	else
@@ -62,11 +58,10 @@ EMlasso <- function(X,y,lambda,maxSteps=10000,intercept=TRUE,model="linear",burn
 
 	# call em algorithm
 	val=list()
-	if(model=="linear")
-	   val=.Call("EMlasso",X,y,nrow(X),ncol(X),lambda,intercept,maxSteps,burn,threshold,eps,epsCG,PACKAGE = "HDPenReg" )
-	else
-	   val=.Call("EMlogisticLasso",X,y,nrow(X),ncol(X),lambda,intercept,maxSteps,burn,threshold,eps,epsCG,PACKAGE = "HDPenReg" )
-	   
+  if(model=="linear")
+      val=.Call("EMlasso",X,y,lambda,intercept,maxSteps,burn,threshold,eps,epsCG,PACKAGE = "HDPenReg" )
+  else
+     val=.Call("EMlogisticLasso",X,y,lambda,intercept,maxSteps,burn,threshold,eps,epsCG,PACKAGE = "HDPenReg" )
 	return(val)
 }
 
@@ -74,7 +69,7 @@ EMlasso <- function(X,y,lambda,maxSteps=10000,intercept=TRUE,model="linear",burn
 #' EM algorithm for fused lasso penalty
 #'
 #' @title EM algorithm for fused lasso penalty
-#' @author Quentin Grimonprez
+#' @author Quentin Grimonprez, Serge Iovleff
 #' @param X the matrix (of size n*p) of the covariates.
 #' @param y a vector of length n with the response.
 #' @param lambda1 a positive real. Parameter associated with the lasso penalty.
@@ -84,9 +79,9 @@ EMlasso <- function(X,y,lambda,maxSteps=10000,intercept=TRUE,model="linear",burn
 #' @param model "linear" or "logistic"
 #' @param intercept If TRUE, there is an intercept in the model.
 #' @param eps tolerance for convergence of the EM algorithm.
-#' @param eps0 epsilon to add to avoid 0 to denominator of fraction.
+#' @param eps0 Zero tolerance. Coefficients under this value are set to zero.
 #' @param epsCG tolerance for convergence of the conjugate gradient.
-#' @return A list containing : 
+#' @return A list containing :
 #' \describe{
 #'   \item{nbStep}{Vector containing the number of steps of the algorithm for every lambda.}
 #'   \item{variable}{List of vector of size "step+1". The i+1-th item contains the index of non-zero coefficients at the i-th step.}
@@ -95,49 +90,43 @@ EMlasso <- function(X,y,lambda,maxSteps=10000,intercept=TRUE,model="linear",burn
 #'   \item{mu}{Intercept.}
 #' }
 #'
-#' @examples 
-#' #dataset=simul(50,100,0.4,1,10,matrix(c(0.1,0.9,0.02,0.02),nrow=2))
-#' #result=EMfusedlasso(dataset$data,dataset$response,1,1)
+#' @examples
+#' dataset=simul(50,1000,0.4,1,10,matrix(c(0.1,0.9,0.02,0.02),nrow=2))
+#' result=EMfusedlasso(dataset$data,dataset$response,1,1)
 #' @export
-#' 
-EMfusedlasso <- function(X,y,lambda1,lambda2,maxSteps=10000,burn=50,intercept=TRUE,model="linear",eps=1e-5,eps0=1e-12, epsCG=1e-8)
+#'
+EMfusedlasso <- function( X, y, lambda1, lambda2
+                        , maxSteps=1000, burn=50, intercept=TRUE, model="linear"
+                        , eps=1e-5, eps0=1e-8, epsCG=1e-8)
 {
     #check arguments
-    if(missing(X))
-        stop("X is missing.")
-    if(missing(y))
-        stop("y is missing.")
+    if(missing(X)) stop("X is missing.")
+    if(missing(y)) stop("y is missing.")
     .check(X,y,maxSteps,eps,intercept)
 
     ## eps0
-    if(!is.double(eps0))
-        stop("eps0 must be a positive real") 
-    if(eps0<=0)
-        stop("eps0 must be a positive real") 
-
+    if(!is.double(eps0)) stop("eps0 must be a positive real")
+    if(eps0<=0) stop("eps0 must be a positive real"):q
+    
 
     ## epsCG
-    if(!is.double(epsCG))
-        stop("epSCG must be a positive real") 
-    if(epsCG<=0)
-        stop("epsCG must be a positive real") 
-        
+    if(!is.double(epsCG)) stop("epSCG must be a positive real")
+    if(epsCG<=0) stop("epsCG must be a positive real")
+
     ##burn
-    if(!.is.wholenumber(burn))
-        stop("maxSteps must be a positive integer")
-    if( (burn<=0) || (burn>=maxSteps) )
-        stop("burn must be a positive integer lower than maxSteps.")
-        
+    if(!.is.wholenumber(burn)) stop("maxSteps must be a positive integer")
+    if( (burn<=0) || (burn>=maxSteps) ) stop("burn must be a positive integer lower than maxSteps.")
+
     #model
     if(!(model%in%c("linear","logistic")))
         stop("The model must be \"linear\" or \"logistic\"")
-        
-    # call lars algorithm
+
+    # call EM algorithm
     val=list()
     if(model=="linear")
-        val=.Call("EMlogisticFusedLasso",X,y,nrow(X),ncol(X),lambda1,lambda2,intercept,maxSteps,burn,eps,eps0,epsCG,PACKAGE = "HDPenReg" )
+      val=.Call("EMfusedLasso",X,y,lambda1,lambda2,intercept,maxSteps,burn,eps,eps0,epsCG,PACKAGE = "HDPenReg" )
     else
-        val=.Call("EMfusedLasso",X,y,nrow(X),ncol(X),lambda1,lambda2,intercept,maxSteps,burn,eps,eps0,epsCG,PACKAGE = "HDPenReg" )
+      val=.Call("EMlogisticFusedLasso",X,y,lambda1,lambda2,intercept,maxSteps,burn,eps,eps0,epsCG,PACKAGE = "HDPenReg" )
     return(val)
 }
 

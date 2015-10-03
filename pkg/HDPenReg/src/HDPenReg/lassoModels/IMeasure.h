@@ -44,7 +44,7 @@ class IMeasure
     IMeasure(){};
     virtual ~IMeasure(){};
 
-    virtual STK::Real measure(STK::CVectorX const& yTrue, STK::CVectorX &yEstimate) {return 0.;};
+    virtual STK::Real measure(STK::VectorX const& yTrue, STK::VectorX &yEstimate) {return 0.;};
 };
 
 
@@ -53,12 +53,9 @@ class Residuals : public IMeasure
   public:
     Residuals() : IMeasure(){};
 
-    STK::Real measure(STK::CVectorX const& yTrue, STK::CVectorX &yEstimate)
+    STK::Real measure(STK::VectorX const& yTrue, STK::VectorX &yEstimate)
     {
-      STK::Real res;
-      res=(yTrue-yEstimate).norm2()/(yTrue.sizeRows());
-
-      return res;
+      return (yTrue-yEstimate).norm2()/(yTrue.size());
     }
 };
 
@@ -67,22 +64,21 @@ class AUC : public IMeasure
   public:
     AUC() : IMeasure(){};
 
-    STK::Real measure(STK::CVectorX const& yTrue, STK::CVectorX &yEstimate)
+    STK::Real measure(STK::VectorX const& yTrue, STK::VectorX &yEstimate)
     {
       STK::Real auc, nb1, nb0, rsum1 = 0;
       nb1 = yTrue.sum();
-      nb0 = yTrue.sizeRows() - nb1;
+      nb0 = yTrue.size() - nb1;
 
-      STK::Array2DVector<int> index(yTrue.sizeRows());
-      for(int i = 1; i <= index.sizeRows(); i++)
+      STK::VectorXi index(yTrue.range());
+      for(int i = index.begin(); i < index.end(); i++)
         index[i] = i;
 
-      STK::Array2DVector<int> index2(index);
+      STK::VectorXi index2(index);
 
       int i, j,elem2;
       STK::Real elem1;
-
-      for (i = 2; i <= yEstimate.sizeRows(); ++i)
+      for (i = yEstimate.begin()+1; i < yEstimate.end(); ++i)
       {
           elem1 = yEstimate[i];
           elem2 = index[i];
@@ -95,7 +91,7 @@ class AUC : public IMeasure
           index[j] = elem2;
       }
 
-      for (i = 2; i <= index.sizeRows(); ++i)
+      for (i = index.begin()+1; i < index.end(); ++i)
       {
           elem1 = index[i];
           elem2 = index2[i];
@@ -104,16 +100,19 @@ class AUC : public IMeasure
             index[j] = index[j-1];
             index2[j] = index2[j-1];
           }
-          index[j] = elem1;
+          index[j]  = elem1;
           index2[j] = elem2;
       }
-      for(i = 1; i <= yTrue.sizeRows(); i++)
+      for(i = yTrue.begin(); i < yTrue.end(); i++)
       {
-        if(yTrue[i]==1)
-          rsum1 += index2[i];
+        if(yTrue[i]==1) rsum1 += index2[i];
       }
-
-      auc = (rsum1-nb1*(nb1+1.)/2.)/(nb1 * nb0);
+      if (nb1 != 0)
+      {
+        auc = (rsum1-nb1*(nb1+1.)/2.)/(nb1 * nb0);
+      }
+      else
+      { auc = (rsum1)/(nb0); }
 
       return auc;
     }

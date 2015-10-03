@@ -36,7 +36,7 @@
 #ifndef PENALTY_H_
 #define PENALTY_H_
 
-#include "RTKpp.h"
+#include <RTKpp.h>
 
 namespace HD
 {
@@ -55,24 +55,17 @@ namespace HD
       inline virtual ~IPenalty() {}
       /**clone*/
       virtual IPenalty* clone() const = 0;
-
-
       /** update penalty
        *  @param beta current estimates
        */
-      virtual void update(STK::CVectorX const& beta) = 0;
-
+      virtual void update(STK::VectorX const& beta) = 0;
       /** penalty term
        *  @param beta current estimates
        *  @return t(beta) * penalty * beta
        */
-      virtual STK::Real penaltyTerm(STK::CVectorX const& beta) const = 0;
-
-      /**
-       *  @return sigma2
-       */
+      virtual STK::Real penaltyTerm(STK::VectorX const& beta) const = 0;
+      /** @return sigma2 */
       virtual STK::Real const& sigma2() const = 0;
-
   };
 }
 

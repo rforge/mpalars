@@ -36,10 +36,11 @@
 #ifndef CVLASSO_H_
 #define CVLASSO_H_
 
+#include "IMeasure.h"
 #include "CV.h"
 #include "EM.h"
 #include "Lasso.h"
-#include "IMeasure.h"
+#include "LogisticLasso.h"
 
 namespace HD
 {
@@ -80,36 +81,47 @@ namespace HD
        * @param p_XControl pointer to the data control
        * @param p_yControl pointer to the response control
        */
-      void runModel(int i, STK::CArrayXX const& XTest, STK::CVectorX const& yTest, STK::CArrayXX const* p_XControl, STK::CVectorX const* p_yControl)
+      void runModel(int i, STK::ArrayXX const& XTest, STK::VectorX const& yTest, STK::ArrayXX const* p_XControl, STK::VectorX const* p_yControl)
       {
-        STK::CVectorX yPred(sizePartition_[i] );
-
+#ifdef HD_CVDEBUG
+         std::cout << "Entering CVlasso::runModel with i=" << i << "\n";
+#endif
+        STK::VectorX yPred(sizePartition_[i]);
         //create em algorithm
         EM algo(maxStep_,burn_,eps_);
-
         //create model
-        LassoModel lasso;
-        //set parameters of the model
-        lasso.setCGEps(epsCG_);
-        lasso.setThreshold(threshold_);
-        lasso.setP_data(p_XControl);
-        lasso.setP_y(p_yControl);
-
+        LassoModel lasso(p_XControl, p_yControl, index_[0], threshold_, epsCG_);
         //run the lasso on all value of index
-        for(int s = 1 ; s <= (int) index_.size(); s++)
+        for(int s = 0 ; s < (int) index_.size(); s++)
         {
+#ifdef HD_CVDEBUG
+        	std::cout << "In CVlasso::runModel lauching algo with lambda= " << index_[s] <<"\n";
+#endif
           //set the new value of lambda to test
-          lasso.setLambda(index_[s-1]);
+          lasso.setLambda(index_[s]);
           //initialize the model
-          lasso.initializeModel();
-          //run the algo
-          algo.run(&lasso);
+          lasso.initializeBeta();
+          //run algorithm
+          if (!algo.run(&lasso))
+          {
 
+      #ifdef HD_CVDEBUG
+            std::cout << "\nIn CVlasso::runModel. An error occur in algo.run(&lasso).\nWhat: " << algo.error() << "\n";
+      #endif
+          }
           //we compute the prediction of the y associated to XTest
           yPred = XTest * lasso.beta();
           //compute the residuals
-          measure_(s,i+1) = p_typeMeasure_->measure(yTest,yPred);
+          measure_(s,i) = p_typeMeasure_->measure(yTest,yPred);
+#ifdef HD_CVDEBUG
+      std::cout << "yTest = " << yTest.transpose() << "\n";
+      std::cout << "yPred = " << yPred.transpose() << "\n";
+      std::cout << "measure_(" << s  <<"," << i << ") = "<< measure_(s,i) << "\n";
+#endif
         }
+#ifdef HD_CVDEBUG
+         std::cout << "Terminating CVlasso::runModel\n";
+#endif
       }
 
     private:

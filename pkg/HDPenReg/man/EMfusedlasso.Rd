@@ -4,8 +4,8 @@
 \alias{EMfusedlasso}
 \title{EM algorithm for fused lasso penalty}
 \usage{
-EMfusedlasso(X, y, lambda1, lambda2, maxSteps = 10000, burn = 50,
-  intercept = TRUE, model = "linear", eps = 1e-05, eps0 = 1e-12,
+EMfusedlasso(X, y, lambda1, lambda2, maxSteps = 1000, burn = 50,
+  intercept = TRUE, model = "linear", eps = 1e-05, eps0 = 1e-08,
   epsCG = 1e-08)
 }
 \arguments{
@@ -27,7 +27,7 @@ EMfusedlasso(X, y, lambda1, lambda2, maxSteps = 10000, burn = 50,
 
 \item{eps}{tolerance for convergence of the EM algorithm.}
 
-\item{eps0}{epsilon to add to avoid 0 to denominator of fraction.}
+\item{eps0}{Zero tolerance. Coefficients under this value are set to zero.}
 
 \item{epsCG}{tolerance for convergence of the conjugate gradient.}
 }
@@ -45,10 +45,10 @@ A list containing :
 EM algorithm for fused lasso penalty
 }
 \examples{
-#dataset=simul(50,100,0.4,1,10,matrix(c(0.1,0.9,0.02,0.02),nrow=2))
-#result=EMfusedlasso(dataset$data,dataset$response,1,1)
+dataset=simul(50,1000,0.4,1,10,matrix(c(0.1,0.9,0.02,0.02),nrow=2))
+result=EMfusedlasso(dataset$data,dataset$response,1,1)
 }
 \author{
-Quentin Grimonprez
+Quentin Grimonprez, Serge Iovleff
 }
 

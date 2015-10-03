@@ -36,120 +36,71 @@
 
 namespace HD
 {
-
-  /*default constructor*/
-  FusedLassoPenalty::FusedLassoPenalty()
-  : lambda1_(), lambda2_(), mainDiagonal_(), offDiagonal_(), sigma2_(1.), eps_(STK::Arithmetic<STK::Real>::epsilon())
-  {
-  }
-
   /* Constructor
    *  @param lambda1 penalization parameter for the l1-norm of the estimates
    *  @param lambda2 penalization parameter for the l1-norm of the difference between successive estimates
    *  @param eps epsilon to add to denominator of fraction to avoid zeros.
    */
-  FusedLassoPenalty::FusedLassoPenalty(STK::Real lambda1, STK::Real lambda2, STK::Real eps)
+  FusedLassoPenalty::FusedLassoPenalty( STK::Real lambda1, STK::Real lambda2, STK::Real eps)
                                       : lambda1_(lambda1)
                                       , lambda2_(lambda2)
                                       , mainDiagonal_()
                                       , offDiagonal_()
                                       , sigma2_(1)
                                       , eps_(eps)
-  {
-  }
-
-
+  {}
   /*
    * Copy constructor
    * @param penalty LassoPenalty object to copy
    */
-  FusedLassoPenalty::FusedLassoPenalty(FusedLassoPenalty const& penalty)
-              : IPenalty(penalty)
-              , lambda1_(penalty.lambda1())
-              , lambda2_(penalty.lambda2())
-              , mainDiagonal_(penalty.mainDiagonal())
-              , offDiagonal_(penalty.offDiagonal())
-              , sigma2_(penalty.sigma2())
-              , eps_(penalty.eps())
-  {
-  }
-
-  /*
-   * clone
-   */
+  FusedLassoPenalty::FusedLassoPenalty( FusedLassoPenalty const& penalty)
+                                      : IPenalty(penalty)
+                                      , lambda1_(penalty.lambda1())
+                                      , lambda2_(penalty.lambda2())
+                                      , mainDiagonal_(penalty.mainDiagonal())
+                                      , offDiagonal_(penalty.offDiagonal())
+                                      , sigma2_(penalty.sigma2())
+                                      , eps_(penalty.eps())
+  {}
+  /* clone*/
   FusedLassoPenalty* FusedLassoPenalty::FusedLassoPenalty::clone() const
-  {
-    return new FusedLassoPenalty(*this);
-  }
+  { return new FusedLassoPenalty(*this);}
 
-  /*
-   * @param beta current estimates
+  /* @param beta current estimates
    * @return t(beta) * matrixB * beta
    */
-  STK::Real FusedLassoPenalty::penaltyTerm(STK::CVectorX const& beta) const
+  STK::Real FusedLassoPenalty::penaltyTerm(STK::VectorX const& beta) const
   {
-    STK::Real pen(0);
-//    pen = beta.dot(matrixB_ * beta);
-    //check the size
-    if(beta.sizeRows() != mainDiagonal_.sizeRows())
-      throw(STK::out_of_range("size mismatch."));
-
-    if(beta.sizeRows() > 0)
-    {
-      if(beta.sizeRows() == 1)
-        pen = beta[1] * mainDiagonal_[1] * beta[1];
-      else
-      {
-        pen = beta[1] * (mainDiagonal_[1] * beta[1] +  offDiagonal_[1] * beta[2]);
-        if(beta.sizeRows() > 2)
-        {
-          for(int i = 2; i < beta.sizeRows(); i++)
-            pen += beta[i] * ( offDiagonal_[i-1] * beta[i-1] + mainDiagonal_[i] * beta[i] +  offDiagonal_[i] * beta[i+1] );
-        }
-        pen += beta.back() * (beta.back() * mainDiagonal_.back() + beta[beta.sizeRows()-1] * offDiagonal_[beta.sizeRows()-1] );
-      }
-
-    }
-
+    STK::Real pen = lambda1_ * beta.abs().sum();
+    STK::Range r0(beta.begin(), beta.size()-1), r1(beta.begin()+1, beta.size()-1);
+    pen += lambda2_ * (beta.sub(r0) - beta.sub(r1)).abs().sum();
     return pen;
-  }
-
-  /*
-   * update sigma2 and the fused lasso penalty
-   * @param beta current estimates
-   * @param normResidual ||y-X*beta||_2^2
-   */
-  void FusedLassoPenalty::update(STK::CVectorX const& beta)
-  {
-    updatePenalty(beta);
   }
 
   /* update the penalty matrix : matrixB_
    *  @param beta current estimates
    */
-  void FusedLassoPenalty::updatePenalty(STK::CVectorX const& beta)
+  void FusedLassoPenalty::update(STK::VectorX const& beta)
   {
     //resize to the current size
-    offDiagonal_.resize(beta.sizeRows()-1);
-    mainDiagonal_.resize(beta.sizeRows());
+    offDiagonal_.resize(beta.size()-1);
+    mainDiagonal_.resize(beta.range());
 
-    if(beta.sizeRows() == 1)
-      mainDiagonal_[1] = lambda1_/(std::abs(beta[1]) + eps_);
+    if(beta.size() == 1)
+    {  mainDiagonal_.front() = lambda1_/(std::abs(beta.front()) + eps_);}
     else
     {
-      offDiagonal_[1] = -lambda2_/(std::abs(beta[2]-beta[1]) + eps_);
-      mainDiagonal_[1] = lambda1_/(std::abs(beta[1]) + eps_) - offDiagonal_[1];
-
-      if(beta.sizeRows() > 2)
+      // first element
+      offDiagonal_.front()  = -lambda2_/(std::abs(beta[beta.begin()+1]-beta.front()) + eps_);
+      mainDiagonal_.front() =  lambda1_/(std::abs(beta.front()) + eps_) - offDiagonal_.front();
+      // intermediate elements
+      for(int i = beta.begin()+1; i < beta.lastIdx(); i++)
       {
-        for(int i = 2; i < beta.sizeRows(); i++)
-        {
-          offDiagonal_[i] = -lambda2_/(std::abs(beta[i+1]-beta[i]) + eps_);
-          mainDiagonal_[i] = lambda1_/(std::abs(beta[i]) + eps_) - offDiagonal_[i] - offDiagonal_[i-1];
-        }
+        offDiagonal_[i] = -lambda2_/(std::abs(beta[i+1]-beta[i]) + eps_);
+        mainDiagonal_[i] = lambda1_/(std::abs(beta[i]) + eps_) - offDiagonal_[i] - offDiagonal_[i-1];
       }
-
-      mainDiagonal_[beta.sizeRows()] = lambda1_/(std::abs(beta[beta.sizeRows()]) + eps_) - offDiagonal_[beta.sizeRows()-1];
+      // last element
+      mainDiagonal_[beta.lastIdx()] = lambda1_/(std::abs(beta[beta.lastIdx()]) + eps_) - offDiagonal_[beta.lastIdx()-1];
     }
   }
 
@@ -157,35 +108,29 @@ namespace HD
    *  @param beta current estimates
    *  @param segment segment repartition from FusedLassoSolver
    */
-  void FusedLassoPenalty::updatePenalty(STK::CVectorX const& beta, std::vector<STK::Range> const& segment)
+  void FusedLassoPenalty::update(STK::VectorX const& beta, Segment const& segment)
   {
     //resize to the current size
-    offDiagonal_.resize(beta.sizeRows()-1);
-    mainDiagonal_.resize(beta.sizeRows());
+    offDiagonal_.resize(beta.size()-1);
+    mainDiagonal_.resize(beta.range());
 
     //we have to multiply lambda1 by the number of element of the segment to keep the tight structure when regrouping variable
-    if(beta.sizeRows() == 1)
-      mainDiagonal_[1] = segment[0].size() * lambda1_/(std::abs(beta[1]) + eps_);
+    if(beta.size() == 1)
+      mainDiagonal_.front() = segment.front().size() * lambda1_/(std::abs(beta.front()) + eps_);
     else
     {
-      offDiagonal_[1] = -lambda2_/(std::abs(beta[2]-beta[1]) + eps_);
-      mainDiagonal_[1] = segment[0].size() * lambda1_/(std::abs(beta[1]) + eps_) - offDiagonal_[1];
-
-      if(beta.sizeRows() > 2)
+      // first element
+      offDiagonal_.front()  = -lambda2_/(std::abs(beta[beta.begin()+1]-beta.front()) + eps_);
+      mainDiagonal_.front() = segment.front().size() * lambda1_/(std::abs(beta.front()) + eps_) - offDiagonal_.front();
+      // intermediate elements
+      for(int i = beta.begin()+1; i < beta.lastIdx(); i++)
       {
-        for(int i = 2; i < beta.sizeRows(); i++)
-        {
-          offDiagonal_[i] = -lambda2_/(std::abs(beta[i+1]-beta[i]) + eps_);
-          mainDiagonal_[i] = segment[i-1].size() * lambda1_/(std::abs(beta[i]) + eps_) - offDiagonal_[i] - offDiagonal_[i-1];
-        }
+        offDiagonal_[i] = -lambda2_/(std::abs(beta[i+1]-beta[i]) + eps_);
+        mainDiagonal_[i] = segment[i].size() * lambda1_/(std::abs(beta[i]) + eps_) - offDiagonal_[i] - offDiagonal_[i-1];
       }
-      mainDiagonal_[beta.sizeRows()] = segment.back().size() *  lambda1_/(std::abs(beta[beta.sizeRows()]) + eps_) - offDiagonal_[beta.sizeRows()-1];
+      // last element
+      mainDiagonal_.back() = segment.back().size() *  lambda1_/(std::abs(beta.back()) + eps_) - offDiagonal_[beta.lastIdx()-1];
     }
-  }
-
-  void FusedLassoPenalty::update(STK::CVectorX const& beta, std::vector<STK::Range> const& segment)
-  {
-    updatePenalty(beta,segment);
   }
 
 }

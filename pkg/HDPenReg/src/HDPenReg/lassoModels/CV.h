@@ -39,7 +39,6 @@
 #include "../lars/Lars.h"
 #include "../lars/functions.h"
 #include "IAlgo.h"
-#include "CV.h"
 
 namespace HD
 {
@@ -62,7 +61,7 @@ namespace HD
        * @param nbFolds number of folds
        * @param index vector with value to test
        */
-      CV(STK::CArrayXX const& X, STK::CVectorX const& y, int nbFolds, std::vector<double> const& index);
+      CV(STK::ArrayXX const& X, STK::VectorX const& y, int nbFolds, std::vector<double> const& index);
 
       /**destructor*/
       virtual ~CV() {}
@@ -75,9 +74,9 @@ namespace HD
 
       //setter
       /**set the data*/
-      inline void setX(STK::CArrayXX const& X) {p_X_ = &X;}
+      inline void setX(STK::ArrayXX const& X) {p_X_ = &X;}
       /**set the response*/
-      inline void setY(STK::CVectorX const& y) {p_y_ = &y;}
+      inline void setY(STK::VectorX const& y) {p_y_ = &y;}
       /**set the number of folds for the cross validation*/
       inline void setNbFolds(int const& nbFolds) {nbFolds_ = nbFolds;}
       /**set the index to test*/
@@ -85,9 +84,9 @@ namespace HD
 
       //getter
       /** @return return the prediction error for each index*/
-      inline STK::CVectorX const& cv() const {return cv_;}
+      inline STK::VectorX const& cv() const {return cv_;}
       /** @return return the standard deviation of prediction error for each index*/
-      inline STK::CVectorX const& cvError() const {return cvError_;}
+      inline STK::VectorX const& cvError() const {return cvError_;}
       /** @return return the index*/
       inline std::vector<double> const& index() const {return index_;}
 
@@ -112,13 +111,13 @@ namespace HD
        * @param p_XControl pointer to the data control
        * @param p_yControl pointer to the response control
        */
-      virtual void runModel(int i, STK::CArrayXX const& XTest, STK::CVectorX const& yTest, STK::CArrayXX const* p_XControl, STK::CVectorX const* p_yControl) = 0;
+      virtual void runModel(int i, STK::ArrayXX const& XTest, STK::VectorX const& yTest, STK::ArrayXX const* p_XControl, STK::VectorX const* p_yControl) = 0;
 
     protected:
       ///pointer on the data
-      STK::CArrayXX const* p_X_;
+      STK::ArrayXX const* p_X_;
       ///pointer on the response
-      STK::CVectorX const* p_y_;
+      STK::VectorX const* p_y_;
       ///repartition of the sample into k-folds
       std::vector<int> partition_;
       ///size of each fold
@@ -126,11 +125,11 @@ namespace HD
       ///vector with real between 0 and 1 (ratio (norm coefficient)/max(norm coefficient) for which we compute the prediction error)
       std::vector<double> index_;
       ///measure of good fitness : mse, auc
-      STK::CArrayXX measure_;
+      STK::ArrayXX measure_;
       ///criterion
-      STK::CVectorX cv_;
+      STK::VectorX cv_;
       ///criterion error
-      STK::CVectorX cvError_;
+      STK::VectorX cvError_;
       ///number of folds
       int nbFolds_;
       ///number of sample

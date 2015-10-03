@@ -37,9 +37,11 @@
 #define CVFUSEDLASSO_H_
 
 
+#include "IMeasure.h"
 #include "CV.h"
 #include "EM.h"
 #include "FusedLasso.h"
+#include "LogisticFusedLasso.h"
 
 namespace HD
 {
@@ -52,7 +54,7 @@ namespace HD
   {
     public:
       /**default constructor*/
-      CVFusedLasso1D() : CV(), lambda_(1.), optimL1_(false), eps_(1e-6),threshold_(1e-10), epsCG_(1e-8), maxStep_(1000), burn_(30), p_typeMeasure_(0) {};
+      CVFusedLasso1D(): CV(), lambda_(1.), optimL1_(false), eps_(1e-6),threshold_(1e-10), epsCG_(1e-8), maxStep_(1000), burn_(30), p_typeMeasure_(0) {};
 
       /**set optimL1 parameter
        * @param optimL1 If true, optimization of lambda1
@@ -89,31 +91,22 @@ namespace HD
       void initialize() {initializeCV();};
 
     protected:
-      void runModel(int i, STK::CArrayXX const& XTest, STK::CVectorX const& yTest, STK::CArrayXX const* p_XControl, STK::CVectorX const* p_yControl)
+      void runModel(int i, STK::ArrayXX const& XTest, STK::VectorX const& yTest, STK::ArrayXX const* p_XControl, STK::VectorX const* p_yControl)
       {
-        STK::CVectorX yPred(sizePartition_[i] );
+        STK::VectorX yPred(sizePartition_[i] );
 
         //create model
-        FusedLassoModel fusedlasso;
-        //set parameters of the model
-        fusedlasso.setP_data(p_XControl);
-        fusedlasso.setP_y(p_yControl);
-        fusedlasso.setLambda1(lambda_);
-        fusedlasso.setLambda2(lambda_);
+        FusedLassoModel fusedlasso(p_XControl, p_yControl,index_[0],lambda_,threshold_,epsCG_);
         fusedlasso.setEps(threshold_);
-        fusedlasso.setThreshold(threshold_);
-        fusedlasso.setCGEps(epsCG_);
-        //create algorithm
         EM algo(maxStep_,burn_,eps_);
-
         //run the model for all values of lambda
-        for(int s = 1 ; s <= (int) index_.size(); s++)
+        for(int s = 0 ; s < (int) index_.size(); s++)
         {
           //set the value of lambda to test
           if(optimL1_)
-            fusedlasso.setLambda1(index_[s-1]);
+            fusedlasso.setLambda1(index_[s]);
           else
-            fusedlasso.setLambda2(index_[s-1]);
+            fusedlasso.setLambda2(index_[s]);
 
           //initialize the model
           fusedlasso.initializeModel();
@@ -121,24 +114,24 @@ namespace HD
           algo.run(&fusedlasso);
 
           //we compute the prediction of the y associated to XTest
-          yPred = XTest * fusedlasso.beta();
+          STK::VectorX yPred = XTest * fusedlasso.beta();
           //compute the residuals
 //          stk_cout<<(fusedlasso.p_penalty())->lambda1()<<"   "<<(fusedlasso.p_penalty())->lambda2()<<"  "<<index_[s-1]<<"  "<<i+1<<"   "<<(yPred-yTest).square().sum()/sizePartition_[i]<<std::endl;
-          measure_(s,i+1) = p_typeMeasure_->measure(yTest,yPred);
+          measure_(s,i) = p_typeMeasure_->measure(yTest,yPred);
 
         }
       }
 
-//      void runModel(int i, STK::CArrayXX const& XTest, STK::CVectorX const& yTest, STK::CArrayXX const* p_XControl, STK::CVectorX const* p_yControl)
+//      void runModel(int i, STK::ArrayXX const& XTest, STK::VectorX const& yTest, STK::ArrayXX const* p_XControl, STK::VectorX const* p_yControl)
 //      {
 //        #pragma omp parallel
 //        {
 //          #pragma omp for schedule(dynamic,1)
 //          for(int s = 1 ; s <= (int) index_.size(); s++)
 //          {
-//            STK::CVectorX yPred(sizePartition_[i] );
+//            STK::VectorX yPred(sizePartition_[i] );
 //            FusedLasso fusedlasso;
-//            fusedlasso.setP_data(p_XControl);
+//            fusedlasso.setP_x(p_XControl);
 //            fusedlasso.setP_y(p_yControl);
 //            fusedlasso.setLambda1(lambda_);
 //            fusedlasso.setLambda2(lambda_);
@@ -226,52 +219,61 @@ namespace HD
       void initialize()
       {
         initializeCV();
-        measure_.resize(index_.size() * indexL2_.size(),nbFolds_);
+        measure_.resize(index_.size() * indexL2_.size(), nbFolds_);
         cv_.resize(index_.size() * indexL2_.size());
         cvError_.resize(index_.size() * indexL2_.size());
       };
 
     protected:
-      void runModel(int i, STK::CArrayXX const& XTest, STK::CVectorX const& yTest, STK::CArrayXX const* p_XControl, STK::CVectorX const* p_yControl)
-      {
-        STK::CVectorX yPred(sizePartition_[i] );
 
+      void runModel( int i, STK::ArrayXX const& XTest, STK::VectorX const& yTest
+                   , STK::ArrayXX const* p_XControl, STK::VectorX const* p_yControl)
+      {
+#ifdef HD_CVDEBUG
+         std::cerr << "Entering CVFusedlasso::runModel with i=" << i << "\n";
+#endif
         //create model
-        FusedLassoModel fusedlasso;
-        //set parameters of the model
-        fusedlasso.setP_data(p_XControl);
-        fusedlasso.setP_y(p_yControl);
+        FusedLassoModel fusedlasso(p_XControl, p_yControl, index_[0], indexL2_[0], threshold_, epsCG_);
         fusedlasso.setEps(threshold_);
-        fusedlasso.setThreshold(threshold_);
-        fusedlasso.setCGEps(epsCG_);
-        //create algorithm
         EM algo(maxStep_,burn_,eps_);
         //run on all the grid of lambda1 and lambda2
-        for(int s = 1 ; s <= (int) index_.size(); s++)
+        for(int s = 0 ; s < (int) index_.size(); s++)
         {
           //set lambda1
-          fusedlasso.setLambda1(index_[s-1]);
-
+          fusedlasso.setLambda1(index_[s]);
           //run for all lambda2
-          for(int j = 1; j <= (int) indexL2_.size(); j++)
+          for(int j = 0; j < (int) indexL2_.size(); j++)
           {
+#ifdef HD_CVDEBUG
+            std::cerr << "---------------------------------------------\n";
+            std::cerr << "In CVlasso::runModel lauching algo with lambda1= "
+                      << index_[s] << ", lambda2=" << indexL2_[j] <<"\n";
+#endif
             //set the values of lambda2
-            fusedlasso.setLambda2(indexL2_[j-1]);
+            fusedlasso.setLambda2(indexL2_[j]);
             //initialize the model
             fusedlasso.initializeModel();
+            //run algorithm
+            if (!algo.run(&fusedlasso))
+            {
 
-            //run the algo
-            algo.run(&fusedlasso);
-
-            //we compute the prediction of the y associated to XTest
-            yPred = XTest * fusedlasso.beta();
-
+        #ifdef HD_CVDEBUG
+              std::cout << "\nIn CVFusedlasso::runModel. An error occur in algo.run(&lasso).\nWhat: " << algo.error() << "\n";
+        #endif
+            }
+#ifdef HD_CVDEBUG
+            std::cerr << "Algo terminated.\n";
+#endif
+           //we compute the prediction of the y associated to XTest
+            STK::VectorX yPred = XTest * fusedlasso.beta();
             //compute the residuals
-            measure_((s-1)*indexL2_.size() + j,i+1) = p_typeMeasure_->measure(yTest,yPred);
+            measure_(s*indexL2_.size() + j, i) = p_typeMeasure_->measure(yTest,yPred);
+#ifdef HD_CVDEBUG
+      std::cout << "measure_(" << s*indexL2_.size() + j  <<"," << i << ") = "<< measure_(s*indexL2_.size() + j, i) << "\n";
+#endif
           }
         }
       }
-
 
     private:
       ///values to test for lambda2

@@ -11,24 +11,26 @@ PKGLIB    = $(PKGLIBDIR)/lib$(PKGNAME).a
 
 ## Use the R_HOME indirection to support installations of multiple R version
 PKG_CXXFLAGS = `${R_HOME}/bin/Rscript -e "rtkpp:::CxxFlags()"`
-PKG_CPPFLAGS =  -DSTKBASEARRAYS=1 `${R_HOME}/bin/Rscript -e "rtkpp:::CppFlags()"`
+PKG_CPPFLAGS = `${R_HOME}/bin/Rscript -e "rtkpp:::CppFlags()"`
 PKG_LIBS = $(PKGLIB) `$(R_HOME)/bin/Rscript -e "rtkpp:::LdFlags()"` $(SHLIB_OPENMP_CFLAGS) $(LAPACK_LIBS) $(BLAS_LIBS) $(FLIBS)
 
-HD_CPPFLAGS1 = $(ALL_CPPFLAGS)
+## Define HD_CPPFLAGS flags and HD_CXXFLAGS here
+HD_CPPFLAGS0 = $(ALL_CPPFLAGS) # -DHD_DEBUG #-DHD_CVDEBUG # -DHD_DEBUG
+HD_CPPFLAGS1 = $(ALL_CPPFLAGS) -DSTKBASEARRAYS=1
 HD_CXXFLAGS  = $(ALL_CXXFLAGS)
 
+## And export
 export
 
 .PHONY: all pkglib
 
 ## $(SHLIB) is the usual default target that is built automatically from all source
 ## files in this directory. pkglib is an additional target for the libraries
-## that will be installed in $(STKPPDIR) and $(PKGLIB) and which users can link against.
-
+## that will be installed in $(PKGDIR) and $(PKGLIB) and which users can link against.
 
 all: $(SHLIB)
 $(SHLIB): pkglib
 
 pkglib:
-	(cd $(PKGDIR) && $(MAKE)  all)
+	(cd $(PKGDIR) && $(MAKE) all)
 	(cd $(PKGDIR) && $(MAKE) clean)

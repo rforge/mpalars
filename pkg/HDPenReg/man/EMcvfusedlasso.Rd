@@ -5,8 +5,8 @@
 \title{cross validation for EM fused-lasso}
 \usage{
 EMcvfusedlasso(X, y, lambda1, lambda2, nbFolds = 10, maxSteps = 1000,
-  burn = 30, intercept = TRUE, model = "linear",
-  threshold = .Machine$double.eps^0.5, eps = 1e-05, epsCG = 1e-08)
+  burn = 50, intercept = TRUE, model = "linear", eps = 1e-05,
+  eps0 = 1e-08, epsCG = 1e-08)
 }
 \arguments{
 \item{X}{the matrix (of size n*p) of the covariates.}
@@ -27,9 +27,9 @@ EMcvfusedlasso(X, y, lambda1, lambda2, nbFolds = 10, maxSteps = 1000,
 
 \item{model}{"linear" or "logistic".}
 
-\item{threshold}{zero tolerance.}
-
 \item{eps}{Tolerance of the algorithm.}
+
+\item{eps0}{Zero tolerance. Coefficients under this value are set to zero.}
 
 \item{epsCG}{Epsilon for the convergence of the conjugate gradient.}
 }
@@ -48,10 +48,10 @@ A list containing
 cross validation function for EM lasso.
 }
 \examples{
-#dataset=simul(50,50,0.4,1,10,matrix(c(0.1,0.8,0.02,0.02),nrow=2))
-#result=EMcvfusedlasso(dataset$data,dataset$response,5,lambda1=3:1,lambda2=3:1,intercept=FALSE)
+dataset=simul(50,1000,0.4,1,10,matrix(c(0.1,0.8,0.02,0.02),nrow=2))
+result=EMcvfusedlasso(dataset$data,dataset$response,5,lambda1=3:1,lambda2=3:1,intercept=FALSE)
 }
 \author{
-Quentin Grimonprez
+Quentin Grimonprez, Serge Iovleff
 }
 

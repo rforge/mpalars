@@ -36,7 +36,7 @@
 #ifndef PATHSTATE_H_
 #define PATHSTATE_H_
 
-#include "RTKpp.h"
+#include <RTKpp.h>
 #include <utility>
 
 namespace HD

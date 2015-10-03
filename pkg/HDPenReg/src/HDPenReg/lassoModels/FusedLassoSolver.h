@@ -49,95 +49,88 @@ namespace HD
   class FusedLassoSolver : public IPenalizedSolver
   {
     public:
-
-      /**default constructor*/
-      FusedLassoSolver();
-      /**
-       * Constructor
-       * @param p_data pointer to the full data
+      typedef STK::CG<FusedLassoMultiplicator,STK::VectorX,InitIdFunctor> CGSolver;
+      typedef STK::Array2DVector<STK::Range> Segment;
+      /** Constructor
+       * @param p_x pointer to the full data
        * @param beta initial solution of the problem
        * @param p_y pointer to the response associated with the data
        * @param p_solver pointer to the solver
        * @param p_penalty pointer to the Fused lasso penalty
        * @param eps tolerance for zero
        */
-
-      FusedLassoSolver(STK::CArrayXX const* p_data, STK::CVectorX const& beta, STK::CVectorX const* p_y = 0,
-                       STK::CG<FusedLassoMultiplicator,STK::CVectorX,InitFunctor>* p_solver = 0, FusedLassoPenalty* p_penalty = 0,
-                       STK::Real eps = 1e-8);
-
-
+      FusedLassoSolver( STK::ArrayXX const* p_x, STK::VectorX const* p_y, STK::VectorX* p_beta
+                      , STK::Real const& threshold, STK::Real const& epsCG
+                      , FusedLassoPenalty* p_penalty = 0);
       /**destructor*/
-      ~FusedLassoSolver() {};
+      inline ~FusedLassoSolver() {};
 
-      /**
-       * Solve the M-step with a conjugate gradient
-       * @return the completed loglikelihood
-       */
-      STK::Real run(bool const& burn = true);
+      // getter
+      /** @return segment_ */
+      inline Segment segment() const { return segment_;}
+      /**@return pointer to the penalty*/
+      inline FusedLassoPenalty* p_penalty() { return p_penalty_;}
+      /**@return pointer to the solver*/
+      inline CGSolver* p_solver() { return &cgsolver_;}
 
-      /**run the update of the penalty*/
-      void update();
-
-      /**initialization of the solver*/
-      void initializeSolver();
-
-      //setter and getter
-      /** set the conjugate gradient solver
-       * @param p_solver pointer to a conjugate gradient solver
-       * */
-      inline void setSolver(STK::CG<FusedLassoMultiplicator,STK::CVectorX,InitFunctor>* p_solver) {p_solver_ = p_solver;}
+      //setter
       /** set the pointer to the FusedLassopenalty
        * @param p_penalty pointer to the FusedLassopenalty
        * */
-      inline void setPenalty(FusedLassoPenalty* p_penalty) {p_penalty_ = p_penalty;}
+      inline void setPenalty(FusedLassoPenalty* p_penalty) { p_penalty_ = p_penalty;}
       /** set the tolerance for the difference of estimates
        * @param eps new tolerance
        */
-      inline void setEps(STK::Real eps) {eps_ = eps;}
+      inline void setEps(STK::Real eps) { eps_ = eps;}
+      /** @param eps tolerance of the CG */
+      inline void setCGEps(STK::Real const& eps) { cgsolver_.setEps(eps); }
 
-      /** @return segment_ */
-      inline std::vector<STK::Range> segment() const {return segment_;}
-
-      /**@return pointer to the penalty*/
-      inline FusedLassoPenalty* p_penalty() {return p_penalty_;}
-      /**@return pointer to the solver*/
-      inline STK::CG<FusedLassoMultiplicator,STK::CVectorX,InitFunctor>* p_solver() {return p_solver_;}
-
-
-    protected:
-      /**
-       * update currentSet_, segment_ and currentBeta_
-       * @return a boolean, if true there is a changement in the currentSet
+      /** Solve the M-step with a conjugate gradient
+       *  @return the completed loglikelihood
        */
-      bool updateCurrent();
-
-      /**update currentData_*/
-      void updateCurrentData();
-
-      /** update beta_*/
-      void updateBeta();
-
+      STK::Real run(bool toUpdate = true);
+      /**run the update of the penalty*/
+      void update(bool toUpdate);
+      /**initialization of the solver*/
+      STK::Real initializeSolver();
+      /**update the solver*/
+      STK::Real updateSolver();
       /**Computation of the completed log-likelihood
        * @return the current completed loglikelihood
        */
-      STK::Real computeLlc();
+      STK::Real computeLlc() const;
+
+    protected:
+      /** update currentSet_, segment_ and currentBeta_
+       *  @return a boolean, if true there is a changement in the currentSet
+       */
+      bool updateCurrentBeta();
+      /** compute an initial value of beta using ols */
+      void computeInitialBeta();
+      /**update currentX_*/
+      void updateCurrentData();
+      /** update beta_*/
+      void updateBeta();
 
     private:
-      ///pointer to the conjugate gradient with LassoMultiplicator
-      STK::CG<FusedLassoMultiplicator,STK::CVectorX,InitFunctor>* p_solver_;
-      ///currentData_.transpose() * (*p_y_)
-      STK::CVectorX currentXty_;
+      ///currentX_.transpose() * (*p_y_)
+      STK::VectorX currentXty_;
       ///vector containing the segment corresponding to every index of beta
-      std::vector<STK::Range> segment_;
-      /// number of sample in the data
-      int n_;
+      Segment segment_;
       ///size of currentBeta_
       int nbActiveVariables_;
       ///eps_ tolerance for the difference of estimates
       STK::Real eps_;
+
       ///pointer to the penalty
       FusedLassoPenalty* p_penalty_;
+
+      /// multiplicator for conjugate gradient
+      FusedLassoMultiplicator mult_;
+      /// conjugate gradient for solver
+      CGSolver cgsolver_;
+      /// initial functor for CG
+      InitIdFunctor init_;
   };
 }
 

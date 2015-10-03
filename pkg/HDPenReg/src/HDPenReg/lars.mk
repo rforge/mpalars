@@ -11,24 +11,25 @@ PKGLIB = ./lib/libHDPenReg.a
 #-----------------------------------------------------------------------
 # Sources files
 #
-SRCS =  ./lars/Lars.cpp \
-  ./lars/Path.cpp \
-	./lars/PathState.cpp \
-	./lars/functions.cpp \
-  ./lars/Fusion.cpp \
-	./lars/Cvlars.cpp \
+SRCS =./lars/Lars.cpp \
+  		./lars/Path.cpp \
+			./lars/PathState.cpp \
+			./lars/functions.cpp \
+  		./lars/Fusion.cpp \
+			./lars/Cvlars.cpp \
+			./larsRmain.cpp
 
 
 
 #-------------------------------------------------------------------------
 # generate the variable OBJS containing the names of the object files
 #
-OBJS= $(SRCS:./lars/%.cpp=%.o)
+OBJS= $(SRCS:%.cpp=%.o)
 
 #-------------------------------------------------------------------------
 # rule for compiling the cpp files
 #
-%.o: ./lars/%.cpp
+%.o: %.cpp
 	$(CXX) $(HD_CPPFLAGS1) $(HD_CXXFLAGS)  $< -c -o $@
 
 #-----------------------------------------------------------------------
@@ -43,4 +44,4 @@ mostlyclean: clean
 
 clean:
 	@-rm -rf .libs _libs $(PKGLIB)
-	@-rm -f *.o
+	@-rm -f $(OBJS)

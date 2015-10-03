@@ -54,15 +54,15 @@ class EnetSolver : public IPenalizedSolver
 
     /**
      * Constructor
-     * @param p_data pointer to the current Data
+     * @param p_x pointer to the current Data
      * @param beta initial solution
      * @param p_y pointer to the response
      * @param threshold threshold for shrinkage
      * @param p_solver pointer to the solver
      * @param p_penalty pointer to the lasso penalty
      */
-    EnetSolver(STK::CArrayXX const* p_data, STK::CVectorX const& beta, STK::CVectorX const* p_y = 0,  STK::Real const& threshold = 1e-10,
-                STK::CG<EnetMultiplicator,STK::CVectorX,InitFunctor>* p_solver = 0, EnetPenalty* p_penalty = 0 );
+    EnetSolver(STK::ArrayXX const* p_x, STK::VectorX const& beta, STK::VectorX const* p_y = 0,  STK::Real const& threshold = 1e-10,
+                STK::CG<EnetMultiplicator,STK::VectorX,InitFunctor>* p_solver = 0, EnetPenalty* p_penalty = 0 );
 
     /**destructor*/
     virtual ~EnetSolver() {};
@@ -70,10 +70,10 @@ class EnetSolver : public IPenalizedSolver
     /**Solve the M-step with a conjugate gradient
      * @return the completed loglikelihood
      * */
-    STK::Real run(bool const& burn = true);
+    STK::Real run(bool burn = true);
 
     /**run the update of the penalty*/
-    void update();
+    void update(bool toUpdate);
 
     /**Initialization of the solver*/
     void initializeSolver();
@@ -82,13 +82,13 @@ class EnetSolver : public IPenalizedSolver
     /**@return the pointer to the penalty*/
     inline EnetPenalty* p_penalty() const { return p_penalty_;}
     /**@return a pointer to the CG solver*/
-    inline STK::CG<EnetMultiplicator,STK::CVectorX,InitFunctor>* p_solver() {return p_solver_;}
+    inline STK::CG<EnetMultiplicator,STK::VectorX,InitFunctor>* p_solver() {return p_solver_;}
 
     //setter
     /** set the conjugate gradient solver
      * @param p_solver pointer to the solver
      */
-    inline void setSolver(STK::CG<EnetMultiplicator,STK::CVectorX,InitFunctor>* p_solver) {p_solver_ = p_solver;}
+    inline void setSolver(STK::CG<EnetMultiplicator,STK::VectorX,InitFunctor>* p_solver) {p_solver_ = p_solver;}
 
     /**
      * set the EnetPenalty
@@ -107,9 +107,9 @@ class EnetSolver : public IPenalizedSolver
     void thresholding();
 
     /** update all the current variables*/
-    void updateCurrent();
+    void updateCurrentBeta();
 
-    /**Update the currentBeta_ and currentData_*/
+    /**Update the currentBeta_ and currentX_*/
     void updateCurrentData();
 
     /** Computation of the completed loglikelihood*/
@@ -117,11 +117,11 @@ class EnetSolver : public IPenalizedSolver
 
   private:
     ///pointer to the conjugate gradient with LassoMultiplicator
-    STK::CG<EnetMultiplicator,STK::CVectorX,InitFunctor>* p_solver_;
+    STK::CG<EnetMultiplicator,STK::VectorX,InitFunctor>* p_solver_;
     ///t(X) * y
-    STK::CVectorX Xty_;
+    STK::VectorX Xty_;
     ///b from ax=b for CG
-    STK::CVectorX b_;
+    STK::VectorX b_;
     ///number of active variables in the current set
     int nbActiveVariables_;
     ///threshold under we consider a beta equal to 0

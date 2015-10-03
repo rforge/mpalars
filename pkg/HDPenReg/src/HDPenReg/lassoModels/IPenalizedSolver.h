@@ -38,131 +38,188 @@
 
 #include "IPenalty.h"
 
-
 namespace HD
 {
+  /**functor for Initial CG  */
+  struct InitLassoMultiplicator
+  {
+      /** functor for the CG. A=X'*X
+       * @param x vector of length sizeCols(A)
+       * @return A*x
+       */
+      STK::VectorX operator()(STK::VectorX const& x) const
+      {
+        STK::VectorX a = p_x_->transpose() * (*p_x_  * x) + lambda_ * x;
+        return a;
+      }
+      /** Constructor of the functor
+       * @param p_x constant pointer on the data
+       */
+      InitLassoMultiplicator( STK::ArrayXX const* p_x, STK::Real const& lambda): p_x_(p_x), lambda_(1.) {}
+      ///pointer to the current data
+      STK::ArrayXX const* p_x_;
+      STK::Real lambda_;
+  };
 
-  /**
-   * Functor for initialization in the conjugate gradient
-   */
+  /** Functor for initialization in the conjugate gradient */
+  struct InitLassoFunctor
+  {
+      /** @return pointer on the initial value */
+      inline STK::VectorX operator()() const  { return *p_x0_;}
+      /** Constructor
+       *  @param p_x pointer on the initial value
+       **/
+      inline InitLassoFunctor() : p_x0_(0) {};
+      ///pointer on the initial value
+      STK::VectorX const* p_x0_;
+  };
+
+  /** Functor for initialization in the conjugate gradient */
   struct InitFunctor
   {
-      /**
-       * Operator
-       * @return pointer on the value for initialization
-       */
-      STK::CVectorX operator()() const
-      { return *p_x_;}
+      /** @return pointer on the initial value */
+      inline STK::VectorX operator()() const  { return *p_x_*lambda_;}
+      /** Constructor
+       *  @param p_x pointer on the initial value
+       **/
+      inline InitFunctor(STK::VectorX const* p_x = 0) : p_x_(p_x), lambda_(1.) {};
+      ///pointer on the initial value
+      STK::VectorX const* p_x_;
+      STK::Real lambda_;
+  };
 
-      /**
-       * Constructor
-       * @param p_x pointer on the value for initialization
-       */
-      InitFunctor(STK::CVectorX const* p_x = 0) : p_x_(p_x) {};
-
-      ///pointer on the value for initialization
-      STK::CVectorX const* p_x_;
+  /** Functor for initialization in the conjugate gradient */
+  struct InitIdFunctor
+  {
+      /** @return pointer on the initial value */
+      inline STK::VectorX const& operator()() const  { return *p_x_;}
+      /** Constructor
+       *  @param p_x pointer on the initial value
+       **/
+      inline InitIdFunctor(STK::VectorX const* p_x = 0) : p_x_(p_x) {};
+      ///pointer on the initial value
+      STK::VectorX const* p_x_;
   };
 
   /** @ingroup lassoModels
-   *  @brief The class IPenalizedSolver is an interface for the solver of the @c PenalizedModels M-step
+   *  @brief The class IPenalizedSolver is an interface for the solver
+   *  of the @c PenalizedModels M-step
    */
   class IPenalizedSolver
   {
     public:
       /**default constructor*/
-      IPenalizedSolver()
-      : currentData_()
-      , currentBeta_()
-      , currentSet_()
-      , p_data_(0)
-      , p_y_(0)
-      , beta_()
-      {
-      }
+      IPenalizedSolver(): currentX_()
+                        , currentBeta_()
+                        , currentSet_()
+                        , p_beta_(0)
+                        , p_x_(0)
+                        , p_y_(0)
+                        , threshold_(1e-10)
+      {}
 
-      /**
-       * Constructor
-       * @param beta value for initializing beta
-       * @param p_data pointer to the data
-       * @param p_y pointer to the response
+      /** Constructor
+       *  @param beta value for initializing beta
+       *  @param p_x pointer to the data
+       *  @param p_y pointer to the response
        */
-      IPenalizedSolver(STK::CVectorX const& beta, STK::CArrayXX const* p_data = 0, STK::CVectorX const* p_y = 0)
-                           : currentData_(*p_data)
-                           , currentBeta_(beta)
-                           , currentSet_(beta.sizeRows())
-                           , p_data_(p_data)
-                           , p_y_(p_y)
-                           , beta_(beta)
+      IPenalizedSolver( STK::VectorX* p_beta
+                      , STK::ArrayXX const* p_x
+                      , STK::VectorX const* p_y
+                      , STK::Real threshold = 1e-10
+                      )
+                      : currentX_(*p_x)
+                      , currentBeta_(*p_beta)
+                      , currentSet_(p_x->sizeCols())
+                      , p_beta_(p_beta)
+                      , p_x_(p_x)
+                      , p_y_(p_y)
+                      , threshold_(threshold)
        {
-         for(int i = 1; i <= currentSet_.sizeRows(); i++)
+         for(int i = currentSet_.begin(); i < currentSet_.end(); i++)
            currentSet_[i] = i;
        };
-
        /**destructor*/
-       virtual ~IPenalizedSolver() {} ;
+       inline virtual ~IPenalizedSolver() {};
 
-       /**
-        * run the solver (Mstep)
-        * @return the new estimated value of beta
-        */
-       virtual STK::Real run(bool const& burn = true) = 0;
        /**run the update of the penalty (Estep)*/
-       virtual void update() = 0;
+       virtual void update(bool toUpdate) = 0;
+       /** run the solver (Mstep)
+        *  @return the new estimated value of beta
+        */
+       virtual STK::Real run(bool burn) = 0;
+       /** initialize the initial beta0 (do nothing by default)*/
+       virtual STK::Real updateSolver() {};
+
        /** initialize all the containers of the class */
-       virtual void initializeSolver() = 0;
+       virtual STK::Real initializeSolver() = 0;
+       /**@return the current threshold */
+       inline STK::Real const& threshold() const { return threshold_; }
 
        //setter
-       /**set the pointer to the current data (data reduce to covariates from current set)*/
-       inline void setData(STK::CArrayXX const* p_data) {p_data_ = p_data;};
+       inline void setThreshold(STK::Real const& threshold) { threshold_ = threshold; }
+       /** set the pointer to the current data
+        *  (data reduced to covariates from current set)*/
+       inline void setX(STK::ArrayXX const* p_x) { p_x_ = p_x;};
        /**set the pointer to the response*/
-       inline void setY(STK::CVectorX const* p_y) {p_y_ = p_y;};
+       inline void setY(STK::VectorX const* p_y) { p_y_ = p_y;};
        /**set the pointer to the current beta*/
-       inline void setBeta(STK::CVectorX const& beta)
+       inline void setBeta(STK::VectorX* p_beta)
        {
-         beta_ = beta;
-         currentBeta_ = beta_;
+         p_beta_ = p_beta;
+         currentBeta_ = *p_beta;
        };
-
 
        //getter
        /**@return beta_*/
-       inline STK::CVectorX  const& beta() const {return beta_;};
-       /**@return currentData_*/
-       inline STK::CArrayXX const& currentData() const {return currentData_;};
+       inline STK::VectorX* p_beta() const { return p_beta_;};
+       /**@return currentX_*/
+       inline STK::ArrayXX const* p_currentX() const {return &currentX_;};
+       /**@return currentX_*/
+       inline STK::ArrayXX const& currentX() const {return currentX_;};
        /**@return currentBeta_*/
-       inline STK::CVectorX const& currentBeta() const {return currentBeta_;};
-       /**@return currentData_*/
-       inline STK::CArrayXX const* p_currentData() const {return &currentData_;};
-       /**@return currentBeta_*/
-       inline STK::CVectorX const* p_currentBeta() const {return &currentBeta_;};
+       inline STK::VectorX const& currentBeta() const {return currentBeta_;};
        ///@return currentSet_
-       inline STK::Array2DVector<int> const& currentSet() const {return currentSet_;};
+       inline STK::VectorXi const& currentSet() const {return currentSet_;};
+       /**@return currentBeta_*/
+       inline STK::VectorX const* p_currentBeta() const {return &currentBeta_;};
 
+       /** disrupts current value of beta */
+       void disruptsBeta()
+       {
+         for (int i=p_beta_->begin(); i< p_beta_->end(); ++i)
+         {
+           // disrupts only small values
+           if (std::abs(p_beta_->elt(i))< threshold_)
+           {
+             p_beta_->elt(i) += STK::sign(p_beta_->elt(i), 10. * threshold_);
+           }
+         }
+       }
 
     protected:
        /** compute the loglikelihood
         * @return the loglikelihood of the current step
         */
-       virtual STK::Real computeLlc() = 0;
+       virtual STK::Real computeLlc() const = 0;
 
     protected:
-       ///current data
-       STK::CArrayXX currentData_;
-       ///Current beta
-       STK::CVectorX currentBeta_;
-       ///current set of variable
-       STK::Array2DVector<int> currentSet_;
-       ///const pointer on the data
-       STK::CArrayXX const* p_data_;
-       ///const pointer on the response
-       STK::CVectorX const* p_y_;
-       ///const pointer on beta_
-       STK::CVectorX beta_;
+       /// current data
+       STK::ArrayXX currentX_;
+       /// Current beta
+       STK::VectorX currentBeta_;
+       /// current set of variable
+       STK::VectorXi currentSet_;
 
+       /// pointer on beta_
+       STK::VectorX* p_beta_;
+       ///threshold under we consider a beta equal to 0
+       STK::Real threshold_;
+       /// pointer on the data
+       STK::ArrayXX const* p_x_;
+       /// pointer on the response
+       STK::VectorX const* p_y_;
    };
-
-
 }
 
 #endif /* IPENALIZEDSOLVER_H_ */

@@ -56,7 +56,7 @@ namespace HD
    * @param nbFolds number of folds
    * @param index vector with real between 0 and 1 (ratio (norm coefficient)/max(norm coefficient) for which we compute the prediction error)
    */
-  CV::CV(STK::CArrayXX const& X, STK::CVectorX const& y, int nbFolds, std::vector<double> const& index)
+  CV::CV(STK::ArrayXX const& X, STK::VectorX const& y, int nbFolds, std::vector<double> const& index)
                 : p_X_(&X)
                 , p_y_(&y)
                 , partition_(X.sizeRows())
@@ -84,8 +84,6 @@ namespace HD
       partition_[i] = i%nbFolds_;
       sizePartition_[i%nbFolds_]++;
     }
-
-
     //make a random rearrangement
     srand(time(NULL));
     random_shuffle(partition_.begin(),partition_.end());
@@ -122,18 +120,15 @@ namespace HD
         k++;
       }
     }
-
     //run for each size of fold
     for(int i = 0; i < (int) startIndex.size(); i++)
       subrun(startIndex[i],endIndex[i]);
-
     // compute mean prediction error for each index
-    STK::CVectorX one(nbFolds_,1);
+    STK::VectorX one(nbFolds_,1);
     cv_ = (measure_ * one) / nbFolds_;
-
     // compute mean standard deviation of cv_ for each index
-    for(int i = 1; i <= (int) index_.size(); i++)
-      for(int j = 1; j <= nbFolds_; j++)
+    for(int i = 0; i < (int) index_.size(); i++)
+      for(int j = 0; j < nbFolds_; j++)
         measure_(i,j) -= cv_[i];
       //residuals_.row(i) -= cv_[i];
     measure_ = measure_.square();
@@ -142,174 +137,162 @@ namespace HD
 
   }
 
-  /*
-   * run cross validation for folds from idxStartFold to idxEndFold
-   * @param idxStartFold index of the first fold
-   * @param idxEndFold index of the last fold
-   */
-  void CV::subrun(int idxStartFold,int idxEndFold)
+/*
+ * run cross validation for folds from idxStartFold to idxEndFold
+ * @param idxStartFold index of the first fold
+ * @param idxEndFold index of the last fold
+ */
+void CV::subrun(int idxStartFold,int idxEndFold)
+{
+  //create test and control container
+  STK::ArrayXX XControl( n_ - sizePartition_[idxStartFold], p_);
+  STK::VectorX yControl( n_ - sizePartition_[idxStartFold] );
+  STK::ArrayXX XTest(sizePartition_[idxStartFold], p_);
+  STK::VectorX yTest(sizePartition_[idxStartFold] );
+  STK::VectorX yPred(sizePartition_[idxStartFold] );
+
+  for(int i = idxStartFold ; i <= idxEndFold ; i++)
   {
-    //create test and control container
-    STK::CArrayXX XControl( n_ - sizePartition_[idxStartFold], p_);
-    STK::CVectorX yControl( n_ - sizePartition_[idxStartFold] );
-    STK::CArrayXX XTest(sizePartition_[idxStartFold], p_);
-    STK::CVectorX yTest(sizePartition_[idxStartFold] );
-    STK::CVectorX yPred(sizePartition_[idxStartFold] );
-
-    for(int i = idxStartFold ; i <= idxEndFold ; i++)
+    //fill the container
+    int index = 1;
+    int index2 = 1;
+    for(int j = 0; j < n_; j++)
     {
-      //fill the container
-      int index = 1;
-      int index2 = 1;
-      for(int j = 1; j <= n_; j++)
+      if(partition_[j-1] != i)
       {
-        if(partition_[j-1] != i)
-        {
-          yControl[index] = (*p_y_)[j];
-          XControl.row(index)=p_X_->row(j);
+        yControl[index] = (*p_y_)[j];
+        XControl.row(index)=p_X_->row(j);
 
-          index++;
-        }
-        else
-        {
-          yTest[index2] = (*p_y_)[j];
-          XTest.row(index2)=p_X_->row(j);
-          index2++;
-        }
+        index++;
       }
-
-      runModel(i,XTest,yTest,&XControl,&yControl);
-
+      else
+      {
+        yTest[index2] = (*p_y_)[j];
+        XTest.row(index2)=p_X_->row(j);
+        index2++;
+      }
     }
+    runModel(i,XTest,yTest,&XControl,&yControl);
   }
+}
 
-  /*parallelized version of run*/
-  void CV::run2()
+/*parallelized version of run*/
+void CV::run2()
+ {
+#ifdef HD_CVDEBUG
+       std::cout << "Entering CV::run2\n";
+       for (int i=0; i<sizePartition_.size(); i++)
+       { std::cout << sizePartition_[i] << " ";}
+       std::cout << "\n";
+#endif
+   //run for each size of fold
+   //create test and control container
+//#pragma omp parallel
    {
-     //search the first and last fold with the same size
-     std::vector<int> startIndex(1,0),endIndex(1,nbFolds_-1);
-     int k = 0;
-     for(int i = 1; i < nbFolds_; i++)
+//     #pragma omp for schedule(dynamic,1)
+     for(int i = 0; i < nbFolds_ ; i++)
      {
-       if(sizePartition_[i]!= sizePartition_[startIndex[k]])
+#ifdef HD_CVDEBUG
+       std::cout << "---------->Creating Fold " << i << "\n";
+#endif
+       STK::ArrayXX XControl( n_ - sizePartition_[i], p_);
+       STK::VectorX yControl( n_ - sizePartition_[i] );
+       STK::ArrayXX XTest(sizePartition_[i], p_);
+       STK::VectorX yTest(sizePartition_[i] );
+       //fill the container
+       int index = 0;
+       int index2 = 0;
+       for(int j = 0; j < n_; j++)
        {
-         startIndex.push_back(i);
-         endIndex[k] = i-1;
-         endIndex.push_back(nbFolds_-1);
-         k++;
-       }
-     }
-
-     //run for each size of fold
-     //create test and control container
-     #pragma omp parallel
-     {
-       #pragma omp for schedule(dynamic,1)
-       for(int i = 0; i < nbFolds_ ; i++)
-       {
-         STK::CArrayXX XControl( n_ - sizePartition_[i], p_);
-         STK::CVectorX yControl( n_ - sizePartition_[i] );
-         STK::CArrayXX XTest(sizePartition_[i], p_);
-         STK::CVectorX yTest(sizePartition_[i] );
-
-
-         //fill the container
-         int index = 1;
-         int index2 = 1;
-         for(int j = 1; j <= n_; j++)
+         if(partition_[j] != i)
          {
-           if(partition_[j-1] != i)
-           {
-             yControl[index] = (*p_y_)[j];
-             XControl.row(index)=p_X_->row(j);
-             index++;
-           }
-           else
-           {
-             yTest[index2] = (*p_y_)[j];
-             XTest.row(index2)=p_X_->row(j);
-             index2++;
-           }
+           yControl[index] = (*p_y_)[j];
+           XControl.row(index)=p_X_->row(j);
+           index++;
          }
-
-         runModel(i,XTest,yTest,&XControl,&yControl);
+         else
+         {
+           yTest[index2] = (*p_y_)[j];
+           XTest.row(index2)=p_X_->row(j);
+           index2++;
+         }
        }
-     }//end parallel
+#ifdef HD_CVDEBUG
+       std::cout << "Fold build. Call runModel\n";
+#endif
+       runModel(i,XTest,yTest,&XControl,&yControl);
+     }
+   }//end parallel
+#ifdef HD_CVDEBUG
+       std::cout << "measure_ =\n" << measure_ << "\n";
+#endif
+   // compute mean prediction error for each index
+   cv_ = STK::sumByRow(measure_) / nbFolds_;
+#ifdef HD_CVDEBUG
+       std::cout << "cv_ =" << cv_ << "\n";
+#endif
+   // compute mean standard deviation of cv_ for each index
+   for(int i = 0; i < (int) index_.size(); i++)
+     measure_.row(i) -= cv_[i];
+   measure_ = measure_.square();
+   cvError_ = STK::sumByRow(measure_)/(nbFolds_-1)/nbFolds_;
+   cvError_ = cvError_.sqrt();
+ }
 
-     // compute mean prediction error for each index
-     STK::CVectorX one(nbFolds_,1);
-     cv_ = (measure_ * one) / nbFolds_;
-
-     // compute mean standard deviation of cv_ for each index
-     for(int i = 1; i <= (int) index_.size(); i++)
-       measure_.row(i) -= cv_[i];
-
-     measure_ = measure_.square();
-     cvError_ = (measure_ * one)/(nbFolds_-1)/nbFolds_;
-     cvError_ = cvError_.sqrt();
-
-   }
-
-  void CV::run3()
+void CV::run3()
+{
+   //search the first and last fold with the same size
+   std::vector<int> startIndex(1,0),endIndex(1,nbFolds_-1);
+   int k = 0;
+   for(int i = 1; i < nbFolds_; i++)
    {
-     //search the first and last fold with the same size
-     std::vector<int> startIndex(1,0),endIndex(1,nbFolds_-1);
-     int k = 0;
-     for(int i = 1; i < nbFolds_; i++)
+     if(sizePartition_[i]!= sizePartition_[startIndex[k]])
      {
-       if(sizePartition_[i]!= sizePartition_[startIndex[k]])
-       {
-         startIndex.push_back(i);
-         endIndex[k] = i-1;
-         endIndex.push_back(nbFolds_-1);
-         k++;
-       }
+       startIndex.push_back(i);
+       endIndex[k] = i-1;
+       endIndex.push_back(nbFolds_-1);
+       k++;
      }
-
-     //run for each size of fold
-     //create test and control container
-
-       for(int i = 0; i < nbFolds_ ; i++)
+   }
+   //run for each size of fold
+   //create test and control container
+     for(int i = 0; i < nbFolds_ ; i++)
+     {
+       STK::ArrayXX XControl( n_ - sizePartition_[i], p_);
+       STK::VectorX yControl( n_ - sizePartition_[i] );
+       STK::ArrayXX XTest(sizePartition_[i], p_);
+       STK::VectorX yTest(sizePartition_[i] );
+       //fill the container
+       int index = 1;
+       int index2 = 1;
+       for(int j = 0; j < n_; j++)
        {
-         STK::CArrayXX XControl( n_ - sizePartition_[i], p_);
-         STK::CVectorX yControl( n_ - sizePartition_[i] );
-         STK::CArrayXX XTest(sizePartition_[i], p_);
-         STK::CVectorX yTest(sizePartition_[i] );
-
-
-         //fill the container
-         int index = 1;
-         int index2 = 1;
-         for(int j = 1; j <= n_; j++)
+         if(partition_[j] != i)
          {
-           if(partition_[j-1] != i)
-           {
-             yControl[index] = (*p_y_)[j];
-             XControl.row(index)=p_X_->row(j);
-             index++;
-           }
-           else
-           {
-             yTest[index2] = (*p_y_)[j];
-             XTest.row(index2)=p_X_->row(j);
-             index2++;
-           }
+           yControl[index] = (*p_y_)[j];
+           XControl.row(index)=p_X_->row(j);
+           index++;
          }
-
-         runModel(i,XTest,yTest,&XControl,&yControl);
+         else
+         {
+           yTest[index2] = (*p_y_)[j];
+           XTest.row(index2)=p_X_->row(j);
+           index2++;
+         }
        }
 
-     // compute mean prediction error for each index
-     STK::CVectorX one(nbFolds_,1);
-     cv_ = (measure_ * one) / nbFolds_;
+       runModel(i,XTest,yTest,&XControl,&yControl);
+     }
+   // compute mean prediction error for each index
+   STK::VectorX one(nbFolds_,1);
+   cv_ = (measure_ * one) / nbFolds_;
 
-     // compute mean standard deviation of cv_ for each index
-     for(int i = 1; i <= (int) index_.size(); i++)
-       measure_.row(i) -= cv_[i];
+   // compute mean standard deviation of cv_ for each index
+   for(int i = 0; i < (int) index_.size(); i++)
+     measure_.row(i) -= cv_[i];
 
-     measure_ = measure_.square();
-     cvError_ = (measure_ * one)/(nbFolds_-1)/nbFolds_;
-     cvError_ = cvError_.sqrt();
-
-   }
+   measure_ = measure_.square();
+   cvError_ = (measure_ * one)/(nbFolds_-1)/nbFolds_;
+   cvError_ = cvError_.sqrt();
+}
 }//end namespace HD

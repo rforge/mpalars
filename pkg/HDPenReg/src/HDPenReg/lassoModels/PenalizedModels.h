@@ -36,182 +36,135 @@
 #ifndef PENALIZEDMODELS_H_
 #define PENALIZEDMODELS_H_
 
-#include "IPenalty.h"
+#include <RTKpp.h>
 #include "IPenalizedSolver.h"
+#include "IPenalty.h"
 
 namespace HD
 {
-  /** @ingroup lassoModels
-   *  @brief The class PenalizedModels inherits from the template class @c ILatentModel.
-   *  It contains implementations of Estep and Mstep for run an EM algorithm.
-   */
-
-  class PenalizedModelsBase : public STK::IStatModelBase
-  {
-    public:
-      /**
-       * Constructor
-       * @param p_data each row contains values of covariates for an individuals
-       * @param y response of each individuals
-       * @param beta Initialization of beta_ (least-Square solution)
-       * @param p_penalty pointer on the penalty of the model
-       * @param p_solver pointer on the solver to use in the Mstep
-       * @param threshold tolerance for thresholding the solution
-       */
-      PenalizedModelsBase( STK::CArrayXX const* p_data, STK::CVectorX const* p_y, STK::CVectorX const& beta, IPenalizedSolver* p_solver = 0)
-                         : STK::IStatModelBase(p_data->sizeRows(),p_data->sizeCols()),
-                          p_data_(p_data),
-                          p_y_(p_y),
-                          beta_(beta)
-      {}
-
-      PenalizedModelsBase( STK::CArrayXX const* p_data, STK::CVectorX const* p_y)
-                         : STK::IStatModelBase(p_data->sizeRows(),p_data->sizeCols()),
-                         p_data_(p_data),
-                         p_y_(p_y),
-                         beta_(p_y->sizeRows())
-      {}
-
-      PenalizedModelsBase(): STK::IStatModelBase(),p_data_(0),p_y_(0),beta_()
-      {}
-
-      /** destructor*/
-      virtual ~PenalizedModelsBase(){};
-
-      //setter
-      inline void setP_y(STK::CVectorX const* p_y) {p_y_ = p_y;}
-      inline void setP_data(STK::CArrayXX const* p_data)
-      {
-        p_data_ = p_data;
-        setNbSample(p_data_->sizeRows());
-        setNbVariable(p_data_->sizeCols());
-      }
-      //getter
-      /**@return a pointer to the data*/
-      inline STK::CArrayXX const* p_data() const {return p_data_;}
-      /**@return the estimated beta*/
-      inline STK::CVectorX const& beta() const {return beta_;}
-      /**@return the estimated beta*/
-      inline STK::Real beta(int i) const {return beta_[i];}
-      /** @return a pointer to the response */
-      inline STK::CVectorX const* p_y() const {return p_y_;}
-
-      /** EStep update the latent variable in penalty*/
-      virtual void eStep(){}
-
-      /**MStep update the estimation of beta*/
-      virtual void mStep(bool burn = true){}
-
-
-    protected:
-      ///pointer to the data
-      STK::CArrayXX const* p_data_;
-      ///response (length n_)
-      STK::CVectorX const* p_y_;
-      ///estimates of the model (length p_)
-      STK::CVectorX beta_;
-
-  };
-
 
   template <class Model> struct ModelTraits;
 
   template<class Model>
-  class PenalizedModels : public PenalizedModelsBase
+  class PenalizedModels : public STK::IStatModelBase
   {
     public:
 
     typedef typename ModelTraits<Model>::Solver Solver;
     typedef typename ModelTraits<Model>::Penalty Penalty;
 
-      /**
-       * Constructor
-       * @param p_data each row contains values of covariates for an individuals
-       * @param y response of each individuals
-       * @param beta Initialization of beta_ (least-Square solution)
-       * @param p_penalty pointer on the penalty of the model
-       * @param p_solver pointer on the solver to use in the Mstep
-       * @param threshold tolerance for thresholding the solution
-       */
-      PenalizedModels(STK::CArrayXX const* p_data, STK::CVectorX const* p_y, STK::CVectorX const& beta, Solver* p_solver = 0)
-                      : PenalizedModelsBase(p_data,p_y,beta),
-                        p_solver_(p_solver)
-          {
-          }
+    /**
+     * Constructor
+     * @param p_x each row contains values of covariates for an individuals
+     * @param y response of each individuals
+     * @param beta Initialization of beta_ (least-Square solution)
+     * @param p_penalty pointer on the penalty of the model
+     * @param p_solver pointer on the solver to use in the Mstep
+     * @param threshold tolerance for thresholding the solution
+     **/
+    PenalizedModels( STK::ArrayXX const* p_x, STK::VectorX const* p_y
+                   , STK::VectorX const& beta
+                   , Solver* p_solver = 0)
+                   : STK::IStatModelBase(p_x->sizeRows(),p_x->sizeCols())
+                   , p_x_(p_x)
+                   , p_y_(p_y)
+                   , beta_(beta)
+                   , p_solver_(p_solver)
+                   , p_penalty_(0)
+    {}
 
-      PenalizedModels(STK::CArrayXX const* p_data, STK::CVectorX const* p_y)
-                      : PenalizedModelsBase(p_data,p_y),
-                        p_solver_(0)
-          {
-          }
+    PenalizedModels( STK::ArrayXX const* p_x, STK::VectorX const* p_y)
+                   : STK::IStatModelBase(p_x->sizeRows(),p_x->sizeCols())
+                   , p_x_(p_x)
+                   , p_y_(p_y)
+                   , beta_(p_x->sizeCols())
+                   , p_solver_(0)
+                   , p_penalty_(0)
+    {}
 
-      PenalizedModels()
-                      : PenalizedModelsBase(),p_solver_(0)
-          {}
+    PenalizedModels(): STK::IStatModelBase(),p_x_(0),p_y_(0),beta_(),p_solver_(0), p_penalty_(0)
+    {}
 
-      /** destructor*/
-       virtual ~PenalizedModels()
-       {
-         if(p_penalty_) delete p_penalty_;
-         if(p_solver_) delete p_solver_;
-       };
+    /** destructor*/
+    ~PenalizedModels()
+    {
+       if(p_penalty_) delete p_penalty_;
+       if(p_solver_) delete p_solver_;
+    };
+    //getter
+    /**@return a pointer to the data*/
+    inline STK::ArrayXX const* p_x() const {return p_x_;}
+    /** @return a pointer to the response */
+    inline STK::VectorX const* p_y() const {return p_y_;}
+    /**@return the estimated beta*/
+    inline STK::VectorX const& beta() const {return beta_;}
+    /**@return the estimated beta*/
+    inline STK::Real beta(int i) const {return beta_[i];}
+    /**@return p_solver_*/
+    inline Solver const* p_solver() const {return p_solver_;}
+    /**@return p_penalty_*/
+    inline Penalty const* p_penalty() const {return p_penalty_;}
 
+    // short cuts for the temporaries arrays used in solver
+    /** @return  the non zero beta*/
+    inline STK::VectorX const& currentBeta() const {return p_solver_->currentBeta();}
+    /** @return  the non zero beta*/
+    inline STK::VectorX const* p_currentBeta() const {return p_solver_->p_currentBeta();}
+    /** @return  data*/
+    inline STK::ArrayXX const& currentX() const {return p_solver_->currentX();}
+    /** @return  data*/
+    inline STK::ArrayXX const* p_currentX() const {return p_solver_->p_currentX();}
+    /**@return currentSet_*/
+    inline STK::VectorXi const& currentSet() const {return p_solver_->currentSet();};
 
-      //getter
-      /** @return  the non zero beta*/
-      inline STK::CVectorX const& currentBeta() const {return p_solver_->currentBeta();}
-      /** @return  the non zero beta*/
-      inline STK::CVectorX const* p_currentBeta() const {return p_solver_->p_currentBeta();}
-      /** @return  data*/
-      inline STK::CArrayXX const& currentData() const {return p_solver_->currentData();}
-      /** @return  data*/
-      inline STK::CArrayXX const* p_currentData() const {return p_solver_->p_currentData();}
-      /**@return currentSet_*/
-      inline STK::Array2DVector<int> const& currentSet() const {return p_solver_->currentSet();};
-      /**@return p_solver_*/
-      inline Solver const* p_solver() const {return p_solver_;}
-      /**@return p_penalty_*/
-      inline Penalty const* p_penalty() const {return p_solver_->p_penalty();}
-
-      //setter
-      /**
-       * set the solver
-       * @param p_solver a pointer to a IPenalizedSolver object
-       */
-      inline void setSolver(Solver* p_solver) {p_solver_=p_solver;}
-
-
-
-      /** EStep update the latent variable in penalty*/
-      inline void eStep()
-      {
-        //STK::Real normRes=(y_- (*p_observableData_ * beta_)).norm2();//for updating sigma2_ in the penalty class
-
-        if(p_solver_ == 0)
-          throw STK::invalid_argument(STK::String("p_solver_ has not be set"));
-        else
-          p_solver_ ->update();
-
-      }
-
-      /**MStep update the estimation of beta*/
-      inline void mStep(bool burn = true)
-      {
-        if(p_solver_ == 0)
-          throw STK::invalid_argument(STK::String("p_solver_ has not be set"));
-        else
-        {
-          setLnLikelihood(p_solver_->run(burn));
-          beta_ = p_solver_->beta();
-        }
-      }
+    //setter
+    inline void setP_y(STK::VectorX const* p_y) {p_y_ = p_y;}
+    inline void setP_x(STK::ArrayXX const* p_x)
+    {
+      p_x_ = p_x;
+      this->setNbSample(p_x_->sizeRows());
+      this->setNbVariable(p_x_->sizeCols());
+    }
+    //setter
+    /** set the solver
+     * @param p_solver a pointer to a IPenalizedSolver object
+     */
+    inline void setSolver(Solver* p_solver) { p_solver_=p_solver;}
+    /** EStep update the current beta if toUpdate is @c true
+     *  and update the latent variable in the penalty term*/
+    inline void eStep(bool toUpdate)
+    {
+#ifdef HD_DEBUG
+      if(p_solver_ == 0)
+      { throw STK::invalid_argument(STK::String("p_solver_ has not be set"));}
+#endif
+      p_solver_->update(toUpdate);
+    }
+    /** MStep update the estimation of beta*/
+    inline void mStep(bool toUpdate)
+    {
+#ifdef HD_DEBUG
+      if(p_solver_ == 0)
+      { throw STK::invalid_argument(STK::String("p_solver_ has not be set"));}
+#endif
+      this->setLnLikelihood(p_solver_->run(toUpdate));
+    }
+    /** update solver and set the initial beta0 */
+    STK::Real updateSolver()  { return p_solver_->updateSolver();}
+    /**initialize the solver */
+    STK::Real initializeSolver()  { return p_solver_->initializeSolver();}
 
     protected:
+      ///pointer to the data
+      STK::ArrayXX const* p_x_;
+      ///response (length n_)
+      STK::VectorX const* p_y_;
+      ///estimates of the model (length p_)
+      STK::VectorX beta_;
       ///pointer to the solver for solving the M step
       Solver* p_solver_;
+      ///pointer to the penalty of the model
       Penalty* p_penalty_;
-
-
   };
 }
 

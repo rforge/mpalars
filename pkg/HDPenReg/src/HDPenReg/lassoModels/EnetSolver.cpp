@@ -44,16 +44,16 @@ namespace HD
 
   /*
    * Constructor
-   * @param p_data pointer to the current Data
+   * @param p_x pointer to the current Data
    * @param beta initial solution
    * @param p_y pointer to the response
    * @param threshold threshold for shrinkage
    * @param p_solver pointer to the solver
    * @param p_penalty pointer to the lasso penalty
    */
-  EnetSolver::EnetSolver(STK::CArrayXX const* p_data, STK::CVectorX const& beta, STK::CVectorX const* p_y,
-                           STK::Real const& threshold, STK::CG<EnetMultiplicator,STK::CVectorX,InitFunctor>* p_solver, EnetPenalty* p_penalty)
-              : IPenalizedSolver(beta,p_data,p_y)
+  EnetSolver::EnetSolver(STK::ArrayXX const* p_x, STK::VectorX const& beta, STK::VectorX const* p_y,
+                           STK::Real const& threshold, STK::CG<EnetMultiplicator,STK::VectorX,InitFunctor>* p_solver, EnetPenalty* p_penalty)
+              : IPenalizedSolver(beta,p_x,p_y)
               , p_solver_(p_solver)
               , Xty_()
               , b_()
@@ -61,35 +61,36 @@ namespace HD
               , threshold_(threshold)
               , p_penalty_(p_penalty)
   {
-    Xty_ = currentData_.transpose() * *p_y;
+    Xty_ = currentX_.transpose() * *p_y;
     p_solver_->setB(b_);
   }
 
   /*Initialization of the solver*/
-  void EnetSolver::initializeSolver()
+  Real EnetSolver::initializeSolver()
   {
     //check the existence pointers to the data and the response
-    if(p_data_ == 0)
-      throw STK::invalid_argument(STK::String("p_data_ has not be set"));
+    if(p_x_ == 0)
+      throw STK::invalid_argument(STK::String("p_x_ has not be set"));
     if(p_y_ == 0)
       throw STK::invalid_argument(STK::String("p_y_ has not be set"));
 
-//    currentData.resize(p_data_->sizeRows(),p_data_->sizeCols());
-    currentData_ = *p_data_;
+//    currentX.resize(p_x_->sizeRows(),p_x_->sizeCols());
+    currentX_ = *p_x_;
     currentBeta_ = beta_;
-    Xty_ = currentData_.transpose() * (*p_y_);
-    nbActiveVariables_ = p_data_->sizeCols();
+    Xty_ = currentX_.transpose() * (*p_y_);
+    nbActiveVariables_ = p_x_->sizeCols();
     p_solver_->setB(b_);
 
     currentSet_.resize(nbActiveVariables_);
     for(int i = 1; i <= nbActiveVariables_; i++)
       currentSet_[i] = i;
+    return computeLlc();
   }
 
   /* Computation of the completed loglikelihood*/
   STK::Real EnetSolver::computeLlc()
   {
-    STK::Real llc= -( ( (*p_y_ - (currentData_ * currentBeta_) ).square().sum() )/p_penalty_->sigma2() +  p_penalty_->penaltyTerm(currentBeta_))/2;
+    STK::Real llc= -( ( (*p_y_ - (currentX_ * currentBeta_) ).square().sum() )/p_penalty_->sigma2() +  p_penalty_->penaltyTerm(currentBeta_))/2;
 
     return llc;
   }
@@ -98,7 +99,7 @@ namespace HD
    * run the solver of the M step
    * @return
    */
-  STK::Real EnetSolver::run(bool const& burn)
+  STK::Real EnetSolver::run(bool burn)
   {
     //compute the b of the linear system Ax=b
     b_.resize(currentSet_.sizeRows());
@@ -118,23 +119,23 @@ namespace HD
     STK::Real llc;
     llc = computeLlc();
 
-    //if burn, check if we can reduce the dimension
-    if(burn)
-    {
-      //thresholding + update currentBeta_ and currentData_;
-      updateCurrent();
-    }
-    else
-      beta_ = currentBeta_;
 
     return llc;
   }
 
   /*run the update of the penalty*/
-  void EnetSolver::update()
+  void EnetSolver::update(bool toUpdate)
   {
     if(p_penalty_ == 0)
       throw STK::invalid_argument(STK::String("p_penalty_ has not be set"));
+    //if burn, check if we can reduce the dimension
+    if(toUpdate)
+    {
+      //thresholding + update currentBeta_ and currentX_;
+      updateCurrentBeta();
+    }
+    else
+      beta_ = currentBeta_;
 
     p_penalty_->update(currentBeta_);
   }
@@ -152,7 +153,7 @@ namespace HD
 
 
   /* update all the current variables*/
-  void EnetSolver::updateCurrent()
+  void EnetSolver::updateCurrentBeta()
   {
     //thresholding of the new estimates
     thresholding();
@@ -181,17 +182,17 @@ namespace HD
     }
   }
 
-  /*Update the currentBeta_ and currentData_*/
+  /*Update the currentBeta_ and currentX_*/
   void EnetSolver::updateCurrentData()
   {
-    //resize currentBeta_,  currentData_ with only the active variable
+    //resize currentBeta_,  currentX_ with only the active variable
     currentBeta_.resize(nbActiveVariables_);
-    currentData_.resize(p_data_->sizeRows(), nbActiveVariables_);
+    currentX_.resize(p_x_->sizeRows(), nbActiveVariables_);
 
     for(int i = 1; i <= nbActiveVariables_; i++)
     {
       currentBeta_[i]=beta_[currentSet_[i]];
-      currentData_.col(i)=p_data_->col(currentSet_[i]);
+      currentX_.col(i)=p_x_->col(currentSet_[i]);
     }
   }
 

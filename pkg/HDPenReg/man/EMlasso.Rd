@@ -4,9 +4,8 @@
 \alias{EMlasso}
 \title{EM algorithm for lasso penalty}
 \usage{
-EMlasso(X, y, lambda, maxSteps = 10000, intercept = TRUE,
-  model = "linear", burn = 50, threshold = 1e-10, eps = 1e-05,
-  epsCG = 1e-08)
+EMlasso(X, y, lambda, maxSteps = 1000, intercept = TRUE, model = "linear",
+  burn = 50, threshold = 1e-08, eps = 1e-05, epsCG = 1e-08)
 }
 \arguments{
 \item{X}{the matrix (of size n*p) of the covariates.}
@@ -23,7 +22,7 @@ EMlasso(X, y, lambda, maxSteps = 10000, intercept = TRUE,
 
 \item{burn}{Number of steps before thresholding some variables to zero.}
 
-\item{threshold}{Zero tolerance.}
+\item{threshold}{Zero tolerance. Coefficients under this value are set to zero.}
 
 \item{eps}{Epsilon for the convergence of the EM algorithm.}
 
@@ -43,10 +42,10 @@ A list containing :
 EM algorithm for lasso penalty
 }
 \examples{
-#dataset=simul(50,100,0.4,1,10,matrix(c(0.1,0.9,0.02,0.02),nrow=2))
-#result=EMlasso(dataset$data,dataset$response)
+dataset=simul(50,1000,0.4,1,10,matrix(c(0.1,0.9,0.02,0.02),nrow=2))
+result=EMlasso(dataset$data,dataset$response)
 }
 \author{
-Quentin Grimonprez
+Quentin Grimonprez, Serge Iovleff
 }
 

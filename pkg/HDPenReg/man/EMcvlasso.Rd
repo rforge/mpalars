@@ -4,8 +4,8 @@
 \alias{EMcvlasso}
 \title{cross validation for EM lasso}
 \usage{
-EMcvlasso(X, y, nbFolds = 10, lambda = NULL, maxSteps = 1000, burn = 30,
-  intercept = TRUE, model = "linear", threshold = .Machine$double.eps^0.5,
+EMcvlasso(X, y, lambda = NULL, nbFolds = 10, maxSteps = 1000,
+  intercept = TRUE, model = "linear", burn = 30, threshold = 1e-08,
   eps = 1e-05, epsCG = 1e-08)
 }
 \arguments{
@@ -13,21 +13,21 @@ EMcvlasso(X, y, nbFolds = 10, lambda = NULL, maxSteps = 1000, burn = 30,
 
 \item{y}{a vector of length n with the response.}
 
-\item{nbFolds}{the number of folds for the cross-validation.}
-
 \item{lambda}{Values at which prediction error should be computed.}
 
-\item{maxSteps}{Maximal number of steps for EM algorithm.}
+\item{nbFolds}{the number of folds for the cross-validation.}
 
-\item{burn}{Number of steps for the burn period.}
+\item{maxSteps}{Maximal number of steps for EM algorithm.}
 
 \item{intercept}{If TRUE, there is an intercept in the model.}
 
 \item{model}{"linear" or "logistic".}
 
-\item{threshold}{zero tolerance.}
+\item{burn}{Number of steps for the burn period.}
 
-\item{eps}{Tolerance of the algorithm.}
+\item{threshold}{Zero tolerance. Coefficients under this value are set to zero.}
+
+\item{eps}{Tolerance of the EM algorithm.}
 
 \item{epsCG}{Epsilon for the convergence of the conjugate gradient.}
 }
@@ -45,10 +45,10 @@ A list containing
 cross validation function for EM lasso.
 }
 \examples{
-#dataset=simul(50,100,0.4,1,10,matrix(c(0.1,0.8,0.02,0.02),nrow=2))
-#result=EMcvlasso(dataset$data,dataset$response,5,lambda=5:1,intercept=FALSE)
+dataset=simul(50,1000,0.4,1,10,matrix(c(0.1,0.8,0.02,0.02),nrow=2))
+result=EMcvlasso(dataset$data,dataset$response,5,lambda=5:1,intercept=FALSE)
 }
 \author{
-Quentin Grimonprez
+Quentin Grimonprez, Serge Iovleff
 }
 

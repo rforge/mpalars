@@ -48,87 +48,74 @@ namespace HD
   class LassoSolver : public IPenalizedSolver
   {
     public:
+      typedef STK::CG<LassoMultiplicator,STK::VectorX,InitLassoFunctor> CGSolver;
 
-      /**default constructor*/
-      LassoSolver();
-
-      /**
-       * Constructor
-       * @param p_data pointer to the current Data
-       * @param beta initial solution
+      /** Constructor
+       * @param p_x pointer to the current Data
        * @param p_y pointer to the response
+       * @param p_beta pointer on the initial/final solution
        * @param threshold threshold for shrinkage
-       * @param p_solver pointer to the solver
+       * @param epsCG tolerance for the Conjugate Gradient
        * @param p_penalty pointer to the lasso penalty
        */
-      LassoSolver(STK::CArrayXX const* p_data, STK::CVectorX const& beta, STK::CVectorX const* p_y = 0,  STK::Real const& threshold = 1e-10,
-                  STK::CG<LassoMultiplicator,STK::CVectorX,InitFunctor>* p_solver = 0, LassoPenalty* p_penalty = 0 );
-
+      LassoSolver(LassoPenalty* p_penalty);
+      LassoSolver( STK::ArrayXX const* p_x
+                 , STK::VectorX const* p_y
+                 , STK::VectorX* p_beta
+                 , STK::Real const& threshold = 1e-10
+                 , STK::Real const& epsCG = 1e-8
+                 , LassoPenalty* p_penalty = 0 );
       /**destructor*/
-      virtual ~LassoSolver() {};
-
+      inline virtual ~LassoSolver() {};
+      /**Initialization of the solver (to use when data are modified) */
+      STK::Real initializeSolver();
+      /** update the solver of the solver (to use when lambda is modified) */
+      virtual STK::Real updateSolver();
+      /** run the update of the penalty (called during the eStep) */
+      void update(bool toUpdate);
       /**Solve the M-step with a conjugate gradient
        * @return the completed loglikelihood
        * */
-      STK::Real run(bool const& burn = true);
-
-      /**run the update of the penalty*/
-      void update();
-
-      /**Initialization of the solver*/
-      void initializeSolver();
-
+      STK::Real run(bool toUpdate);
       //getter
       /**@return the pointer to the penalty*/
       inline LassoPenalty* p_penalty() const { return p_penalty_;}
       /**@return a pointer to the CG solver*/
-      inline STK::CG<LassoMultiplicator,STK::CVectorX,InitFunctor>* p_solver() {return p_solver_;}
-
-      //setter
-      /** set the conjugate gradient solver
-       * @param p_solver pointer to the solver
-       */
-      inline void setSolver(STK::CG<LassoMultiplicator,STK::CVectorX,InitFunctor>* p_solver) {p_solver_ = p_solver;}
-
-      /**
-       * set the LassoPenalty
-       * @param p_penalty pointer to the penakty
+      inline CGSolver const* p_gcsolver() const { return &cgsolver_;}
+      /** set the LassoPenalty
+       *  @param p_penalty pointer to the penalty
        */
       inline void setPenalty(LassoPenalty* p_penalty) {p_penalty_ = p_penalty;}
-      /**
-       * set the threshold
-       * @param threshold threshold for shrinkage to 0
-       */
-      inline void setThreshold(STK::Real threshold) {threshold_ = threshold;}
-
+      /** @param eps tolerance of the CG */
+      inline void setCGEps(STK::Real const& eps) { cgsolver_.setEps(eps); }
+      /** Computation of the completed loglikelihood using the current beta */
+      STK::Real computeLlc() const;
 
     protected:
-      /**Thresholding of the new estimates : estimated coefficients < threshold_ become 0*/
-      void thresholding();
-
+      /** compute an initial value of beta using ols */
+      void computeInitialBeta();
       /** update all the current variables*/
-      void updateCurrent();
-
-      /**Update the currentBeta_ and currentData_*/
-      void updateCurrentData();
-
-      /** Computation of the completed loglikelihood*/
-      STK::Real computeLlc();
+      void updateCurrentBeta();
+      /** update the system */
+      void updateSystem();
+      /** update the second member */
+      void updateB();
 
     private:
-      ///pointer to the conjugate gradient with LassoMultiplicator
-      STK::CG<LassoMultiplicator,STK::CVectorX,InitFunctor>* p_solver_;
       ///t(X) * y
-      STK::CVectorX Xty_;
+      STK::VectorX Xty_;
       ///b from ax=b for CG
-      STK::CVectorX b_;
-      ///number of active variables in the current set
-      int nbActiveVariables_;
-      ///threshold under we consider a beta equal to 0
-      STK::Real threshold_;
+      STK::VectorX b_;
+      /// x0 for CG
+      STK::VectorX x0_;
       ///pointer to the lasso penalty
       LassoPenalty* p_penalty_;
-
+      /// multiplicator for conjugate gradient
+      LassoMultiplicator mult_;
+      /// conjugate gradient for solver
+      CGSolver cgsolver_;
+      /// initialization of the  cg solver
+      InitLassoFunctor cginit_;
   };
 }
 

@@ -38,7 +38,7 @@
 
 
 #include "PenalizedModels.h"
-#include "LogisticLassoPenalty.h"
+#include "LassoPenalty.h"
 #include "LogisticLassoSolver.h"
 
 namespace HD
@@ -49,9 +49,9 @@ namespace HD
   struct ModelTraits<LogisticLasso>
   {
     typedef LogisticLassoSolver Solver;
-    typedef LogisticLassoPenalty Penalty;
+    typedef LassoPenalty Penalty;
     typedef LassoMultiplicator Multiplicator;
-    typedef STK::CG<LassoMultiplicator,STK::CVectorX, InitFunctor> CG;
+    typedef STK::CG<LassoMultiplicator,STK::VectorX, InitFunctor> CG;
   };
 
   /**
@@ -61,154 +61,75 @@ namespace HD
   class LogisticLasso : public PenalizedModels<LogisticLasso>
   {
     public:
-      /** default constructor*/
-      LogisticLasso()
-      : PenalizedModels<LogisticLasso>()
-      {
-        STK::CVectorX Xty(nbVariable());
-
-        // creation lasso penalty
-        LogisticLassoPenalty*  p_penalty = new LogisticLassoPenalty();
-        p_penalty_ = p_penalty;
-
-        //creation functor for CG
-        LassoMultiplicator mult(p_currentData(),p_penalty_->p_invPenalty(), p_penalty_->p_sigma2());
-        mult_ = mult;
-
-        //create CG
-        STK::CG<LassoMultiplicator,STK::CVectorX, InitFunctor>* p_gcsolver = new STK::CG<LassoMultiplicator,STK::CVectorX,InitFunctor>(mult_, Xty);
-        p_gcsolver_ = p_gcsolver;
-
-        //create solver for lasso
-        LogisticLassoSolver* p_lassosolver = new LogisticLassoSolver();
-        p_lassosolver->setPenalty(p_penalty_);
-        p_lassosolver->setSolver(p_gcsolver_);
-
-        //add solver to lasso
-        p_solver_ = p_lassosolver;
-
-        //add pointer to currentData to the multiplicator functor
-        mult_.p_data_= p_currentData();
-      }
-
+      typedef STK::CG<LassoMultiplicator,STK::VectorX, InitFunctor> CGSolver;
       /**
        * Constructor
-       * @param p_data pointer to the data
+       * @param p_x pointer to the data
        * @param p_y pointer to the response
        * @param lambda value of parameter associated to the l1 penalty
        * @param threshold threshold for setting coefficient to 0
        * @param epsCG epsilon for CG convergence
        */
-      LogisticLasso(STK::CArrayXX const* p_data, STK::CVectorX const* p_y, STK::Real lambda, STK::Real threshold, STK::Real epsCG)
-      : PenalizedModels<LogisticLasso>(p_data, p_y)
+      LogisticLasso( STK::ArrayXX const* p_x, STK::VectorX const* p_y
+                   , STK::Real lambda, STK::Real threshold, STK::Real epsCG)
+                   : PenalizedModels<LogisticLasso>(p_x, p_y)
       {
-        STK::CVectorX Xty(nbVariable());
-        Xty = p_data_->transpose() * *p_y_;
-
-        STK::CVectorX beta0(Xty.sizeRows());
-        for(int i = 1; i <= Xty.sizeRows();i++)
-          beta0[i] = Xty[i]/((*p_data).col(i).norm2());
-
-        beta_ = beta0;
-
+#ifdef HD_DEBUG
+        std::cout << "Creating LogisticLasso.\nLambda =" << lambda << std::endl;
+        std::cout << "threshold =" << threshold << std::endl;
+        std::cout << "epsCG =" << epsCG << std::endl;
+#endif
         // creation lasso penalty
-        LogisticLassoPenalty*  p_penalty = new LogisticLassoPenalty(lambda);
-        p_penalty_ = p_penalty;
-        p_penalty_->setPy(p_y_);
-
-        //creation functor for CG
-        LassoMultiplicator mult(p_currentData(),p_penalty_->p_invPenalty(), p_penalty_->p_sigma2());
-        mult_ = mult;
-
-        //create CG
-        STK::CG<LassoMultiplicator,STK::CVectorX, InitFunctor>* p_gcsolver = new STK::CG<LassoMultiplicator,STK::CVectorX,InitFunctor>(mult_, Xty, 0, epsCG);
-        p_gcsolver_ = p_gcsolver;
-
-        //create solver for lasso
-        LogisticLassoSolver* p_lassosolver = new LogisticLassoSolver(p_data_, beta_, p_penalty_->p_z(), threshold, p_gcsolver_, p_penalty_);
-
-        //add the penalty
-        p_lassosolver->setPenalty(p_penalty_);
-
-        //add solver to lasso
-        p_solver_ = p_lassosolver;
-
-        p_penalty_->setPcurrentData(p_solver_->p_currentData());
-
-//        InitFunctor init(p_solver_->p_currentBeta());
-//        init_ = init;
-//        (p_solver_->p_solver())->setInitFunctor(&init_);
-
-        mult_.p_data_= p_currentData();
+        p_penalty_ = new LassoPenalty(lambda);
+        //create solver for lasso and add the penalty
+        p_solver_ = new LogisticLassoSolver(p_x_, p_y_, &beta_, threshold, epsCG, p_penalty_);
+#ifdef HD_DEBUG
+        std::cout << "LogisticLasso Initialized. Likelihood =" << p_solver_->computeLlc() << std::endl;
+#endif
       }
-
       /** destructor*/
-      ~LogisticLasso()
+      inline virtual ~LogisticLasso() {}
+      /** set the lasso regularization parameter
+       *  @param lambda
+       */
+      inline void setLambda(STK::Real lambda) { p_penalty_->setLambda(lambda);}
+      /** set the threshold for the shrinkage
+       *  @param threshold
+       */
+      inline void setThreshold(STK::Real threshold) { p_solver_->setThreshold(threshold);}
+      /** set the epsilon for the CG
+       *  @param epsilon epsilon for the convergence of CG
+       */
+      inline void setCGEps( STK::Real eps) { p_solver_->setCGEps(eps);}
+      /** initialization of the class with a new beta0 */
+      void initializeBeta()
       {
-        if(p_gcsolver_) delete p_gcsolver_;
+        p_solver_->disruptsBeta();
+        p_solver_->initializeSolver();
+#ifdef HD_DEBUG
+        std::cout << "LogisitcLasso::initializeBeta done. Likelihood =" << p_solver_->computeLlc() << std::endl;
+#endif
       }
-
-      /**
-       * set the lasso regularization parameter
-       * @param lambda
-       */
-      inline void setLambda(STK::Real lambda) {(p_solver_->p_penalty())->setLambda(lambda);}
-      /**
-       * set the threshold for the shrinkage
-       * @param threshold
-       */
-      inline void setThreshold(STK::Real threshold) {p_solver_->setThreshold(threshold);}
-
-      /**
-       * set the epsilon for the CG
-       * @param epsilon epsilon for the convergence of CG
-       */
-      inline void setCGEps(STK::Real eps) {p_gcsolver_->setEps(eps);}
-
-
-      /**initialize the containers of all subclasses*/
+      /** initialize the containers of the solver*/
       void initializeModel()
       {
-        //compte intitial beta
-        STK::CVectorX Xty(nbVariable());
-        Xty = p_data_->transpose() * *p_y_;
-
-        STK::CVectorX beta0(Xty.sizeRows());
-        for(int i = 1; i <= Xty.sizeRows();i++)
-          beta0[i] = Xty[i]/((*p_data_).col(i).norm2());
-
-        //add response to penalty
-        p_penalty_->setPy(p_y_);
-
-        beta_ = beta0;
         //set the parameter of the solver
-        p_solver_->setData(p_data_);
-        p_solver_->setY(p_penalty_->p_z());
-        p_solver_->setBeta(beta_);
+        p_solver_->setX(p_x_);
+        p_solver_->setY(p_y_);
+        p_solver_->setBeta(&beta_);
         //initialize the solver
         p_solver_->initializeSolver();
-        //add currentData to penalty
-        p_penalty_->setPcurrentData(p_solver_->p_currentData());
-
       }
-
-      /**initialization of the class for with a new beta0
+      /**initialization of the class with a new beta0
        * @param beta initial start for beta
        * */
-      void initializeBeta(STK::CVectorX const& beta)
+      void initializeBeta(STK::VectorX const& beta)
       {
-        p_solver_->setBeta(beta_);
+        beta_ = beta;
         p_solver_->initializeSolver();
       }
-
-    private:
-      /// multiplicator for conjugate gradient
-      LassoMultiplicator mult_;
-      /// conjugate gradient for solver
-      STK::CG<LassoMultiplicator,STK::CVectorX, InitFunctor>* p_gcsolver_;
-//      InitFunctor init_;
   };
-}
+} // HD
 
 
 #endif /* LOGISTICLASSO_H_ */

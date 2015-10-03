@@ -44,39 +44,35 @@ namespace HD
   /**functor for CG  */
   struct LassoMultiplicator
   {
-      /**
-       * functor for the CG. A=sigma2*I+invPenalty.sqrt()*tX*X*invPenalty.sqrt()
+      /** functor for the CG. A=sigma2*I+invPenalty.sqrt()*tX*X*invPenalty.sqrt()
        * @param x vector of length sizeCols(A)
        * @return A*x
        */
-      STK::CVectorX operator()(STK::CVectorX &x) const
+      STK::VectorX operator()(STK::VectorX const& x) const
       {
-        STK::CVectorX a(x.sizeRows());
-        //a = sigI*x+invD*tX*X*invD*x
-        a = (*p_sigma2_ * x) + ((*p_invPenalty_ * p_data_->transpose()) * (((*p_data_) * (*p_invPenalty_ * x))));
-
+        //a = sig I*x+ invD*tX*X*invD*x
+        STK::VectorX a = (*p_sigma2_ * x)
+                       + (p_sqrtInvPenalty_->diagonalize() * p_x_->transpose()) * ((*p_x_ * p_sqrtInvPenalty_->diagonalize()) * x);
         return   a ;
       }
 
-      /**
-       * Constructor of the functor
-       * @param p_data constant pointer on the data
+      /** Constructor of the functor
+       * @param p_x constant pointer on the data
        * @param p_invPenalty constant pointer on the current estimates of invPenalty
        * @param p_sigma2 constant pointer on the current estimates of sigma2
        */
-      LassoMultiplicator(STK::CArrayXX const* p_data = 0, STK::Array2DDiagonal<STK::Real> const* p_invPenalty = 0, STK::Real const* p_sigma2 = 0)
-                        : p_data_(p_data), p_invPenalty_(p_invPenalty), p_sigma2_(p_sigma2)
-      {
-      }
-
+      LassoMultiplicator( STK::ArrayXX const* p_x = 0
+                        , STK::VectorX const* p_sqrtInvPenalty = 0
+                        , STK::Real const* p_sigma2 = 0)
+                        : p_x_(p_x), p_sqrtInvPenalty_(p_sqrtInvPenalty), p_sigma2_(p_sigma2)
+      {}
       ///pointer to the current data
-      STK::CArrayXX const* p_data_;
+      STK::ArrayXX const* p_x_;
       ///pointer to the penalty matrix
-      STK::Array2DDiagonal<STK::Real> const* p_invPenalty_;
+      STK::VectorX const* p_sqrtInvPenalty_;
       ///matrix to sigma2
       STK::Real const* p_sigma2_;
   };
-
 
   /** @ingroup lassoModels
    *  @brief The class LassoPenalty derived from the @c IPenalty class.
@@ -85,38 +81,38 @@ namespace HD
   class LassoPenalty : public IPenalty
   {
     public:
-      /**default constructor*/
-      LassoPenalty();
       /** Constructor
        *  @param lambda penalization parameter for the l1-norm of the estimates
        *  @param n size of sample
        *  @param p size of Penalty (number of covariates)
        */
-      LassoPenalty(STK::Real lambda);
-
+      inline LassoPenalty(STK::Real lambda): IPenalty()
+                                            , lambda_(lambda)
+                                            , sqrtInvPenalty_()
+                                            , sigma2_(1.) {}
       /** Copy constructor
        *  @param penalty LassoPenalty object to copy
        */
-      LassoPenalty(LassoPenalty const& penalty);
-
+      inline LassoPenalty(LassoPenalty const& penalty): IPenalty(penalty)
+                                                      , lambda_(penalty.lambda_)
+                                                      , sqrtInvPenalty_(penalty.sqrtInvPenalty_)
+                                                      , sigma2_(penalty.sigma2_)
+      {}
       /** destructor */
       inline virtual ~LassoPenalty() {};
-
       /**clone*/
-      LassoPenalty* clone() const;
-
+      inline LassoPenalty* clone() const  { return new LassoPenalty(*this);}
       //getter
       /**@return lambda parameter of the lasso */
       inline STK::Real const& lambda() const {return lambda_;}
       /**@return invPenalty diagonal matrix containing |beta_i| / lambda */
-      inline STK::Array2DDiagonal<STK::Real> const& invPenalty() const {return sqrtInvPenalty_;}
+      inline STK::VectorX const& sqrtInvPenalty() const {return sqrtInvPenalty_;}
       /**@return sigma2 variance of the response*/
       inline STK::Real const& sigma2() const { return sigma2_;}
       /**@return A constant pointer on the matrix penalty*/
-      inline STK::Array2DDiagonal<STK::Real> const* p_invPenalty() const {return &sqrtInvPenalty_;}
+      inline STK::VectorX const* p_sqrtInvPenalty() const {return &sqrtInvPenalty_;}
       /**@return A constant pointer on sigma2*/
-      inline STK::Real const*  p_sigma2() const { return &sigma2_;}
-
+      inline STK::Real const* p_sigma2() const { return &sigma2_;}
       //setter
       /** change the value of lambda_ */
       inline void setLambda(STK::Real const& lambda) {lambda_ = lambda;}
@@ -124,61 +120,59 @@ namespace HD
       inline void setSigma2(STK::Real const& sigma2) {sigma2_ = sigma2;}
 
       //methods
-      /**
-       * update sigma2 and the lasso penalty
+      /** update sigma2 and the lasso penalty
        * @param beta current estimates
        * @param normResidual ||y-X*beta||_2^2
        */
-      void update(STK::CVectorX const& beta, STK::Real const& normResidual);
-
-      /**
-       * update the lasso penalty (for fixed sigma)
+//      void update(STK::VectorX const& beta, STK::Real const& normResidual)
+//      { sqrtInvPenalty_ = (beta.abs()/lambda_).sqrt();}
+      /** update the lasso penalty (for fixed sigma)
        * @param beta current estimates
        */
-      virtual void update(STK::CVectorX const& beta);
-
+      inline virtual void update(STK::VectorX const& beta)
+      { sqrtInvPenalty_ = (beta.abs()/lambda_).sqrt();}
       /**
        * @param x a vector of length p_
        * @return the product invPenalty_*x
        */
-      STK::CVectorX multInvPenalty(STK::CVectorX const& x) const;
-
+      inline STK::VectorX multInvPenalty(STK::VectorX const& x) const
+      {
+        STK::VectorX a  = sqrtInvPenalty_.square() * x;
+        return a;
+      }
       /**
        * @param x a vector of length p_
        * @return the product invPenalty_.sqrt()*x
        */
-      STK::CVectorX multSqrtInvPenalty(STK::CVectorX const& x) const;
-
+      inline STK::VectorX multSqrtInvPenalty(STK::VectorX const& x) const
+      {
+        STK::VectorX a = sqrtInvPenalty_ * x;
+        return a;
+      }
       /** penalty term
        *  @param beta current estimates
        *  @return t(beta) * penalty * beta
        */
-      STK::Real penaltyTerm(STK::CVectorX const& beta) const;
-
+      inline STK::Real penaltyTerm(STK::VectorX const& beta) const
+      {
+        return beta.abs().sum() * lambda_;
+        //return beta.dot( (sqrtInvPenalty_.square()).inverse() * beta);
+      }
 
     protected:
-      /** update the penalty
-       *  @param beta current estimates
-       */
-      void updatePenalty(STK::CVectorX const& beta);
-
       /** update sigma2
        *  @param beta current estimates
        *  @param normResidual ||y-X*beta||_2^2
        */
-      void updateSigma2(STK::CVectorX const& beta, STK::Real const& normResidual);
+      void updateSigma2(STK::VectorX const& beta, STK::Real const& normResidual);
 
     private:
       ///value associated to the l1 penalty of estimates
       STK::Real lambda_;
       ///diag(E[1/tau_i^2])^-1 =diag(|beta|/lambda_)
-      STK::Array2DDiagonal<STK::Real> sqrtInvPenalty_;
+      STK::VectorX sqrtInvPenalty_;
       ///variance
       STK::Real sigma2_;
-//      ///number of sample
-//      int n_;
-//      ///number of covariates
-//      int p_;
   };
 }
 

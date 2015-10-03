@@ -40,23 +40,25 @@
 
 namespace HD
 {
-  /**
-   * Interface class for algorithms.
-   * Inherited classes has to implemented a run function.
+  /** Interface class for algorithms.
+   *  Inherited classes has to implemented a run function.
    */
   class IAlgo
   {
     public:
       /**default constructor*/
       IAlgo() : maxStep_(0), eps_(0.) {};
+      /** constructor*/
+      IAlgo( int maxStep, STK::Real const& eps )
+           : maxStep_(maxStep), eps_(eps) {};
 
       /**virtual destructor*/
       virtual ~IAlgo() {};
-      /**
-       * run an algorithm to solve the penalizedModels
-       * @param model a pointer to the penalizedModels object to solve.
-       */
-      virtual bool run(PenalizedModelsBase* model) = 0;
+//      /**
+//       * run an algorithm to solve the penalizedModels
+//       * @param model a pointer to the penalizedModels object to solve.
+//       */
+//      virtual bool run(PenalizedModelsBase* model) = 0;
 
       /** set the threshold for convergence of the complete loglikelihood
        * @param eps new value for the threshold

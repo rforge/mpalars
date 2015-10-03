@@ -36,22 +36,9 @@
 
 namespace HD
 {
-  /*default constructor*/
-  FusedLassoSolver::FusedLassoSolver()
-  : IPenalizedSolver()
-  , p_solver_(0)
-  , currentXty_()
-  , segment_()
-  , n_(0)
-  , nbActiveVariables_(0)
-  , eps_(STK::Arithmetic<STK::Real>::epsilon())
-  , p_penalty_(0)
-  {
-  }
-
   /*
    * Constructor
-   * @param p_data pointer to the full data
+   * @param p_x pointer to the full data
    * @param beta initial solution of the problem
    * @param p_y pointer to the response associated with the data
    * @param burn burn-in period before regrouping variables in segments
@@ -59,190 +46,216 @@ namespace HD
    * @param p_penalty pointer to the Fused lasso penalty
    * @param eps tolerance for zero
    */
-  FusedLassoSolver::FusedLassoSolver(STK::CArrayXX const* p_data, STK::CVectorX const& beta, STK::CVectorX const* p_y,
-                                     STK::CG<FusedLassoMultiplicator,STK::CVectorX,InitFunctor>* p_solver, FusedLassoPenalty* p_penalty,
-                                     STK::Real eps)
-                                     : IPenalizedSolver(beta, p_data, p_y)
-                                     , p_solver_(p_solver)
-                                     , currentXty_()
-                                     , segment_(beta.sizeRows())
-                                     , n_(p_data->sizeRows())
-                                     , nbActiveVariables_(beta.sizeRows())
-                                     , eps_(eps)
-                                     , p_penalty_(p_penalty)
+FusedLassoSolver::FusedLassoSolver( STK::ArrayXX const* p_x, STK::VectorX const* p_y, STK::VectorX* p_beta
+                                  , STK::Real const& threshold, STK::Real const& epsCG
+                                  , FusedLassoPenalty* p_penalty)
+                                  : IPenalizedSolver(p_beta, p_x, p_y, threshold)
+                                  , currentXty_()
+                                  , segment_(p_x_->cols())
+                                  , nbActiveVariables_(p_x_->sizeCols())
+                                  , eps_(threshold)
+                                  , p_penalty_(p_penalty)
   {
-    //initialization of currentXty
-    currentXty_ = p_data->transpose() * (*p_y);
-
-    p_solver_->setB(currentXty_);
-
-    for(int i = 1; i <= beta.sizeRows(); i++)
-    {
-      //initialization of the segment : segment of 1 point
-      segment_[i-1] = STK::Range(i,1);
-    }
+#ifdef HD_DEBUG
+    std::cout << "Entering FusedLassoSolver::FusedLassoSolver()\n";
+    std::cout << "threshold_ =" << threshold_ << "\n";
+    std::cout << "eps_ =" << eps_ << "\n";
+    std::cout << "epsCG =" << epsCG << "\n";
+#endif
+    // currentX_  is initialized to *p_x in IPenalizedSolver
+    // currentSet_ is initialized in IPenalizedSolver to currentSet_[i} = i
+    // currentXty_ and currentBeta_ are initialized in computeInitialBeta()
+    computeInitialBeta();
+    // initialize size 1 segments
+    for(int i = segment_.begin(); i < segment_.end(); i++)
+    { segment_[i] = STK::Range(i,1);}
+    // initialize CG
+    cgsolver_.setMultFunctor(mult_);
+    cgsolver_.setEps(epsCG);
+    cgsolver_.setB(currentXty_);
+    //intialize mult functor for CG
+    mult_.p_x_            = p_currentX();
+    mult_.p_mainDiagonal_ = p_penalty_->p_mainDiagonal();
+    mult_.p_offDiagonal_  = p_penalty_->p_offDiagonal();
+    mult_.p_sigma2_       = p_penalty_->p_sigma2();
+    // initialize init for CG
+    init_.p_x_ = p_currentBeta();
+    cgsolver_.setInitFunctor(&init_);
+    p_penalty_->update(currentBeta_);
   }
-
-
-  /*update the penalty (E step)*/
-  void FusedLassoSolver::update()
-  {
-    if(p_penalty_ == 0)
-      throw STK::invalid_argument(STK::String("p_penalty_ has not be set"));
-
-//    p_penalty_->update(currentBeta_);
-    p_penalty_->update(currentBeta_,segment_);
-  }
-
   /*initialize the container of the class*/
-  void FusedLassoSolver::initializeSolver()
+  STK::Real FusedLassoSolver::initializeSolver()
   {
-    //check the existence pointers to the data and the response
-    if(p_data_ == 0)
-      throw STK::invalid_argument(STK::String("p_data_ has not be set"));
+#ifdef HD_DEBUG
+    if(p_x_ == 0)
+      throw STK::invalid_argument(STK::String("p_x_ has not be set"));
     if(p_y_ == 0)
       throw STK::invalid_argument(STK::String("p_y_ has not be set"));
-
-    currentData_ = *p_data_;
-    currentBeta_ = beta_;
-    nbActiveVariables_ = p_data_->sizeCols();
-    n_ = p_data_->sizeRows();
-//    currentXty_.resize(nbActiveVariables_);
-    currentXty_ = currentData_.transpose() * (*p_y_);
-
-    p_solver_->setB(currentXty_);
+#endif
+    currentX_ = *p_x_;
+    currentBeta_ = *p_beta_;
+    nbActiveVariables_ = p_x_->sizeCols();
+    currentXty_ = currentX_.transpose() * (*p_y_);
+    // init sets and segments
     currentSet_.resize(nbActiveVariables_);
-
     segment_.resize(nbActiveVariables_);
-
-    for(int i = 1; i <= nbActiveVariables_; i++)
+    for(int i = segment_.begin(); i < segment_.end(); i++)
     {
-      //initialization of the segment : segment of 1 point
-      segment_[i-1] = STK::Range(i,1);
-      //initialization of the set
+      segment_[i] = STK::Range(i,1);
       currentSet_[i] =  i;
     }
-
+    p_penalty_->update(currentBeta_);
+    return updateSolver();
   }
+  /*Initialization of the solver*/
+  STK::Real FusedLassoSolver::updateSolver()
+  {
+#ifdef HD_DEBUG
+    //check the existence pointers to the data and the response
+    if(p_x_ == 0)
+      throw STK::invalid_argument(STK::String("p_x_ has not be set"));
+    if(p_y_ == 0)
+      throw STK::invalid_argument(STK::String("p_y_ has not be set"));
+#endif
+    // reinitialize all containers
+    currentX_ = *p_x_;
+    currentBeta_ = *p_beta_;
+    nbActiveVariables_ = p_x_->sizeCols();
+    currentXty_ = currentX_.transpose() * (*p_y_);
+    // init sets and segments
+    currentSet_.resize(nbActiveVariables_);
+    segment_.resize(nbActiveVariables_);
+    for(int i = segment_.begin(); i < segment_.end(); i++)
+    {
+      segment_[i] = STK::Range(i,1);
+      currentSet_[i] =  i;
+    }
+    p_penalty_->update(currentBeta_);
+#ifdef HD_DEBUG
+      std::cout << "FusedLassoSolver::updateSolver done. llc =" << computeLlc() << std::endl;
+#endif
+    return computeLlc();
+  }
+
 
   /*Computation of the completed log-likelihood
    * @return the current completed loglikelihood
    */
-  STK::Real FusedLassoSolver::computeLlc()
+  STK::Real FusedLassoSolver::computeLlc() const
   {
-    STK::Real llc;
-    llc = - ( ( (*p_y_ - (currentData_ * currentBeta_) ).square().sum() )/p_penalty_->sigma2() +  p_penalty_->penaltyTerm(currentBeta_))/2;
-
-    return llc;
+    return - ( ( (*p_y_ - (currentX_ * currentBeta_) ).square().sum() )/p_penalty_->sigma2()
+               +  p_penalty_->penaltyTerm(currentBeta_))/2;
   }
-
-  /*
-   * Solve the M-step with a conjugate gradient
-   * @return new estimate of beta
-   */
-  STK::Real FusedLassoSolver::run(bool const& burn)
+  /*update the penalty (E step)*/
+  void FusedLassoSolver::update(bool toUpdate)
   {
-    //run the conjugate gradient
-    p_solver_->run();
-
-    //get the solution
-    currentBeta_ = p_solver_->x();
-
-    //compute llc
-    STK::Real llc = computeLlc();
-
+#ifdef HD_DEBUG
+    if(p_penalty_ == 0)
+      throw STK::invalid_argument(STK::String("p_penalty_ has not be set"));
+#endif
     //reduction of the data with segments
-    if(burn)
+    if (toUpdate)
     {
       //update segment_ and currentSet_ and currentBeta_
-      bool changement = false;
-      changement = updateCurrent();
-
+      bool changement = updateCurrentBeta();
       //update the full beta_
       updateBeta();
-
-      //if true, we have to change the currentData matrix
+      //if true, we have to change the currentX matrix
       if(changement)
       {
         updateCurrentData();
-
-        //update currentXty_ because currentData_ change
-        currentXty_ = currentData_.transpose() * (*p_y_);
+        //update currentXty_ because currentX_ change
+        currentXty_ = currentX_.transpose() * (*p_y_);
       }
     }
     else
-      beta_=currentBeta_;
-
-    return llc;
+    {
+      if(p_beta_->range()!=currentBeta_.range())
+      { updateBeta();}
+      else
+      { *p_beta_=currentBeta_;}
+    }
+    p_penalty_->update(currentBeta_,segment_);
+  }
+  /* Solve the M-step with a conjugate gradient
+   * @return new estimate of beta
+   */
+  STK::Real FusedLassoSolver::run(bool toUpdate)
+  {
+    //run the conjugate gradient
+    int cgiter = cgsolver_.run();
+#ifdef HD_DEBUG
+      std::cout << "In FusedLassoSolver::run. cgsolver_ run in " << cgiter << " iterations.\n";
+#endif
+    //get the solution
+    currentBeta_ = cgsolver_.x();
+    return computeLlc();
   }
 
+  /* compute an initial value of beta using ols */
+  void FusedLassoSolver::computeInitialBeta()
+  {
+    // compute initial value using OLS
+    currentXty_ = currentX_.transpose() * *p_y_;
+    InitLassoMultiplicator mult(p_x_, p_penalty_->lambda1());
+    STK::CG<InitLassoMultiplicator,STK::VectorX,InitFunctor> cginitial(mult, currentXty_, 0, 1e-05);
+    cginitial.run();
+    p_beta_->move(cginitial.x());
+    disruptsBeta();
+    currentBeta_ = *p_beta_;
+  }
   /*
    * update currentSet_, segment_ and currentBeta_
    * @return a boolean, if true there is a changement in the currentSet
    */
-  bool FusedLassoSolver::updateCurrent()
+  bool FusedLassoSolver::updateCurrentBeta()
   {
-    int betaSize = currentBeta_.sizeRows();
-    STK::Array2DVector<STK::Real> betaTemp (betaSize);
-    betaTemp=currentBeta_;
+#ifdef HD_DEBUG
+    std::cout << "Entering FusedLassoSolver::updateCurrentBeta()\n";
+    std::cout << "p_beta_->range() =" << p_beta_->range() << "\n";
+    std::cout << "currentSet_.range() =" << currentSet_.range() << "\n";
+    std::cout << "currentBeta_.range() =" << currentBeta_.range() << "\n";
+    std::cout << "segment_.range() =" << segment_.range() << "\n";
+#endif
     bool changement = false;
-
-    for(int i = betaSize; i > 1; i--)
+    // start fusion of the segment
+    for(int i = currentBeta_.lastIdx(); i > currentBeta_.begin(); i--)
     {
-      //fusion of 2 segments
+      // TRUE: fusion of 2 segments
       if( std::abs(currentBeta_[i]-currentBeta_[i-1]) <= eps_ )
       {
-        //erase the i-th beta (same as (i-1)-th)
-        betaTemp.erase(i,1);
-
-        /*update of segment_*/
-        //increase the last index of the segment i-1 //vector index shift by 1
-        segment_[i-2] = segment_[i-2].incLast(segment_[i-1].lastIdx()-segment_[i-1].firstIdx()+1);
-
+        //increase the last index of the segment i-1
+        segment_[i-1] = segment_[i-1].incLast(segment_[i].size());
         //delete the segment i
-        segment_.erase(segment_.begin()+i-1,segment_.begin()+i);
-
-        /*update of indBetaSegment*/
+        //erase the i-th beta (same as (i-1)-th)
+        segment_.erase(i);
+        currentBeta_.erase(i);
         //the segment i merged with segment i-1, segment i+1, i+2,... become segment i, i+1, ...
-        for( int j = i; j <= currentSet_.sizeRows(); j++)
-          currentSet_[j]--;
-
-        //a variable is removed from the active variable
+        for( int j = i; j < currentSet_.end(); j++) currentSet_[j]--;
+        // a variable is removed from the active variable
         nbActiveVariables_--;
         changement = true;
       }
     }
-
-    //put the changes into currentBeta
-    if(changement)
-    {
-//      currentBeta_.resize(nbActiveVariables_);
-      currentBeta_ = betaTemp;
-    }
-
-    for(int i = 1; i <= currentBeta_.sizeRows(); i++)
-    {
-      if( std::abs(currentBeta_[i]) < eps_ )
-        currentBeta_[i] = 0;
-    }
-
+    // check small values
+    for(int i = currentBeta_.begin(); i < currentBeta_.end(); i++)
+    { if( std::abs(currentBeta_[i]) < eps_ ) currentBeta_[i] = 0;}
     return changement;
   }
 
   /*
-   * update currentData_
+   * update currentX_
    */
   void FusedLassoSolver::updateCurrentData()
   {
-    //resize currentData_ with only the active variable
-    currentData_.resize(STK::Range(1,n_),STK::Range(1,nbActiveVariables_));//currentData_.resize(n_,nbActiveVariables_);
-    currentData_.zeros();
-
-    for(int i = 0; i < nbActiveVariables_; i++)
+    //resize currentX_ with only the active variable
+    currentX_.resize(p_x_->rows(), nbActiveVariables_);
+    currentX_.zeros();
+    for(int i = currentX_.beginCols(); i < currentX_.endCols(); i++)
     {
       //the covariate associates to an index is the sum of all covariates of the segment
-      for(int j = segment_[i].firstIdx(); j<= segment_[i].lastIdx(); j++)
-        currentData_.col(i+1) += p_data_->col(j);
+      for(int j = segment_[i].begin(); j< segment_[i].end(); j++)
+        currentX_.col(i) += p_x_->col(j);
     }
   }
 
@@ -252,10 +265,10 @@ namespace HD
   void FusedLassoSolver::updateBeta()
   {
     //complete beta with the updated values
-    for(int i = 0; i < nbActiveVariables_; i++)
+    for(int i = currentBeta_.begin(); i < currentBeta_.end(); i++)
     {
-      for(int j = segment_[i].firstIdx(); j <= segment_[i].lastIdx(); j++)
-        beta_[j] = currentBeta_[i+1];
+      for(int j = segment_[i].begin(); j < segment_[i].end(); j++)
+        p_beta_->elt(j) = currentBeta_[i];
     }
   }
 
