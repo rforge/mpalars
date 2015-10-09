@@ -18,4 +18,7 @@
 \description{
 plot the path of the lars algorithm.
 }
+\seealso{
+\code{\link{HDlars}} \code{\link{LarsPath}}
+}
 

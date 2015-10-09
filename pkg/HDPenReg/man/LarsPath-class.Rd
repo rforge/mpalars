@@ -2,6 +2,7 @@
 % Please edit documentation in R/LarsPath.R
 \docType{class}
 \name{LarsPath-class}
+\alias{LarsPath}
 \alias{LarsPath-class}
 \title{Constructor of LarsPath class}
 \description{
@@ -23,5 +24,8 @@ This class stores the results of lars and fusion algorithms.
 	 \item{fusion}{If TRUE,  results from HDfusion function.}
   \item{error}{Error message from lars.}
 }
+}
+\seealso{
+\code{\link{HDlars}}
 }
 

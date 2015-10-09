@@ -2,7 +2,7 @@
 % Please edit documentation in R/cvEM.R
 \name{EMcvlasso}
 \alias{EMcvlasso}
-\title{cross validation for EM lasso}
+\title{cross validation for \code{\link{EMlasso}}}
 \usage{
 EMcvlasso(X, y, lambda = NULL, nbFolds = 10, maxSteps = 1000,
   intercept = TRUE, model = "linear", burn = 30, threshold = 1e-08,
@@ -35,18 +35,18 @@ EMcvlasso(X, y, lambda = NULL, nbFolds = 10, maxSteps = 1000,
 A list containing
 \describe{
   \item{cv}{Mean prediction error for each value of index.}
-  \item{cvError}{Standard error of cv.}
-  \item{minCv}{Minimal cv criterion.}
-  \item{lambda}{Values of lambda at which prediction error should be computed.}
-  \item{lambda.optimal}{Value of lambda for which the cv criterion is minimal.}
+  \item{cvError}{Standard error of \code{lambda}.}
+  \item{minCv}{Minimal \code{lambda} criterion.}
+  \item{lambda}{Values of \code{lambda} at which prediction error should be computed.}
+  \item{lambda.optimal}{Value of \code{lambda} for which the cv criterion is minimal.}
 }
 }
 \description{
-cross validation function for EM lasso.
+cross validation function for \code{\link{EMlasso}}.
 }
 \examples{
-dataset=simul(50,1000,0.4,1,10,matrix(c(0.1,0.8,0.02,0.02),nrow=2))
-result=EMcvlasso(dataset$data,dataset$response,5,lambda=5:1,intercept=FALSE)
+dataset=simul(50,100,0.4,1,10,matrix(c(0.1,0.8,0.02,0.02),nrow=2))
+result=EMcvlasso(dataset$data,dataset$response,5:1,5,intercept=FALSE)
 }
 \author{
 Quentin Grimonprez, Serge Iovleff

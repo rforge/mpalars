@@ -2,7 +2,7 @@
 % Please edit documentation in R/EM.R
 \name{EMfusedlasso}
 \alias{EMfusedlasso}
-\title{EM algorithm for fused lasso penalty}
+\title{EM algorithm for fused-lasso penalty}
 \usage{
 EMfusedlasso(X, y, lambda1, lambda2, maxSteps = 1000, burn = 50,
   intercept = TRUE, model = "linear", eps = 1e-05, eps0 = 1e-08,
@@ -34,7 +34,7 @@ EMfusedlasso(X, y, lambda1, lambda2, maxSteps = 1000, burn = 50,
 \value{
 A list containing :
 \describe{
-  \item{nbStep}{Vector containing the number of steps of the algorithm for every lambda.}
+  \item{step}{Vector containing the number of steps of the algorithm for every lambda.}
   \item{variable}{List of vector of size "step+1". The i+1-th item contains the index of non-zero coefficients at the i-th step.}
   \item{coefficient}{List of vector of size "step+1". The i+1-th item contains the non-zero coefficients at the i-th step.}
   \item{lambda}{Vector of length "step+1", containing the lambda at each step.}
@@ -42,13 +42,16 @@ A list containing :
 }
 }
 \description{
-EM algorithm for fused lasso penalty
+EM algorithm for fused-lasso penalty
 }
 \examples{
-dataset=simul(50,1000,0.4,1,10,matrix(c(0.1,0.9,0.02,0.02),nrow=2))
+dataset=simul(50,100,0.4,1,10,matrix(c(0.1,0.9,0.02,0.02),nrow=2))
 result=EMfusedlasso(dataset$data,dataset$response,1,1)
 }
 \author{
 Quentin Grimonprez, Serge Iovleff
+}
+\seealso{
+\code{\link{EMcvfusedlasso}}
 }
 

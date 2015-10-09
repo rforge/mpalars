@@ -19,10 +19,10 @@ HDlars(X, y, maxSteps = 3 * min(dim(X)), intercept = TRUE,
 \item{eps}{Tolerance of the algorithm.}
 }
 \value{
-An object of type LarsPath.
+An object of type \code{\link{LarsPath}}.
 }
 \description{
-lars algorithm
+It performs the lars algorithm for solving lasso problem. It is a linear regression problem with a l1-penalty on the estimated coefficient.
 }
 \examples{
 dataset=simul(50,10000,0.4,10,50,matrix(c(0.1,0.8,0.02,0.02),nrow=2))
@@ -30,5 +30,11 @@ result=HDlars(dataset$data,dataset$response)
 }
 \author{
 Quentin Grimonprez
+}
+\references{
+Efron, Hastie, Johnstone and Tibshirani (2003) "Least Angle Regression" (with discussion) Annals of Statistics
+}
+\seealso{
+\code{\link{LarsPath}} \code{\link{HDcvlars}}
 }
 

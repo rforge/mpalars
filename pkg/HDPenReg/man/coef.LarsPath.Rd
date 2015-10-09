@@ -32,4 +32,7 @@ coeff=coef(result,0.3,"fraction")
 \author{
 Quentin Grimonprez
 }
+\seealso{
+\code{\link{HDlars}} \code{\link{LarsPath}}
+}
 

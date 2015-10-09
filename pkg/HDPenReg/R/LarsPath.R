@@ -19,10 +19,12 @@
 #'   \item{error}{Error message from lars.}
 #' }
 #'
-#'
+#' @aliases LarsPath
 #' @name LarsPath-class
 #' @rdname LarsPath-class
 #' @exportClass LarsPath
+#'
+#' @seealso \code{\link{HDlars}}
 #'
 setClass(
   Class="LarsPath",
@@ -40,7 +42,7 @@ setClass(
     fusion="logical",
     p="numeric",
     error="character"
-    ),
+  ),
   prototype=prototype(
     variable=list(),
     coefficient=list(),
@@ -55,8 +57,8 @@ setClass(
     fusion=FALSE,
     p=numeric(0),
     error=character()
-    )
   )
+)
 
 
 ###################################################################################
@@ -74,6 +76,8 @@ setClass(
 #' @name plot-methods 
 #' @aliases plot,LarsPath-method plot-methods
 #'
+#' @seealso \code{\link{HDlars}} \code{\link{LarsPath}}
+#'
 #' @export
 setMethod(
   f="plot",
@@ -82,21 +86,22 @@ setMethod(
   {
     miny=0
     maxy=0
+#     miny=min(sapply(x@coefficient,min))
+#     maxy=max(sapply(x@coefficient,max))
     for(i in 2:length(x@coefficient))
     {
       miny=min(miny,x@coefficient[[i]])
       maxy=max(maxy,x@coefficient[[i]])
     }
     var=unique(unlist(x@variable))
+
+
     plot(NA,xlim=c(min(x@l1norm),max(x@l1norm)),ylim=c(miny,maxy),main="Path",xlab="l1norm",ylab="coefficients") 
     abline(h=0)
     lines(x@l1norm[1:2],c(0,x@coefficient[[2]][1]),col=which(var==x@variable[[2]][1]))
     
     for(i in 2:(length(x@l1norm)-1))
-    {
-      if(sep.line)
-        abline(v=x@l1norm[i],col="blue",lty=2)
-      
+    {      
       if(length(x@dropIndex[[i]])==0)##plot add case 
       {
         for(j in 1:length(x@coefficient[[i]]))
@@ -105,8 +110,7 @@ setMethod(
         if(length(x@addIndex[[i]])!=0)
         {
           for(j in (length(x@coefficient[[i]])+1):(length(x@coefficient[[i]])+length(x@addIndex[[i]])) )
-            lines(x@l1norm[i:(i+1)],c(0,x@coefficient[[i+1]][j]),col=which(var==x@variable[[i+1]][j]))
-          
+            lines(x@l1norm[i:(i+1)],c(0,x@coefficient[[i+1]][j]),col=which(var==x@variable[[i+1]][j]))       
         }
       }
       else
@@ -144,7 +148,7 @@ setMethod(
     }
     
     if(sep.line)
-      abline(v=x@l1norm[length(x@l1norm)],col="blue",lty=2)
+      abline(v=x@l1norm,col="blue",lty=2)
     axis(4, at=x@coefficient[[length(x@coefficient)]],labels=x@variable[[length(x@variable)]])
   }
 )
@@ -165,6 +169,8 @@ setMethod(
 #' plotCoefficient(result,result@@nbStep) #plot coefficients at the last step
 #' @export 
 #' 
+#' @seealso \code{\link{HDlars}} \code{\link{LarsPath}}
+#' 
 plotCoefficient=function(x,step,ylab="coefficients",xlab="variables",...)
 {
   if(missing(x))
@@ -177,7 +183,7 @@ plotCoefficient=function(x,step,ylab="coefficients",xlab="variables",...)
     stop("step must be a positive integer smaller than x@nbStep")
   if( (step<0) || (step>x@nbStep) )
     stop("step must be a positive integer smaller than x@nbStep")
-    
+  
   if(x@fusion)
   {
     index=sort(x@variable[[step+1]],index.return=TRUE)$ix
@@ -217,6 +223,8 @@ plotCoefficient=function(x,step,ylab="coefficients",xlab="variables",...)
 #' result=HDfusion(dataset$data,dataset$response)
 #' coefficient=coeff(result,result@@nbStep) #get the coefficients
 #' @export 
+#' 
+#' @seealso \code{\link{HDlars}}  \code{\link{HDfusion}} \code{\link{LarsPath}}
 #'
 coeff=function(x,step)
 {
@@ -272,6 +280,9 @@ coeff=function(x,step)
 #' result=HDlars(dataset$data[1:40,],dataset$response[1:40])
 #' coeff=coef(result,0.3,"fraction")
 #' @export
+#' 
+#' @seealso \code{\link{HDlars}} \code{\link{LarsPath}}
+#' 
 coef.LarsPath=function(object,index=NULL,mode=c("lambda","step","fraction","norm"),...)
 {
   mode <- match.arg(mode)
@@ -315,6 +326,6 @@ coef.LarsPath=function(object,index=NULL,mode=c("lambda","step","fraction","norm
     betatemp=computeCoefficients(object,index,mode)
     beta[betatemp$variable]=betatemp$coefficient
   }
-
+  
   return(beta)
 }
