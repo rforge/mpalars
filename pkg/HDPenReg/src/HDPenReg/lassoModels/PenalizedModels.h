@@ -37,6 +37,7 @@
 #define PENALIZEDMODELS_H_
 
 #include <RTKpp.h>
+#include <StatModels.h>
 #include "IPenalizedSolver.h"
 #include "IPenalty.h"
 
