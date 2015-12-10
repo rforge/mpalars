@@ -10,9 +10,9 @@ PKGLIBDIR = $(PKGDIR)/lib
 PKGLIB    = $(PKGLIBDIR)/lib$(PKGNAME).a
 
 ## Use the R_HOME indirection to support installations of multiple R version
-PKG_CXXFLAGS = `${R_HOME}/bin/Rscript -e "rtkpp:::CxxFlags()"`
-PKG_CPPFLAGS = `${R_HOME}/bin/Rscript -e "rtkpp:::CppFlags()"`
-PKG_LIBS = $(PKGLIB) `$(R_HOME)/bin/Rscript -e "rtkpp:::LdFlags()"` $(SHLIB_OPENMP_CFLAGS) $(LAPACK_LIBS) $(BLAS_LIBS) $(FLIBS)
+PKG_CXXFLAGS = `${R_HOME}/bin/Rscript -e "rtkore:::CxxFlags()"`
+PKG_CPPFLAGS = `${R_HOME}/bin/Rscript -e "rtkore:::CppFlags()"`
+PKG_LIBS = $(PKGLIB) `$(R_HOME)/bin/Rscript -e "rtkore:::LdFlags()"` $(SHLIB_OPENMP_CFLAGS) $(LAPACK_LIBS) $(BLAS_LIBS) $(FLIBS)
 
 ## Define HD_CPPFLAGS flags and HD_CXXFLAGS here
 HD_CPPFLAGS0 = $(ALL_CPPFLAGS) # -DHD_DEBUG #-DHD_CVDEBUG # -DHD_DEBUG

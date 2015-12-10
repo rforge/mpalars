@@ -1,5 +1,5 @@
 #' @useDynLib HDPenReg
-#' @import rtkpp
+#' @import rtkore
 #' @import methods
 #' @importFrom graphics abline axis lines points
 #' @importFrom stats rbeta rbinom rpois
