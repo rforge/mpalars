@@ -1,8 +1,10 @@
 Version 0.93 (03-10-2015)
-- stabilization and acceleration of the EM algorithms  
+- stabilization and acceleration of the EM algorithms
+- HDPenReg now based on rtkore
+- EM part of the package using 0 based stk++ arrays
 
 Version 0.92 (03-09-2015)
-- change in c++ code to follow rtkpp 0.9.2 
+- change in c++ code to follow rtkpp 0.9.2
 
 Version 0.91 (25-11-2014)
 - HDPenReg now depends on rtkpp

@@ -55,7 +55,7 @@ RcppExport SEXP cvEMlasso( SEXP data, SEXP response
                          , SEXP threshold, SEXP eps, SEXP epsCG)
 {
 #ifdef _OPENMP
-omp_set_num_threads(1);
+omp_set_num_threads(2);
 #endif
   return cvEMlassoMain(data, response, lambda, nbFolds, intercept, maxStep, burn, threshold, eps, epsCG);
 }
@@ -68,7 +68,7 @@ RcppExport SEXP cvEMfusedLasso1D( SEXP data, SEXP response
                                , SEXP eps, SEXP epsCG)
 {
 #ifdef _OPENMP
-omp_set_num_threads(1);
+omp_set_num_threads(2);
 #endif
   return cvEMfusedLasso1DMain( data,  response,  lambda1,  lambda2,  optimL1,  nbFolds,  intercept,  maxStep,  burn,  threshold,  eps,  epsCG);
 }
@@ -80,7 +80,7 @@ RcppExport SEXP cvEMfusedLasso2D(SEXP data, SEXP response
                                , SEXP threshold, SEXP eps, SEXP epsCG)
 {
 #ifdef _OPENMP
-omp_set_num_threads(1);
+omp_set_num_threads(2);
 #endif
   return cvEMfusedLasso2DMain( data,  response, lambda1,  lambda2,  nbFolds,  intercept,  maxStep,  burn,  threshold,  eps,  epsCG);
 }
@@ -94,7 +94,7 @@ RcppExport SEXP cvEMlogisticLasso( SEXP data, SEXP response
                                   , SEXP eps, SEXP epsCG)
 {
 #ifdef _OPENMP
-omp_set_num_threads(1);
+omp_set_num_threads(2);
 #endif
   return cvEMlogisticLassoMain(data, response, lambda, nbFolds, intercept, maxStep, burn, threshold, eps, epsCG);
 }
@@ -108,7 +108,7 @@ RcppExport SEXP cvEMlogisticFusedLasso1D( SEXP data, SEXP response
                                          , SEXP eps, SEXP epsCG)
 {
 #ifdef _OPENMP
-omp_set_num_threads(1);
+omp_set_num_threads(2);
 #endif
   return cvEMlogisticFusedLasso1DMain( data,  response,  lambda1,  lambda2,  optimL1,  nbFolds,  intercept,  maxStep,  burn,  threshold,  eps,  epsCG);
 }
