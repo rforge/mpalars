@@ -39,7 +39,7 @@
 #include "Lars.h"
 #include "functions.h"
 
-#ifdef SUPPORT_OPENMP
+#ifdef _OPENMP
   #include <omp.h>
 #endif
 

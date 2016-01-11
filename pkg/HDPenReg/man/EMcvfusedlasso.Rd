@@ -5,8 +5,8 @@
 \title{cross validation for EM fused-lasso}
 \usage{
 EMcvfusedlasso(X, y, lambda1, lambda2, nbFolds = 10, maxSteps = 1000,
-  burn = 50, intercept = TRUE, model = "linear", eps = 1e-05,
-  eps0 = 1e-08, epsCG = 1e-08)
+  burn = 50, intercept = TRUE, model = c("linear", "logistic"),
+  eps = 1e-05, eps0 = 1e-08, epsCG = 1e-08)
 }
 \arguments{
 \item{X}{the matrix (of size n*p) of the covariates.}
@@ -45,11 +45,11 @@ A list containing
 }
 }
 \description{
-cross validation function for EM lasso.
+cross validation function for \code{\link{EMfusedlasso}}.
 }
 \examples{
-dataset=simul(50,1000,0.4,1,10,matrix(c(0.1,0.8,0.02,0.02),nrow=2))
-result=EMcvfusedlasso(dataset$data,dataset$response,5,lambda1=3:1,lambda2=3:1,intercept=FALSE)
+dataset=simul(50,100,0.4,1,10,matrix(c(0.1,0.8,0.02,0.02),nrow=2))
+result=EMcvfusedlasso(dataset$data,dataset$response,3:1,3:1,5,intercept=FALSE)
 }
 \author{
 Quentin Grimonprez, Serge Iovleff

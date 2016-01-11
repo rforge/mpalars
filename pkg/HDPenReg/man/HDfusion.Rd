@@ -19,10 +19,11 @@ HDfusion(X, y, maxSteps = 3 * min(dim(X)), intercept = TRUE,
 \item{eps}{Tolerance of the algorithm.}
 }
 \value{
-An object of type LarsPath.
+An object of type \code{\link{LarsPath}}. \code{\link{LarsPath-class}}.
 }
 \description{
-fusion algorithm
+It performs the lars algorithm for solving a special case of lasso problem. 
+It is a linear regression problem with a l1-penalty on the difference of two successive coefficients.
 }
 \examples{
  
@@ -31,5 +32,11 @@ result=HDfusion(dataset$data,dataset$response)
 }
 \author{
 Quentin Grimonprez
+}
+\references{
+Efron, Hastie, Johnstone and Tibshirani (2003) "Least Angle Regression" (with discussion) Annals of Statistics
+}
+\seealso{
+LarsPath HDlars
 }
 

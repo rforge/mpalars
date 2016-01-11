@@ -1,6 +1,9 @@
 #' @useDynLib HDPenReg
 #' @import rtkore
 #' @import methods
+#' @import Matrix
+#' @importFrom graphics abline axis lines points
+#' @importFrom stats rbeta rbinom rpois
 #' 
 #' @title Algorithms for lasso and fused-lasso problems.
 #' @docType package
@@ -15,8 +18,8 @@
 #'   \tabular{ll}{
 #' Package: \tab HDPenReg\cr
 #' Type: \tab Package\cr
-#' Version: \tab 0.91.1\cr
-#' Date: \tab 2015-02-20\cr
+#' Version: \tab 0.93.1\cr
+#' Date: \tab 2016-01-11\cr
 #' License: \tab GPL (>=2) \cr
 #' }
 #' 
@@ -29,6 +32,10 @@
 #' #see vignette
 #' #vignette("HDPenReg")
 #' 
+#'  
+#'  
+#'  
+#' @seealso \code{\link{HDlars}} \code{\link{HDcvlars}}
 #'  
 #' @keywords package
 NULL

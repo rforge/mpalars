@@ -63,11 +63,11 @@ class AUC : public IMeasure
 {
   public:
     AUC() : IMeasure(){};
-
+    /*http://webapps.fundp.ac.be/biostats/biostat/modules/module137/page3.html*/
     STK::Real measure(STK::VectorX const& yTrue, STK::VectorX &yEstimate)
     {
       STK::Real auc, nb1, nb0, rsum1 = 0;
-      nb1 = yTrue.sum();
+      nb1 = yTrue.sum();/*remplacer par test de yTrue = 1*/
       nb0 = yTrue.size() - nb1;
 
       STK::VectorXi index(yTrue.range());

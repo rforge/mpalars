@@ -225,7 +225,7 @@ namespace HD
     }
   }
 
-#ifdef SUPPORT_OPENMP
+#ifdef _OPENMP
   void Cvlars::run2()
    {
      //search the first and last fold with the same size

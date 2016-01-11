@@ -2,6 +2,7 @@
 % Please edit documentation in R/LarsPath.R
 \docType{class}
 \name{LarsPath-class}
+\alias{LarsPath}
 \alias{LarsPath-class}
 \title{Constructor of LarsPath class}
 \description{
@@ -16,12 +17,15 @@ This class stores the results of lars and fusion algorithms.
   \item{lambda}{Vector of length "step+1", containing the lambda at each step.}
   \item{dropIndex}{Vector of length "step" containing the index of the dropped variable at the i-th step, 0 means no variable has been dropped at this step.}
   \item{addIndex}{Vector of length "step" containing the index of the added variable at the i-th step, 0 means no variable has been added at this step.}
- \item{mu}{Intercept.}
+  \item{mu}{Intercept.}
   \item{meanX}{Mean of columns of X.}
  \item{ignored}{A vector containing index of ignored variables during the algorithm.}
   \item{p}{Total number of covariates.}
  \item{fusion}{If TRUE,  results from HDfusion function.}
   \item{error}{Error message from lars.}
 }
+}
+\seealso{
+\code{\link{HDlars}}
 }
 

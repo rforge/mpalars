@@ -87,47 +87,47 @@ HDcvlars <- function(X,y,nbFolds=10,index=seq(0,1,by=0.01),mode=c("fraction","la
 # check arguments from cvlars 
 .checkcvlars=function(X,y,maxSteps,eps,nbFolds,index,intercept,mode)
 {
-	## X: matrix of real
-	if(!is.numeric(X) || !is.matrix(X))
-		stop("X must be a matrix of real")
-	
-	## y: vector of real
-	if(!is.numeric(y) || !is.vector(y))
-		stop("y must be a vector of real")
-	if(length(y)!=nrow(X))
-		stop("The number of rows of X doesn't match with the length of y")
-		
-	## maxSteps
-	if(!.is.wholenumber(maxSteps))
-		stop("maxSteps must be a positive integer")
-	if(maxSteps<=0)
-		stop("maxSteps must be a positive integer")
-
-	## nbFolds
-	if(!.is.wholenumber(nbFolds))
-		stop("nbFolds must be a positive integer")
-	if(nbFolds<=0)
-		stop("nbFolds must be a positive integer")
+  ## X: matrix of real
+  if(!is.numeric(X) || !is.matrix(X))
+    stop("X must be a matrix of real")
+  
+  ## y: vector of real
+  if(!is.numeric(y) || !is.vector(y))
+    stop("y must be a vector of real")
+  if(length(y)!=nrow(X))
+    stop("The number of rows of X doesn't match with the length of y")
+  
+  ## maxSteps
+  if(!.is.wholenumber(maxSteps))
+    stop("maxSteps must be a positive integer")
+  if(maxSteps<=0)
+    stop("maxSteps must be a positive integer")
+  
+  ## nbFolds
+  if(!.is.wholenumber(nbFolds))
+    stop("nbFolds must be a positive integer")
+  if(nbFolds<=0)
+    stop("nbFolds must be a positive integer")
   if(nbFolds>length(y))
     stop("nbFolds must be lower than the number of samples")
-
-	## eps
-	if(!is.double(eps))
-		stop("eps must be a positive real")	
-	if(eps<=0)
-		stop("eps must be a positive real")	
-
-	## index
-	if(!is.numeric(index) || !is.vector(index))
-		stop("index must be a vector")
-	if( (mode=="fraction") && (max(index)>1 || min(index)<0))
-		stop("index must be a vector of real between 0 and 1")
-	if( (mode=="lambda") && (min(index)<0))
-	  stop("index must be a vector of positive real")
-		
-	##intercept
-    if(!is.logical(intercept))
-        stop("intercept must be a boolean") 
+  
+  ## eps
+  if(!is.double(eps))
+    stop("eps must be a positive real")  
+  if(eps<=0)
+    stop("eps must be a positive real")	
+  
+  ## index
+  if(!is.numeric(index) || !is.vector(index))
+    stop("index must be a vector")
+  if( (mode=="fraction") && (max(index)>1 || min(index)<0))
+    stop("index must be a vector of real between 0 and 1")
+  if( (mode=="lambda") && (min(index)<0))
+    stop("index must be a vector of positive real")
+  
+  ##intercept
+  if(!is.logical(intercept))
+    stop("intercept must be a boolean") 
 }
 
 #' plot cross validation mean square error

@@ -205,7 +205,7 @@ RcppExport SEXP cvlarsmain(SEXP data, SEXP response, SEXP nbIndiv, SEXP nbVar, S
   if(partitionC[0]!=-1)
     cvlars.setPartition(partitionC);
     
-#ifdef SUPPORT_OPENMP   
+#ifdef _OPENMP   
   cvlars.run2();
 #else
   cvlars.run();

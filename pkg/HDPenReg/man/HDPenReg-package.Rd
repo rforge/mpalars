@@ -15,8 +15,8 @@ for the lasso and fusion penalization and EM-based algorithms for (logistic) las
 \tabular{ll}{
 Package: \tab HDPenReg\cr
 Type: \tab Package\cr
-Version: \tab 0.91.1\cr
-Date: \tab 2015-02-20\cr
+Version: \tab 0.93.1\cr
+Date: \tab 2016-01-11\cr
 License: \tab GPL (>=2) \cr
 }
 
@@ -27,9 +27,14 @@ The main function is \link{HDlars}.
 #vignette("HDPenReg")
 
  
+ 
+ 
 }
 \author{
 Maintainer: Quentin Grimonprez <quentin.grimonprez@inria.fr>
+}
+\seealso{
+\code{\link{HDlars}} \code{\link{HDcvlars}}
 }
 \keyword{package}
 
