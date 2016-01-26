@@ -62,48 +62,65 @@ setClass(
 
 
 #' 
-#' create a matrix with all estimated coefficients from the output of \code{\link{HDlars}} function. 
+#' create a matrix with all estimated coefficients from the output of \code{\link{HDlars}} or \code{\link{EMlasso}} functions. 
 #'
 #' @title List to sparse matrix conversion
 #'
-#' @param x a \code{\link{LarsPath}} object
+#' @param x a \code{\link{LarsPath}} or \code{EMlasso} object
 #' @param row if covariates, covariates are in row
 #'
 #' @return A sparse matrix containing the values of estimated coefficients for all penalty parameter and all covariates
 #' 
 #' @export
 #' 
-#' @seealso \code{\link{HDlars}}
+#' @seealso \code{\link{HDlars}} \code{\link{EMlasso}}
 #' 
 listToMatrix = function(x, row = c("covariates","lambda"))
 {
-  if(class(x)!="LarsPath")
-    stop("x must be a LarsPath object")
+  if(!(class(x)%in%c("LarsPath","EMlasso")))
+    stop("x must be a LarsPath or EM object")
   row = match.arg(row)
+  
+  if(class(x)=="EMlasso")
+  {
+    p = x$p
+    coefficient = x$coefficient
+    variable = x$variable
+    lambda = x$lambda
+    l1norm = x$lambda
+  }
+  else
+  {
+    p = x@p
+    coefficient = x@coefficient
+    variable = x@variable
+    lambda = x@lambda
+    l1norm = x@l1norm
+  }
+  
   if(row == "covariates")
   {
-    bet = Matrix(0, nrow = x@p, ncol = length(x@l1norm))
-    for(i in 1:length(x@l1norm))
+    bet = Matrix(0, nrow = p, ncol = length(l1norm))
+    for(i in 1:length(l1norm))
     {
-      bet[x@variable[[i]], i] = bet[x@variable[[i]], i] + x@coefficient[[i]]
+      bet[variable[[i]], i] = bet[variable[[i]], i] + coefficient[[i]]
     }
     
     return(bet)
   }
   else
   {
-    bet = Matrix(0, nrow = length(x@l1norm), ncol = x@p)
-    for(i in 1:length(x@l1norm))
+    bet = Matrix(0, nrow = length(l1norm), ncol = p)
+    for(i in 1:length(l1norm))
     {
-      bet[i, x@variable[[i]]] = bet[i, x@variable[[i]]] + x@coefficient[[i]]
-      bet[i, x@variable[[i]]] = bet[i, x@variable[[i]]] + x@coefficient[[i]]
+      bet[i, variable[[i]]] = bet[i, variable[[i]]] + coefficient[[i]]
+      bet[i, variable[[i]]] = bet[i, variable[[i]]] + coefficient[[i]]
     }
     
     return(bet)
   }
   
 }
-
 
 
 ###################################################################################

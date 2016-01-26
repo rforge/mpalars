@@ -7,7 +7,7 @@
 listToMatrix(x, row = c("covariates", "lambda"))
 }
 \arguments{
-\item{x}{a \code{\link{LarsPath}} object}
+\item{x}{a \code{\link{LarsPath}} or \code{EMlasso} object}
 
 \item{row}{if covariates, covariates are in row}
 }
@@ -15,9 +15,9 @@ listToMatrix(x, row = c("covariates", "lambda"))
 A sparse matrix containing the values of estimated coefficients for all penalty parameter and all covariates
 }
 \description{
-create a matrix with all estimated coefficients from the output of \code{\link{HDlars}} function.
+create a matrix with all estimated coefficients from the output of \code{\link{HDlars}} or \code{\link{EMlasso}} functions.
 }
 \seealso{
-\code{\link{HDlars}}
+\code{\link{HDlars}} \code{\link{EMlasso}}
 }
 

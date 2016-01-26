@@ -24,6 +24,8 @@
 #' @examples
 #' dataset=simul(50,100,0.4,1,10,matrix(c(0.1,0.9,0.02,0.02),nrow=2))
 #' result=EMlasso(dataset$data,dataset$response)
+#' # Obtain estimated coefficient in matrix format
+#' coefficient = listToMatrix(result)
 #' @export
 #' 
 #' @seealso \code{\link{EMcvlasso}}
@@ -77,6 +79,10 @@ EMlasso <- function(X, y, lambda, maxSteps=1000, intercept=TRUE, model=c("linear
   else
     val=.Call("EMlogisticLasso",X,y,lambda,intercept,maxSteps,burn,threshold,eps,epsCG,PACKAGE = "HDPenReg")
   
+  val$p = ncol(X)
+  
+  class(val) = "EMlasso"
+  
   return(val)
 }
 
@@ -108,6 +114,7 @@ EMlasso <- function(X, y, lambda, maxSteps=1000, intercept=TRUE, model=c("linear
 #' @examples
 #' dataset=simul(50,100,0.4,1,10,matrix(c(0.1,0.9,0.02,0.02),nrow=2))
 #' result=EMfusedlasso(dataset$data,dataset$response,1,1)
+#' 
 #' @export
 #' 
 #' @seealso \code{\link{EMcvfusedlasso}}
@@ -158,6 +165,11 @@ EMfusedlasso <- function(X, y, lambda1, lambda2, maxSteps=1000, burn=50, interce
     val=.Call("EMfusedLasso",X,y,lambda1,lambda2,intercept,maxSteps,burn,eps,eps0,epsCG,PACKAGE = "HDPenReg")
   else
     val=.Call("EMlogisticFusedLasso",X,y,lambda1,lambda2,intercept,maxSteps,burn,eps,eps0,epsCG,PACKAGE = "HDPenReg")
+  
+  val$p = ncol(X)
+  
+  class(val) = "EMfusedlasso"
+  
   return(val)
 }
 

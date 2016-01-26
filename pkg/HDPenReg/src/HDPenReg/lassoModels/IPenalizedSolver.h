@@ -149,7 +149,7 @@ namespace HD
         */
        virtual STK::Real run(bool burn) = 0;
        /** initialize the initial beta0 (do nothing by default)*/
-       virtual STK::Real updateSolver() {};
+       virtual STK::Real updateSolver() = 0;
 
        /** initialize all the containers of the class */
        virtual STK::Real initializeSolver() = 0;
