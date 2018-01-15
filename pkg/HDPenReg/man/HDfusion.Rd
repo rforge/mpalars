@@ -30,13 +30,12 @@ It is a linear regression problem with a l1-penalty on the difference of two suc
 dataset=simul(50,10000,0.4,10,50,matrix(c(0.1,0.8,0.02,0.02),nrow=2))
 result=HDfusion(dataset$data,dataset$response)
 }
-\author{
-Quentin Grimonprez
-}
 \references{
 Efron, Hastie, Johnstone and Tibshirani (2003) "Least Angle Regression" (with discussion) Annals of Statistics
 }
 \seealso{
 LarsPath HDlars
 }
-
+\author{
+Quentin Grimonprez
+}

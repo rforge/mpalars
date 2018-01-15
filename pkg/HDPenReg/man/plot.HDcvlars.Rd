@@ -22,4 +22,3 @@ plot(result)
 \author{
 Quentin Grimonprez
 }
-

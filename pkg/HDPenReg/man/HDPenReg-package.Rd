@@ -2,9 +2,9 @@
 % Please edit documentation in R/HDPenReg-package.R
 \docType{package}
 \name{HDPenReg-package}
-\alias{HDPenReg}
 \alias{HDPenReg-package}
 \alias{HDPenReg-package,}
+\alias{HDPenReg}
 \title{Algorithms for lasso and fused-lasso problems.}
 \description{
 This package contains algorithms for lasso and fused-lasso problems.
@@ -15,8 +15,8 @@ for the lasso and fusion penalization and EM-based algorithms for (logistic) las
 \tabular{ll}{
 Package: \tab HDPenReg\cr
 Type: \tab Package\cr
-Version: \tab 0.93.1\cr
-Date: \tab 2016-01-26\cr
+Version: \tab 0.93.2\cr
+Date: \tab 2018-01-16\cr
 License: \tab GPL (>=2) \cr
 }
 
@@ -30,11 +30,10 @@ The main function is \link{HDlars}.
  
  
 }
-\author{
-Maintainer: Quentin Grimonprez <quentin.grimonprez@inria.fr>
-}
 \seealso{
 \code{\link{HDlars}} \code{\link{HDcvlars}}
 }
+\author{
+Maintainer: Quentin Grimonprez <quentin.grimonprez@inria.fr>
+}
 \keyword{package}
-

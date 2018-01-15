@@ -31,4 +31,3 @@ coeff=computeCoefficients(result,0.3,"fraction")
 \author{
 Quentin Grimonprez
 }
-

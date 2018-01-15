@@ -20,4 +20,3 @@ create a matrix with all estimated coefficients from the output of \code{\link{H
 \seealso{
 \code{\link{HDlars}} \code{\link{EMlasso}}
 }
-

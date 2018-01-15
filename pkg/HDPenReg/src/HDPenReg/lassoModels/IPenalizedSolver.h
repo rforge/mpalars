@@ -210,15 +210,14 @@ namespace HD
        STK::VectorX currentBeta_;
        /// current set of variable
        STK::VectorXi currentSet_;
-
        /// pointer on beta_
        STK::VectorX* p_beta_;
-       ///threshold under we consider a beta equal to 0
-       STK::Real threshold_;
        /// pointer on the data
        STK::ArrayXX const* p_x_;
        /// pointer on the response
        STK::VectorX const* p_y_;
+       ///threshold under we consider a beta equal to 0
+       STK::Real threshold_;
    };
 }
 

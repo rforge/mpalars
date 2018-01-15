@@ -48,10 +48,9 @@ result=EMlasso(dataset$data,dataset$response)
 # Obtain estimated coefficient in matrix format
 coefficient = listToMatrix(result)
 }
-\author{
-Quentin Grimonprez, Serge Iovleff
-}
 \seealso{
 \code{\link{EMcvlasso}}
 }
-
+\author{
+Quentin Grimonprez, Serge Iovleff
+}

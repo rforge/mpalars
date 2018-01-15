@@ -2,8 +2,8 @@
 % Please edit documentation in R/LarsPath.R
 \docType{methods}
 \name{plot-methods}
-\alias{plot,LarsPath-method}
 \alias{plot-methods}
+\alias{plot,LarsPath-method}
 \title{plot methods for LarsPath object}
 \usage{
 \S4method{plot}{LarsPath}(x, sep.line = FALSE, abscissa = c("l1norm",
@@ -26,4 +26,3 @@ plot the path of the lars algorithm.
 \seealso{
 \code{\link{HDlars}} \code{\link{LarsPath}}
 }
-

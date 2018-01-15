@@ -53,7 +53,7 @@ namespace HD
   {
     public:
       /**default constructor*/
-      CVLasso() : CV(){};
+      CVLasso() : CV(), eps_(1e-5), threshold_(1e-8), epsCG_(1e-8), maxStep_(1000), burn_(30), p_typeMeasure_(0){};
 
       /**initialize containers and class*/
       void initialize() {initializeCV();};
@@ -88,7 +88,7 @@ namespace HD
 #endif
         STK::VectorX yPred(sizePartition_[i]);
         //create em algorithm
-        EM algo(maxStep_,burn_,eps_);
+        EM algo(maxStep_, burn_, eps_);
         //create model
         LassoModel lasso(p_XControl, p_yControl, index_[0], threshold_, epsCG_);
         //run the lasso on all value of index

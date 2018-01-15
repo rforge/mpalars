@@ -56,8 +56,8 @@ namespace HD
                                                     , segment_(p_x_->cols())
                                                     , nbActiveVariables_(p_x_->sizeCols())
                                                     , eps_(threshold)
-                                                    , mult_(), cgsolver_(), cginit_()
                                                     , p_penalty_(p_penalty)
+                                                    , mult_(), cgsolver_(), cginit_()
   {
 #ifdef HD_DEBUG
     std::cout << "Entering LogisiticFusedLassoSolver::LogisticFusedLassoSolver()\n";

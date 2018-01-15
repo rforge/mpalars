@@ -37,13 +37,12 @@ result=HDlars(dataset$data,dataset$response)
 coefficient = listToMatrix(result)
 
 }
-\author{
-Quentin Grimonprez
-}
 \references{
 Efron, Hastie, Johnstone and Tibshirani (2003) "Least Angle Regression" (with discussion) Annals of Statistics
 }
 \seealso{
 \code{\link{LarsPath}} \code{\link{HDcvlars}} \code{\link{listToMatrix}}
 }
-
+\author{
+Quentin Grimonprez
+}

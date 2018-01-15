@@ -25,4 +25,3 @@ coefficient=coeff(result,result@nbStep) #get the coefficients
 \seealso{
 \code{\link{HDlars}}  \code{\link{HDfusion}} \code{\link{LarsPath}}
 }
-

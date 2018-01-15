@@ -80,8 +80,8 @@ namespace HD
           // we stop the burning after convergence of the completed log-likelihood
           // or after reaching the maximal number of burning step
           runBurn(model, burn_);
-          int div =0;
-          while (step_<maxStep_ && div < 2)
+          int div = 0;
+          while (step_ < maxStep_ && div < 2)
           {
             step_++;
             model->eStep(true);
@@ -147,7 +147,7 @@ namespace HD
         // we stop the burning after convergence of the completed log-likelihood
         // or after reaching the maximal number of burning step
         // or in case of divergence
-        int step=0, div =0;
+        int step = 0, div = 0;
         STK::Real diff;
         while (step < burn)
         {

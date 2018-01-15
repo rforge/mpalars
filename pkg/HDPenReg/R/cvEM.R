@@ -22,11 +22,11 @@
 #'   \item{lambda.optimal}{Value of \code{lambda} for which the cv criterion is minimal.}
 #' }
 #' @examples 
-#' dataset=simul(50,100,0.4,1,10,matrix(c(0.1,0.8,0.02,0.02),nrow=2))
-#' result=EMcvlasso(dataset$data,dataset$response,5:1,5,intercept=FALSE)
+#' dataset <- simul(50, 100, 0.4, 1, 10, matrix(c(0.1,0.8,0.02,0.02),nrow=2))
+#' result <- EMcvlasso(X = dataset$data, y = dataset$response, lambda = 5:1, nbFolds = 5,intercept = FALSE)
 #' @export
 #' 
-EMcvlasso <- function(X , y, lambda=NULL, nbFolds=10, maxSteps=1000, intercept=TRUE, model=c("linear", "logistic"), burn=30, threshold=1.e-08, eps=1e-5, epsCG=1e-8)
+EMcvlasso <- function(X , y, lambda = NULL, nbFolds = 10, maxSteps = 1000, intercept = TRUE, model = c("linear", "logistic"), burn = 30, threshold = 1.e-08, eps = 1e-5, epsCG = 1e-8)
 {
   #check arguments
   if(missing(X))
@@ -77,11 +77,11 @@ EMcvlasso <- function(X , y, lambda=NULL, nbFolds=10, maxSteps=1000, intercept=T
   }
   
   # call cv for lasso
-  val=list()
-  if(model=="linear")
-    val=.Call( "cvEMlasso",X,y,lambda,nbFolds,intercept,maxSteps,burn,threshold,eps,epsCG,PACKAGE = "HDPenReg")
+  val <- list()
+  if(model == "linear")
+    val = .Call("cvEMlasso",X, y, lambda, nbFolds, intercept, maxSteps, burn, threshold, eps, epsCG, PACKAGE = "HDPenReg")
   else
-    val=.Call( "cvEMlogisticLasso",X,y,lambda,nbFolds,intercept,maxSteps,burn,threshold,eps,epsCG,PACKAGE = "HDPenReg")
+    val = .Call("cvEMlogisticLasso",X, y, lambda, nbFolds, intercept, maxSteps, burn, threshold, eps, epsCG, PACKAGE = "HDPenReg")
   
   #create the output object
   #cv=list(cv=val$cv,cvError=val$cvError,minCv=min(val$cv),lambda.optim=val$lambdaMin,fraction=index[which.min(val$cv)],lambda=val$lambda,maxSteps=maxSteps)
@@ -118,11 +118,11 @@ EMcvlasso <- function(X , y, lambda=NULL, nbFolds=10, maxSteps=1000, intercept=T
 #'   \item{lambda.optimal}{Value of (lambda1,lambda2) for which the cv criterion is minimal.}
 #' }
 #' @examples 
-#' dataset=simul(50,100,0.4,1,10,matrix(c(0.1,0.8,0.02,0.02),nrow=2))
-#' result=EMcvfusedlasso(dataset$data,dataset$response,3:1,3:1,5,intercept=FALSE)
+#' dataset <- simul(50, 100, 0.4, 1, 10, matrix(c(0.1,0.8,0.02,0.02),nrow=2))
+#' result <- EMcvfusedlasso(X = dataset$data, y = dataset$response, lambda1 = 3:1, lambda2 = 3:1, nbFolds = 5,intercept = FALSE)
 #' @export
 #' 
-EMcvfusedlasso <- function(X, y, lambda1, lambda2, nbFolds=10, maxSteps=1000, burn=50, intercept=TRUE, model=c("linear", "logistic"), eps=1e-5, eps0=1e-8, epsCG=1e-8)
+EMcvfusedlasso <- function(X, y, lambda1, lambda2, nbFolds = 10, maxSteps = 1000, burn = 50, intercept = TRUE, model = c("linear", "logistic"), eps = 1e-5, eps0 = 1e-8, epsCG = 1e-8)
 {
   #check arguments
   if(missing(X))

@@ -28,4 +28,3 @@ plotCoefficient(result,result@nbStep) #plot coefficients at the last step
 \seealso{
 \code{\link{HDlars}} \code{\link{LarsPath}}
 }
-

@@ -32,4 +32,3 @@ y=predict(result,dataset$data[41:50,],0.3,"fraction")
 \author{
 Quentin Grimonprez
 }
-

@@ -2,8 +2,8 @@
 % Please edit documentation in R/LarsPath.R
 \docType{class}
 \name{LarsPath-class}
-\alias{LarsPath}
 \alias{LarsPath-class}
+\alias{LarsPath}
 \title{Constructor of LarsPath class}
 \description{
 This class stores the results of lars and fusion algorithms.
@@ -28,4 +28,3 @@ This class stores the results of lars and fusion algorithms.
 \seealso{
 \code{\link{HDlars}}
 }
-

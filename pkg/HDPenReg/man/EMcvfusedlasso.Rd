@@ -48,10 +48,9 @@ A list containing
 cross validation function for \code{\link{EMfusedlasso}}.
 }
 \examples{
-dataset=simul(50,100,0.4,1,10,matrix(c(0.1,0.8,0.02,0.02),nrow=2))
-result=EMcvfusedlasso(dataset$data,dataset$response,3:1,3:1,5,intercept=FALSE)
+dataset <- simul(50, 100, 0.4, 1, 10, matrix(c(0.1,0.8,0.02,0.02),nrow=2))
+result <- EMcvfusedlasso(X = dataset$data, y = dataset$response, lambda1 = 3:1, lambda2 = 3:1, nbFolds = 5,intercept = FALSE)
 }
 \author{
 Quentin Grimonprez, Serge Iovleff
 }
-

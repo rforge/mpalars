@@ -49,4 +49,3 @@ result=HDcvlars(dataset$data,dataset$response,5)
 \author{
 Quentin Grimonprez
 }
-
