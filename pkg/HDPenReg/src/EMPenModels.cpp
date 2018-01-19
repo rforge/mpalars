@@ -4,7 +4,7 @@
 using namespace Rcpp;
 
 // lasso and logistic lasso
-RcppExport SEXP EMlasso( SEXP data, SEXP response
+RcppExport SEXP EMlassoC( SEXP data, SEXP response
                        , SEXP lambda, SEXP intercept
                        , SEXP maxStep, SEXP burn
                        , SEXP threshold, SEXP eps, SEXP epsCG)
@@ -111,4 +111,17 @@ RcppExport SEXP cvEMlogisticFusedLasso1D( SEXP data, SEXP response
 omp_set_num_threads(2);
 #endif
   return cvEMlogisticFusedLasso1DMain( data,  response,  lambda1,  lambda2,  optimL1,  nbFolds,  intercept,  maxStep,  burn,  threshold,  eps,  epsCG);
+}
+
+//
+RcppExport SEXP cvEMlogisticFusedLasso2D( SEXP data, SEXP response
+                                            , SEXP lambda1, SEXP lambda2
+                                            , SEXP nbFolds
+                                            , SEXP intercept
+                                            , SEXP maxStep, SEXP burn, SEXP threshold, SEXP eps, SEXP epsCG)
+{
+#ifdef _OPENMP
+  omp_set_num_threads(2);
+#endif
+  return cvEMlogisticFusedLasso2DMain(data,  response,  lambda1,  lambda2,  nbFolds,  intercept,  maxStep,  burn,  threshold,  eps,  epsCG);
 }

@@ -213,7 +213,7 @@ EMcvfusedlasso <- function(X, y, lambda1, lambda2, nbFolds = 10, maxSteps = 1000
         if(model=="linear")
           val=.Call( "cvEMfusedLasso2D",X,y,lambda1,lambda2,nbFolds,intercept,maxSteps,burn,eps0,eps,epsCG,PACKAGE = "HDPenReg" )
         else
-          val=.Call( "cvEMLogisticFusedLasso2D",X,y,lambda1,lambda2,nbFolds,intercept,maxSteps,burn,eps0,eps,epsCG,PACKAGE = "HDPenReg" )
+          val=.Call( "cvEMlogisticFusedLasso2D",X,y,lambda1,lambda2,nbFolds,intercept,maxSteps,burn,eps0,eps,epsCG,PACKAGE = "HDPenReg" )
         val$lambda1=lambda1
         val$lambda2=lambda2            
       }

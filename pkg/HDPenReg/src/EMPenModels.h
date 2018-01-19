@@ -61,22 +61,12 @@ RcppExport SEXP cvEMlogisticFusedLasso1DMain( SEXP data, SEXP response
                                             , SEXP optimL1, SEXP nbFolds
                                             , SEXP intercept, SEXP maxStep, SEXP burn, SEXP threshold, SEXP eps, SEXP epsCG);
 
-RcppExport SEXP cvEMLogisticFusedLasso2DMain( SEXP data, SEXP response
-                                            , SEXP lambda1, SEXP lambda2
-                                            , SEXP nbFolds
-                                            , SEXP intercept, SEXP maxStep, SEXP burn, SEXP threshold, SEXP eps, SEXP epsCG);
+RcppExport SEXP cvEMlogisticFusedLasso2DMain( SEXP data, SEXP response
+                                                , SEXP lambda1, SEXP lambda2
+                                                , SEXP nbFolds
+                                                , SEXP intercept
+                                                , SEXP maxStep, SEXP burn, SEXP threshold, SEXP eps, SEXP epsCG);
 
-RcppExport SEXP cvEMlogisticLassoMain( SEXP data, SEXP response
-                                     , SEXP lambda, SEXP nbFolds
-                                     , SEXP intercept, SEXP maxStep
-                                     , SEXP burn, SEXP threshold
-                                     , SEXP eps, SEXP epsCG);
 
-RcppExport SEXP cvEMlogisticFusedLasso1DMain( SEXP data, SEXP response
-                                            , SEXP lambda1, SEXP lambda2
-                                            , SEXP optimL1, SEXP nbFolds
-                                            , SEXP intercept, SEXP maxStep
-                                            , SEXP burn, SEXP threshold
-                                            , SEXP eps, SEXP epsCG);
 
 #endif

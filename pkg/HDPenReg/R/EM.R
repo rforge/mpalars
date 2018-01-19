@@ -75,7 +75,7 @@ EMlasso <- function(X, y, lambda, maxSteps=1000, intercept=TRUE, model=c("linear
   # call em algorithm
   val=list()
   if(model=="linear")
-    val=.Call("EMlasso",X,y,lambda,intercept,maxSteps,burn,threshold,eps,epsCG,PACKAGE = "HDPenReg")
+    val=.Call("EMlassoC",X,y,lambda,intercept,maxSteps,burn,threshold,eps,epsCG,PACKAGE = "HDPenReg")
   else
     val=.Call("EMlogisticLasso",X,y,lambda,intercept,maxSteps,burn,threshold,eps,epsCG,PACKAGE = "HDPenReg")
   

@@ -1,4 +1,4 @@
-#' @useDynLib HDPenReg
+#' @useDynLib HDPenReg, .registration = TRUE
 #' @import rtkore
 #' @import methods
 #' @import Matrix
@@ -19,7 +19,7 @@
 #' Package: \tab HDPenReg\cr
 #' Type: \tab Package\cr
 #' Version: \tab 0.93.2\cr
-#' Date: \tab 2018-01-16\cr
+#' Date: \tab 2018-01-19\cr
 #' License: \tab GPL (>=2) \cr
 #' }
 #' 
@@ -29,11 +29,11 @@
 #' @author Maintainer: Quentin Grimonprez <quentin.grimonprez@@inria.fr>
 #' 
 #' @examples 
+#' \dontrun{
 #' #see vignette
-#' #vignette("HDPenReg")
+#' vignette("HDPenReg")
+#' }
 #' 
-#'  
-#'  
 #'  
 #' @seealso \code{\link{HDlars}} \code{\link{HDcvlars}}
 #'  

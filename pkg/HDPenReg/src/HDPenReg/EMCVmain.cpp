@@ -415,7 +415,7 @@ RcppExport SEXP cvEMlogisticFusedLasso1DMain( SEXP data, SEXP response
                      );
 }
 
-RcppExport SEXP cvEMLogisticFusedLasso2DMain( SEXP data, SEXP response
+RcppExport SEXP cvEMlogisticFusedLasso2DMain( SEXP data, SEXP response
                                             , SEXP lambda1, SEXP lambda2
                                             , SEXP nbFolds
                                             , SEXP intercept

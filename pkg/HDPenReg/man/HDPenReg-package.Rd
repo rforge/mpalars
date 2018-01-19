@@ -16,18 +16,18 @@ for the lasso and fusion penalization and EM-based algorithms for (logistic) las
 Package: \tab HDPenReg\cr
 Type: \tab Package\cr
 Version: \tab 0.93.2\cr
-Date: \tab 2018-01-16\cr
+Date: \tab 2018-01-19\cr
 License: \tab GPL (>=2) \cr
 }
 
 The main function is \link{HDlars}.
 }
 \examples{
+\dontrun{
 #see vignette
-#vignette("HDPenReg")
+vignette("HDPenReg")
+}
 
- 
- 
  
 }
 \seealso{
