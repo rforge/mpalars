@@ -11,10 +11,10 @@
 #
 tumorboost<-function(dataSetName,normalTumorArray,plot=TRUE)
 {
-  require(aroma.cn)
-  require(aroma.core)
-  require(R.devices)
-  require(R.filesets)
+  requireNamespace("aroma.cn")
+  requireNamespace("aroma.core")
+  requireNamespace("R.devices")
+  requireNamespace("R.filesets")
   
   log <- verbose <- Arguments$getVerbose(-1, timestamp=TRUE);
   rootPath <- "totalAndFracBData";
@@ -157,11 +157,11 @@ tumorboost<-function(dataSetName,normalTumorArray,plot=TRUE)
 #
 tumorboostPlot=function(ds,dsList,dataSetName,normalTumorArray,tumorSample,normalSample,dsC,normalTumorMatrixC)
 {
-  require(aroma.affymetrix)
-  require(aroma.core)
-  require(R.filesets)
-  require(R.methodsS3)
-  require(R.oo)
+  requireNamespace("aroma.affymetrix")
+  requireNamespace("aroma.core")
+  requireNamespace("R.filesets")
+  requireNamespace("R.methodsS3")
+  requireNamespace("R.oo")
   
   ########## load the total copy number signal for a pair (normal,tumor) 
   pairC <- normalTumorMatrixC[normalTumorMatrixC[,2]==tumorSample,]
@@ -199,7 +199,7 @@ tumorboostPlot=function(ds,dsList,dataSetName,normalTumorArray,tumorSample,norma
   platform <- aroma.core::getPlatform(ugp);
   if (platform == "Affymetrix") 
   {
-    require("aroma.affymetrix") || R.methodsS3::throw("Package not loaded: aroma.affymetrix");
+    requireNamespace("aroma.affymetrix") || R.methodsS3::throw("Package not loaded: aroma.affymetrix");
     snpPattern <- "^SNP|^S-";
   } 
   else if (platform == "Illumina") 

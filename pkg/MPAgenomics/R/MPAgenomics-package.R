@@ -1,4 +1,4 @@
-#' @import R.utils changepoint glmnet cghseg HDPenReg spikeslab
+#' @import R.utils changepoint glmnet HDPenReg spikeslab devtools
 #' @importFrom graphics axis lines par points
 #' @importFrom stats lm mad median optim sd var
 #' @importFrom utils head read.csv write.table
@@ -19,8 +19,8 @@
 #'   \tabular{ll}{
 #' Package: \tab MPAgenomics\cr
 #' Type: \tab Package\cr
-#' Version: \tab 1.1.4\cr
-#' Date: \tab 2015-09-09\cr
+#' Version: \tab 1.1.5\cr
+#' Date: \tab 2018-08-20\cr
 #' License: \tab GPL (>=2) \cr
 #' }
 #' 
@@ -28,7 +28,7 @@
 #' 
 #' @author Quentin Grimonprez with contributions from Guillemette Marot and Samuel Blanck
 #'
-#' Maintainer: Samuel Blanck <samuel.blanck@@inria.fr>
+#' Maintainer: Samuel Blanck <samuel.blanck@@univ-lille.fr>
 #'  
 #' 
 #'@examples \donttest{

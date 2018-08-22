@@ -44,7 +44,7 @@ markerSelection=function(dataSetName,dataResponse,chromosome=1:22,signal=c("CN",
   pkg <- match.arg(pkg)
   
   allpkg=TRUE
-  if(!suppressPackageStartupMessages(require("aroma.affymetrix", quietly=TRUE) ) )
+  if(!suppressPackageStartupMessages(requireNamespace("aroma.affymetrix", quietly=TRUE) ) )
   {
     cat("Package not found: aroma.affymetrix. For download it:\n")
     cat("source(\"http://www.braju.com/R/hbLite.R\")\n")
@@ -59,7 +59,7 @@ markerSelection=function(dataSetName,dataResponse,chromosome=1:22,signal=c("CN",
   }
   
   
-  if(!suppressPackageStartupMessages(require("aroma.cn", quietly=TRUE) ) )
+  if(!suppressPackageStartupMessages(requireNamespace("aroma.cn", quietly=TRUE) ) )
   {
     cat("Package not found: aroma.cn. For download it:\n")
     cat("install.packages(\"aroma.cn\")\n") 

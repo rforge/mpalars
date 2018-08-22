@@ -241,7 +241,7 @@ CGHcall <- function(inputSegmented, prior="auto", nclass=5, organism="human",cel
     
     gc()
     if(ncpus>1){
-            trysnow <- try(library(snowfall))  
+            trysnow <- try(requireNamespace("snowfall"))  
             if(class(trysnow)=="try-error") {
             print("You should install 'snowfall' if you want to use parallel computing...")
             print("Escaping to slower computation on 1 cpu")

@@ -30,7 +30,7 @@
 getGenotypeCalls=function(dataSetName,chromosome,listOfFiles=NULL,verbose=TRUE)
 {
   allpkg=TRUE
-  if(!suppressPackageStartupMessages(require("aroma.affymetrix", quietly=TRUE) ) )
+  if(!suppressPackageStartupMessages(requireNamespace("aroma.affymetrix", quietly=TRUE) ) )
   {
     cat("Package not found: aroma.affymetrix. For download it:\n")
     cat("source(\"http://www.braju.com/R/hbLite.R\")\n")
@@ -46,7 +46,7 @@ getGenotypeCalls=function(dataSetName,chromosome,listOfFiles=NULL,verbose=TRUE)
   #   else
   #     cat("Package aroma.affymetrix loaded.\n")
   
-  if(!suppressPackageStartupMessages(require("aroma.cn", quietly=TRUE) ) )
+  if(!suppressPackageStartupMessages(requireNamespace("aroma.cn", quietly=TRUE) ) )
   {
     cat("Package not found: aroma.cn. For download it:\n")
     cat("install.packages(\"aroma.cn\")\n") 
@@ -59,9 +59,9 @@ getGenotypeCalls=function(dataSetName,chromosome,listOfFiles=NULL,verbose=TRUE)
   if(!allpkg)
     stop("You have to install some packages : Follow the printed informations.")
   
-  require(aroma.core)
-  require(R.filesets)
-  require(R.methodsS3)
+  requireNamespace("aroma.core")
+  requireNamespace("R.filesets")
+  requireNamespace("R.methodsS3")
   
   if(!("callData"%in%list.files()))
     stop("There is no \"totalAndFracBData\", check if you are in the good working directory or if you have run the signalPreProcess function before.")
@@ -151,7 +151,7 @@ getGenotypeCalls=function(dataSetName,chromosome,listOfFiles=NULL,verbose=TRUE)
   
   if (platform == "Affymetrix") 
   {
-    require("aroma.affymetrix") || R.methodsS3::throw("Package not loaded: aroma.affymetrix");
+    requireNamespace("aroma.affymetrix") || R.methodsS3::throw("Package not loaded: aroma.affymetrix");
     snpPattern <- "^SNP|^S-";
   } 
   else if (platform == "Illumina") 

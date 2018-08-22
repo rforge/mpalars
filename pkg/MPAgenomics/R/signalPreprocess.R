@@ -34,7 +34,7 @@
 SignalNormalization<-function(dataFolder,chipType,normalTumorArray,genotypeCallsMethod="naive",savePlot=TRUE, tags=NULL)
 {
   allpkg=TRUE
-  if(!suppressPackageStartupMessages(require("aroma.affymetrix", quietly=TRUE) ) )
+  if(!suppressPackageStartupMessages(requireNamespace("aroma.affymetrix", quietly=TRUE) ) )
   {
     cat("Package not found: aroma.affymetrix. For download it:\n")
     cat("source(\"http://www.braju.com/R/hbLite.R\")\n")
@@ -50,7 +50,7 @@ SignalNormalization<-function(dataFolder,chipType,normalTumorArray,genotypeCalls
 #   else
 #     cat("Package aroma.affymetrix loaded.\n")
 
-  if(!suppressPackageStartupMessages(require("aroma.cn", quietly=TRUE) ) )
+  if(!suppressPackageStartupMessages(requireNamespace("aroma.cn", quietly=TRUE) ) )
   {
     cat("Package not found: aroma.cn. For download it:\n")
     cat("install.packages(\"aroma.cn\")\n") 
@@ -209,7 +209,7 @@ signalPreProcess=function(dataSetName, chipType, normalTumorArray, dataSetPath, 
 {
 
   allpkg=TRUE
-  if(!require("aroma.affymetrix", quietly=TRUE) )
+  if(!requireNamespace("aroma.affymetrix", quietly=TRUE) )
   {
     cat("Package not found: aroma.affymetrix. For download it:\n")
     cat("source(\"http://www.braju.com/R/hbLite.R\")\n")
@@ -223,7 +223,7 @@ signalPreProcess=function(dataSetName, chipType, normalTumorArray, dataSetPath, 
     allpkg=FALSE
   }
     
-  if(!require("aroma.cn", quietly=TRUE) )
+  if(!requireNamespace("aroma.cn", quietly=TRUE) )
   {
     cat("Package not found: aroma.cn. For download it:\n")
     cat("hbInstall(\"aroma.cn\")\n") 

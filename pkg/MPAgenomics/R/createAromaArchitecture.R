@@ -192,7 +192,7 @@ copyChipFiles=function(pathToChipFiles,chipName,path,verbose)
 #@author Quentin Grimonprez
 .checkChipType=function(chipType,tag,path)
 {
-  if(!suppressPackageStartupMessages(require("aroma.affymetrix", quietly=TRUE) ) )
+  if(!suppressPackageStartupMessages(requireNamespace("aroma.affymetrix", quietly=TRUE) ) )
   {
     cat("Package not found: aroma.affymetrix. For download it:\n")
     cat("source(\"http://www.braju.com/R/hbLite.R\")\n")
@@ -206,7 +206,7 @@ copyChipFiles=function(pathToChipFiles,chipName,path,verbose)
     allpkg=FALSE
   }
   
-  require(aroma.core)
+  requireNamespace("aroma.core")
   
   actualPath=getwd()
   setwd(path)
@@ -293,7 +293,7 @@ copyChipFiles=function(pathToChipFiles,chipName,path,verbose)
 #' @export
 createArchitecture=function(dataSetName,chipType,dataSetPath,chipFilesPath,path=".",verbose=FALSE, tags=NULL)
 {
-  if(!suppressPackageStartupMessages(require("aroma.affymetrix", quietly=TRUE) ) )
+  if(!suppressPackageStartupMessages(requireNamespace("aroma.affymetrix", quietly=TRUE) ) )
   {
     cat("Package not found: aroma.affymetrix. For download it:\n")
     cat("source(\"http://www.braju.com/R/hbLite.R\")\n")

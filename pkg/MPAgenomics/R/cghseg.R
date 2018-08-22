@@ -93,6 +93,18 @@ bestSegmentation <- function(lambdaList,resCGHSeg,n)
 # 
 cghseg=function(signal,Kmax=10,position=NULL,plot=TRUE,verbose=TRUE)
 {
+  
+  allpkg=TRUE
+  if(!suppressPackageStartupMessages(requireNamespace("cghseg", quietly=TRUE) ) )
+  {
+    cat("Package not found: cghseg. To install it:\n")
+    cat("install.packages(\"https://cran.r-project.org/src/contrib/Archive/cghseg/cghseg_1.0.2-1.tar.gz\", repos=NULL, type=\"source\")\n")
+    allpkg=FALSE
+  }
+  
+  if(!allpkg)
+    stop("You have to install some packages : Follow the printed informations.")
+  
   #signal
   if(missing(signal))
     stop("signal is missing.") 
@@ -204,9 +216,9 @@ cghseg=function(signal,Kmax=10,position=NULL,plot=TRUE,verbose=TRUE)
 # 
 CGHSEGaroma=function(dataSetName,normalTumorArray,chromosome=1:22,Kmax=10,listOfFiles=NULL,onlySNP=TRUE,savePlot=TRUE,verbose=TRUE)
 {
-  require(R.devices)
+  requireNamespace("R.devices")
   allpkg=TRUE
-  if(!suppressPackageStartupMessages(require("aroma.affymetrix", quietly=TRUE) ) )
+  if(!suppressPackageStartupMessages(requireNamespace("aroma.affymetrix", quietly=TRUE) ) )
   {
     cat("Package not found: aroma.affymetrix. For download it:\n")
     cat("source(\"http://www.braju.com/R/hbLite.R\")\n")
@@ -221,7 +233,7 @@ CGHSEGaroma=function(dataSetName,normalTumorArray,chromosome=1:22,Kmax=10,listOf
   }
 
   
-  if(!suppressPackageStartupMessages(require("aroma.cn", quietly=TRUE) ) )
+  if(!suppressPackageStartupMessages(requireNamespace("aroma.cn", quietly=TRUE) ) )
   {
     cat("Package not found: aroma.cn. For download it:\n")
     cat("install.packages(\"aroma.cn\")\n") 
@@ -231,8 +243,8 @@ CGHSEGaroma=function(dataSetName,normalTumorArray,chromosome=1:22,Kmax=10,listOf
   if(!allpkg)
     stop("You have to install some packages : Follow the printed informations.")
   
-  require(aroma.core)
-  require(R.filesets)
+  requireNamespace("aroma.core")
+  requireNamespace("R.filesets")
   
   if(!("totalAndFracBData"%in%list.files()))
     stop("There is no \"totalAndFracBData\", check if you are in the good working directory or if you have run the signalPreProcess function before.")
@@ -450,7 +462,7 @@ CGHSEGaroma=function(dataSetName,normalTumorArray,chromosome=1:22,Kmax=10,listOf
 #' 
 #' @author Quentin Grimonprez
 #' 
-segmentation=function(signal,method=c("cghseg","PELT"),Rho=NULL,Kmax=10,position=NULL,plot=TRUE,verbose=TRUE)
+segmentation=function(signal,method=c("PELT","cghseg"),Rho=NULL,Kmax=10,position=NULL,plot=TRUE,verbose=TRUE)
 {
   method <- match.arg(method)
   seg=switch(method,
@@ -493,7 +505,7 @@ segmentation=function(signal,method=c("cghseg","PELT"),Rho=NULL,Kmax=10,position
 #' 
 #' @author Quentin Grimonprez
 #' 
-segmentationAroma=function(dataSetName,normalTumorArray,chromosome=1:22,method=c("cghseg","PELT"),Kmax,Rho=NULL,listOfFiles=NULL,onlySNP=TRUE,savePlot=TRUE,verbose=TRUE)
+segmentationAroma=function(dataSetName,normalTumorArray,chromosome=1:22,method=c("PELT","cghseg"),Kmax,Rho=NULL,listOfFiles=NULL,onlySNP=TRUE,savePlot=TRUE,verbose=TRUE)
 {
   method <- match.arg(method)
   seg=switch(method,

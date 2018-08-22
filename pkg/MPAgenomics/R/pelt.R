@@ -157,7 +157,7 @@ PELTaroma=function(dataSetName,normalTumorArray,chromosome=1:22,Rho=NULL,listOfF
 {
   
   allpkg=TRUE
-  if(!suppressPackageStartupMessages(require("aroma.affymetrix", quietly=TRUE) ) )
+  if(!suppressPackageStartupMessages(requireNamespace("aroma.affymetrix", quietly=TRUE) ) )
   {
     cat("Package not found: aroma.affymetrix. For download it:\n")
     cat("source(\"http://www.braju.com/R/hbLite.R\")\n")
@@ -171,7 +171,7 @@ PELTaroma=function(dataSetName,normalTumorArray,chromosome=1:22,Rho=NULL,listOfF
     allpkg=FALSE
   }
   
-  if(!suppressPackageStartupMessages(require("aroma.cn", quietly=TRUE) ) )
+  if(!suppressPackageStartupMessages(requireNamespace("aroma.cn", quietly=TRUE) ) )
   {
     cat("Package not found: aroma.cn. For download it:\n")
     cat("install.packages(\"aroma.cn\")\n") 
@@ -182,9 +182,9 @@ PELTaroma=function(dataSetName,normalTumorArray,chromosome=1:22,Rho=NULL,listOfF
   if(!allpkg)
     stop("You have to install some packages : Follow the printed informations.")
   
-  require(aroma.core)
-  require(R.filesets)
-  require(R.devices)
+  requireNamespace("aroma.core")
+  requireNamespace("R.filesets")
+  requireNamespace("R.devices")
   
   if(!("totalAndFracBData"%in%list.files()))
     stop("There is no \"totalAndFracBData\", check if you are in the good working directory or if you have run the signalPreProcess function before.")

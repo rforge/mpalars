@@ -11,14 +11,14 @@
 #
 naiveGenotypeCalls<-function(dataSetName,normalTumorArray,singleArray,plot)
 {  
-  require(aroma.cn)
-  require(aroma.affymetrix)
-  require(aroma.core)
-  require(aroma.light)
-  require(R.filesets)
-  require(R.methodsS3)
-  require(R.oo)
-  require(matrixStats)
+  requireNamespace("aroma.cn")
+  requireNamespace("aroma.affymetrix")
+  requireNamespace("aroma.core")
+  requireNamespace("aroma.light")
+  requireNamespace("R.filesets")
+  requireNamespace("R.methodsS3")
+  requireNamespace("R.oo")
+  requireNamespace("matrixStats")
   
   ##Setup
   log <- verbose <- Arguments$getVerbose(-1, timestamp=TRUE);
@@ -239,11 +239,11 @@ naiveGenotypeCalls<-function(dataSetName,normalTumorArray,singleArray,plot)
 #
 SingleStudyPlot=function(dataFolder)
 { 
-  require(aroma.affymetrix)
-  require(aroma.core)
-  require(R.devices)
-  require(R.filesets)
-  require(R.methodsS3)
+  requireNamespace("aroma.affymetrix")
+  requireNamespace("aroma.core")
+  requireNamespace("R.devices")
+  requireNamespace("R.filesets")
+  requireNamespace("R.methodsS3")
   
   log <- verbose <- Arguments$getVerbose(-8, timestamp=TRUE);
   
@@ -278,7 +278,7 @@ SingleStudyPlot=function(dataFolder)
   platform <- aroma.core::getPlatform(ugp);
   if (platform == "Affymetrix") 
   {
-    require("aroma.affymetrix") || R.methodsS3::throw("Package not loaded: aroma.affymetrix");
+    requireNamespace("aroma.affymetrix") || R.methodsS3::throw("Package not loaded: aroma.affymetrix");
     snpPattern <- "^SNP|^S-";
   } 
   else if (platform == "Illumina") 

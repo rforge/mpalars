@@ -38,12 +38,12 @@
 #' 
 #' @author Quentin Grimonprez
 #' 
-cnSegCallingProcess=function(dataSetName,normalTumorArray,chromosome=1:22,method=c("cghseg","PELT"),Rho=NULL,Kmax=10,listOfFiles=NULL,onlySNP=TRUE,savePlot=TRUE,nclass=3,cellularity=1,...)
+cnSegCallingProcess=function(dataSetName,normalTumorArray,chromosome=1:22,method=c("PELT","cghseg"),Rho=NULL,Kmax=10,listOfFiles=NULL,onlySNP=TRUE,savePlot=TRUE,nclass=3,cellularity=1,...)
 {
-  require(R.devices)
+  requireNamespace("R.devices")
   method <- match.arg(method)
   allpkg=TRUE
-  if(!suppressPackageStartupMessages(require("aroma.affymetrix", quietly=TRUE) ) )
+  if(!suppressPackageStartupMessages(requireNamespace("aroma.affymetrix", quietly=TRUE) ) )
   {
     cat("Package not found: aroma.affymetrix. For download it:\n")
     cat("source(\"http://www.braju.com/R/hbLite.R\")\n")
@@ -59,7 +59,7 @@ cnSegCallingProcess=function(dataSetName,normalTumorArray,chromosome=1:22,method
   #   else
   #     cat("Package aroma.affymetrix loaded.\n")
   
-  if(!suppressPackageStartupMessages(require("aroma.cn", quietly=TRUE) ) )
+  if(!suppressPackageStartupMessages(requireNamespace("aroma.cn", quietly=TRUE) ) )
   {
     cat("Package not found: aroma.cn. For download it:\n")
     cat("install.packages(\"aroma.cn\")\n") 
@@ -70,8 +70,8 @@ cnSegCallingProcess=function(dataSetName,normalTumorArray,chromosome=1:22,method
   if(!allpkg)
     stop("You have to install some packages : Follow the printed informations.")
   
-  require(aroma.core)
-  require(R.filesets)
+  requireNamespace("aroma.core")
+  requireNamespace("R.filesets")
   
   if(!("totalAndFracBData"%in%list.files()))
     stop("There is no \"totalAndFracBData\", check if you are in the good working directory or if you have run the signalPreProcess function before.")

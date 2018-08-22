@@ -1,3 +1,7 @@
+Version 1.1.5 (22-08-2018)
+- Update maintener
+- cghseg is now optionnal
+
 Version 1.1.4 (09-09-2015)
 - Add importFrom in MPAgenomics-package.R to complete NAMESPACE file
 

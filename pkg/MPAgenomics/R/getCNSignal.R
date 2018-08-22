@@ -33,7 +33,7 @@
 getCopyNumberSignal=function(dataSetName,chromosome,normalTumorArray,onlySNP=FALSE,listOfFiles=NULL,verbose=TRUE)
 {
   allpkg=TRUE
-  if(!suppressPackageStartupMessages(require("aroma.affymetrix", quietly=TRUE) ) )
+  if(!suppressPackageStartupMessages(requireNamespace("aroma.affymetrix", quietly=TRUE) ) )
   {
     cat("Package not found: aroma.affymetrix. For download it:\n")
     cat("source(\"http://www.braju.com/R/hbLite.R\")\n")
@@ -47,7 +47,7 @@ getCopyNumberSignal=function(dataSetName,chromosome,normalTumorArray,onlySNP=FAL
     allpkg=FALSE
   }
   
-  if(!suppressPackageStartupMessages(require("aroma.cn", quietly=TRUE) ) )
+  if(!suppressPackageStartupMessages(requireNamespace("aroma.cn", quietly=TRUE) ) )
   {
     cat("Package not found: aroma.cn. For download it:\n")
     cat("install.packages(\"aroma.cn\")\n") 
@@ -58,9 +58,9 @@ getCopyNumberSignal=function(dataSetName,chromosome,normalTumorArray,onlySNP=FAL
   if(!allpkg)
     stop("You have to install some packages : Follow the printed informations.")
   
-  require(aroma.core)
-  require(R.filesets)
-  require(R.methodsS3)
+  requireNamespace("aroma.core")
+  requireNamespace("R.filesets")
+  requireNamespace("R.methodsS3")
   
   #TODO verifier comportement list.files() sur une autre machine
   list.files()
@@ -198,7 +198,7 @@ getCopyNumberSignal=function(dataSetName,chromosome,normalTumorArray,onlySNP=FAL
   platform <- aroma.core::getPlatform(ugp);
   if (platform == "Affymetrix") 
   {
-    require("aroma.affymetrix") || R.methodsS3::throw("Package not loaded: aroma.affymetrix");
+    requireNamespace("aroma.affymetrix") || R.methodsS3::throw("Package not loaded: aroma.affymetrix");
     snpPattern <- "^SNP|^S-";
   } 
   else if (platform == "Illumina") 
@@ -261,10 +261,10 @@ getCopyNumberSignal=function(dataSetName,chromosome,normalTumorArray,onlySNP=FAL
 # @author Quentin Grimonprez
 getCopyNumberSignalSingleStudy=function(dsC,units,chromosome,indexOfFiles,ugp)
 {    
-  require(aroma.affymetrix)
-  require(aroma.core)
-  require(R.filesets)
-  require(R.oo)
+  requireNamespace("aroma.affymetrix")
+  requireNamespace("aroma.core")
+  requireNamespace("R.filesets")
+  requireNamespace("R.oo")
   
   #compute the median
   ceR <- aroma.core::getAverageFile(dsC, verbose=0)
@@ -325,10 +325,10 @@ getCopyNumberSignalSingleStudy=function(dsC,units,chromosome,indexOfFiles,ugp)
 # @author Quentin Grimonprez
 getCopyNumberSignalPairedStudy=function(dsC,units,normalTumorArray,chromosome,normalFiles,ugp)
 {  
-  require(aroma.affymetrix)
-  require(aroma.core)
-  require(R.filesets)
-  require(R.oo)
+  requireNamespace("aroma.affymetrix")
+  requireNamespace("aroma.core")
+  requireNamespace("R.filesets")
+  requireNamespace("R.oo")
   
   #id of normal files
   normalId=sapply(normalFiles,FUN=function(x,names){which(names==x)},R.filesets::getNames(dsC))
@@ -392,9 +392,9 @@ getCopyNumberSignalPairedStudy=function(dsC,units,normalTumorArray,chromosome,no
 # @author Quentin Grimonprez
 findGender=function(dataSetName,indexFileToExtract,ugp)
 {
-  require(aroma.cn)
-  require(aroma.core)
-  require(R.filesets)
+  requireNamespace("aroma.cn")
+  requireNamespace("aroma.core")
+  requireNamespace("R.filesets")
   
   #path where find the data
   rootPath <- "totalAndFracBData";

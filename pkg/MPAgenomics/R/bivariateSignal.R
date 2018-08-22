@@ -61,7 +61,7 @@ HDlarsbivariate=function(CN,fracB,y,weightsCN=1/apply(CN,1,sd),weightsFracB=1/ap
 # normalTumorArrayINCA=read.csv("normalTumorArrayINCA.csv")
 # greffe=which(normalTumorArrayINCA$greffe==1)
 # na=which(is.na(normalTumorArrayINCA$greffe))
-# etrange=c(2,36)#66 semble greffé #7 CN étrange
+# etrange=c(2,36)#66 semble greffe #7 CN etrange
 # omit=union(union(na,greffe),etrange)
 # i=1
 # fracB=CN=sampleNames=c()

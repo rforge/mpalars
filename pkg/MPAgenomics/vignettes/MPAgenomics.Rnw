@@ -32,7 +32,7 @@
     For both types of analyses, a pre-processing step (section \ref{sec:norm}) is proposed as a wrapper of \texttt{aroma.*} packages \cite{aroma}\cite{affy}\cite{aromasite}. 
 		This enables to keep maximum information from the original profiles and improve the multi-patient analysis. In particular, this is useful to keep quantitative data for SNPs rather than usual genotype calls (AA, AB or BB) when these states are not relevant (eg in cancer studies where the number of copies differs from two copies). Note that the use of \texttt{aroma.*} packages \cite{aroma} implies that the pre-processing step is only available for Affymetrix DNA chips. The other functionalities of the package \texttt{MPAgenomics} can however be used independently and such procedures are explained in the sections which detail each step of the proposed analysis. 
     
-    Efficient segmentation is proposed by the \textsc{cghseg} segmentation \cite{cghseg}\cite{cghsegb} combined with the slope heuristic \cite{heurpente} to choose automatically the number of segments. \texttt{MPAgenomics} also suggests an automatic choice of the penalty parameter for the \textsc{Pelt} segmentation \cite{pelt} originally implemented in the \texttt{changepoint} package \cite{peltR}. \texttt{MPAgenomics} offers a pipeline to perform normalization, segmentation and calling at the same time.
+    \texttt{MPAgenomics} suggests an automatic choice of the penalty parameter for the \textsc{Pelt} segmentation \cite{pelt} originally implemented in the \texttt{changepoint} package \cite{peltR}. MPAgenomics also proprose Efficient segmentation with the \textsc{cghseg} segmentation \cite{cghseg}\cite{cghsegb} combined with the slope heuristic \cite{heurpente} to choose automatically the number of segments.\texttt{MPAgenomics} offers a pipeline to perform normalization, segmentation and calling at the same time.
     
     Selection of genomic markers relies on the use of penalized regularization techniques implemented in \texttt{glmnet} \cite{glmnet} and wrappers are offered to relate this package with the normalisation packages. For the users who would like to go further in the use of penalized regularization techniques, we also provide some guidelines to quickly build inputs for the \texttt{HDPenReg} package and interpret some outputs of this latter one.
 
@@ -84,7 +84,8 @@ vignette("MPAgenomics")
 	
 		
 		Since the package provides simple wrappers of many existing packages and all users are not interested by the same wrappers, we did not force \texttt{MPAgenomics} to depend on all the packages. We however recommend the user who would like to preprocess data to install \texttt{aroma} packages \cite{aroma} with the following commands:
-		
+	
+\begin{scriptsize}
 <<eval=FALSE>>=
 source("http://www.braju.com/R/hbLite.R")
 hbLite("sfit")
@@ -94,9 +95,9 @@ biocLite("DNAcopy")
 biocLite("aroma.light")
 install.packages("aroma.affymetrix")
 install.packages("aroma.cn")
+install.packages("https://cran.r-project.org/src/contrib/Archive/cghseg/cghseg_1.0.2-1.tar.gz", repos=NULL, type="source")
 @	
-	
-
+\end{scriptsize}
 
 		The installation of all these packages at the very beginning of the use of \texttt{MPAgenomics} is only for convenience, not mandatory. Indeed, the user who would have forgotten to install some packages would be reminded to install them when applying the corresponding wrapper.
 	
