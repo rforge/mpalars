@@ -1,3 +1,6 @@
+Version 1.1.6 (23-08-2018)
+- cghseg Namespace imported conditionally on its availability via requireNamespace
+
 Version 1.1.5 (22-08-2018)
 - Update maintener
 - cghseg is now optionnal

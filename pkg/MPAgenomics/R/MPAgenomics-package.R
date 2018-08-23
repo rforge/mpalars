@@ -19,8 +19,8 @@
 #'   \tabular{ll}{
 #' Package: \tab MPAgenomics\cr
 #' Type: \tab Package\cr
-#' Version: \tab 1.1.5\cr
-#' Date: \tab 2018-08-20\cr
+#' Version: \tab 1.1.6\cr
+#' Date: \tab 2018-08-23\cr
 #' License: \tab GPL (>=2) \cr
 #' }
 #' 
@@ -28,7 +28,7 @@
 #' 
 #' @author Quentin Grimonprez with contributions from Guillemette Marot and Samuel Blanck
 #'
-#' Maintainer: Samuel Blanck <samuel.blanck@@univ-lille.fr>
+#' Maintainer: Samuel Blanck <samuel.blanck@univ-lille.fr>
 #'  
 #' 
 #'@examples \donttest{

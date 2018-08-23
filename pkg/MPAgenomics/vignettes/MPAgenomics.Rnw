@@ -748,7 +748,7 @@ savePlot=TRUE,method="cghseg")
 				~ & the copy number profiles  will be segmented (default is all the files).\\
 				\texttt{savePlot} & if TRUE, graphics of the segmented CN signal will be\\
 				~~ & saved in the \texttt{figures/dataSetName/segmentation/CN} folder. (default=TRUE).\\
-				\texttt{method} & ``PELT'' or ``cghseg''. (default=``cghseg'').\\
+				\texttt{method} & ``PELT'' or ``cghseg''. (default=``PELT'').\\
 				\hline
 			\end{tabular}		
 		\end{center}
@@ -857,7 +857,7 @@ savePlot=TRUE,verbose=TRUE,method="cghseg")
 				\texttt{position} & A vector containing the position of all elements of the signal (not necessary).\\
 				\texttt{plot} & If TRUE, plot some graphics (default=TRUE	).\\
 				\texttt{verbose} & If TRUE, print some information (default=TRUE).\\
-        \texttt{method} & ``PELT'' or ``cghseg''. (default=``cghseg'').\\
+        \texttt{method} & ``PELT'' or ``cghseg''. (default=``PELT'').\\
 				\hline	
 			\end{tabular}		
 		\end{center}
@@ -994,7 +994,7 @@ seg$segment
 			~ &   4 (including amplifications), 5 (including double deletions) (default=3).\\
 			\texttt{cellularity} &  Percentage of tumor cells in the sample (default=1).\\
 			\texttt{\dots} & Other parameters for the CGHcall function \cite{CGHcallR}.\\
-      \texttt{method} & ``PELT'' or ``cghseg''. (default=``cghseg'').\\
+      \texttt{method} & ``PELT'' or ``cghseg''. (default=``PELT'').\\
 			\hline
 		\end{tabular}
 

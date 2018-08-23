@@ -94,17 +94,6 @@ bestSegmentation <- function(lambdaList,resCGHSeg,n)
 cghseg=function(signal,Kmax=10,position=NULL,plot=TRUE,verbose=TRUE)
 {
   
-  allpkg=TRUE
-  if(!suppressPackageStartupMessages(requireNamespace("cghseg", quietly=TRUE) ) )
-  {
-    cat("Package not found: cghseg. To install it:\n")
-    cat("install.packages(\"https://cran.r-project.org/src/contrib/Archive/cghseg/cghseg_1.0.2-1.tar.gz\", repos=NULL, type=\"source\")\n")
-    allpkg=FALSE
-  }
-  
-  if(!allpkg)
-    stop("You have to install some packages : Follow the printed informations.")
-  
   #signal
   if(missing(signal))
     stop("signal is missing.") 
@@ -140,10 +129,15 @@ cghseg=function(signal,Kmax=10,position=NULL,plot=TRUE,verbose=TRUE)
     return(NULL)
   }
   
-    
   #segmentation
-  segmentation=cghseg:::segmeanCO(signal, Kmax=Kmax)
-  
+  if(!suppressPackageStartupMessages(requireNamespace("cghseg", quietly=TRUE)))
+  {
+    cat("cghseg package not found. To install cghseg:\n")
+    cat("devtools::install.url('https://cran.r-project.org/src/contrib/Archive/cghseg/cghseg_1.0.2-1.tar.gz')\n")
+    stop("Error Loading cghseg package. Please follow the printed instructions to install cghseg or use PELT method")
+  } else {
+    segmentation=cghseg:::segmeanCO(signal, Kmax=Kmax)
+  }
   #find best segmentation
   #best=bestSegmentationBM(segmentation,length(signal))
   lambdalist=seq(var(signal)*10,0,length=1000)
