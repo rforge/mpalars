@@ -196,7 +196,7 @@ namespace HD
   void LogisticFusedLassoSolver::computeInitialBeta()
   {
     // compute initial value using OLS
-    STK::Vector Xty = currentX_.transpose() * z_;
+    STK::VectorX Xty = currentX_.transpose() * z_;
     InitLassoMultiplicator mult(p_x_, p_penalty_->lambda1());
     STK::CG<InitLassoMultiplicator,STK::VectorX,InitFunctor> cginitial(mult, Xty, 0, 1e-05);
     cginitial.run();
