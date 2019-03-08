@@ -36,9 +36,6 @@
 #ifndef PATH_H_
 #define PATH_H_
 
-#include "PathState.h"
-#include <vector>
-
 namespace HD
 {
 /**
@@ -68,9 +65,9 @@ namespace HD
       /**@return l1norm of state i*/
       inline STK::Real const l1norm(int i) const {return states_[i].l1norm();}
       /**@return l1norm*/
-      inline STK::Array2DVector<STK::Real> const l1norm() const
+      inline STK::VectorX const l1norm() const
       {
-        STK::Array2DVector<STK::Real> l1norm(states_.size());
+        STK::VectorX l1norm(states_.size());
         for(int i = 0; i < (int) states_.size(); i++)
           l1norm[i+1] = states_[i].l1norm();
         return l1norm;
@@ -112,7 +109,7 @@ namespace HD
        * @param idxVarAdd index of the new variable (0 if no new variable)
        * @param idxVarDrop index of the delete variable variable (0 if no delete variable)
        */
-      void addCoeff(STK::Array2DVector<int> const& indexVariables,STK::Array2DVector<STK::Real> const& coefficients,int idxVarAdd,int idxVarDrop);
+      void addCoeff(STK::VectorXi const& indexVariables,STK::VectorX const& coefficients,int idxVarAdd,int idxVarDrop);
 
       /**
        * update of the coefficients of the previous state with a new variable
@@ -120,14 +117,14 @@ namespace HD
        * @param gamma step of the update
        * @param addIdxVar index of the variable to add
        */
-      void addCaseUpdate(STK::Real gamma, STK::Array2DVector<STK::Real> const& w, std::vector<int> const& addIdxVar);
+      void addCaseUpdate(STK::Real gamma, STK::CVectorX const& w, std::vector<int> const& addIdxVar);
 
       /**
        * update of the coefficients of the previous step
        * @param w direction of the update
        * @param gamma step of the update
        */
-      void update(STK::Real gamma, STK::Array2DVector<STK::Real> const& w);
+      void update(STK::Real gamma, STK::CVectorX const& w);
 
       /**
        * update of the coefficients of the previous state with a variable to drop and a variable to add
@@ -137,7 +134,7 @@ namespace HD
        * @param dropIdxVar index of the delete variable
        * @param dropIdx index (in the vector of coefficients of the previous step) of the variable to delete
        */
-      void addWithDropCaseUpdate(STK::Real gamma, STK::Array2DVector<STK::Real> const& w, std::vector<int> const& addIdxVar, std::vector<int> const& dropIdxVar, std::vector<int> const& dropIdx);
+      void addWithDropCaseUpdate(STK::Real gamma, STK::CVectorX const& w, std::vector<int> const& addIdxVar, std::vector<int> const& dropIdxVar, std::vector<int> const& dropIdx);
 
       /**
        * update of the coefficients of the previous state with a variable to drop
@@ -146,7 +143,7 @@ namespace HD
        * @param dropIdxVar index of the delete variable
        * @param dropIdx index (in the vector of coefficients of the previous step) of the variable to delete
        */
-      void dropAfterDropCaseUpdate(STK::Real gamma, STK::Array2DVector<STK::Real> const& w, std::vector<int> const& dropIdxVar, std::vector<int> const& dropIdx);
+      void dropAfterDropCaseUpdate(STK::Real gamma, STK::CVectorX const& w, std::vector<int> const& dropIdxVar, std::vector<int> const& dropIdx);
 
       /**
        * transform the path from lars problem to fusion problem
@@ -160,6 +157,19 @@ namespace HD
        */
       void addLambda(STK::Real const& lambda);
 
+      /**
+       * Compute the coefficients for a given value of lambda
+       * @param state1 state of a lars step
+       * @param state2 state of the next lars step
+       * @param evolution difference between the 2 lars step
+       * @param lambda abscissa to compute ordinates
+       * @return value of coefficients for lambda
+       */
+      STK::Array1D< std::pair<int,STK::Real> > computeCoefficients( PathState const& state1
+                                                                  , PathState const& state2
+                                                                  , std::pair<std::vector<int>
+                                                                  , std::vector<int> > const& evolution
+                                                                  , STK::Real const& lambda) const;
 
     private:
       ///path solution

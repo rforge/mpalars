@@ -1,13 +1,12 @@
 #ifndef EMPENMODELS_H
 #define EMPENMODELS_H
 
-#include <RTKpp.h>
-
+#include <Rcpp.h>
 /*
  * note : RcppExport is an alias to `extern "C"` defined by Rcpp.
  *
- * It gives C calling convention to the rcpp_hello_world function so that 
- * it can be called from .Call in R. Otherwise, the C++ compiler mangles the 
+ * It gives C calling convention to the rcpp_hello_world function so that
+ * it can be called from .Call in R. Otherwise, the C++ compiler mangles the
  * name of the function and .Call can't find it.
  *
  * It is only useful to use RcppExport when the function is intended to be called

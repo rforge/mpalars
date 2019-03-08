@@ -423,9 +423,10 @@ plot(resfusion)
 		\begin{figure}[!h]
 			\begin{center}			
 << plotcoeff, echo=TRUE,fig=TRUE,width=16,height=8>>=
-plotCoefficient(resfusion,20)
+step = resfusion@nbStep
+plotCoefficient(resfusion,3)
 @			
-				\caption{$\hat{\beta}$ coefficients at the step 20.}
+				\caption{$\hat{\beta}$ coefficients at the step 3.}
 			\end{center}
 		\end{figure}
 		

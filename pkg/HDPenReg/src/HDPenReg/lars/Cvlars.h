@@ -36,9 +36,6 @@
 #ifndef CVLARS_H_
 #define CVLARS_H_
 
-#include "Lars.h"
-#include "functions.h"
-
 #ifdef _OPENMP
   #include <omp.h>
 #endif
@@ -55,35 +52,36 @@ namespace HD
        * Constructor with no index ( it will be a sequence from 0 to 1 by 0.01)
        * @param X matrix of data, a row=a individual
        * @param y response
-       * @param k number of folds
+       * @param nbFolds number of folds
        * @param maxSteps number of maximum step to do
        * @param intercept if true, there is an intercept in the model
        * @param eps epsilon (for 0)
        */
-      Cvlars(STK::CArrayXX const& X, STK::CVectorX const& y, int k, int maxSteps, bool intercept = true, STK::Real eps = STK::Arithmetic<STK::Real>::epsilon());
+      Cvlars(STK::CArrayXX const& X, STK::CVectorX const& y, int nbFolds, int maxSteps, bool intercept = true, STK::Real eps = STK::Arithmetic<STK::Real>::epsilon());
 
       /**
        * Constructor
        * @param X matrix of data, a row=a individual
        * @param y response
-       * @param k number of folds
+       * @param nbFolds number of folds
        * @param index elements to test for cross validation (l1norm fraction or lambda)
        * @param lambdaMode if true index contains lambda values, else it contains real between 0 and 1 (ratio (norm coefficient)/max(norm coefficient) for which we compute the prediction error)
        * @param maxSteps number of maximum step to do
        * @param intercept if true, there is an intercept in the model
        * @param eps epsilon (for 0)
        */
-      Cvlars(STK::CArrayXX const& X, STK::CVectorX const& y, int k, std::vector<double> const& index, bool lambdaMode, int maxSteps, bool intercept = true, STK::Real eps = STK::Arithmetic<STK::Real>::epsilon());
+      Cvlars(STK::CArrayXX const& X, STK::CVectorX const& y, int nbFolds, std::vector<double> const& index, bool lambdaMode, int maxSteps, bool intercept = true, STK::Real eps = STK::Arithmetic<STK::Real>::epsilon());
 
       /**
        * run a k-fold cross validation
        */
       void run();
+#ifdef _OPENMP
       /**
        * run a k-fold cross validation (parallelized version)
        */
       void run2();
-
+#endif
       //getter
       /** @return return the prediction error for each index*/
       inline STK::CVectorX const& cv() const {return cv_;}
@@ -127,7 +125,7 @@ namespace HD
       ///criterion error
       STK::CVectorX cvError_;
       ///number of folds
-      int k_;
+      int nbFolds_;
       ///number of sample
       int n_;
       ///number of variables

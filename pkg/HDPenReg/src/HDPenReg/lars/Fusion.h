@@ -36,8 +36,6 @@
 #ifndef FUSION_H_
 #define FUSION_H_
 
-#include "../lars/Lars.h"
-
 namespace HD
 {
 /**
@@ -126,12 +124,12 @@ namespace HD
 
       /**@return muX_*/
       inline STK::CVectorX muX() const {return muX_;}
-      
+
       /**@return muX_[i]*/
       inline STK::Real muX(int i) const {return muX_[i];}
-      
+
       /** @return the ignored variable*/
-      inline std::vector<bool> toIgnore() const {return toIgnore_;}
+      inline STK::CArrayVector<bool> toIgnore() const {return toIgnore_;}
 
       /** @return msg_error_*/
       inline std::string msg_error() const {return msg_error_;}
@@ -165,7 +163,7 @@ namespace HD
       ///solution path of the lars
       Path path_;
       ///ignored variables (due to correlation)
-      std::vector<bool> toIgnore_;
+      STK::CArrayVector<bool> toIgnore_;
       /// if true, there is an intercept in the model
       bool intercept_;
       ///last error message

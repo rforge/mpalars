@@ -160,7 +160,7 @@ namespace HD
   void LogisticLassoSolver::computeInitialBeta()
   {
     // compute initial value using OLS
-    STK::VectorX Xty = currentX_.transpose() * z_;
+    STK::Vector Xty = currentX_.transpose() * z_;
     InitLassoMultiplicator mult(p_x_, p_penalty_->lambda());
     STK::CG<InitLassoMultiplicator,STK::VectorX,InitFunctor> cginit(mult, Xty, 0, 1e-05);
     cginit.run();

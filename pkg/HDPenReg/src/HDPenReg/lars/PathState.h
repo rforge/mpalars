@@ -36,9 +36,6 @@
 #ifndef PATHSTATE_H_
 #define PATHSTATE_H_
 
-#include <RTKpp.h>
-#include <utility>
-
 namespace HD
 {
 /**
@@ -89,14 +86,14 @@ namespace HD
        * @param indexVariables vector containing the index of active variables
        * @param coefficients vector containing the value of estimates for active variables
        */
-      void update(STK::Array2DVector<int> const& indexVariables,STK::Array2DVector<STK::Real> const& coefficients);
+      void update(STK::VectorXi const& indexVariables,STK::VectorX const& coefficients);
 
       /**
        * update of the coefficients of the previous step
        * @param w direction of the update
        * @param gamma step of the update
        */
-      void update(STK::Array2DVector<STK::Real> const& w, STK::Real gamma);
+      void update(STK::CVectorX const& w, STK::Real gamma);
 
       /**
        * update of the coefficients of the previous state with a variable to drop and a variable to add
@@ -105,7 +102,7 @@ namespace HD
        * @param addIdxVar index of the variable to add
        * @param dropIdx index (in the vector of coefficients of the previous step) of the variable to delete
        */
-      void addWithDropUpdate(STK::Array2DVector<STK::Real> const& w, STK::Real gamma, std::vector<int> const& addIdxVar, std::vector<int> const& dropIdx);
+      void addWithDropUpdate(STK::CVectorX const& w, STK::Real gamma, std::vector<int> const& addIdxVar, std::vector<int> const& dropIdx);
 
       /**
        * update of the coefficients of the previous state with a variable to drop
@@ -113,7 +110,7 @@ namespace HD
        * @param gamma step of the update
        * @param dropIdx index (in the vector of coefficients of the previous step) of the variable to delete
        */
-      void dropAfterDropUpdate(STK::Array2DVector<STK::Real> const& w, STK::Real gamma, std::vector<int> const& dropIdx);
+      void dropAfterDropUpdate(STK::CVectorX const& w, STK::Real gamma, std::vector<int> const& dropIdx);
 
       /**
        * update of the coefficients of the previous state with a new variable
@@ -121,7 +118,7 @@ namespace HD
        * @param gamma step of the update
        * @param addIdxVar index of the variable to add
        */
-      void addUpdate(STK::Array2DVector<STK::Real> const& w, STK::Real gamma, std::vector<int> const& addIdxVar);
+      void addUpdate(STK::CVectorX const& w, STK::Real gamma, std::vector<int> const& addIdxVar);
 
       /**print coefficients*/
       void printCoeff() const;

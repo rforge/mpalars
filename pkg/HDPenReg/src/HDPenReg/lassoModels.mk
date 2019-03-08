@@ -6,7 +6,7 @@ all:lib
 #-----------------------------------------------------------------------
 # Variables
 #
-LIB= ./lib/libHDPenReg.a
+LIB= ./lib/libHD.a
 
 #-----------------------------------------------------------------------
 # Sources files
@@ -28,7 +28,7 @@ OBJS= $(SRCS:%.cpp=%.o)
 #-------------------------------------------------------------------------
 # rule for compiling the cpp files
 %.o: %.cpp
-	$(CXX) $(HD_CPPFLAGS0) $(HD_CXXFLAGS) $< -c -o $@
+	$(CXX)  $(HD_CXXFLAGS) $(HD_CPPFLAGS) $< -c -o $@
 
 #-----------------------------------------------------------------------
 # The rule lib create the library
