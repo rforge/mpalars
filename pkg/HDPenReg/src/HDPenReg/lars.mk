@@ -30,7 +30,8 @@ OBJS= $(SRCS:%.cpp=%.o)
 # rule for compiling the cpp files
 #
 %.o: %.cpp
-	$(CXX) $(HD_CXXFLAGS)  $(HD_CPPFLAGS) -DSTKBASEARRAYS=1 -DSTK_BOUNDS_CHECK -DLARS_DEBUG -DFUSION_DEBUG -DCVLARS_DEBUG $< -c -o $@
+	$(CXX) $(HD_CXXFLAGS)  $(HD_CPPFLAGS) -DSTKBASEARRAYS=1 $< -c -o $@
+#	$(CXX) $(HD_CXXFLAGS)  $(HD_CPPFLAGS) -DSTKBASEARRAYS=1 -DSTK_BOUNDS_CHECK -DLARS_DEBUG -DFUSION_DEBUG -DCVLARS_DEBUG $< -c -o $@
 
 #-----------------------------------------------------------------------
 # The rule lib create the library 
