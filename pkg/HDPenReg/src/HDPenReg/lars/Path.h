@@ -68,8 +68,10 @@ namespace HD
       inline STK::VectorX const l1norm() const
       {
         STK::VectorX l1norm(states_.size());
-        for(int i = 0; i < (int) states_.size(); i++)
-          l1norm[i+1] = states_[i].l1norm();
+        for(int i = 0, il1norm=l1norm.begin(); i < (int) states_.size(); i++, il1norm++)
+        {
+          l1norm[il1norm] = states_[i].l1norm();
+        }
         return l1norm;
       }
       /**@return coefficient j of state i*/

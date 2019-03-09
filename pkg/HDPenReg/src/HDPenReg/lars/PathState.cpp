@@ -41,13 +41,13 @@ namespace HD
 {
   //constructors
 /* default constructor*/
-PathState::PathState() : l1norm_(0.) {}
+PathState::PathState(): coefficients_(Range(1,0)), l1norm_(0.) {}
 
 /*
  * constructor with reserve size
  * @param nbMaxVariable maximal number of variable to potentially stock
  */
-PathState::PathState(int nbMaxVariable) : l1norm_(0.)
+PathState::PathState(int nbMaxVariable): coefficients_(Range(1,0)), l1norm_(0.)
 {
   coefficients_.reserve(nbMaxVariable);
   coefficients_.shift(1); // in case
@@ -107,14 +107,14 @@ void PathState::addWithDropUpdate(CVectorX const& w, Real gamma, vector<int> con
 {
   //update the other variable
   l1norm_=0;
-  if(dropIdx[0]!=1)
-  {
-    for(int i=1; i < dropIdx[0]; i++)
+//  if(dropIdx[0]!=1)
+//  {
+    for(int i=coefficients_.begin(); i < dropIdx[0]; i++)
     {
       coefficients_[i].second += gamma*w[i];
       l1norm_ += std::abs(coefficients_[i].second);
     }
-  }
+//  }
   if(dropIdx.size() > 1)
   {
     for(int j = 0; j < (int) dropIdx.size(); j++)
@@ -126,9 +126,9 @@ void PathState::addWithDropUpdate(CVectorX const& w, Real gamma, vector<int> con
       }
     }
   }
-  if(dropIdx.back()!=coefficients_.size())
+  if(dropIdx.back()!=coefficients_.lastIdx())
   {
-    for(int i=dropIdx.back()+1; i <= coefficients_.size(); i++)
+    for(int i=dropIdx.back()+1; i < coefficients_.end(); i++)
     {
       coefficients_[i].second += gamma*w[i];
       l1norm_ += std::abs(coefficients_[i].second);
@@ -138,12 +138,12 @@ void PathState::addWithDropUpdate(CVectorX const& w, Real gamma, vector<int> con
   for(int i = 0; i < (int) addIdxVar.size(); i++)
   {
     coefficients_.pushBack(1);
-    coefficients_.back()=make_pair(addIdxVar[i],gamma*w[coefficients_.size()]);
+    coefficients_.back()=make_pair(addIdxVar[i],gamma*w[coefficients_.lastIdx()]);
     l1norm_ += std::abs(coefficients_.back().second);
   }
   //delete the variable to delete
   for(int i = dropIdx.size()-1; i >= 0; i--)
-    coefficients_.erase(dropIdx[i],1);
+    coefficients_.erase(dropIdx[i]);
 }
 
 /*
@@ -158,7 +158,7 @@ void PathState::dropAfterDropUpdate(CVectorX const& w, Real gamma, vector<int> c
   //update the other coefficient
   if(dropIdx[0]!=1)
   {
-    for(int i = 1; i < dropIdx[0]; i++)
+    for(int i = coefficients_.begin(); i < dropIdx[0]; i++)
     {
       coefficients_[i].second += gamma*w[i];
       l1norm_ += std::abs(coefficients_[i].second);
@@ -175,17 +175,17 @@ void PathState::dropAfterDropUpdate(CVectorX const& w, Real gamma, vector<int> c
       }
     }
   }
-  if(dropIdx.back()!=coefficients_.size())
+  if(dropIdx.back()!=coefficients_.lastIdx())
   {
-    for(int i = dropIdx.back() + 1; i <= coefficients_.size(); i++)
+    for(int i = dropIdx.back() + 1; i < coefficients_.end(); i++)
     {
       coefficients_[i].second += gamma*w[i];
       l1norm_ += std::abs(coefficients_[i].second);
     }
   }
-  //delete the variable to delete
+  //delete the variables to delete
   for(int i = dropIdx.size()-1; i >= 0; i--)
-    coefficients_.erase(dropIdx[i],1);
+    coefficients_.erase(dropIdx[i]);
 }
 
 /*
@@ -198,7 +198,7 @@ void PathState::addUpdate(CVectorX const& w, Real gamma, vector<int> const& addI
 {
   //update previous coefficients
   l1norm_=0;
-  for(int i=1; i<=coefficients_.size(); i++)
+  for(int i=coefficients_.begin(); i<coefficients_.end(); i++)
   {
     coefficients_[i].second += gamma * w[i];
     l1norm_ += std::abs(coefficients_[i].second);
@@ -206,7 +206,7 @@ void PathState::addUpdate(CVectorX const& w, Real gamma, vector<int> const& addI
   for(int i = 0; i < (int) addIdxVar.size(); i++)
   {
     coefficients_.pushBack(1);
-    coefficients_.back() = make_pair(addIdxVar[i], gamma * w[coefficients_.size()]);
+    coefficients_.back() = make_pair(addIdxVar[i], gamma * w[coefficients_.lastIdx()]);
     l1norm_ += std::abs(coefficients_.back().second);
   }
 }

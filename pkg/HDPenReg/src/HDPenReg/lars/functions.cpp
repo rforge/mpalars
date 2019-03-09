@@ -177,10 +177,10 @@ Real computeOrdinate(Real x1,Real x2,Real x3,Real y1,Real y2)
 
 void print(STK::Array2DVector< pair<int,Real> > const& state)
 {
-  for(int j(1);j<=state.size();j++)
+  for(int j=state.begin();j<state.end();j++)
     cout<<setw(8)<<state[j].first<<"  ";
   cout<<endl;
-  for(int j(1);j<=state.size();j++)
+  for(int j=state.begin();j<state.end();j++)
     cout<<setw(8)<<state[j].second<<"  ";
   cout<<endl;
 }
@@ -190,22 +190,21 @@ bool import(std::string adressFichier,int n,int p,STK::CArrayXX &data)
 {
   std::ifstream flux(adressFichier.c_str());
 
-  Real real;
-  int i(1),j(1);
-
   if (flux.is_open())//si le fichier est ouvert
   {
-     while(flux>>real)//on lit le fichier entier par entier
-     {
-       data(i,j)=real;
-       j++;
-       if(j>p)//bout de ligne, on ajoute les données et on passe à la ligne
-       {
-         j=1;
-         i++;
-       }
-     }
-     return true;
+    Real real;
+    int i=data.beginRows(),j=data.beginCols();
+    while(flux>>real)//on lit le fichier données par données
+    {
+      data(i,j)=real;
+      j++;
+      if(j==data.endCols())//bout de ligne, on passe à la ligne
+      {
+        j=data.beginCols();
+        i++;
+      }
+    }
+    return true;
   }
   else
     return false;
@@ -215,17 +214,16 @@ bool import(std::string adressFichier,int n,STK::CVectorX &data)
 {
   std::ifstream flux(adressFichier.c_str());
 
-  Real real;
-  int i(1);
-
   if (flux.is_open())//si le fichier est ouvert
   {
-     while(flux>>real)//on lit le fichier entier par entier
-     {
-       data[i]=real;
-       i++;
-     }
-     return true;
+    Real real;
+    int i=data.begin();
+    while(flux>>real)//on lit le fichier entier par entier
+    {
+      data[i]=real;
+      i++;
+    }
+    return true;
   }
   else
     return false;

@@ -178,20 +178,20 @@ Array1D< pair<int,Real> > Path::computeCoefficients( PathState const& state1
   Array1D< pair<int,Real> > coeff(Range(1,maxSize));
   if(evolution.second.size() == 0)
   {//no drop variable
-    int j(1);
-    for(j=1; j <= state1.size(); j++)
+    int j;
+    for(j=coeff.begin(); j <= state1.size(); j++)
       coeff[j]=make_pair(state1.varIdx(j),computeOrdinate(state1.l1norm(), state2.l1norm(), l1norm, state1.varCoeff(j), state2.varCoeff(j)));
     //add variable case
     if(evolution.first.size() != 0)
     {
-      for(int i = 0; i < (int) evolution.first.size(); i++)
+      for(int i = coeff.begin(); i < (int) evolution.first.size(); i++)
         coeff[j]=make_pair( evolution.first[i], computeOrdinate(state1.l1norm(), state2.l1norm(), l1norm, 0., state2.varCoeff(j)));
     }
   }
   else
   {
     //delete variable case
-    int i = 1;
+    int i = coeff.begin();
     for( int j = 0; j < (int) evolution.second.size(); j++)
     {
       //while we don't meet the delete variable, variable has the same index in the two sets
@@ -220,115 +220,6 @@ Array1D< pair<int,Real> > Path::computeCoefficients( PathState const& state1
   return coeff;
 }
 
-  /*
-   * transform the path from lars problem to fusion problem
-   * @param p Number of variables
-   */
-  ///DEPRECATED :
-  ///TODO : need to be updated
-//  void Path::transform2fusion(int const& p)
-//  {
-//    VectorXi order(1,1);// the first element contains the index (in the vector
-//    order.reserveCols(states_.size());
-//    Array1D< pair<int,Real> > coeffTemp;
-//    coeffTemp.reserve(states_.size());
-//
-//    Real l1norm;
-//    int drop = 1;
-//
-//    //step=1. only 1 variable, so we only update l1norm
-//    l1norm = abs((p-states_[1].varIdx(1)+1)*states_[1].varCoeff(1));
-//    states_[1].setl1norm(l1norm);
-//
-//    for(int step=2; step < (int) states_.size(); step++)
-//    {
-//      //if a variable is drop at this step
-//      if(evolution_[step-1].second.size()!=0)
-//      {
-//        //we delete the position found
-//        for(int j=1; j<=order.size(); j++)
-//        {
-//          if( order[j]==drop )
-//          {
-//            order.erase(j,1);
-//            break;
-//          }
-//        }
-//
-//        for(int j=1; j<=order.size(); j++)
-//        {
-//          if( order[j]>drop )
-//            order[j]--;
-//        }
-//      }
-//
-//      //if a variable is add at this step
-//      if(evolution_[step-1].first.size()!=0)
-//      {
-//        //update order
-//        for(int j=1; j<states_[step].size(); j++)
-//        {
-//          //we look after the first index greater than the new index
-//          if( states_[step].varIdx(states_[step].size()) < states_[step].varIdx(order[j]) )
-//          {
-//            order.insertElt(j,1);
-//            order[j]=states_[step].size();
-//
-//            break;
-//          }
-//        }
-//        if(order.size()<states_[step].size())
-//        {
-//          order.pushBack(1);
-//          order.back()=states_[step].size();
-//        }
-//      }
-//
-//      //if there is a drop variable at the next step, we search its position in the actual coefficients before coefficients are sorting
-//      if(step < (int) states_.size()-1)
-//      {
-//        if(evolution_[step].second.size()!=0)
-//        {
-//          for(int i=1; i<=states_[step].size(); i++)
-//          {
-//            if(states_[step].varIdx(i)==evolution_[step].second)
-//            {
-//              drop=i;
-//              break;
-//            }
-//          }
-//        }
-//      }
-//
-//      //transform to fusion coefficient
-//      coeffTemp=states_[step].coefficients();
-//      l1norm=0;
-//
-//      coeffTemp[1]=states_[step].coefficients(order[1]);
-//
-//      for(int i=2; i<states_[step].size(); i++)
-//      {
-//        //we sort the index
-//        coeffTemp[i]=states_[step].coefficients(order[i]);
-//
-//        //compute coefficients of fusion
-//        coeffTemp[i].second += coeffTemp[i-1].second;
-//
-//        //update l1norm
-//        l1norm += abs((coeffTemp[i].first-coeffTemp[i-1].first)*coeffTemp[i-1].second);
-//      }
-//
-//      coeffTemp.back()=states_[step].coefficients(order.back());
-//      coeffTemp.back().second += coeffTemp[coeffTemp.size()-1].second;
-//      if(coeffTemp.size()>1)
-//        l1norm += abs((coeffTemp.back().first-coeffTemp[coeffTemp.size()-1].first)*coeffTemp[coeffTemp.size()-1].second);
-//
-//      l1norm += abs((p-coeffTemp.back().first+1)*coeffTemp.back().second);
-//      states_[step].setCoefficients(coeffTemp);
-//      states_[step].setl1norm(l1norm);
-//
-//    }
-//  }
 
 }//end namespace
 

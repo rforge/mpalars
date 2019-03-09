@@ -22,11 +22,17 @@
 
 \section{Introduction}
 
-	Lasso, fused lasso and fusion problems are linear regression problems with $l_1$ constraints on the estimates.
-	
-	This package provides a C++ implementation of the LARS which is an algorithm to solve the lasso problem. The storage of the results has been designed for handling the case $n<p$, where $n$ is the number of individuals and $p$ the number of covariates.
-	
-	In the next section, the lasso problem will be presented as well as the fusion. The LARS algorithm will be detailed in section 3. In section 4, we will present all the functionalities of the package through some examples.
+Lasso, fused lasso and fusion problems are linear regression problems with $l_1$
+constraints on the estimates.
+
+This package provides a C++ implementation of the LARS which is an algorithm to
+solve the lasso problem. The storage of the results has been designed for
+handling the case $n<p$, where $n$ is the number of individuals and $p$ the 
+number of covariates.
+
+In the next section, the lasso problem will be presented as well as the fusion.
+The LARS algorithm will be detailed in section 3. In section 4, we will present
+all the functionalities of the package through some examples.
 
 \section{Lasso \& Fusion}
 	\subsection{Lasso}
@@ -423,18 +429,18 @@ plot(resfusion)
 		\begin{figure}[!h]
 			\begin{center}			
 << plotcoeff, echo=TRUE,fig=TRUE,width=16,height=8>>=
-step = resfusion@nbStep
+resfusion@nbStep
 plotCoefficient(resfusion,3)
 @			
-				\caption{$\hat{\beta}$ coefficients at the step 3.}
+				\caption{$\hat{\beta}$ coefficients at the step 15.}
 			\end{center}
 		\end{figure}
 		
-		Coefficients are organized in segments of the same value. Here, it's more difficult to analyze due to few number of non-zero coefficient.
-				 
-	\nocite{*}
-	\bibliographystyle{apalike}
-	\bibliography{HDPenReg} 	
+	Coefficients are organized in segments of the same value. Here, it's more difficult to analyze due to few number of non-zero coefficient.
+			 
+\nocite{*}
+\bibliographystyle{apalike}
+\bibliography{HDPenReg} 	
 	
 	
 \end{document}

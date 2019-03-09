@@ -26,6 +26,7 @@
 									<listOptionValue builtIn="false" value="/home/iovleff/R/x86_64-pc-linux-gnu-library/3.5/rtkore/include"/>
 									<listOptionValue builtIn="false" value="/home/iovleff/R/x86_64-pc-linux-gnu-library/3.5/rtkore/projects"/>
 									<listOptionValue builtIn="false" value="/usr/lib/R/site-library/Rcpp/include/"/>
+									<listOptionValue builtIn="false" value="/usr/share/R/include"/>
 								</option>
 								<option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="false" id="gnu.c.compiler.option.preprocessor.def.symbols.455548452" name="Defined symbols (-D)" superClass="gnu.c.compiler.option.preprocessor.def.symbols" useByScannerDiscovery="false" valueType="definedSymbols">
 									<listOptionValue builtIn="false" value="IS_RTKPP_LIB"/>
@@ -40,6 +41,7 @@
 									<listOptionValue builtIn="false" value="/usr/lib/R/site-library/Rcpp/include/"/>
 									<listOptionValue builtIn="false" value="/home/iovleff/R/x86_64-pc-linux-gnu-library/3.5/rtkore/include"/>
 									<listOptionValue builtIn="false" value="/home/iovleff/R/x86_64-pc-linux-gnu-library/3.5/rtkore/projects"/>
+									<listOptionValue builtIn="false" value="/usr/share/R/include"/>
 								</option>
 								<option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="false" id="gnu.cpp.compiler.option.preprocessor.def.1377757632" name="Defined symbols (-D)" superClass="gnu.cpp.compiler.option.preprocessor.def" useByScannerDiscovery="false" valueType="definedSymbols">
 									<listOptionValue builtIn="false" value="IS_RTKPP_LIB"/>
@@ -57,9 +59,10 @@
 							<tool id="cdt.managedbuild.tool.gnu.cross.archiver.2059322971" name="Cross GCC Archiver" superClass="cdt.managedbuild.tool.gnu.cross.archiver"/>
 							<tool id="cdt.managedbuild.tool.gnu.cross.assembler.1656894658" name="Cross GCC Assembler" superClass="cdt.managedbuild.tool.gnu.cross.assembler">
 								<option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="false" id="gnu.both.asm.option.include.paths.1393769419" name="Include paths (-I)" superClass="gnu.both.asm.option.include.paths" useByScannerDiscovery="false" valueType="includePath">
+									<listOptionValue builtIn="false" value="/usr/share/R/include"/>
+									<listOptionValue builtIn="false" value="/usr/lib/R/site-library/Rcpp/include/"/>
 									<listOptionValue builtIn="false" value="/home/iovleff/R/x86_64-pc-linux-gnu-library/3.5/rtkore/include"/>
 									<listOptionValue builtIn="false" value="/home/iovleff/R/x86_64-pc-linux-gnu-library/3.5/rtkore/projects"/>
-									<listOptionValue builtIn="false" value="/usr/lib/R/site-library/Rcpp/include/"/>
 								</option>
 								<inputType id="cdt.managedbuild.tool.gnu.assembler.input.729685079" superClass="cdt.managedbuild.tool.gnu.assembler.input"/>
 							</tool>
@@ -94,6 +97,7 @@
 									<listOptionValue builtIn="false" value="/home/iovleff/R/x86_64-pc-linux-gnu-library/3.5/rtkore/include"/>
 									<listOptionValue builtIn="false" value="/home/iovleff/R/x86_64-pc-linux-gnu-library/3.5/rtkore/projects"/>
 									<listOptionValue builtIn="false" value="/usr/lib/R/site-library/Rcpp/include/"/>
+									<listOptionValue builtIn="false" value="/usr/share/R/include"/>
 								</option>
 								<option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="false" id="gnu.c.compiler.option.preprocessor.def.symbols.1230055101" name="Defined symbols (-D)" superClass="gnu.c.compiler.option.preprocessor.def.symbols" useByScannerDiscovery="false" valueType="definedSymbols">
 									<listOptionValue builtIn="false" value="IS_RTKPP_LIB"/>
@@ -108,6 +112,7 @@
 									<listOptionValue builtIn="false" value="/home/iovleff/R/x86_64-pc-linux-gnu-library/3.5/rtkore/include"/>
 									<listOptionValue builtIn="false" value="/home/iovleff/R/x86_64-pc-linux-gnu-library/3.5/rtkore/projects"/>
 									<listOptionValue builtIn="false" value="/usr/lib/R/site-library/Rcpp/include/"/>
+									<listOptionValue builtIn="false" value="/usr/share/R/include"/>
 								</option>
 								<option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="false" id="gnu.cpp.compiler.option.preprocessor.def.612700867" name="Defined symbols (-D)" superClass="gnu.cpp.compiler.option.preprocessor.def" useByScannerDiscovery="false" valueType="definedSymbols">
 									<listOptionValue builtIn="false" value="IS_RTKPP_LIB"/>
@@ -128,6 +133,7 @@
 									<listOptionValue builtIn="false" value="/home/iovleff/R/x86_64-pc-linux-gnu-library/3.5/rtkore/include"/>
 									<listOptionValue builtIn="false" value="/home/iovleff/R/x86_64-pc-linux-gnu-library/3.5/rtkore/projects"/>
 									<listOptionValue builtIn="false" value="/usr/lib/R/site-library/Rcpp/include/"/>
+									<listOptionValue builtIn="false" value="/usr/share/R/include"/>
 								</option>
 								<inputType id="cdt.managedbuild.tool.gnu.assembler.input.1924352706" superClass="cdt.managedbuild.tool.gnu.assembler.input"/>
 							</tool>

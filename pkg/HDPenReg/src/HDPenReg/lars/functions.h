@@ -64,10 +64,9 @@ bool import(std::string adressFichier,int n,STK::CVectorX &data);
 template <typename T>
 std::ostream& operator<<( std::ostream &flux, std::vector<T> vect)
 {
-    for (unsigned int i(0);i<vect.size();i++)
-        flux << vect[i]<< " ";
-
-    return flux;
+  for (unsigned int i(0);i<vect.size();i++)
+      flux << vect[i]<< " ";
+  return flux;
 }
 
 #endif /* FUNCTIONS_H_ */

@@ -1,4 +1,4 @@
-
+#include <Rcpp.h>
 #include "larsR.h"
 
 extern "C" SEXP lars(SEXP data, SEXP response, SEXP nbIndiv, SEXP nbVar, SEXP maxStep, SEXP intercept, SEXP eps)

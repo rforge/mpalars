@@ -138,7 +138,7 @@ void Cvlars::setPartition(std::vector<int> const& partition)
   stk_cerr << _T("Entering Cvlars::run")<<endl;
 #endif
     //search the first and last fold with the same size
-    std::vector<int> startIndex(1,0),endIndex(1,nbFolds_-1);
+    std::vector<int> startIndex(1,0), endIndex(1, nbFolds_-1);
     int k = 0;
     for(int i = 1; i < nbFolds_; i++)
     {
@@ -260,7 +260,6 @@ void Cvlars::run2()
      #pragma omp for schedule(dynamic,1)
      for(int i = 0; i < nbFolds_ ; i++)
      {
-
        Range rangeControl(1, n_ - sizePartition_[i]);
        Range rangeTest(1, sizePartition_[i]);
        STK::CArrayXX XControl( rangeControl, Range(1,p_));
@@ -274,7 +273,7 @@ void Cvlars::run2()
        //fill the container
        int index1 = 1;
        int index2 = 1;
-       for(int j = 1; j <= n_; j++)
+       for(int j = p_y_->begin(); j < p_y_->end(); j++)
        {
          if(partition_[j-1] != i)
          {
