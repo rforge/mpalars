@@ -68,10 +68,8 @@ namespace HD
       inline STK::VectorX const l1norm() const
       {
         STK::VectorX l1norm(states_.size());
-        for(int i = 0, il1norm=l1norm.begin(); i < (int) states_.size(); i++, il1norm++)
-        {
-          l1norm[il1norm] = states_[i].l1norm();
-        }
+        for(int i = 0, il1norm=l1norm.begin(); i < l1norm.end(); i++, il1norm++)
+        { l1norm[il1norm] = states_[i].l1norm();}
         return l1norm;
       }
       /**@return coefficient j of state i*/
@@ -98,7 +96,6 @@ namespace HD
       inline std::pair<std::vector<int> ,std::vector<int> > evolution(int i) const {return evolution_[i];}
 
       //methods
-
       /** @brief get coefficient associates to a lambda value.
        *  @param lambda is the norm value for which we want values of coefficient
        *  @return a vector containing pair<int,double>=(index of non zero coefficient,coefficient)
@@ -146,12 +143,6 @@ namespace HD
        * @param dropIdx index (in the vector of coefficients of the previous step) of the variable to delete
        */
       void dropAfterDropCaseUpdate(STK::Real gamma, STK::CVectorX const& w, std::vector<int> const& dropIdxVar, std::vector<int> const& dropIdx);
-
-      /**
-       * transform the path from lars problem to fusion problem
-       * @param p Number of variables
-       */
-      void transform2fusion(int const& p);
 
       /**
        * add an element at the end of the vector of the correlation max

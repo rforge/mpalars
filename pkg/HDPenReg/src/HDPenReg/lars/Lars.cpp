@@ -637,123 +637,121 @@ void Lars::run()
   continuer=firstStep(Cmax,newId,signC,action,Aa,Gi1,w,u,a,gam);
   if (!continuer) return;
   //we stop, if we reach maxStep or if there is no more variable to add
-  if(continuer)
+  Real oldCmax;
+  while( (step_< maxSteps_) && ( nbActiveVariable_ < min( n_-1, (p_-nbIgnoreVariable_) ) ) )
   {
-    Real oldCmax;
-    while( (step_< maxSteps_) && ( nbActiveVariable_ < min( n_-1, (p_-nbIgnoreVariable_) ) ) )
-    {
 #ifdef LARS_DEBUG
   stk_cerr << _T("Lars::run step_ = ") << step_<<endl;
 #endif
-      step_++;
-      oldCmax = Cmax;
-      //computation of correlation
-      Cmax = computeCmax();
-      if( Cmax < eps_*100)
-      {
-        step_--;
-#ifdef VERBOSE
+    step_++;
+    oldCmax = Cmax;
+    //computation of correlation
+    Cmax = computeCmax();
+    if( Cmax < eps_*100)
+    {
+      step_--;
+#ifdef LARS_DEBUG
         std::cout << "Correlation max is equal to 0."<<std::endl;
 #endif
-        msg_error_ = "Correlation max is equal to 0.";
-        break;
-      }
-      //if correlation max increased, we stop, Cmax must decreased
-      if( Cmax > oldCmax)
-      {
-//          stk_cout<<Cmax<<endl;
-        step_--;
-#ifdef VERBOSE
+      msg_error_ = "Correlation max is equal to 0.";
+      break;
+    }
+    //if correlation max increased, we stop, Cmax must decreased
+    if( Cmax > oldCmax)
+    {//          stk_cout<<Cmax<<endl;
+      step_--;
+#ifdef LARS_DEBUG
         std::cout << "Correlation max has increased."<<std::endl;
 #endif
-        msg_error_ = "Correlation max has increased";
-        break;
-      }
-      //add case : update of QR decomposition, active set and X'*X
-      if(isAddCase)
-      {
+      msg_error_ = "Correlation max has increased";
+      break;
+    }
+    //add case : update of QR decomposition, active set and X'*X
+    if(isAddCase)
+    {
 #ifdef LARS_DEBUG
   stk_cerr << _T("Lars::run isAddCase")<<endl;
 #endif
-        newId.resize(0);
-        computeAddSet(Cmax, newId);
-        if(newId.size() == 0)
-        {
-          step_--;
+      newId.resize(0);
+      computeAddSet(Cmax, newId);
+      if(newId.size() == 0)
+      {
+        step_--;
 #ifdef VERBOSE
           std::cout << "No variable selected for add in the add step."<<std::endl;
 #endif
-          msg_error_ = "No variable selected for add in the add step.";
-          break;
-        }
-        action.second.erase(action.second.begin(),action.second.end());
-        for(vector<int>::iterator it = newId.begin() ; it != newId.end(); it++)
-        { updateR(*it,signC,action);}
+        msg_error_ = "No variable selected for add in the add step.";
+        break;
       }
-      else
-      {
-        action=make_pair(false,dropId);
-      }
-      addCmax(Cmax);
-      //compute the inverse of G
-      computeGi1(Gi1,signC);
-      //compute Aa
-      Aa = 1/sqrt(Gi1.sum());
-      //compute w
-      w = Gi1*signC*Aa;
-      //compute equiangular vector
-      u = Xi_*w;
+      action.second.erase(action.second.begin(),action.second.end());
+      for(vector<int>::iterator it = newId.begin() ; it != newId.end(); it++)
+      { updateR(*it,signC,action);}
+    }
+    else
+    {
+      action=make_pair(false,dropId);
+    }
+    addCmax(Cmax);
+    //compute the inverse of G
+    computeGi1(Gi1,signC);
+    //compute Aa
+    Aa = 1/sqrt(Gi1.sum());
+    //compute w
+    w = Gi1*signC*Aa;
+    //compute equiangular vector
+    u = Xi_*w;
+    //computation of gamma hat
+    //if the number of active variable is equal to the max number authorized, we don't search a new index
+    if( nbActiveVariable_ == min(n_-1, p_-nbIgnoreVariable_) )
+    {  gam = Cmax/Aa;}
+    else
+    {
+      //computation of a
+      a = X_.transpose()*u;
       //computation of gamma hat
-      //if the number of active variable is equal to the max number authorized, we don't search a new index
-      if( nbActiveVariable_ == min(n_-1, p_-nbIgnoreVariable_) )
-      {  gam = Cmax/Aa;}
-      else
-      {
-        //computation of a
-        a = X_.transpose()*u;
-        //computation of gamma hat
-        gam = computeGamHat(Aa,a,Cmax);
-      }
-      //computation of gamma tilde
-      gammaTilde = computeGamTilde(w,dropId);
-      if( gammaTilde < gam )
-      {
-        gam = gammaTilde;
-        isAddCase = false;
-        nbActiveVariable_ -= dropId.size();
-      }
-      else
-      { isAddCase = true;}
-      //update beta
-      updateBeta(gam,w,action,isAddCase,dropId);
-      //update of c_
-      if( nbActiveVariable_ == min(n_-1, p_-nbIgnoreVariable_) )
-      {
+      gam = computeGamHat(Aa,a,Cmax);
+    }
+    //computation of gamma tilde
+    gammaTilde = computeGamTilde(w,dropId);
+    if( gammaTilde < gam )
+    {
+      gam = gammaTilde;
+      isAddCase = false;
+      nbActiveVariable_ -= dropId.size();
+    }
+    else
+    { isAddCase = true;}
+    //update beta
+    updateBeta(gam,w,action,isAddCase,dropId);
+    //update of c_
+    if( nbActiveVariable_ == min(n_-1, p_-nbIgnoreVariable_) )
+    {
 #ifdef LARS_DEBUG
   stk_cerr << _T("Lars::run update c_ with nbActiveVariable_ == min(n_-1, p_-nbIgnoreVariable_)")<<endl;
 #endif
-        c_ -= (X_.transpose()*u)*gam;
-      }
-      else
-      {
+      c_ -= (X_.transpose()*u)*gam;
+    }
+    else
+    {
 #ifdef LARS_DEBUG
   stk_cerr << _T("Lars::run update c_")<<endl;
 #endif
-        c_ -= a * gam;
-      }
-      //drop situation
-      if(!isAddCase) { dropStep(dropId,signC);}
-      //path_.states(step_).printCoeff();
+      c_ -= a * gam;
+    }
+    //drop situation
+    if(!isAddCase) { dropStep(dropId,signC);}
+    //path_.states(step_).printCoeff();
 #ifdef LARS_DEBUG
   stk_cerr << _T("Lars::run update c_ done")<<endl;
 #endif
-
-    }
+  }
 #ifdef LARS_DEBUG
   stk_cerr << _T("Lars::run while terminated")<<endl;
-  stk_cerr << _T("continuer =") << continuer<<endl;
+  stk_cerr<<endl<<"Algorithm finished"<<endl;
+  stk_cerr<<"Number of steps: "<<step_<<endl;
+  stk_cerr<<"Number of active variables: "<<nbActiveVariable_<<endl;
 #endif
-  }
+
 #ifdef VERBOSE
   Real t1 = Chrono::elapsed();
   cout<<endl<<"Algorithm finished in "<<t1<<"s"<<endl;

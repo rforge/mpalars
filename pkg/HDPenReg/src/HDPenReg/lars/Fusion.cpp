@@ -50,7 +50,6 @@ Fusion::Fusion(CArrayXX const& X, CVectorX const& y, bool intercept)
               , y_(y)
               , eps_(Arithmetic<Real>::epsilon())
               , path_(maxSteps_)
-              , toIgnore_()
               , intercept_(intercept)
 {
   maxSteps_ = 3*min(X.sizeRows(),X.sizeCols());
@@ -70,7 +69,6 @@ Fusion::Fusion( CArrayXX const& X, CVectorX const& y, int maxSteps, bool interce
               , maxSteps_(maxSteps)
               , eps_(eps)
               , path_(maxSteps)
-              , toIgnore_()
               , intercept_(intercept)
 { computeZ();}
 
@@ -83,8 +81,9 @@ void Fusion::computeZ()
   //int p=X_.sizeCols(), n=X_.sizeRows();
   for(int i=X_.lastIdxCols()-1; i>=X_.beginCols(); i--)
   {
-    for(int j=X_.beginRows(); j<X_.endRows(); j++ )
-      X_(j,i) += X_(j,i+1);
+    X_.col(i) += X_.col(i+1);
+//    for(int j=X_.beginRows(); j<X_.endRows(); j++ )
+//      X_(j,i) += X_(j,i+1);
   }
 }
 
@@ -98,11 +97,11 @@ void Fusion::run()
   lars.run();
 
   //get the solution path
-  path_=lars.path();
-  step_=lars.step();
-  mu_=lars.mu();
-  muX_=lars.muX();
-  toIgnore_=lars.toIgnore();
+  path_     =lars.path();
+  step_     =lars.step();
+  mu_       =lars.mu();
+  muX_      =lars.muX();
+  toIgnore_ =lars.toIgnore();
   msg_error_=lars.msg_error();
 }
 

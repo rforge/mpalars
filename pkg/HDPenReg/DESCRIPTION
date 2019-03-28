@@ -1,5 +1,5 @@
 Package: HDPenReg
-Version: 0.94.4
+Version: 0.94.5
 Date: 2018-03-09
 Title: High-Dimensional Penalized Regression
 Authors@R: c(person("Quentin", "Grimonprez", role = c("aut","cre"), email =

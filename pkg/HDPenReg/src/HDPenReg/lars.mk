@@ -12,12 +12,12 @@ LIB = ./lib/libEM.a
 # Sources files
 #
 SRCS =./lars/Lars.cpp \
-  		./lars/Path.cpp \
-			./lars/PathState.cpp \
-			./lars/functions.cpp \
-  		./lars/Fusion.cpp \
-			./lars/Cvlars.cpp \
-			./larsRmain.cpp
+  	./lars/Path.cpp \
+	./lars/PathState.cpp \
+	./lars/functions.cpp \
+  	./lars/Fusion.cpp \
+	./lars/Cvlars.cpp \
+	./larsRmain.cpp
 
 
 
@@ -30,8 +30,8 @@ OBJS= $(SRCS:%.cpp=%.o)
 # rule for compiling the cpp files
 #
 %.o: %.cpp	
-	$(CXX) $(HD_CXXFLAGS)  $(HD_CPPFLAGS) -DSTKBASEARRAYS=1 $< -c -o $@
-#	$(CXX) $(HD_CXXFLAGS)  $(HD_CPPFLAGS) -DSTKBASEARRAYS=1 -DSTK_BOUNDS_CHECK -DLARS_DEBUG -DFUSION_DEBUG -DCVLARS_DEBUG $< -c -o $@
+	$(CXX) $(HD_CXXFLAGS)  $(HD_CPPFLAGS) -DSTKBASEARRAYS=1  $< -c -o $@
+#	$(CXX) $(HD_CXXFLAGS)  $(HD_CPPFLAGS) -DSTKBASEARRAYS=1 -DSTK_BOUNDS_CHECK -DFUSION_DEBUG -DCVLARS_DEBUG $< -c -o $@
 #	$(CXX) $(HD_CXXFLAGS)  $(HD_CPPFLAGS) -DSTKBASEARRAYS=0 -DSTK_BOUNDS_CHECK -DLARS_DEBUG -DFUSION_DEBUG -DCVLARS_DEBUG $< -c -o $@
 
 #-----------------------------------------------------------------------

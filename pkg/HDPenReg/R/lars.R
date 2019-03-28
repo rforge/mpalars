@@ -55,9 +55,11 @@ HDlars <- function(X,y,maxSteps=3*min(dim(X)),intercept=TRUE,eps=.Machine$double
 #' @param intercept If TRUE, there is an intercept in the model.
 #' @param eps Tolerance of the algorithm.
 #' @return An object of type \code{\link{LarsPath}}. \code{\link{LarsPath-class}}.
-#' @examples  
+#' @examples
+#' set.seed(10)
 #' dataset=simul(50,10000,0.4,10,50,matrix(c(0.1,0.8,0.02,0.02),nrow=2))
 #' result=HDfusion(dataset$data,dataset$response)
+#' 
 #' @export
 #' 
 #' @references Efron, Hastie, Johnstone and Tibshirani (2003) "Least Angle Regression" (with discussion) Annals of Statistics
