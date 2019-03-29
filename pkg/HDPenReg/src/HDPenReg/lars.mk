@@ -12,12 +12,12 @@ LIB = ./lib/libEM.a
 # Sources files
 #
 SRCS =./lars/Lars.cpp \
-  	./lars/Path.cpp \
-	./lars/PathState.cpp \
-	./lars/functions.cpp \
-  	./lars/Fusion.cpp \
-	./lars/Cvlars.cpp \
-	./larsRmain.cpp
+			./lars/Path.cpp \
+			./lars/PathState.cpp \
+			./lars/functions.cpp \
+ 			./lars/Fusion.cpp \
+			./lars/Cvlars.cpp \
+			./larsRmain.cpp
 
 
 
