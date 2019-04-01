@@ -36,10 +36,6 @@
 #ifndef CVLARS_H_
 #define CVLARS_H_
 
-#ifdef _OPENMP
-  #include <omp.h>
-#endif
-
 namespace HD
 {
 /**

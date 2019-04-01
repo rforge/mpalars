@@ -11,9 +11,10 @@ PKGLIBHD    = $(PKGLIBDIR)/libHD.a
 PKGLIBEM    = $(PKGLIBDIR)/libEM.a
 
 ## Use the R_HOME indirection to support installations of multiple R version
-PKG_CXXFLAGS = `${R_HOME}/bin/Rscript -e "rtkore:::CxxFlags()"`
+PKG_CXXFLAGS = `${R_HOME}/bin/Rscript -e "rtkore:::CxxFlags()"` $(SHLIB_OPENMP_CXXFLAGS)
 PKG_CPPFLAGS = `${R_HOME}/bin/Rscript -e "rtkore:::CppFlags()"`
-PKG_LIBS = $(PKGLIBHD) $(PKGLIBEM) `$(R_HOME)/bin/Rscript -e "rtkore:::LdFlags()"` $(SHLIB_OPENMP_CFLAGS) $(LAPACK_LIBS) $(BLAS_LIBS) $(FLIBS)
+PKG_LIBS = $(PKGLIBHD) $(PKGLIBEM) `$(R_HOME)/bin/Rscript -e "rtkore:::LdFlags()"` \
+           $(SHLIB_OPENMP_CXXFLAGS) $(LAPACK_LIBS) $(BLAS_LIBS) $(FLIBS)
 
 CXX_STD = CXX11
 

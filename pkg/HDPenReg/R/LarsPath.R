@@ -22,7 +22,6 @@
 #' @aliases LarsPath
 #' @name LarsPath-class
 #' @rdname LarsPath-class
-#' @exportClass LarsPath
 #'
 #' @seealso \code{\link{HDlars}}
 #'
@@ -70,8 +69,6 @@ setClass(
 #' @param row if covariates, covariates are in row
 #'
 #' @return A sparse matrix containing the values of estimated coefficients for all penalty parameter and all covariates
-#' 
-#' @export
 #' 
 #' @seealso \code{\link{HDlars}} \code{\link{EMlasso}}
 #' 
@@ -142,7 +139,6 @@ listToMatrix = function(x, row = c("covariates","lambda"))
 #'
 #' @seealso \code{\link{HDlars}} \code{\link{LarsPath}}
 #'
-#' @export
 setMethod(
   f="plot",
   signature="LarsPath",
@@ -180,7 +176,6 @@ setMethod(
 #' dataset=simul(50,1000,0.4,10,50,matrix(c(0.1,0.8,0.02,0.02),nrow=2))
 #' result=HDfusion(dataset$data,dataset$response) 
 #' plotCoefficient(result,result@@nbStep) #plot coefficients at the last step
-#' @export 
 #' 
 #' @seealso \code{\link{HDlars}} \code{\link{LarsPath}}
 #' 
@@ -235,7 +230,6 @@ plotCoefficient=function(x,step,ylab="coefficients",xlab="variables",...)
 #' dataset=simul(50,1000,0.4,10,50,matrix(c(0.1,0.8,0.02,0.02),nrow=2))
 #' result=HDfusion(dataset$data,dataset$response)
 #' coefficient=coeff(result,result@@nbStep) #get the coefficients
-#' @export 
 #' 
 #' @seealso \code{\link{HDlars}}  \code{\link{HDfusion}} \code{\link{LarsPath}}
 #'
@@ -292,7 +286,6 @@ coeff=function(x,step)
 #' dataset=simul(50,10000,0.4,10,50,matrix(c(0.1,0.8,0.02,0.02),nrow=2))
 #' result=HDlars(dataset$data[1:40,],dataset$response[1:40])
 #' coeff=coef(result,0.3,"fraction")
-#' @export
 #' 
 #' @seealso \code{\link{HDlars}} \code{\link{LarsPath}}
 #' 

@@ -14,7 +14,6 @@
 #' dataset=simul(50,10000,0.4,10,50,matrix(c(0.1,0.8,0.02,0.02),nrow=2))
 #' result=HDlars(dataset$data[1:40,],dataset$response[1:40])
 #' y=predict(result,dataset$data[41:50,],0.3,"fraction")
-#' @export
 #' 
 predict.LarsPath=function(object,Xnew, lambda, mode=c("fraction","lambda","norm"),...)
 {
@@ -94,7 +93,6 @@ predict.LarsPath=function(object,Xnew, lambda, mode=c("fraction","lambda","norm"
 #' dataset=simul(50,10000,0.4,10,50,matrix(c(0.1,0.8,0.02,0.02),nrow=2))
 #' result=HDlars(dataset$data[1:40,],dataset$response[1:40])
 #' coeff=computeCoefficients(result,0.3,"fraction")
-#' @export
 #' 
 computeCoefficients = function(x,lambda,mode="fraction")
 {

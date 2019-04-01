@@ -15,8 +15,6 @@
 #' # Obtain estimated coefficient in matrix format
 #' coefficient = listToMatrix(result)
 #' 
-#' @export
-#' 
 #' @details
 #' The l1 penalty performs variable selection via shrinkage of the estimated coefficient. 
 #' It depends on a penalty parameter called lambda controlling the amount of regularization.
@@ -59,8 +57,6 @@ HDlars <- function(X,y,maxSteps=3*min(dim(X)),intercept=TRUE,eps=.Machine$double
 #' set.seed(10)
 #' dataset=simul(50,10000,0.4,10,50,matrix(c(0.1,0.8,0.02,0.02),nrow=2))
 #' result=HDfusion(dataset$data,dataset$response)
-#' 
-#' @export
 #' 
 #' @references Efron, Hastie, Johnstone and Tibshirani (2003) "Least Angle Regression" (with discussion) Annals of Statistics
 #' 

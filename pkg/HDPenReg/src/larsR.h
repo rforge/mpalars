@@ -1,6 +1,11 @@
 #ifndef _LARSR_H
 #define _LARSR_H
 
+#ifdef _OPENMP
+#include <omp.h>
+#endif
+
+
 #ifdef __cplusplus
 extern "C"
 {

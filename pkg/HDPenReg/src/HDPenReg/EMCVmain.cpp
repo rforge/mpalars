@@ -194,7 +194,7 @@ RcppExport SEXP cvEMfusedLasso2DMain( SEXP data, SEXP response
   STK::RMatrix<double> dataC(data);
   STK::RVector<double> responseC(response);
   //
-  int p = dataC.sizeCols(), n = dataC.sizeRows();
+  //int p = dataC.sizeCols(), n = dataC.sizeRows();
   ArrayXX x = dataC;
   VectorX y = responseC;
   vector<STK::Real> lambda1C = as<vector<STK::Real> >(lambda1);
@@ -424,12 +424,12 @@ RcppExport SEXP cvEMlogisticFusedLasso2DMain( SEXP data, SEXP response
   //convert parameters
   int  maxStepC(as<int>(maxStep)), burnC(as<int>(burn)), nbFoldsC(as<int>(nbFolds));
   Real epsC(as<Real>(eps)), thresholdC(as<Real>(threshold)), epsCGC(as<Real>(epsCG));
-  bool interceptC=as<bool>(intercept);
+  //bool interceptC=as<bool>(intercept);
   //convert parameters
   STK::RMatrix<double> dataC(data);
   STK::RVector<double> responseC(response);
   //
-  int p = dataC.sizeCols(), n = dataC.sizeRows();
+  //int p = dataC.sizeCols(), n = dataC.sizeRows();
   ArrayXX x = dataC;
   VectorX y = responseC;
   vector<STK::Real> lambda1C = as<vector<STK::Real> >(lambda1);

@@ -26,7 +26,6 @@
 #' result=EMlasso(dataset$data,dataset$response)
 #' # Obtain estimated coefficient in matrix format
 #' coefficient = listToMatrix(result)
-#' @export
 #' 
 #' @seealso \code{\link{EMcvlasso}}
 #' 
@@ -114,8 +113,6 @@ EMlasso <- function(X, y, lambda, maxSteps=1000, intercept=TRUE, model=c("linear
 #' @examples
 #' dataset=simul(50,100,0.4,1,10,matrix(c(0.1,0.9,0.02,0.02),nrow=2))
 #' result=EMfusedlasso(dataset$data,dataset$response,1,1)
-#' 
-#' @export
 #' 
 #' @seealso \code{\link{EMcvfusedlasso}}
 #' 

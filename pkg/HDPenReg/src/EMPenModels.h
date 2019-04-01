@@ -1,6 +1,10 @@
 #ifndef EMPENMODELS_H
 #define EMPENMODELS_H
 
+#ifdef _OPENMP
+#include <omp.h>
+#endif
+
 #ifdef __cplusplus
 extern "C"
 {
