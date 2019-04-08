@@ -22,10 +22,11 @@
 #'   \item{maxSteps}{Maximum number of steps of the lars algorithm.}
 #' }
 #' @examples 
-#' dataset=simul(50,10000,0.4,10,50,matrix(c(0.1,0.8,0.02,0.02),nrow=2))
-#' result=HDcvlars(dataset$data,dataset$response,5)
+#' dataset <- simul(50, 10000, 0.4, 10, 50, matrix(c(0.1,0.8,0.02,0.02), nrow =2 ))
+#' result <- HDcvlars(dataset$data, dataset$response, 5)
 #' 
-HDcvlars <- function(X,y,nbFolds=10,index=seq(0,1,by=0.01),mode=c("fraction","lambda"),maxSteps=3*min(dim(X)),partition=NULL,intercept=TRUE,eps=.Machine$double.eps^0.5)
+#' @export
+HDcvlars <- function(X, y, nbFolds = 10, index = seq(0, 1, by = 0.01), mode = c("fraction", "lambda"), maxSteps = 3*min(dim(X)), partition = NULL, intercept = TRUE, eps = .Machine$double.eps^0.5)
 {
   #check arguments
   mode <- match.arg(mode)
@@ -138,11 +139,12 @@ HDcvlars <- function(X,y,nbFolds=10,index=seq(0,1,by=0.01),mode=c("fraction","la
 #' @aliases plot.HDcvlars
 #' @method plot HDcvlars
 #' @examples 
-#' dataset=simul(50,10000,0.4,10,50,matrix(c(0.1,0.8,0.02,0.02),nrow=2))
-#' result=HDcvlars(dataset$data,dataset$response,5)
+#' dataset <- simul(50, 10000, 0.4, 10, 50, matrix(c(0.1,0.8,0.02,0.02), nrow = 2))
+#' result <- HDcvlars(dataset$data, dataset$response, 5)
 #' plot(result)
 #' 
-plot.HDcvlars=function(x,...)
+#' @export
+plot.HDcvlars <- function(x, ...)
 {
   if(missing(x))
     stop("x is missing.")

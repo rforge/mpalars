@@ -15,9 +15,3 @@ License: GPL (>= 2)
 LinkingTo: rtkore, Rcpp
 SystemRequirements: GNU make
 RoxygenNote: 6.1.1
-NeedsCompilation: yes
-Packaged: 2018-01-19 16:31:12 UTC; grimonprez
-Author: Quentin Grimonprez [aut, cre], Serge Iovleff [aut]
-Maintainer: Quentin Grimonprez <quentin.grimonprez@inria.fr>
-Repository: CRAN
-Date/Publication: 2018-01-19 17:06:10 UTC

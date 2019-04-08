@@ -11,11 +11,12 @@
 #' @aliases predict.LarsPath
 #' @method predict LarsPath
 #' @examples 
-#' dataset=simul(50,10000,0.4,10,50,matrix(c(0.1,0.8,0.02,0.02),nrow=2))
-#' result=HDlars(dataset$data[1:40,],dataset$response[1:40])
-#' y=predict(result,dataset$data[41:50,],0.3,"fraction")
+#' dataset <- simul(50, 10000, 0.4, 10, 50, matrix(c(0.1,0.8,0.02,0.02), nrow = 2))
+#' result <- HDlars(dataset$data[1:40,], dataset$response[1:40])
+#' y <- predict(result, dataset$data[41:50,], 0.3, "fraction")
 #' 
-predict.LarsPath=function(object,Xnew, lambda, mode=c("fraction","lambda","norm"),...)
+#' @export
+predict.LarsPath <- function(object, Xnew, lambda, mode = c("fraction", "lambda", "norm"), ...)
 {
   mode <- match.arg(mode)
   
@@ -90,17 +91,18 @@ predict.LarsPath=function(object,Xnew, lambda, mode=c("fraction","lambda","norm"
 #'   \item{coefficient}{non-zeros coefficients.}
 #' }
 #' @examples 
-#' dataset=simul(50,10000,0.4,10,50,matrix(c(0.1,0.8,0.02,0.02),nrow=2))
-#' result=HDlars(dataset$data[1:40,],dataset$response[1:40])
-#' coeff=computeCoefficients(result,0.3,"fraction")
+#' dataset <- simul(50, 10000, 0.4, 10, 50, matrix(c(0.1,0.8,0.02,0.02), nrow = 2))
+#' result <- HDlars(dataset$data[1:40,], dataset$response[1:40])
+#' coeff <- computeCoefficients(result, 0.3, "fraction")
 #' 
-computeCoefficients = function(x,lambda,mode="fraction")
+#' @export
+computeCoefficients <- function(x, lambda, mode = "fraction")
 {
   if(missing(x))
     stop("x is missing.")
   if(class(x)!="LarsPath")
     stop("x must be a LarsPath object.")
-  if( !(mode%in%c("fraction","norm","lambda"))  ) 
+  if(!(mode%in%c("fraction","norm","lambda"))  ) 
     stop("mode must be \"fraction\" or \"norm\" or \"lambda\".")
   #lambda
   if(!is.numeric(lambda))
@@ -198,7 +200,8 @@ computeCoefficients = function(x,lambda,mode="fraction")
   return(list(variable=variable,coefficient=coeff))
 }
 
-.computeOrdinate=function(x1,x2,x3,y1,y2)
+
+.computeOrdinate <- function(x1, x2, x3, y1, y2)
 {
   return(y1 + (y2-y1) * ((x3-x1)/(x2-x1)) )
 }

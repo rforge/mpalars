@@ -22,10 +22,11 @@
 #'   \item{lambda.optimal}{Value of \code{lambda} for which the cv criterion is minimal.}
 #' }
 #' @examples 
-#' dataset <- simul(50, 100, 0.4, 1, 10, matrix(c(0.1,0.8,0.02,0.02),nrow=2))
+#' dataset <- simul(50, 100, 0.4, 1, 10, matrix(c(0.1,0.8,0.02,0.02), nrow = 2))
 #' result <- EMcvlasso(X = dataset$data, y = dataset$response,
 #'                     lambda = 5:1, nbFolds = 5,intercept = FALSE)
 #' 
+#' @export
 EMcvlasso <- function(X , y, lambda = NULL, nbFolds = 10, maxSteps = 1000, intercept = TRUE, model = c("linear", "logistic"), burn = 30, threshold = 1.e-08, eps = 1e-5, epsCG = 1e-8)
 {
   #check arguments
@@ -118,10 +119,11 @@ EMcvlasso <- function(X , y, lambda = NULL, nbFolds = 10, maxSteps = 1000, inter
 #'   \item{lambda.optimal}{Value of (lambda1,lambda2) for which the cv criterion is minimal.}
 #' }
 #' @examples 
-#' dataset <- simul(50, 100, 0.4, 1, 10, matrix(c(0.1,0.8,0.02,0.02),nrow=2))
+#' dataset <- simul(50, 100, 0.4, 1, 10, matrix(c(0.1,0.8,0.02,0.02), nrow = 2))
 #' result <- EMcvfusedlasso(X = dataset$data, y = dataset$response, lambda1 = 3:1, 
 #'                          lambda2 = 3:1, nbFolds = 5,intercept = FALSE)
 #' 
+#' @export
 EMcvfusedlasso <- function(X, y, lambda1, lambda2, nbFolds = 10, maxSteps = 1000, burn = 50, intercept = TRUE, model = c("linear", "logistic"), eps = 1e-5, eps0 = 1e-8, epsCG = 1e-8)
 {
   #check arguments

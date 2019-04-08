@@ -22,10 +22,10 @@
 #' \item{causalSNP}{A vector of size nbSeg containing the center of causal segments.}
 #' @author Quentin Grimonprez, Serge Iovleff
 #' @examples 
-#' data=simul(50,10000,0.4,10,150,matrix(c(0.1,0.8,0.001,0.001),nrow=2))
+#' data <- simul(50, 10000, 0.4, 10, 150, matrix(c(0.1,0.8,0.001,0.001), nrow = 2))
 #' 
-
-simul=function(n,nbSNP,probCas,nbSeg,meanSegmentSize,prob,alpha=15)
+#' @export
+simul <- function(n, nbSNP, probCas, nbSeg, meanSegmentSize, prob, alpha = 15)
 {
   if(missing(n))
     stop("n is missing.")
@@ -82,7 +82,7 @@ simul=function(n,nbSNP,probCas,nbSeg,meanSegmentSize,prob,alpha=15)
 }
 
 # check arguments from simulation function
-.checkSim=function(n,nbSNP,probCas,nbSeg,meanSegmentSize,prob,alpha)
+.checkSim <- function(n, nbSNP, probCas, nbSeg, meanSegmentSize, prob, alpha)
 {
   
   ## n

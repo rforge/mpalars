@@ -1,3 +1,10 @@
+#' @useDynLib HDPenReg, .registration = TRUE 	 
+#' @import rtkore 	 
+#' @import methods 	 
+#' @import Matrix 	 
+#' @importFrom graphics abline axis lines points matplot 	 
+#' @importFrom stats rbeta rbinom rpois
+#'
 #' @title Algorithms for lasso and fused-lasso problems.
 #' @docType package
 #' @aliases HDPenReg-package, HDPenReg
