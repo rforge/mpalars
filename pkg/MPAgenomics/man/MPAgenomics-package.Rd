@@ -17,8 +17,8 @@ The package also enables to preprocess all samples individually in order to keep
 \tabular{ll}{
 Package: \tab MPAgenomics\cr
 Type: \tab Package\cr
-Version: \tab 1.1.5\cr
-Date: \tab 2018-08-20\cr
+Version: \tab 1.1.7\cr
+Date: \tab 2020-01-14\cr
 License: \tab GPL (>=2) \cr
 }
 }

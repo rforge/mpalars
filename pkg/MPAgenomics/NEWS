@@ -1,3 +1,6 @@
+Version 1.1.7 (14-01-2020)
+- cghseg conditionnally installed via drat repo
+
 Version 1.1.6 (23-08-2018)
 - cghseg Namespace imported conditionally on its availability via requireNamespace
 

@@ -1,8 +1,8 @@
 Package: MPAgenomics
 Type: Package
 Title: Multi-Patient Analysis of Genomic Markers
-Version: 1.1.6
-Date: 2018-08-23
+Version: 1.1.7
+Date: 2020-01-14
 Author: Quentin Grimonprez with contributions from Guillemette Marot and Samuel
     Blanck. Some functions use code created by Sjoerd Vosse, Mark van de Wiel,
     Pierre Neuvial, Henrik Bengtsson.
@@ -14,13 +14,12 @@ Description: Preprocess and analysis of genomic data. MPAgenomics
     parameters involved in the wrapped packages. Considering multiple profiles
     in the same time, MPAgenomics wraps efficient penalized regression methods
     to select relevant markers associated with a given outcome.
-Additional_repositories: http://r-forge.r-project.org
+Additional_repositories: https://sblanck.github.io/drat/
 License: GPL(>=2)
-Copyright: Inria 2012-2018.
+Copyright: Inria 2012-2020.
 Imports:
-    R.utils,changepoint(>= 1.1),glmnet,HDPenReg(>= 0.90),spikeslab,devtools
+    R.utils,changepoint(>= 1.1),glmnet,HDPenReg(>= 0.90),spikeslab,devtools, drat
 Suggests:
-    CGHcall,aroma.affymetrix,aroma.cn,aroma.core,aroma.light,snowfall,R.devices,R.filesets,R.methodsS3,R.oo,matrixStats
-Enhances: cghseg
+    CGHcall,aroma.affymetrix,aroma.cn,aroma.core,aroma.light,snowfall,R.devices,R.filesets,R.methodsS3,R.oo,matrixStats,cghseg
 Roxygen: list(wrap = FALSE)
 RoxygenNote: 6.0.1

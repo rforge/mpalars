@@ -95,9 +95,17 @@ biocLite("DNAcopy")
 biocLite("aroma.light")
 install.packages("aroma.affymetrix")
 install.packages("aroma.cn")
-install.packages("https://cran.r-project.org/src/contrib/Archive/cghseg/cghseg_1.0.2-1.tar.gz", repos=NULL, type="source")
 @	
 \end{scriptsize}
+
+We also recommend the user who would like to use the cghseg segmentation method to install \texttt{cghseg} package \cite{cghseg} with the following commands:
+\begin{scriptsize}
+<<eval=FALSE>>=
+drat::addRepo("sblanck")
+install.packages("cghseg")
+@
+\end{scriptsize}
+
 
 		The installation of all these packages at the very beginning of the use of \texttt{MPAgenomics} is only for convenience, not mandatory. Indeed, the user who would have forgotten to install some packages would be reminded to install them when applying the corresponding wrapper.
 	

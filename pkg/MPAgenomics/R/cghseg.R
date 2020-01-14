@@ -133,10 +133,11 @@ cghseg=function(signal,Kmax=10,position=NULL,plot=TRUE,verbose=TRUE)
   if(!suppressPackageStartupMessages(requireNamespace("cghseg", quietly=TRUE)))
   {
     cat("cghseg package not found. To install cghseg:\n")
-    cat("devtools::install.url('https://cran.r-project.org/src/contrib/Archive/cghseg/cghseg_1.0.2-1.tar.gz')\n")
+    cat("drat::addRepo('sblanck')\n")
+    cat("install.packages('cghseg')")
     stop("Error Loading cghseg package. Please follow the printed instructions to install cghseg or use PELT method")
   } else {
-    segmentation=cghseg:::segmeanCO(signal, Kmax=Kmax)
+    segmentation=cghseg::segmeanCO(signal, Kmax=Kmax)
   }
   #find best segmentation
   #best=bestSegmentationBM(segmentation,length(signal))
