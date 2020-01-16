@@ -1,8 +1,8 @@
 Package: MPAgenomics
 Type: Package
 Title: Multi-Patient Analysis of Genomic Markers
-Version: 1.1.7
-Date: 2020-01-14
+Version: 1.1.8
+Date: 2020-01-16
 Author: Quentin Grimonprez with contributions from Guillemette Marot and Samuel
     Blanck. Some functions use code created by Sjoerd Vosse, Mark van de Wiel,
     Pierre Neuvial, Henrik Bengtsson.
@@ -20,6 +20,8 @@ Copyright: Inria 2012-2020.
 Imports:
     R.utils,changepoint(>= 1.1),glmnet,HDPenReg(>= 0.90),spikeslab,devtools, drat
 Suggests:
-    CGHcall,aroma.affymetrix,aroma.cn,aroma.core,aroma.light,snowfall,R.devices,R.filesets,R.methodsS3,R.oo,matrixStats,cghseg
+    CGHcall,aroma.affymetrix,aroma.cn,aroma.core,aroma.light,snowfall,R.devices,R.filesets,R.methodsS3,R.oo,matrixStats
+Enhances:
+    cghseg
 Roxygen: list(wrap = FALSE)
 RoxygenNote: 6.0.1

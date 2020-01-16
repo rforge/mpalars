@@ -1,3 +1,6 @@
+Version 1.1.8 (16-01-2020)
+- cghseg moved to enhances section
+
 Version 1.1.7 (14-01-2020)
 - cghseg conditionnally installed via drat repo
 
